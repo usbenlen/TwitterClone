@@ -1,6 +1,6 @@
 /** @format */
 
-import TweetCard from "@/components/feed/TweetCard";
+import TweetCard from "@/components/tweet/TweetCard";
 import { Spinner } from "@/ui/Spinner";
 
 import type { Tweet } from "@/types/tweet";

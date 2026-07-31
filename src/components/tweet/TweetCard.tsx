@@ -1,6 +1,6 @@
 /** @format */
 
-import { TweetHeader, TweetContent, TweetActions } from "@/components/feed";
+import { TweetHeader, TweetContent, TweetActions } from "@/components/tweet";
 
 import type { Tweet } from "@/types/tweet";
 import { Avatar } from "@/ui";
