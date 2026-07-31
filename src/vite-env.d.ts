@@ -3,9 +3,25 @@
 /// <reference types="vite/client" />
 
 interface ImportMetaEnv {
+  readonly VITE_APP_NAME: string;
+
   readonly VITE_PATH_TO_SERVER: string;
   readonly VITE_PATH_TO_API: string;
+
   readonly VITE_USE_MOCK?: string;
+
+  readonly VITE_MAX_TWEET_LENGTH: number;
+  readonly VITE_MAX_MEDIA_ATTACHMENTS: number;
+
+  readonly VITE_MAX_IMAGE_SIZE_MB: number;
+  readonly VITE_MAX_VIDEO_SIZE_MB: number;
+  readonly VITE_MAX_GIF_SIZE_MB: number;
+
+  readonly VITE_ENABLE_IMAGE_UPLOAD: string;
+  readonly VITE_ENABLE_VIDEO_UPLOAD: string;
+  readonly VITE_ENABLE_GIFS: string;
+  readonly VITE_ENABLE_POLLS: string;
+  readonly VITE_ENABLE_LOCATION: string;
 }
 
 interface ImportMeta {
