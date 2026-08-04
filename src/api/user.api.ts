@@ -2,7 +2,7 @@
 import { apiClient } from "@/api/client";
 import { ENDPOINTS } from "@/api/config";
 import type { User } from "@/types/user";
-import { MOCK_ENABLED, mockUserApi } from "@/api/mock";
+import { MOCK_ENABLED, mockUserApi } from "@/mock/handlers/mock";
 
 const realUserApi = {
   getByUsername: (username: string) =>

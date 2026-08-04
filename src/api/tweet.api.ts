@@ -1,8 +1,8 @@
 /** @format */
 import { apiClient } from "@/api/client";
 import { ENDPOINTS } from "@/api/config";
-import type { Tweet } from "@/types/tweet";
-import { MOCK_ENABLED, mockTweetApi } from "@/api/mock";
+import type { Tweet, CreateTweetRequest } from "@/types/tweet";
+import { MOCK_ENABLED, mockTweetApi } from "@/mock/handlers/mock";
 
 const realTweetApi = {
   getFeed: () => apiClient.get<Tweet[]>(ENDPOINTS.tweets.feed),
@@ -10,8 +10,8 @@ const realTweetApi = {
   getByUsername: (username: string) =>
     apiClient.get<Tweet[]>(ENDPOINTS.tweets.byUsername(username)),
 
-  create: (content: string) =>
-    apiClient.post<Tweet>(ENDPOINTS.tweets.create, { content }),
+  create: (data: CreateTweetRequest) =>
+    apiClient.post<Tweet>(ENDPOINTS.tweets.create, data),
 
   toggleLike: (id: string) =>
     apiClient.post<{ likedByMe: boolean; likesCount: number }>(

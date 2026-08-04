@@ -3,7 +3,7 @@ import { apiClient } from "@/api/client";
 import { ENDPOINTS } from "@/api/config";
 import type { AuthResponse, LoginRequest, RegisterRequest } from "@/types/auth";
 import type { User } from "@/types/user";
-import { MOCK_ENABLED, mockAuthApi } from "@/api/mock";
+import { MOCK_ENABLED, mockAuthApi } from "@/mock/handlers/mock";
 
 const realAuthApi = {
   login: (data: LoginRequest) =>
