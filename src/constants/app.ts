@@ -4,20 +4,35 @@ export const APP_NAME = import.meta.env.VITE_APP_NAME;
 
 export const MAX_TWEET_LENGTH = Number(import.meta.env.VITE_MAX_TWEET_LENGTH);
 
-export const MAX_MEDIA_ATTACHMENTS = Number(
-  import.meta.env.VITE_MAX_MEDIA_ATTACHMENTS,
-);
-
-export const MAX_IMAGE_SIZE_MB = Number(import.meta.env.VITE_MAX_IMAGE_SIZE_MB);
-
-export const MAX_VIDEO_SIZE_MB = Number(import.meta.env.VITE_MAX_VIDEO_SIZE_MB);
-
-export const MAX_GIF_SIZE_MB = Number(import.meta.env.VITE_MAX_GIF_SIZE_MB);
-
 export const MEDIA = {
-  ALLOWED_IMAGE_TYPES: ["image/jpeg", "image/png", "image/webp"],
+  MAX_ATTACHMENTS: Number(import.meta.env.VITE_MAX_MEDIA_ATTACHMENTS),
 
-  ALLOWED_VIDEO_TYPES: ["video/mp4", "video/webm"],
+  IMAGE: {
+    MAX_SIZE_MB: Number(import.meta.env.VITE_MAX_IMAGE_SIZE_MB),
+    MAX_WIDTH: Number(import.meta.env.VITE_IMAGE_MAX_WIDTH),
+    QUALITY: Number(import.meta.env.VITE_IMAGE_QUALITY),
+
+    ALLOWED_TYPES: ["image/jpeg", "image/png", "image/webp"],
+  },
+
+  VIDEO: {
+    MAX_SIZE_MB: Number(import.meta.env.VITE_MAX_VIDEO_SIZE_MB),
+
+    ALLOWED_TYPES: ["video/mp4", "video/webm"],
+  },
+
+  GIF: {
+    MAX_SIZE_MB: Number(import.meta.env.VITE_MAX_GIF_SIZE_MB),
+  },
+};
+
+export const MEDIA_STATUS = {
+  IDLE: "idle",
+  COMPRESSING: "compressing",
+  READY: "ready",
+  UPLOADING: "uploading",
+  UPLOADED: "uploaded",
+  ERROR: "error",
 } as const;
 
 export const ENABLE_IMAGE_UPLOAD =

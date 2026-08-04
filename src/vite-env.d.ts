@@ -17,6 +17,9 @@ interface ImportMetaEnv {
   readonly VITE_MAX_VIDEO_SIZE_MB: number;
   readonly VITE_MAX_GIF_SIZE_MB: number;
 
+  readonly VITE_IMAGE_MAX_WIDTH: number;
+  readonly VITE_IMAGE_QUALITY: number;
+
   readonly VITE_ENABLE_IMAGE_UPLOAD: string;
   readonly VITE_ENABLE_VIDEO_UPLOAD: string;
   readonly VITE_ENABLE_GIFS: string;
