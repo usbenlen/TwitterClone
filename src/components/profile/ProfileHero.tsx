@@ -1,8 +1,8 @@
 /** @format */
 
 import { Avatar, Button } from "@/ui";
-
 import type { User } from "@/types/user";
+import { useSubscribe } from "@/hooks/useSubscribe";
 
 interface ProfileHeroProps {
   user: User;
@@ -10,6 +10,14 @@ interface ProfileHeroProps {
 }
 
 export default function ProfileHero({ user, isOwnProfile }: ProfileHeroProps) {
+  const {
+    subscribe,
+    unsubscribe,
+    subscriptions,
+  } = useSubscribe();
+
+const following = subscriptions.includes(user.username);
+
   return (
     <>
       <div className="h-40 w-full bg-muted">
@@ -34,9 +42,20 @@ export default function ProfileHero({ user, isOwnProfile }: ProfileHeroProps) {
                 Редагувати профіль
               </Button>
             ) : (
-              <Button size="sm">Читати</Button>
+              <Button
+                size="sm"
+                variant={following ? "outline" : "primary"}
+                onClick={() =>
+                  following
+                    ? unsubscribe(user.username)
+                    : subscribe(user.username)
+                }
+              >
+                {following ? "✓ Читаю" : "Читати"}
+              </Button>
             )}
           </div>
+
         </div>
       </div>
     </>

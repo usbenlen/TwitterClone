@@ -3,12 +3,18 @@
 import { formatCount, formatJoinDate } from "@/utils/format";
 
 import type { User } from "@/types/user";
+import { useSubscribe } from "@/hooks/useSubscribe";
 
 interface ProfileStatsProps {
   user: User;
+  isOwnProfile: boolean;
 }
 
-export default function ProfileStats({ user }: ProfileStatsProps) {
+export default function ProfileStats({ user, isOwnProfile }: ProfileStatsProps) {
+  const {followingCount} = useSubscribe();
+
+  const count = isOwnProfile ? followingCount : user.followingCount;
+
   return (
     <div className="px-4 pb-4">
       <p className="mt-3 text-sm text-muted-foreground">
@@ -18,7 +24,7 @@ export default function ProfileStats({ user }: ProfileStatsProps) {
       <div className="mt-3 flex gap-4 text-sm">
         <span>
           <strong className="font-bold text-foreground">
-            {formatCount(user.followingCount)}
+            {formatCount(count)}
           </strong>
           <span className="text-muted-foreground"> Читає</span>
         </span>
