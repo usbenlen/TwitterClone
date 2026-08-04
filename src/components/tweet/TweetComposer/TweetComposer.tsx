@@ -78,7 +78,8 @@
 /** @format */
 
 import { useAuth } from "@/hooks/useAuth";
-import { useTweetComposer } from "@/hooks/useTweetComposer";
+import { useTweetComposer } from "@/hooks/composer";
+import { useDragAndDrop } from "@/hooks/composer/media/useDragAndDrop";
 
 import { Avatar } from "@/ui";
 
@@ -89,9 +90,12 @@ import {
   TweetComposerToolbar,
   TweetComposerMediaPreview,
   TweetComposerFooter,
+  TweetComposerDropOverlay,
+  TweetComposerErrors,
+  TweetComposerFileInputs,
 } from "@/components/tweet/TweetComposer";
 
-import { MEDIA } from "@/constants/app";
+import { cn } from "@/utils/cn";
 
 interface TweetComposerProps {
   onCreated: (tweet: Tweet) => void;
@@ -103,10 +107,23 @@ export default function TweetComposer({ onCreated }: TweetComposerProps) {
     onCreated,
   });
 
+  const drag = useDragAndDrop({
+    onFilesSelected: composer.onFilesSelected,
+  });
+
   if (!user) return null;
 
   return (
-    <div className="flex gap-3 border-b border-border p-4">
+    <div
+      onDragEnter={drag.onDragEnter}
+      onDragOver={drag.onDragOver}
+      onDragLeave={drag.onDragLeave}
+      onDrop={drag.onDrop}
+      className={cn(
+        "relative flex gap-3 border-b border-border p-4 transition-all duration-200",
+        drag.isDragging && "bg-primary/5 ring-2 ring-primary ring-inset",
+      )}
+    >
       <Avatar
         name={user.displayName}
         src={user.avatarUrl}
@@ -114,27 +131,26 @@ export default function TweetComposer({ onCreated }: TweetComposerProps) {
       />
 
       <div className="flex flex-1 flex-col gap-3">
+        <TweetComposerDropOverlay visible={drag.isDragging} />
+
         <TweetComposerEditor
           value={composer.content}
           onChange={composer.setContent}
         />
 
-        <TweetComposerMediaPreview />
+        <TweetComposerMediaPreview
+          media={composer.media}
+          onRemove={composer.removeMedia}
+        />
+
+        <TweetComposerErrors errors={composer.errors} />
 
         <TweetComposerToolbar onAction={composer.handleAction} />
 
-        <input
-          ref={composer.imageInputRef}
-          type="file"
-          accept={MEDIA.ALLOWED_IMAGE_TYPES.join(",")}
-          hidden
-        />
-
-        <input
-          ref={composer.videoInputRef}
-          type="file"
-          accept={MEDIA.ALLOWED_VIDEO_TYPES.join(",")}
-          hidden
+        <TweetComposerFileInputs
+          imageRef={composer.imageInputRef}
+          videoRef={composer.videoInputRef}
+          onFilesSelected={composer.onFilesSelected}
         />
 
         <TweetComposerFooter
