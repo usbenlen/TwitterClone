@@ -9,6 +9,7 @@ import type {
   ComposerMediaError,
   ComposerMediaStatus,
 } from "@/types/composer";
+import type { Gif } from "@/types/gif";
 
 import { prepareMedia } from "@/utils/media";
 
@@ -98,10 +99,34 @@ export function useTweetComposerMedia() {
     for (const item of added) upload(item);
   };
 
+  const addGif = (gif: Gif) => {
+    clearErrors();
+
+    if (media.length >= MEDIA.MAX_ATTACHMENTS) {
+      pushError(`Максимум ${MEDIA.MAX_ATTACHMENTS} вкладень.`);
+      return;
+    }
+
+    const item: ComposerMedia = {
+      id: crypto.randomUUID(),
+      type: "gif",
+      url: gif.originalUrl,
+      previewUrl: gif.previewUrl,
+      width: gif.width,
+      height: gif.height,
+      name: gif.title,
+      size: 0,
+      progress: 100,
+      status: "ready",
+    };
+
+    setMedia((current) => [...current, item]);
+  };
+
   const removeMedia = (id: string) => {
     setMedia((current) => {
       const item = current.find((m) => m.id === id);
-      if (item) URL.revokeObjectURL(item.previewUrl);
+      if (item && item.file) URL.revokeObjectURL(item.previewUrl);
 
       const next = current.filter((m) => m.id !== id);
       if (next.length === 0) clearErrors();
@@ -111,7 +136,9 @@ export function useTweetComposerMedia() {
   };
 
   const clearMedia = () => {
-    media.forEach((item) => URL.revokeObjectURL(item.previewUrl));
+    media.forEach((item) => {
+      if (item.file) URL.revokeObjectURL(item.previewUrl);
+    });
 
     setMedia([]);
     clearErrors();
@@ -122,6 +149,8 @@ export function useTweetComposerMedia() {
     errors,
 
     addFiles,
+    addGif,
+
     removeMedia,
     clearMedia,
     clearErrors,

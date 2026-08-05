@@ -21,6 +21,8 @@ export default function ComposerMediaItem({
   className,
   onRemove,
 }: ComposerMediaItemProps) {
+  const isImage = media.type === "image" || media.type === "gif";
+
   return (
     <div
       className={cn(
@@ -42,7 +44,7 @@ export default function ComposerMediaItem({
         <X size={16} />
       </button>
 
-      {media.type === "image" ? (
+      {isImage ? (
         <img
           src={media.previewUrl}
           alt={media.name}

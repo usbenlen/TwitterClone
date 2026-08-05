@@ -4,7 +4,8 @@ import { useRef } from "react";
 
 import type { ComposerAction } from "@/types/composer";
 
-import { useComposerEmoji } from "@/hooks/composer/useComposerEmoji";
+import { useComposerPopup } from "@/hooks/composer/useComposerPopup";
+import { useComposerGif } from "@/hooks/composer/gif/useComposerGif";
 
 export function useComposerActions() {
   const imageInputRef = useRef<HTMLInputElement>(null);
@@ -19,7 +20,17 @@ export function useComposerActions() {
     location: useRef<HTMLButtonElement>(null),
   };
 
-  const emoji = useComposerEmoji();
+  const closeAllPopups = () => {
+    emoji.close();
+    gif.close();
+    poll.close();
+    location.close();
+  };
+
+  const emoji = useComposerPopup();
+  const gif = useComposerGif();
+  const poll = useComposerPopup();
+  const location = useComposerPopup();
 
   const handleAction = (action: ComposerAction) => {
     switch (action) {
@@ -32,7 +43,7 @@ export function useComposerActions() {
         break;
 
       case "gif":
-        console.log("GIF picker");
+        gif.toggle();
         break;
 
       case "emoji":
@@ -40,11 +51,11 @@ export function useComposerActions() {
         break;
 
       case "poll":
-        console.log("Poll");
+        poll.toggle();
         break;
 
       case "location":
-        console.log("Location");
+        location.toggle();
         break;
     }
   };
@@ -56,7 +67,11 @@ export function useComposerActions() {
     buttonRefs,
 
     handleAction,
+    closeAllPopups,
 
     emoji,
+    gif,
+    poll,
+    location,
   };
 }

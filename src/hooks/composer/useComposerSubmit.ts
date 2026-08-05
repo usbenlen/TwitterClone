@@ -30,13 +30,14 @@ export function useComposerSubmit({
     setIsPosting(true);
 
     try {
-      const attachmentIds = media
-        .filter((item) => item.attachmentId)
-        .map((item) => item.attachmentId!);
-
       const tweet = await tweetApi.create({
         content: content.trim(),
-        attachmentIds,
+
+        media: media.map((item) => ({
+          type: item.type,
+          attachmentId: item.attachmentId,
+          url: item.url,
+        })),
       });
 
       onCreated(tweet);

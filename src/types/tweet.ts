@@ -14,7 +14,13 @@ export interface Tweet {
   createdAt: string;
 }
 
+export interface CreateTweetMedia {
+  type: "image" | "video" | "gif";
+  attachmentId?: string;
+  url?: string;
+}
+
 export interface CreateTweetRequest {
   content: string;
-  attachmentIds: string[];
+  media: CreateTweetMedia[];
 }

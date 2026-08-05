@@ -7,27 +7,27 @@ interface MediaItemProps {
 }
 
 export default function MediaItem({ attachment }: MediaItemProps) {
-  switch (attachment.type) {
-    case "image":
-    case "gif":
-      return (
-        <img
-          src={attachment.url}
-          alt=""
-          className="size-full rounded-xl object-cover border border-border"
-        />
-      );
+  const isImage = attachment.type === "image" || attachment.type === "gif";
 
-    case "video":
-      return (
-        <video
-          src={attachment.url}
-          controls
-          className="size-full rounded-xl object-cover border border-border"
-        />
-      );
-
-    default:
-      return null;
+  if (isImage) {
+    return (
+      <img
+        src={attachment.url}
+        alt=""
+        className="size-full rounded-xl border border-border object-cover"
+      />
+    );
   }
+
+  if (attachment.type === "video") {
+    return (
+      <video
+        src={attachment.url}
+        controls
+        className="size-full rounded-xl border border-border object-cover"
+      />
+    );
+  }
+
+  return null;
 }

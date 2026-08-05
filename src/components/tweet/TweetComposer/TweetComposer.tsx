@@ -76,7 +76,12 @@ export default function TweetComposer({ onCreated }: TweetComposerProps) {
           buttonRefs={composer.buttonRefs}
         />
 
-        <ComposerPopovers emoji={composer.emoji} />
+        <ComposerPopovers
+          emoji={composer.popovers.emoji}
+          gif={composer.popovers.gif}
+          poll={composer.popovers.poll}
+          location={composer.popovers.location}
+        />
 
         <TweetComposerFileInputs
           imageRef={composer.imageInputRef}

@@ -21,17 +21,41 @@ export const mockTweetApi = {
   async create(payload: CreateTweetRequest): Promise<Tweet> {
     await delay(300);
 
-    const attachments = mediaStore.getMany(payload.attachmentIds);
+    const attachments = payload.media.flatMap((item) => {
+      if (item.type === "gif") {
+        return [
+          {
+            id: crypto.randomUUID(),
+
+            type: "gif" as const,
+
+            url: item.url!,
+
+            thumbnailUrl: item.url!,
+          },
+        ];
+      }
+
+      if (!item.attachmentId) return [];
+
+      return mediaStore.getMany([item.attachmentId]);
+    });
 
     const tweet: Tweet = {
       id: nextTweetId(),
+
       content: payload.content,
+
       attachments,
+
       author: currentUser,
+
       likesCount: 0,
       repliesCount: 0,
       retweetsCount: 0,
+
       likedByMe: false,
+
       createdAt: new Date().toISOString(),
     };
 

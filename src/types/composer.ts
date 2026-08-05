@@ -15,14 +15,17 @@ export type ComposerMediaStatus =
 
 export interface ComposerMedia {
   id: string;
-  file: File;
+  file?: File;
   previewUrl: string;
-  type: "image" | "video";
+  attachmentId?: string;
+  url?: string;
+  type: "image" | "video" | "gif";
   name: string;
   size: number;
+  width?: number;
+  height?: number;
   status: ComposerMediaStatus;
   progress: number;
-  attachmentId?: string;
 }
 
 export interface ComposerMediaError {

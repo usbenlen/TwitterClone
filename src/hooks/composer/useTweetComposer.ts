@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 
 import type { Tweet } from "@/types/tweet";
+import type { Gif } from "@/types/gif";
 
 import { MAX_TWEET_LENGTH, MEDIA_STATUS } from "@/constants/app";
 
@@ -10,7 +11,7 @@ import { useTweetComposerMedia } from "@/hooks/composer/media/useTweetComposerMe
 import {
   useComposerActions,
   useComposerSubmit,
-  useComposerCursor,
+  useComposerEditor,
 } from "@/hooks/composer";
 
 interface UseTweetComposerProps {
@@ -19,7 +20,7 @@ interface UseTweetComposerProps {
 
 export function useTweetComposer({ onCreated }: UseTweetComposerProps) {
   const [content, setContent] = useState("");
-  const cursor = useComposerCursor();
+  const cursor = useComposerEditor();
 
   const remaining = useMemo(() => MAX_TWEET_LENGTH - content.length, [content]);
 
@@ -59,19 +60,72 @@ export function useTweetComposer({ onCreated }: UseTweetComposerProps) {
     const created = await submitComposer();
     if (created) {
       setContent("");
-      emoji.close();
+      closeAllPopups();
     }
   };
 
-  const { imageInputRef, videoInputRef, handleAction, emoji, buttonRefs } =
-    useComposerActions();
+  const {
+    imageInputRef,
+    videoInputRef,
+    handleAction,
+    closeAllPopups,
+
+    buttonRefs,
+
+    emoji,
+    gif,
+    poll,
+    location,
+  } = useComposerActions();
 
   const insertEmoji = (emojiValue: string) => {
     cursor.insertAtCursor(emojiValue, content, setContent);
 
-    emoji.close();
+    closeAllPopups();
 
     cursor.editorRef.current?.focus();
+  };
+
+  const insertGif = (gifItem: Gif) => {
+    mediaManager.addGif(gifItem);
+
+    closeAllPopups();
+
+    cursor.editorRef.current?.focus();
+  };
+
+  const popovers = {
+    emoji: {
+      open: emoji.isOpen,
+      reference: buttonRefs.emoji?.current ?? null,
+      onOpenChange: (open: boolean) => (open ? emoji.open() : emoji.close()),
+      onSelect: insertEmoji,
+    },
+
+    gif: {
+      open: gif.isOpen,
+      reference: buttonRefs.gif?.current ?? null,
+      onOpenChange: (open: boolean) => (open ? gif.open() : gif.close()),
+      gifs: gif.gifs,
+      query: gif.query,
+      loading: gif.loading,
+      error: gif.error,
+      onQueryChange: gif.setQuery,
+      onSelect: insertGif,
+    },
+
+    poll: {
+      open: poll.isOpen,
+      reference: buttonRefs.poll?.current ?? null,
+      onOpenChange: (open: boolean) => (open ? poll.open() : poll.close()),
+    },
+
+    location: {
+      open: location.isOpen,
+      reference: buttonRefs.location?.current ?? null,
+      onOpenChange: (open: boolean) =>
+        open ? location.open() : location.close(),
+    },
   };
 
   return {
@@ -103,17 +157,6 @@ export function useTweetComposer({ onCreated }: UseTweetComposerProps) {
 
     buttonRefs,
 
-    emoji: {
-      open: emoji.open,
-      reference: buttonRefs.emoji?.current ?? null,
-      onOpenChange: (value: boolean) => {
-        if (value) {
-          emoji.toggle();
-        } else {
-          emoji.close();
-        }
-      },
-      onSelect: insertEmoji,
-    },
+    popovers,
   };
 }
