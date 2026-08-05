@@ -6,5 +6,6 @@ export { useTweetComposer } from "@/hooks/composer/useTweetComposer";
 export { useComposerActions } from "@/hooks/composer/useComposerActions";
 export { useComposerSubmit } from "@/hooks/composer/useComposerSubmit";
 export { useComposerEditor } from "@/hooks/composer/useComposerEditor";
+export { useComposerPopup } from "@/hooks/composer/useComposerPopup";
 
 export { useComposerGif } from "@/hooks/composer/gif/useComposerGif";

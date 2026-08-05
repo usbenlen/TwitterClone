@@ -33,13 +33,9 @@ interface GiphyResponse {
 function mapGif(item: GiphyGif): Gif {
   return {
     id: item.id,
-
     title: item.title,
-
     originalUrl: item.images.original.url,
-
     previewUrl: item.images.fixed_width.url,
-
     width: Number(item.images.original.width),
     height: Number(item.images.original.height),
   };
@@ -47,13 +43,9 @@ function mapGif(item: GiphyGif): Gif {
 
 async function request(url: string): Promise<Gif[]> {
   const response = await fetch(url);
-
-  if (!response.ok) {
-    throw new Error("Failed to fetch GIFs.");
-  }
+  if (!response.ok) throw new Error("Failed to fetch GIFs.");
 
   const json: GiphyResponse = await response.json();
-
   return json.data.map(mapGif);
 }
 
@@ -65,9 +57,7 @@ export const gifApi = {
   },
 
   async search(query: string, limit = LIMIT) {
-    if (!query.trim()) {
-      return [];
-    }
+    if (!query.trim()) return [];
 
     return request(
       `${BASE_URL}/search?api_key=${GIPHY_API_KEY}&q=${encodeURIComponent(

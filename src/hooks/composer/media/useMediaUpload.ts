@@ -20,6 +20,12 @@ export function useMediaUpload({
   pushError,
 }: UseMediaUploadProps) {
   const upload = async (item: ComposerMedia) => {
+    if (!item.file) {
+      setStatus(item.id, MEDIA_STATUS.ERROR);
+      pushError(`Файл "${item.name}" відсутній.`);
+      return null;
+    }
+
     setStatus(item.id, MEDIA_STATUS.UPLOADING);
 
     try {
@@ -30,9 +36,7 @@ export function useMediaUpload({
       });
 
       setAttachmentId(item.id, attachment.id);
-
       setProgress(item.id, 100);
-
       setStatus(item.id, MEDIA_STATUS.UPLOADED);
 
       return attachment;

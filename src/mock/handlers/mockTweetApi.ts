@@ -26,11 +26,8 @@ export const mockTweetApi = {
         return [
           {
             id: crypto.randomUUID(),
-
             type: "gif" as const,
-
             url: item.url!,
-
             thumbnailUrl: item.url!,
           },
         ];

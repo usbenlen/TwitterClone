@@ -15,9 +15,7 @@ import { useEffect } from "react";
 interface ComposerPopoverProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-
   reference: HTMLElement | null;
-
   children: React.ReactNode;
 }
 
@@ -30,21 +28,8 @@ export default function ComposerPopover({
   const { refs, floatingStyles, context } = useFloating({
     open,
     onOpenChange,
-
     placement: "top-start",
-
-    middleware: [
-      offset(8),
-
-      flip({
-        padding: 12,
-      }),
-
-      shift({
-        padding: 12,
-      }),
-    ],
-
+    middleware: [offset(8), flip({ padding: 12 }), shift({ padding: 12 })],
     whileElementsMounted: autoUpdate,
   });
 
@@ -53,7 +38,6 @@ export default function ComposerPopover({
   }, [reference, refs]);
 
   const dismiss = useDismiss(context);
-
   useInteractions([dismiss]);
 
   if (!open) return null;
@@ -63,15 +47,7 @@ export default function ComposerPopover({
       <div
         ref={refs.setFloating}
         style={floatingStyles}
-        className="
-          z-50
-          overflow-hidden
-          rounded-2xl
-          border
-          border-border
-          bg-background
-          shadow-xl
-        "
+        className="z-50 overflow-hidden rounded-2xl border border-border bg-background shadow-xl"
       >
         {children}
       </div>

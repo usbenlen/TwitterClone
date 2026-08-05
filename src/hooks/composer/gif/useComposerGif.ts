@@ -30,17 +30,11 @@ export function useComposerGif() {
           ? await gifApi.search(query)
           : await gifApi.trending();
 
-        if (!controller.signal.aborted) {
-          setGifs(result);
-        }
+        if (!controller.signal.aborted) setGifs(result);
       } catch {
-        if (!controller.signal.aborted) {
-          setError("Не вдалося завантажити GIF.");
-        }
+        if (!controller.signal.aborted) setError("Не вдалося завантажити GIF.");
       } finally {
-        if (!controller.signal.aborted) {
-          setLoading(false);
-        }
+        if (!controller.signal.aborted) setLoading(false);
       }
     }
 

@@ -12,11 +12,7 @@ export default function GifItem({ gif, onSelect }: GifItemProps) {
     <button
       type="button"
       onClick={() => onSelect(gif)}
-      className="
-        overflow-hidden
-        rounded-lg
-        hover:opacity-90
-      "
+      className="overflow-hidden rounded-lg hover:opacity-90"
     >
       <img
         src={gif.previewUrl}

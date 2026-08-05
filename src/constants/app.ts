@@ -4,7 +4,6 @@ export const APP_NAME = import.meta.env.VITE_APP_NAME;
 
 export const MAX_TWEET_LENGTH = Number(import.meta.env.VITE_MAX_TWEET_LENGTH);
 
-//api keys
 export const GIPHY_API_KEY = import.meta.env.VITE_GIPHY_API_KEY;
 
 export const MEDIA = {

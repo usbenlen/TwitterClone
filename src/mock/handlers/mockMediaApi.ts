@@ -1,7 +1,8 @@
 /** @format */
 
-import { mockUpload } from "@/mock/utils/mockUpload";
 import type { MediaAttachment } from "@/types/media";
+
+import { mockUpload } from "@/mock/utils/mockUpload";
 import { mediaStore } from "@/mock/stores/mediaStore";
 
 interface UploadMediaOptions {

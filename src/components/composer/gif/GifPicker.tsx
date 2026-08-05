@@ -2,20 +2,14 @@
 
 import type { Gif } from "@/types/gif";
 
-import GifGrid from "./GifGrid";
-import GifSearch from "./GifSearch";
+import { GifGrid, GifSearch } from "@/components/composer/gif";
 
 interface GifPickerProps {
   gifs: Gif[];
-
   query: string;
-
   loading: boolean;
-
   error: string | null;
-
   onQueryChange: (value: string) => void;
-
   onSelect: (gif: Gif) => void;
 }
 
@@ -28,14 +22,7 @@ export default function GifPicker({
   onSelect,
 }: GifPickerProps) {
   return (
-    <div
-      className="
-        flex
-        h-105
-        w-90
-        flex-col
-      "
-    >
+    <div className="flex h-105 w-90 flex-col">
       <GifSearch value={query} onChange={onQueryChange} />
 
       <div className="flex-1 overflow-y-auto">

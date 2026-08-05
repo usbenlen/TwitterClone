@@ -2,7 +2,7 @@
 
 import type { Gif } from "@/types/gif";
 
-import GifItem from "./GifItem";
+import GifItem from "@/components/composer/gif/GifItem";
 
 interface GifGridProps {
   gifs: Gif[];
@@ -11,14 +11,7 @@ interface GifGridProps {
 
 export default function GifGrid({ gifs, onSelect }: GifGridProps) {
   return (
-    <div
-      className="
-        grid
-        grid-cols-2
-        gap-2
-        p-3
-      "
-    >
+    <div className="grid grid-cols-2 gap-2 p-3">
       {gifs.map((gif) => (
         <GifItem key={gif.id} gif={gif} onSelect={onSelect} />
       ))}
