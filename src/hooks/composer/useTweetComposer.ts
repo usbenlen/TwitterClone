@@ -1,15 +1,13 @@
 /** @format */
 
-import { useMemo, useState, useRef } from "react";
-
-import { tweetApi } from "@/api/tweet.api";
+import { useMemo, useState } from "react";
 
 import type { Tweet } from "@/types/tweet";
-import type { ComposerAction } from "@/types/composer";
 
 import { MAX_TWEET_LENGTH, MEDIA_STATUS } from "@/constants/app";
 
 import { useTweetComposerMedia } from "@/hooks/composer/media/useTweetComposerMedia";
+import { useComposerActions, useComposerSubmit } from "@/hooks/composer";
 
 interface UseTweetComposerProps {
   onCreated: (tweet: Tweet) => void;
@@ -17,7 +15,6 @@ interface UseTweetComposerProps {
 
 export function useTweetComposer({ onCreated }: UseTweetComposerProps) {
   const [content, setContent] = useState("");
-  const [isPosting, setIsPosting] = useState(false);
 
   const remaining = useMemo(() => MAX_TWEET_LENGTH - content.length, [content]);
 
@@ -30,14 +27,22 @@ export function useTweetComposer({ onCreated }: UseTweetComposerProps) {
       item.status === MEDIA_STATUS.ERROR,
   );
 
+  const { submit: submitComposer, isPosting } = useComposerSubmit({
+    content,
+
+    media: mediaManager.media,
+
+    clearMedia: mediaManager.clearMedia,
+    clearErrors: mediaManager.clearErrors,
+
+    onCreated,
+  });
+
   const canSubmit =
     (content.trim().length > 0 || mediaManager.media.length > 0) &&
     remaining >= 0 &&
     !isPosting &&
     !hasBlockedMedia;
-
-  const imageInputRef = useRef<HTMLInputElement>(null);
-  const videoInputRef = useRef<HTMLInputElement>(null);
 
   const onFilesSelected = (files: FileList | null) => {
     mediaManager.addFiles(files);
@@ -46,55 +51,11 @@ export function useTweetComposer({ onCreated }: UseTweetComposerProps) {
   const submit = async () => {
     if (!canSubmit) return;
 
-    setIsPosting(true);
-
-    try {
-      const attachmentIds = mediaManager.media
-        .filter((item) => item.attachmentId)
-        .map((item) => item.attachmentId!);
-
-      const tweet = await tweetApi.create({
-        content: content.trim(),
-        attachmentIds,
-      });
-
-      onCreated(tweet);
-
-      setContent("");
-      mediaManager.clearMedia();
-      mediaManager.clearErrors();
-    } finally {
-      setIsPosting(false);
-    }
+    const created = await submitComposer();
+    if (created) setContent("");
   };
 
-  const handleAction = (action: ComposerAction) => {
-    switch (action) {
-      case "image":
-        imageInputRef.current?.click();
-        break;
-
-      case "video":
-        videoInputRef.current?.click();
-        break;
-
-      case "gif":
-        console.log("GIF picker");
-        break;
-
-      case "emoji":
-        console.log("Emoji picker");
-        break;
-
-      case "poll":
-        console.log("Poll");
-        break;
-
-      case "location":
-        console.log("Location");
-        break;
-    }
-  };
+  const { imageInputRef, videoInputRef, handleAction } = useComposerActions();
 
   return {
     content,

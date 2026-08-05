@@ -1,6 +1,6 @@
 /** @format */
 
-import { MOCK_ENABLED } from "@/mock/handlers/mock";
+import { MOCK_ENABLED } from "@/mock/config";
 import { mockMediaApi } from "@/mock/handlers/mockMediaApi";
 
 interface UploadMediaOptions {
@@ -17,7 +17,8 @@ const realMediaApi = {
 
     // return data;
 
-    throw new Error("ще не готово");
+    // TODO: реалізувати після появи backend
+    throw new Error("Media upload API is not implemented yet.");
   },
 };
 

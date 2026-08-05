@@ -2,6 +2,7 @@
 
 import { mockUpload } from "@/mock/utils/mockUpload";
 import type { MediaAttachment } from "@/types/media";
+import { mediaStore } from "@/mock/stores/mediaStore";
 
 interface UploadMediaOptions {
   onProgress?: (progress: number) => void;
@@ -16,12 +17,14 @@ export const mockMediaApi = {
       onProgress: options?.onProgress,
     });
 
-    return {
+    const attachment: MediaAttachment = {
       id: crypto.randomUUID(),
       type: file.type.startsWith("image/") ? "image" : "video",
       url: URL.createObjectURL(file),
       size: file.size,
       mimeType: file.type,
     };
+
+    return mediaStore.add(attachment);
   },
 };

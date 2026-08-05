@@ -5,6 +5,7 @@ import type { Tweet, CreateTweetRequest } from "@/types/tweet";
 import { delay } from "@/mock/utils/delay";
 import { currentUser } from "@/mock/data/users";
 import { tweets, setTweets, nextTweetId } from "@/mock/data/tweets";
+import { mediaStore } from "@/mock/stores/mediaStore";
 
 export const mockTweetApi = {
   async getFeed(): Promise<Tweet[]> {
@@ -20,10 +21,12 @@ export const mockTweetApi = {
   async create(payload: CreateTweetRequest): Promise<Tweet> {
     await delay(300);
 
+    const attachments = mediaStore.getMany(payload.attachmentIds);
+
     const tweet: Tweet = {
       id: nextTweetId(),
       content: payload.content,
-      attachments: payload.attachmentIds, // виправиться коли зроблю mediaStore.ts
+      attachments,
       author: currentUser,
       likesCount: 0,
       repliesCount: 0,

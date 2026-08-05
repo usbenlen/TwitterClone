@@ -1,5 +1,7 @@
 /** @format */
 
+export { MOCK_ENABLED } from "@/mock/config";
+
 export * from "@/mock/handlers/mockAuthApi";
 export * from "@/mock/handlers/mockTweetApi";
 export * from "@/mock/handlers/mockUserApi";

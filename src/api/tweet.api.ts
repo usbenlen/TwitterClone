@@ -2,7 +2,8 @@
 import { apiClient } from "@/api/client";
 import { ENDPOINTS } from "@/api/config";
 import type { Tweet, CreateTweetRequest } from "@/types/tweet";
-import { MOCK_ENABLED, mockTweetApi } from "@/mock/handlers/mock";
+import { MOCK_ENABLED } from "@/mock/config";
+import { mockTweetApi } from "@/mock/handlers";
 
 const realTweetApi = {
   getFeed: () => apiClient.get<Tweet[]>(ENDPOINTS.tweets.feed),
