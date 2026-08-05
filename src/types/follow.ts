@@ -1,5 +1,5 @@
 /** @format */
 
-export interface SubscribeRequest {
+export interface FollowRequest {
   targetUserId: string;
 }

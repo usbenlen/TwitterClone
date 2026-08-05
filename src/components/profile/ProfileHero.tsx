@@ -2,7 +2,7 @@
 
 import { Avatar, Button } from "@/ui";
 import type { User } from "@/types/user";
-import { useSubscribe } from "@/hooks/useSubscribe";
+import { useFollow } from "@/hooks/useFollow";
 
 interface ProfileHeroProps {
   user: User;
@@ -11,12 +11,12 @@ interface ProfileHeroProps {
 
 export default function ProfileHero({ user, isOwnProfile }: ProfileHeroProps) {
   const {
-    subscribe,
-    unsubscribe,
-    subscriptions,
-  } = useSubscribe();
+    follow,
+    unfollow,
+    isFollowing
+  } = useFollow();
 
-const following = subscriptions.includes(user.username);
+  const following = isFollowing(user.id);
 
   return (
     <>
@@ -47,11 +47,13 @@ const following = subscriptions.includes(user.username);
                 variant={following ? "outline" : "primary"}
                 onClick={() =>
                   following
-                    ? unsubscribe(user.username)
-                    : subscribe(user.username)
+                    ? unfollow(user.id)
+                    : follow(user)
                 }
               >
-                {following ? "✓ Читаю" : "Читати"}
+                {following
+                  ? "Читаю"
+                  : "Читати"}
               </Button>
             )}
           </div>

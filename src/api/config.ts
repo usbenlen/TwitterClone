@@ -36,9 +36,10 @@ export const ENDPOINTS = {
     byUsername: (username: string) => `tweets/user/${username}`,
     like: (id: string) => `tweets/${id}/like`,
   },
-  subscribe: {
-    subscribe: "subscribe/subscribe",
-    unsubscribe: "subscribe/unsubscribe",
-    byUsername: (username: string) => `subscribe/subscribe/${username}`,
+  follows: {
+    follow: (userId: string | number) => `follows/${userId}`,
+    unfollow: (userId: string | number) => `follows/${userId}`,
+    followers: (userId: string | number) => `follows/${userId}/followers`,
+    following: (userId: string | number) => `follows/${userId}/following`,
   }
 } as const;

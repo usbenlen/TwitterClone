@@ -2,7 +2,7 @@
 import type { AuthResponse, LoginRequest, RegisterRequest } from "@/types/auth";
 import type { User } from "@/types/user";
 import type { Tweet } from "@/types/tweet";
-import type { SubscribeRequest } from "@/types/subscribe";
+import type { FollowRequest } from "@/types/follow";
 
 /*
  * Мок-режим для розробки без бекенду.
@@ -165,16 +165,12 @@ export const mockTweetApi = {
   },
 };
 
-export const mockSubscribeApi = {
-  subscribe: async (data: SubscribeRequest) => {
-    console.log("mock subscribe", data);
+export const mockFollowApi = {
+  follow: async (data: FollowRequest) => {
+    console.log("mock follow", data);
   },
 
-  unsubscribe: async (data: SubscribeRequest) => {
-    console.log("mock unsubscribe", data);
+  unfollow: async (data: FollowRequest) => {
+    console.log("mock unfollow", data);
   },
-
-  getSubscriptionsByUsername: async (username: string) => {
-    console.log("mock subscriptions", username);
-  }
 };

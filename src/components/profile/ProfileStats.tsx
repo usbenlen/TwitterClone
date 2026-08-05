@@ -3,7 +3,7 @@
 import { formatCount, formatJoinDate } from "@/utils/format";
 
 import type { User } from "@/types/user";
-import { useSubscribe } from "@/hooks/useSubscribe";
+import { useFollow } from "@/hooks/useFollow";
 
 interface ProfileStatsProps {
   user: User;
@@ -11,7 +11,7 @@ interface ProfileStatsProps {
 }
 
 export default function ProfileStats({ user, isOwnProfile }: ProfileStatsProps) {
-  const {followingCount} = useSubscribe();
+  const {followingCount} = useFollow();
 
   const count = isOwnProfile ? followingCount : user.followingCount;
 
