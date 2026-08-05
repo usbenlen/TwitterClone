@@ -1,6 +1,15 @@
 /** @format */
 @import "tailwindcss";
 
+.twemoji {
+  width: 1.2em;
+  height: 1.2em;
+  display: inline-block;
+  vertical-align: -0.2em;
+  user-select: none;
+  pointer-events: none;
+}
+
 /*
  * Система тем.
  * Кожна тема — окремий блок [data-theme="..."].

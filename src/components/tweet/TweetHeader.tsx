@@ -5,6 +5,7 @@ import { Link } from "react-router";
 import { Avatar } from "@/ui";
 import { APP_ROUTES } from "@/constants/routes";
 import { formatRelativeTime } from "@/utils/format";
+import { parseEmoji } from "@/utils/twemoji";
 
 import type { Tweet } from "@/types/tweet";
 
@@ -47,7 +48,12 @@ export default function TweetHeader({
           </span>
         </div>
 
-        <p className="mt-1 wrap-break-words whitespace-pre-wrap">{content}</p>
+        <p
+          className="mt-1 wrap-break-words whitespace-pre-wrap"
+          dangerouslySetInnerHTML={{
+            __html: parseEmoji(content),
+          }}
+        />
       </div>
     </div>
   );

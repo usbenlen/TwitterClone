@@ -14,10 +14,15 @@ import type { ComposerAction } from "@/types/composer";
 
 interface TweetComposerToolbarProps {
   onAction: (action: ComposerAction) => void;
+
+  buttonRefs: Partial<
+    Record<ComposerAction, React.RefObject<HTMLButtonElement | null>>
+  >;
 }
 
 export default function TweetComposerToolbar({
   onAction,
+  buttonRefs,
 }: TweetComposerToolbarProps) {
   const actions = [
     {
@@ -65,6 +70,7 @@ export default function TweetComposerToolbar({
         .map((action) => (
           <button
             key={action.id}
+            ref={buttonRefs[action.id]}
             type="button"
             aria-label={action.label}
             onClick={() => onAction(action.id)}

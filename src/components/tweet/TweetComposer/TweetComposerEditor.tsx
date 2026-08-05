@@ -1,16 +1,21 @@
 /** @format */
 
+import type { RefObject } from "react";
+
 interface TweetComposerEditorProps {
   value: string;
   onChange: (value: string) => void;
+  editorRef: RefObject<HTMLTextAreaElement | null>;
 }
 
 export default function TweetComposerEditor({
   value,
   onChange,
+  editorRef,
 }: TweetComposerEditorProps) {
   return (
     <textarea
+      ref={editorRef}
       value={value}
       onChange={(e) => onChange(e.target.value)}
       placeholder="Що відбувається?"

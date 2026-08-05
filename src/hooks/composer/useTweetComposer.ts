@@ -7,7 +7,11 @@ import type { Tweet } from "@/types/tweet";
 import { MAX_TWEET_LENGTH, MEDIA_STATUS } from "@/constants/app";
 
 import { useTweetComposerMedia } from "@/hooks/composer/media/useTweetComposerMedia";
-import { useComposerActions, useComposerSubmit } from "@/hooks/composer";
+import {
+  useComposerActions,
+  useComposerSubmit,
+  useComposerCursor,
+} from "@/hooks/composer";
 
 interface UseTweetComposerProps {
   onCreated: (tweet: Tweet) => void;
@@ -15,6 +19,7 @@ interface UseTweetComposerProps {
 
 export function useTweetComposer({ onCreated }: UseTweetComposerProps) {
   const [content, setContent] = useState("");
+  const cursor = useComposerCursor();
 
   const remaining = useMemo(() => MAX_TWEET_LENGTH - content.length, [content]);
 
@@ -52,10 +57,22 @@ export function useTweetComposer({ onCreated }: UseTweetComposerProps) {
     if (!canSubmit) return;
 
     const created = await submitComposer();
-    if (created) setContent("");
+    if (created) {
+      setContent("");
+      emoji.close();
+    }
   };
 
-  const { imageInputRef, videoInputRef, handleAction } = useComposerActions();
+  const { imageInputRef, videoInputRef, handleAction, emoji, buttonRefs } =
+    useComposerActions();
+
+  const insertEmoji = (emojiValue: string) => {
+    cursor.insertAtCursor(emojiValue, content, setContent);
+
+    emoji.close();
+
+    cursor.editorRef.current?.focus();
+  };
 
   return {
     content,
@@ -76,8 +93,27 @@ export function useTweetComposer({ onCreated }: UseTweetComposerProps) {
     clearErrors: mediaManager.clearErrors,
 
     submit,
+
     imageInputRef,
     videoInputRef,
+
     handleAction,
+
+    editorRef: cursor.editorRef,
+
+    buttonRefs,
+
+    emoji: {
+      open: emoji.open,
+      reference: buttonRefs.emoji?.current ?? null,
+      onOpenChange: (value: boolean) => {
+        if (value) {
+          emoji.toggle();
+        } else {
+          emoji.close();
+        }
+      },
+      onSelect: insertEmoji,
+    },
   };
 }
