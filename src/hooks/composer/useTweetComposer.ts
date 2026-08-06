@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 
-import type { Tweet, Gif, Location } from "@/types";
+import type { Tweet, Gif, Location, Embed } from "@/types";
 
 import { MAX_TWEET_LENGTH, MEDIA_STATUS } from "@/constants/app";
 
@@ -22,6 +22,8 @@ export function useTweetComposer({ onCreated }: UseTweetComposerProps) {
   const [selectedLocation, setSelectedLocation] = useState<Location | null>(
     null,
   );
+  const [selectedEmbed, setSelectedEmbed] = useState<Embed | null>(null);
+
   const cursor = useComposerEditor();
 
   const remaining = useMemo(() => MAX_TWEET_LENGTH - content.length, [content]);
@@ -47,6 +49,7 @@ export function useTweetComposer({ onCreated }: UseTweetComposerProps) {
     gif,
     poll,
     location,
+    embed,
   } = useComposerActions();
 
   const { submit: submitComposer, isPosting } = useComposerSubmit({
@@ -54,6 +57,7 @@ export function useTweetComposer({ onCreated }: UseTweetComposerProps) {
     media: mediaManager.media,
     poll: poll.hasPoll ? poll.poll : null,
     location: selectedLocation,
+    embed: selectedEmbed,
 
     clearMedia: mediaManager.clearMedia,
     clearErrors: mediaManager.clearErrors,
@@ -78,6 +82,7 @@ export function useTweetComposer({ onCreated }: UseTweetComposerProps) {
     if (created) {
       setContent("");
       removeLocation();
+      setSelectedEmbed(null);
       closeAllPopups();
       poll.reset();
     }
@@ -110,6 +115,14 @@ export function useTweetComposer({ onCreated }: UseTweetComposerProps) {
 
   const insertLocation = (location: Location) => {
     setSelectedLocation(location);
+
+    closeAllPopups();
+
+    cursor.editorRef.current?.focus();
+  };
+
+  const insertEmbed = (embedItem: Embed) => {
+    setSelectedEmbed(embedItem);
 
     closeAllPopups();
 
@@ -159,6 +172,19 @@ export function useTweetComposer({ onCreated }: UseTweetComposerProps) {
       onQueryChange: location.setQuery,
       onSelect: insertLocation,
     },
+
+    embed: {
+      open: embed.isOpen,
+      reference: buttonRefs.embed?.current ?? null,
+      onOpenChange: (open: boolean) => (open ? embed.open() : embed.close()),
+      url: embed.url,
+      embed: embed.embed,
+      loading: embed.loading,
+      error: embed.error,
+      onUrlChange: embed.setUrl,
+      onResolve: embed.resolve,
+      onSelect: insertEmbed,
+    },
   };
 
   return {
@@ -201,6 +227,11 @@ export function useTweetComposer({ onCreated }: UseTweetComposerProps) {
       visible: !!selectedLocation,
       location: selectedLocation,
       onRemove: removeLocation,
+    },
+    embedPreview: {
+      visible: !!selectedEmbed,
+      embed: selectedEmbed,
+      onRemove: () => setSelectedEmbed(null),
     },
   };
 }

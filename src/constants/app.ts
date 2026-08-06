@@ -43,6 +43,8 @@ export const ENABLE_IMAGE_UPLOAD =
 export const ENABLE_VIDEO_UPLOAD =
   import.meta.env.VITE_ENABLE_VIDEO_UPLOAD === "true";
 
+export const ENABLE_EMBED = import.meta.env.VITE_ENABLE_EMBED === "true";
+
 export const ENABLE_GIFS = import.meta.env.VITE_ENABLE_GIFS === "true";
 
 export const ENABLE_POLLS = import.meta.env.VITE_ENABLE_POLLS === "true";

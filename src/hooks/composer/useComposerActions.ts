@@ -9,6 +9,7 @@ import {
   useComposerGif,
   useComposerPoll,
   useComposerLocation,
+  useComposerEmbed,
 } from "@/hooks/composer";
 
 export function useComposerActions() {
@@ -22,6 +23,7 @@ export function useComposerActions() {
     gif: useRef<HTMLButtonElement>(null),
     poll: useRef<HTMLButtonElement>(null),
     location: useRef<HTMLButtonElement>(null),
+    embed: useRef<HTMLButtonElement>(null),
   };
 
   const closeAllPopups = () => {
@@ -29,12 +31,14 @@ export function useComposerActions() {
     gif.close();
     poll.close();
     location.close();
+    embed.close();
   };
 
   const emoji = useComposerPopup();
   const gif = useComposerGif();
   const poll = useComposerPoll();
   const location = useComposerLocation();
+  const embed = useComposerEmbed();
 
   const handleAction = (action: ComposerAction) => {
     switch (action) {
@@ -61,6 +65,10 @@ export function useComposerActions() {
       case "location":
         location.toggle();
         break;
+
+      case "embed":
+        embed.toggle();
+        break;
     }
   };
 
@@ -77,5 +85,6 @@ export function useComposerActions() {
     gif,
     poll,
     location,
+    embed,
   };
 }

@@ -6,8 +6,9 @@ import EmojiPicker from "@/components/composer/emoji/EmojiPicker";
 import GifPicker from "@/components/composer/gif/GifPicker";
 import PollComposer from "@/components/composer/poll/PollComposer";
 import LocationPicker from "@/components/composer/location/LocationPicker";
+import EmbedPicker from "@/components/composer/embed/EmbedPicker";
 
-import type { Gif, ComposerPoll, Location } from "@/types";
+import type { Gif, ComposerPoll, Location, Embed } from "@/types";
 
 type ComposerPopoverState = {
   open: boolean;
@@ -45,6 +46,16 @@ interface ComposerPopoversProps {
     onQueryChange: (value: string) => void;
     onSelect: (location: Location) => void;
   };
+
+  embed: ComposerPopoverState & {
+    url: string;
+    embed: Embed | null;
+    loading: boolean;
+    error: string | null;
+    onUrlChange: (value: string) => void;
+    onResolve: () => void;
+    onSelect: (embed: Embed) => void;
+  };
 }
 
 export default function ComposerPopovers({
@@ -52,6 +63,7 @@ export default function ComposerPopovers({
   gif,
   poll,
   location,
+  embed,
 }: ComposerPopoversProps) {
   return (
     <>
@@ -104,6 +116,22 @@ export default function ComposerPopovers({
           error={location.error}
           onQueryChange={location.onQueryChange}
           onSelect={location.onSelect}
+        />
+      </ComposerPopover>
+
+      <ComposerPopover
+        open={embed.open}
+        onOpenChange={embed.onOpenChange}
+        reference={embed.reference}
+      >
+        <EmbedPicker
+          url={embed.url}
+          embed={embed.embed}
+          loading={embed.loading}
+          error={embed.error}
+          onUrlChange={embed.onUrlChange}
+          onResolve={embed.onResolve}
+          onSelect={embed.onSelect}
         />
       </ComposerPopover>
     </>

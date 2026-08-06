@@ -24,6 +24,7 @@ interface ImportMetaEnv {
 
   readonly VITE_ENABLE_IMAGE_UPLOAD: string;
   readonly VITE_ENABLE_VIDEO_UPLOAD: string;
+  readonly VITE_ENABLE_EMBED: string;
   readonly VITE_ENABLE_GIFS: string;
   readonly VITE_ENABLE_POLLS: string;
   readonly VITE_ENABLE_LOCATION: string;

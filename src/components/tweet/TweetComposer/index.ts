@@ -10,3 +10,4 @@ export { default as TweetComposerDropOverlay } from "@/components/tweet/TweetCom
 export { default as TweetComposerFileInputs } from "@/components/tweet/TweetComposer/TweetComposerFileInputs";
 export { default as TweetComposerPollPreview } from "@/components/tweet/TweetComposer/TweetComposerPollPreview";
 export { default as TweetComposerLocationPreview } from "@/components/tweet/TweetComposer/TweetComposerLocationPreview";
+export { default as TweetComposerEmbedPreview } from "@/components/tweet/TweetComposer/TweetComposerEmbedPreview";

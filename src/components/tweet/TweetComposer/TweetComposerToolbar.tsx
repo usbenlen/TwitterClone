@@ -1,6 +1,6 @@
 /** @format */
 
-import { BarChart3, Image, MapPin, Smile, Video } from "lucide-react";
+import { BarChart3, Image, MapPin, Smile, Video, Link2 } from "lucide-react";
 
 import {
   ENABLE_GIFS,
@@ -8,6 +8,7 @@ import {
   ENABLE_LOCATION,
   ENABLE_POLLS,
   ENABLE_VIDEO_UPLOAD,
+  ENABLE_EMBED,
 } from "@/constants/app";
 
 import type { ComposerAction } from "@/types/composer";
@@ -60,6 +61,12 @@ export default function TweetComposerToolbar({
       enabled: ENABLE_LOCATION,
       label: "Місце",
       icon: <MapPin size={20} />,
+    },
+    {
+      id: "embed" as const,
+      enabled: ENABLE_EMBED,
+      label: "Вставити",
+      icon: <Link2 size={20} />,
     },
   ];
 

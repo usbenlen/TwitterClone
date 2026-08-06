@@ -8,3 +8,4 @@ export * from "@/types/tweet";
 export * from "@/types/user";
 export * from "@/types/poll";
 export * from "@/types/location";
+export * from "@/types/embed";

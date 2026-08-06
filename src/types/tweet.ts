@@ -1,13 +1,12 @@
 /** @format */
-import type { User } from "@/types/user";
+import type { User, TweetPoll, Location, Embed } from "@/types";
 import type { MediaAttachment } from "@/types/media";
-import type { TweetPoll } from "@/types/poll";
-import type { Location } from "@/types/location";
 
 export interface Tweet {
   id: string;
   content: string;
   attachments: MediaAttachment[];
+  embed?: Embed | null;
   poll?: TweetPoll;
   author: Pick<User, "id" | "username" | "displayName" | "avatarUrl">;
   likesCount: number;
@@ -27,6 +26,7 @@ export interface CreateTweetMedia {
 export interface CreateTweetRequest {
   content: string;
   media: CreateTweetMedia[];
+  embed?: Embed | null;
   poll?: {
     options: string[];
     duration: number;

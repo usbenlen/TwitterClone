@@ -8,7 +8,8 @@ export type ComposerAction =
   | "video"
   | "emoji"
   | "poll"
-  | "location";
+  | "location"
+  | "embed";
 
 export type ComposerMediaStatus =
   (typeof MEDIA_STATUS)[keyof typeof MEDIA_STATUS];

@@ -3,6 +3,7 @@
 import { TweetHeader, TweetActions, TweetMedia } from "@/components/tweet";
 import TweetPoll from "@/components/tweet/poll/TweetPoll";
 import TweetLocation from "@/components/tweet/location/TweetLocation";
+import TweetEmbed from "@/components/tweet/embed/TweetEmbed";
 
 import type { Tweet } from "@/types/tweet";
 
@@ -24,6 +25,8 @@ export default function TweetCard({ tweet }: TweetCardProps) {
       />
 
       {tweet.location && <TweetLocation location={tweet.location} />}
+
+      {tweet.embed && <TweetEmbed embed={tweet.embed} />}
 
       {tweet.poll && <TweetPoll tweetId={tweet.id} poll={tweet.poll} />}
 

@@ -20,6 +20,7 @@ import {
   TweetComposerFileInputs,
   TweetComposerPollPreview,
   TweetComposerLocationPreview,
+  TweetComposerEmbedPreview,
 } from "@/components/tweet/TweetComposer";
 
 import { cn } from "@/utils/cn";
@@ -86,6 +87,13 @@ export default function TweetComposer({ onCreated }: TweetComposerProps) {
             />
           )}
 
+        {composer.embedPreview.visible && composer.embedPreview.embed && (
+          <TweetComposerEmbedPreview
+            embed={composer.embedPreview.embed}
+            onRemove={composer.embedPreview.onRemove}
+          />
+        )}
+
         <TweetComposerErrors errors={composer.errors} />
 
         <TweetComposerToolbar
@@ -98,6 +106,7 @@ export default function TweetComposer({ onCreated }: TweetComposerProps) {
           gif={composer.popovers.gif}
           poll={composer.popovers.poll}
           location={composer.popovers.location}
+          embed={composer.popovers.embed}
         />
 
         <TweetComposerFileInputs
