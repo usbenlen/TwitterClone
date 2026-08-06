@@ -4,7 +4,11 @@ import { useRef } from "react";
 
 import type { ComposerAction } from "@/types/composer";
 
-import { useComposerPopup, useComposerGif } from "@/hooks/composer";
+import {
+  useComposerPopup,
+  useComposerGif,
+  useComposerPoll,
+} from "@/hooks/composer";
 
 export function useComposerActions() {
   const imageInputRef = useRef<HTMLInputElement>(null);
@@ -28,7 +32,7 @@ export function useComposerActions() {
 
   const emoji = useComposerPopup();
   const gif = useComposerGif();
-  const poll = useComposerPopup();
+  const poll = useComposerPoll();
   const location = useComposerPopup();
 
   const handleAction = (action: ComposerAction) => {

@@ -6,10 +6,12 @@ import { tweetApi } from "@/api/tweet.api";
 
 import type { Tweet } from "@/types/tweet";
 import type { ComposerMedia } from "@/types/composer";
+import type { ComposerPoll } from "@/types/poll";
 
 interface UseComposerSubmitProps {
   content: string;
   media: ComposerMedia[];
+  poll?: ComposerPoll | null;
 
   clearMedia: () => void;
   clearErrors: () => void;
@@ -20,6 +22,7 @@ interface UseComposerSubmitProps {
 export function useComposerSubmit({
   content,
   media,
+  poll,
   clearMedia,
   clearErrors,
   onCreated,
@@ -38,6 +41,14 @@ export function useComposerSubmit({
           attachmentId: item.attachmentId,
           url: item.url,
         })),
+
+        poll:
+          poll && poll.options.some((o) => o.text.trim())
+            ? {
+                options: poll.options.map((o) => o.text.trim()).filter(Boolean),
+                duration: poll.duration,
+              }
+            : undefined,
       });
 
       onCreated(tweet);

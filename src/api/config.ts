@@ -36,4 +36,7 @@ export const ENDPOINTS = {
     byUsername: (username: string) => `tweets/user/${username}`,
     like: (id: string) => `tweets/${id}/like`,
   },
+  poll: {
+    vote: (tweetId: string) => `tweets/${tweetId}/poll/vote`,
+  },
 } as const;

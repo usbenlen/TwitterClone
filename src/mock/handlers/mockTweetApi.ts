@@ -1,6 +1,7 @@
 /** @format */
 
 import type { Tweet, CreateTweetRequest } from "@/types/tweet";
+import type { TweetPoll } from "@/types/poll";
 
 import { delay } from "@/mock/utils/delay";
 import { currentUser } from "@/mock/data/users";
@@ -38,12 +39,31 @@ export const mockTweetApi = {
       return mediaStore.getMany([item.attachmentId]);
     });
 
+    const poll: TweetPoll | undefined = payload.poll
+      ? {
+          id: crypto.randomUUID(),
+          totalVotes: 0,
+          isClosed: false,
+
+          expiresAt: new Date(
+            Date.now() + payload.poll.duration * 60 * 1000,
+          ).toISOString(),
+
+          options: payload.poll.options.map((text) => ({
+            id: crypto.randomUUID(),
+            text,
+            votesCount: 0,
+          })),
+        }
+      : undefined;
+
     const tweet: Tweet = {
       id: nextTweetId(),
 
       content: payload.content,
 
       attachments,
+      poll,
 
       author: currentUser,
 

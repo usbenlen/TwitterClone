@@ -1,6 +1,7 @@
 /** @format */
 
 import { TweetHeader, TweetActions, TweetMedia } from "@/components/tweet";
+import TweetPoll from "@/components/tweet/poll/TweetPoll";
 
 import type { Tweet } from "@/types/tweet";
 
@@ -20,6 +21,8 @@ export default function TweetCard({ tweet }: TweetCardProps) {
         createdAt={tweet.createdAt}
         content={tweet.content}
       />
+
+      {tweet.poll && <TweetPoll tweetId={tweet.id} poll={tweet.poll} />}
 
       <TweetMedia attachments={tweet.attachments} />
 

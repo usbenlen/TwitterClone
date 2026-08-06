@@ -4,8 +4,9 @@ import ComposerPopover from "@/components/composer/ComposerPopover";
 
 import EmojiPicker from "@/components/composer/emoji/EmojiPicker";
 import GifPicker from "@/components/composer/gif/GifPicker";
+import PollComposer from "@/components/composer/poll/PollComposer";
 
-import type { Gif } from "@/types/gif";
+import type { Gif, ComposerPoll } from "@/types";
 
 type ComposerPopoverState = {
   open: boolean;
@@ -27,7 +28,13 @@ interface ComposerPopoversProps {
     onSelect: (gif: Gif) => void;
   };
 
-  poll: ComposerPopoverState;
+  poll: ComposerPopoverState & {
+    poll: ComposerPoll;
+    onOptionChange: (id: string, text: string) => void;
+    onAddOption: () => void;
+    onRemoveOption: (id: string) => void;
+    onDurationChange: (minutes: number) => void;
+  };
 
   location: ComposerPopoverState;
 }
@@ -63,15 +70,21 @@ export default function ComposerPopovers({
         />
       </ComposerPopover>
 
-      {/* <ComposerPopover
+      <ComposerPopover
         open={poll.open}
         onOpenChange={poll.onOpenChange}
         reference={poll.reference}
       >
-        {/*poll* /}
+        <PollComposer
+          poll={poll.poll}
+          onOptionChange={poll.onOptionChange}
+          onAddOption={poll.onAddOption}
+          onRemoveOption={poll.onRemoveOption}
+          onDurationChange={poll.onDurationChange}
+        />
       </ComposerPopover>
 
-      <ComposerPopover
+      {/*<ComposerPopover
         open={location.open}
         onOpenChange={location.onOpenChange}
         reference={location.reference}

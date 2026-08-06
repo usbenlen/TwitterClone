@@ -8,3 +8,4 @@ export { default as TweetComposerToolbar } from "@/components/tweet/TweetCompose
 export { default as TweetComposerErrors } from "@/components/tweet/TweetComposer/TweetComposerErrors";
 export { default as TweetComposerDropOverlay } from "@/components/tweet/TweetComposer/TweetComposerDropOverlay";
 export { default as TweetComposerFileInputs } from "@/components/tweet/TweetComposer/TweetComposerFileInputs";
+export { default as TweetComposerPollPreview } from "@/components/tweet/TweetComposer/TweetComposerPollPreview";

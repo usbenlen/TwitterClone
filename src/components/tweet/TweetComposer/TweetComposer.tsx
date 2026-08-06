@@ -18,6 +18,7 @@ import {
   TweetComposerDropOverlay,
   TweetComposerErrors,
   TweetComposerFileInputs,
+  TweetComposerPollPreview,
 } from "@/components/tweet/TweetComposer";
 
 import { cn } from "@/utils/cn";
@@ -68,6 +69,13 @@ export default function TweetComposer({ onCreated }: TweetComposerProps) {
           media={composer.media}
           onRemove={composer.removeMedia}
         />
+
+        {composer.pollPreview.visible && (
+          <TweetComposerPollPreview
+            poll={composer.pollPreview.poll}
+            onRemove={composer.pollPreview.onRemove}
+          />
+        )}
 
         <TweetComposerErrors errors={composer.errors} />
 

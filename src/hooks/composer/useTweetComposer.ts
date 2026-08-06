@@ -33,10 +33,24 @@ export function useTweetComposer({ onCreated }: UseTweetComposerProps) {
       item.status === MEDIA_STATUS.ERROR,
   );
 
+  const {
+    imageInputRef,
+    videoInputRef,
+    handleAction,
+    closeAllPopups,
+
+    buttonRefs,
+
+    emoji,
+    gif,
+    poll,
+    location,
+  } = useComposerActions();
+
   const { submit: submitComposer, isPosting } = useComposerSubmit({
     content,
-
     media: mediaManager.media,
+    poll: poll.hasPoll ? poll.poll : null,
 
     clearMedia: mediaManager.clearMedia,
     clearErrors: mediaManager.clearErrors,
@@ -61,22 +75,14 @@ export function useTweetComposer({ onCreated }: UseTweetComposerProps) {
     if (created) {
       setContent("");
       closeAllPopups();
+      poll.reset();
     }
   };
 
-  const {
-    imageInputRef,
-    videoInputRef,
-    handleAction,
-    closeAllPopups,
-
-    buttonRefs,
-
-    emoji,
-    gif,
-    poll,
-    location,
-  } = useComposerActions();
+  const removePoll = () => {
+    poll.reset();
+    poll.close();
+  };
 
   const insertEmoji = (emojiValue: string) => {
     cursor.insertAtCursor(emojiValue, content, setContent);
@@ -118,6 +124,11 @@ export function useTweetComposer({ onCreated }: UseTweetComposerProps) {
       open: poll.isOpen,
       reference: buttonRefs.poll?.current ?? null,
       onOpenChange: (open: boolean) => (open ? poll.open() : poll.close()),
+      poll: poll.poll,
+      onOptionChange: poll.updateOption,
+      onAddOption: poll.addOption,
+      onRemoveOption: poll.removeOption,
+      onDurationChange: poll.setDuration,
     },
 
     location: {
@@ -158,5 +169,11 @@ export function useTweetComposer({ onCreated }: UseTweetComposerProps) {
     buttonRefs,
 
     popovers,
+
+    pollPreview: {
+      visible: poll.hasPoll,
+      poll: poll.poll,
+      onRemove: removePoll,
+    },
   };
 }
