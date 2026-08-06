@@ -2,8 +2,7 @@
 
 import { useMemo, useState } from "react";
 
-import type { Tweet } from "@/types/tweet";
-import type { Gif } from "@/types/gif";
+import type { Tweet, Gif, Location } from "@/types";
 
 import { MAX_TWEET_LENGTH, MEDIA_STATUS } from "@/constants/app";
 
@@ -20,6 +19,9 @@ interface UseTweetComposerProps {
 
 export function useTweetComposer({ onCreated }: UseTweetComposerProps) {
   const [content, setContent] = useState("");
+  const [selectedLocation, setSelectedLocation] = useState<Location | null>(
+    null,
+  );
   const cursor = useComposerEditor();
 
   const remaining = useMemo(() => MAX_TWEET_LENGTH - content.length, [content]);
@@ -51,6 +53,7 @@ export function useTweetComposer({ onCreated }: UseTweetComposerProps) {
     content,
     media: mediaManager.media,
     poll: poll.hasPoll ? poll.poll : null,
+    location: selectedLocation,
 
     clearMedia: mediaManager.clearMedia,
     clearErrors: mediaManager.clearErrors,
@@ -74,6 +77,7 @@ export function useTweetComposer({ onCreated }: UseTweetComposerProps) {
     const created = await submitComposer();
     if (created) {
       setContent("");
+      removeLocation();
       closeAllPopups();
       poll.reset();
     }
@@ -82,6 +86,10 @@ export function useTweetComposer({ onCreated }: UseTweetComposerProps) {
   const removePoll = () => {
     poll.reset();
     poll.close();
+  };
+
+  const removeLocation = () => {
+    setSelectedLocation(null);
   };
 
   const insertEmoji = (emojiValue: string) => {
@@ -94,6 +102,14 @@ export function useTweetComposer({ onCreated }: UseTweetComposerProps) {
 
   const insertGif = (gifItem: Gif) => {
     mediaManager.addGif(gifItem);
+
+    closeAllPopups();
+
+    cursor.editorRef.current?.focus();
+  };
+
+  const insertLocation = (location: Location) => {
+    setSelectedLocation(location);
 
     closeAllPopups();
 
@@ -136,6 +152,12 @@ export function useTweetComposer({ onCreated }: UseTweetComposerProps) {
       reference: buttonRefs.location?.current ?? null,
       onOpenChange: (open: boolean) =>
         open ? location.open() : location.close(),
+      locations: location.locations,
+      query: location.query,
+      loading: location.loading,
+      error: location.error,
+      onQueryChange: location.setQuery,
+      onSelect: insertLocation,
     },
   };
 
@@ -174,6 +196,11 @@ export function useTweetComposer({ onCreated }: UseTweetComposerProps) {
       visible: poll.hasPoll,
       poll: poll.poll,
       onRemove: removePoll,
+    },
+    locationPreview: {
+      visible: !!selectedLocation,
+      location: selectedLocation,
+      onRemove: removeLocation,
     },
   };
 }

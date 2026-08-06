@@ -8,6 +8,7 @@ import {
   useComposerPopup,
   useComposerGif,
   useComposerPoll,
+  useComposerLocation,
 } from "@/hooks/composer";
 
 export function useComposerActions() {
@@ -33,7 +34,7 @@ export function useComposerActions() {
   const emoji = useComposerPopup();
   const gif = useComposerGif();
   const poll = useComposerPoll();
-  const location = useComposerPopup();
+  const location = useComposerLocation();
 
   const handleAction = (action: ComposerAction) => {
     switch (action) {

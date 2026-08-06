@@ -4,14 +4,13 @@ import { useState } from "react";
 
 import { tweetApi } from "@/api/tweet.api";
 
-import type { Tweet } from "@/types/tweet";
-import type { ComposerMedia } from "@/types/composer";
-import type { ComposerPoll } from "@/types/poll";
+import type { Tweet, ComposerMedia, ComposerPoll, Location } from "@/types";
 
 interface UseComposerSubmitProps {
   content: string;
   media: ComposerMedia[];
   poll?: ComposerPoll | null;
+  location?: Location | null;
 
   clearMedia: () => void;
   clearErrors: () => void;
@@ -23,6 +22,7 @@ export function useComposerSubmit({
   content,
   media,
   poll,
+  location,
   clearMedia,
   clearErrors,
   onCreated,
@@ -49,6 +49,8 @@ export function useComposerSubmit({
                 duration: poll.duration,
               }
             : undefined,
+
+        location,
       });
 
       onCreated(tweet);

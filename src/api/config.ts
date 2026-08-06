@@ -39,4 +39,7 @@ export const ENDPOINTS = {
   poll: {
     vote: (tweetId: string) => `tweets/${tweetId}/poll/vote`,
   },
+  location: {
+    search: "/locations/search",
+  },
 } as const;

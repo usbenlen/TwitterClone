@@ -7,3 +7,4 @@ export * from "@/types/theme";
 export * from "@/types/tweet";
 export * from "@/types/user";
 export * from "@/types/poll";
+export * from "@/types/location";

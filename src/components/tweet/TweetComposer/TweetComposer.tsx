@@ -19,6 +19,7 @@ import {
   TweetComposerErrors,
   TweetComposerFileInputs,
   TweetComposerPollPreview,
+  TweetComposerLocationPreview,
 } from "@/components/tweet/TweetComposer";
 
 import { cn } from "@/utils/cn";
@@ -76,6 +77,14 @@ export default function TweetComposer({ onCreated }: TweetComposerProps) {
             onRemove={composer.pollPreview.onRemove}
           />
         )}
+
+        {composer.locationPreview.visible &&
+          composer.locationPreview.location && (
+            <TweetComposerLocationPreview
+              location={composer.locationPreview.location}
+              onRemove={composer.locationPreview.onRemove}
+            />
+          )}
 
         <TweetComposerErrors errors={composer.errors} />
 

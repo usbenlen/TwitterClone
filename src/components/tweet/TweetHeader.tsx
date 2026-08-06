@@ -49,7 +49,7 @@ export default function TweetHeader({
         </div>
 
         <p
-          className="mt-1 wrap-break-words whitespace-pre-wrap"
+          className="mt-1 wrap-break-word whitespace-pre-wrap"
           dangerouslySetInnerHTML={{
             __html: parseEmoji(content),
           }}

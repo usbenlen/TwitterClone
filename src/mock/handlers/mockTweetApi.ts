@@ -74,6 +74,8 @@ export const mockTweetApi = {
       likedByMe: false,
 
       createdAt: new Date().toISOString(),
+
+      location: payload.location ?? null,
     };
 
     setTweets([tweet, ...tweets]);

@@ -10,3 +10,5 @@ export { useComposerPopup } from "@/hooks/composer/useComposerPopup";
 
 export { useComposerGif } from "@/hooks/composer/gif/useComposerGif";
 export { useComposerPoll } from "@/hooks/composer/poll/useComposerPoll";
+export { useComposerLocation } from "@/hooks/composer/location/useComposerLocation";
+

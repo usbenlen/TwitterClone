@@ -7,3 +7,4 @@ export * from "@/mock/handlers/mockTweetApi";
 export * from "@/mock/handlers/mockUserApi";
 export * from "@/mock/handlers/mockMediaApi";
 export * from "@/mock/handlers/mockPollApi";
+export * from "@/mock/handlers/mockLocationApi";

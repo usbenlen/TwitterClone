@@ -2,6 +2,7 @@
 import type { User } from "@/types/user";
 import type { MediaAttachment } from "@/types/media";
 import type { TweetPoll } from "@/types/poll";
+import type { Location } from "@/types/location";
 
 export interface Tweet {
   id: string;
@@ -13,6 +14,7 @@ export interface Tweet {
   repliesCount: number;
   retweetsCount: number;
   likedByMe: boolean;
+  location?: Location | null;
   createdAt: string;
 }
 
@@ -29,4 +31,5 @@ export interface CreateTweetRequest {
     options: string[];
     duration: number;
   };
+  location?: Location | null;
 }
