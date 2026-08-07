@@ -1,7 +1,6 @@
 /** @format */
 
 import { FeedList } from "@/components/feed";
-import { FollowProvider } from "@/providers/FollowProvider";
 
 import {
   ProfileHero,
@@ -22,7 +21,6 @@ interface ProfileProps {
 export default function Profile({ user, tweets, isOwnProfile }: ProfileProps) {
   
   return (
-    <FollowProvider isOwnProfile={isOwnProfile}>
     <section className="max-w-3xl border-r border-border bg-background">
       
         <ProfileHero user={user} isOwnProfile={isOwnProfile} />
@@ -32,13 +30,12 @@ export default function Profile({ user, tweets, isOwnProfile }: ProfileProps) {
         <ProfileStats user={user} isOwnProfile={isOwnProfile} />
 
         <ProfileTabs />
-
+        
         <FeedList
           tweets={tweets}
           emptyMessage="Користувач ще нічого не публікував."
         />
-    </section>
-    </FollowProvider>
 
+    </section>
   );
 }

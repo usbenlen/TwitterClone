@@ -16,7 +16,7 @@ export default function ProfileHero({ user, isOwnProfile }: ProfileHeroProps) {
     isFollowing
   } = useFollow();
 
-  const following = isFollowing(user.id);
+  const isUserFollowing = isFollowing(user.id);
 
   return (
     <>
@@ -38,20 +38,23 @@ export default function ProfileHero({ user, isOwnProfile }: ProfileHeroProps) {
 
           <div className="pt-3">
             {isOwnProfile ? (
-              <Button variant="outline" size="sm">
+              <Button variant="outline" size="sm"> 
                 Редагувати профіль
               </Button>
             ) : (
               <Button
                 size="sm"
-                variant={following ? "outline" : "primary"}
-                onClick={() =>
-                  following
+                variant={isUserFollowing ? "outline" : "primary"}
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+
+                  isUserFollowing
                     ? unfollow(user.id)
-                    : follow(user)
-                }
+                    : follow(user);
+                }}
               >
-                {following
+                {isUserFollowing
                   ? "Читаю"
                   : "Читати"}
               </Button>

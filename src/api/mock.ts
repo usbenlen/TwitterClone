@@ -2,7 +2,7 @@
 import type { AuthResponse, LoginRequest, RegisterRequest } from "@/types/auth";
 import type { User } from "@/types/user";
 import type { Tweet } from "@/types/tweet";
-import type { FollowRequest } from "@/types/follow";
+import type { FollowRequest, RemoveFollower } from "@/types/follow";
 
 /*
  * Мок-режим для розробки без бекенду.
@@ -165,12 +165,157 @@ export const mockTweetApi = {
   },
 };
 
+// ---
+
+type FollowUser = {
+  id: string;
+  username: string;
+  displayName: string;
+};
+
+
+export const mockFollowing: Record<string, FollowUser[]> = {
+  u2: [
+    {
+      id: "u3",
+      username: "linus",
+      displayName: "Linus",
+    },
+  ],
+  u3: [
+    {
+      id: "u2",
+      username: "ada",
+      displayName: "Ada Lovelace",
+    },
+  ],
+};
+
+export const mockFollowers: Record<string, FollowUser[]> = {
+  u1: [
+    {
+      id: "u2",
+      username: "ada",
+      displayName: "Ada Lovelace",
+    },
+    {
+      id: "u3",
+      username: "linus",
+      displayName: "Linus",
+    },
+    // {
+    //   id: "u2",
+    //   username: "ada",
+    //   displayName: "Ada Lovelace",
+    // },
+    // {
+    //   id: "u3",
+    //   username: "linus",
+    //   displayName: "Linus",
+    // },
+    // {
+    //   id: "u2",
+    //   username: "ada",
+    //   displayName: "Ada Lovelace",
+    // },
+    // {
+    //   id: "u3",
+    //   username: "linus",
+    //   displayName: "Linus",
+    // },
+    // {
+    //   id: "u2",
+    //   username: "ada",
+    //   displayName: "Ada Lovelace",
+    // },
+    // {
+    //   id: "u3",
+    //   username: "linus",
+    //   displayName: "Linus",
+    // },
+    // {
+    //   id: "u2",
+    //   username: "ada",
+    //   displayName: "Ada Lovelace",
+    // },
+    // {
+    //   id: "u3",
+    //   username: "linus",
+    //   displayName: "Linus",
+    // },
+    // {
+    //   id: "u2",
+    //   username: "ada",
+    //   displayName: "Ada Lovelace",
+    // },
+    // {
+    //   id: "u3",
+    //   username: "linus",
+    //   displayName: "Linus",
+    // },
+  ],
+  u2: [
+    {
+      id: "u3",
+      username: "linus",
+      displayName: "Linus",
+    },
+  ],
+  u3: [
+    {
+      id: "u2",
+      username: "ada",
+      displayName: "Ada Lovelace",
+    },
+  ],
+};
+
 export const mockFollowApi = {
-  follow: async (data: FollowRequest) => {
-    console.log("mock follow", data);
-  },
+  // follow: async (data: FollowRequest) => {
+  //   console.log("mock follow", data);
+  // },
+
+  follow: async ({ targetUserId }: FollowRequest) => {
+  if (!currentUser) return;
+
+  if (!mockFollowers[targetUserId]) {
+    mockFollowers[targetUserId] = [];
+  }
+
+  if (!mockFollowing[currentUser.id]) {
+    mockFollowing[currentUser.id] = [];
+  }
+
+  mockFollowers[targetUserId].push(currentUser);
+
+  mockFollowing[currentUser.id].push({
+    id: targetUserId,
+    username: "username",
+    displayName: "User",
+  });
+},
+
 
   unfollow: async (data: FollowRequest) => {
     console.log("mock unfollow", data);
   },
+
+  followers: async (userId: string): Promise<FollowUser[]> => {
+    return mockFollowers[userId];
+  },
+
+  following: async (userId: string): Promise<FollowUser[]> => {
+    return mockFollowing[userId];
+  },
+
+  removeFollower: async (
+    data: RemoveFollower
+      ) => {
+        mockFollowers[data.userId] =
+          (mockFollowers[data.userId])
+            .filter(
+              follower => follower.id !== data.followId
+        );
+    },
+  
 };

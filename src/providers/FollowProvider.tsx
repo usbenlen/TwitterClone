@@ -9,15 +9,25 @@ import {
 } from "react";
 
 import { followApi } from "@/api/follow.api";
+import { useAuth } from "@/hooks";
 import type { User } from "@/types/user";
+import type { FollowUser } from "@/types/follow";
 
 export interface FollowContextValue {
-  following: User[];
-  followingCount: number;
+  followers: FollowUser[]; //User[]
+  following: FollowUser[]; //User[]
 
-  follow(user: User): Promise<void>;
+  getFollowers(user: User["id"]): Promise<void>;
+  getFollowing(user: User["id"]): Promise<void>;
+
+  followingCount: number;
+  followersCount: number;
+
+  // follow(user: User): Promise<void>;
+  follow(user: FollowUser): Promise<void>;
   unfollow(user: User["id"]): Promise<void>;
   isFollowing(user: User["id"]): boolean;
+  removeFollower(userId: User["id"], followId: User["id"]): Promise<void>;
 }
 
 export const FollowContext =
@@ -25,24 +35,30 @@ export const FollowContext =
 
 interface Props {
     children: ReactNode;
-    isOwnProfile: boolean;
 }
 
-export function FollowProvider({ children, isOwnProfile }: Props) {
-  const [following, setFollowing] = useState<User[]>(() => {
+export function FollowProvider({ children }: Props) {
+  
+  const [following, setFollowing] = useState<FollowUser[]>(() => { //User[]
+    
     const saved = localStorage.getItem("following");
 
+
     try {
-      return saved
-        ? JSON.parse(saved)
-        : [];
-    } catch(error) {
+      return saved ? JSON.parse(saved) : [];
+    } catch (error) {
       console.error(error);
+      return [];
     }
 
   });
 
+  const [followers, setFollowers] = useState<FollowUser[]>([]); //User[]
+  
   const followingCount = following.length;
+  const followersCount = followers.length;
+
+  const { user: currentUser } = useAuth();
 
   useEffect(() => {
     localStorage.setItem(
@@ -51,27 +67,37 @@ export function FollowProvider({ children, isOwnProfile }: Props) {
     );
   }, [following]);
 
-  const follow = async (user: User) => {
+  const follow = async (user: FollowUser) => {
     try {
+      if (!currentUser) return;
+      
       await followApi.follow({
         targetUserId: user.id,
       });
 
-      if (!isOwnProfile) {
-        setFollowing(prev => {
-          const exists = prev.some(
-            item => item.id === user.id
-          );
 
-          if (exists) {
-            return prev;
-          }
+      // добавляем в мои подписки
+      setFollowing(prev => {
+        if (prev.some(item => item.id === user.id)) {
+          return prev;
+        }
 
-          return [
-            ...prev, user
-          ];
-        });
-      }
+        return [...prev, user];
+      });
+
+
+      // добавляем меня в followers этого пользователя
+      setFollowers(prev => {
+        if (prev.some(item => item.id === currentUser?.id)) {
+          return prev;
+        }
+
+        return [
+          ...prev,
+          currentUser!
+        ];
+      });
+
 
     } catch(error) {
       console.error(error);
@@ -84,11 +110,9 @@ export function FollowProvider({ children, isOwnProfile }: Props) {
         targetUserId: userId,
       });
 
-      if (!isOwnProfile) {
         setFollowing(prev => 
           prev.filter(user => user.id !== userId)
         );
-      }
       
     } catch(error) {
       console.error(error);
@@ -96,23 +120,79 @@ export function FollowProvider({ children, isOwnProfile }: Props) {
   };
 
   const isFollowing = useCallback(
-    (userId: User["id"]) => {
-      return following.some(user => user.id === userId);
-    },
+  (userId: User["id"]) => {
+    console.log("CHECK:", userId, following);
+
+    return following.some(
+      item => item.id === userId
+    );
+  },
     [following]
   );
 
+  const removeFollower = async (
+      userId: User["id"],
+      followerId: User["id"]
+      ): Promise<void> => {
+        try {
+          await followApi.removeFollower({
+            userId,
+            followId: followerId,
+          });
+
+          setFollowers(prev =>
+            prev.filter(
+              user => user.id !== followerId
+            )
+          );
+
+        } catch (error) {
+          console.error(error);
+        }
+    };
+
+  const getFollowers = async (userId: User["id"]) => {
+  try {
+      const data = await followApi.followers(userId);
+
+      setFollowers(data ?? []);
+
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const getFollowing = async (userId: User["id"]) => {
+  try {
+    setFollowing(prev => {
+
+      return [
+        ...prev,
+      ];
+    });
+
+  } catch(error) {
+    console.error(error);
+  }
+};
+  
   return (
     <FollowContext.Provider
       value={{
         following,
         followingCount,
+        followers,
+        followersCount,
         follow,
         unfollow,
         isFollowing,
+        removeFollower,
+        getFollowers,
+        getFollowing,
       }}
     >
       {children}
     </FollowContext.Provider>
   );
 }
+

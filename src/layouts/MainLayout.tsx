@@ -17,7 +17,7 @@ export default function MainLayout() {
       <div className="mx-auto w-full max-w-340 lg:grid lg:grid-cols-[18rem_minmax(0,1fr)_22rem]">
         <LeftSidebar />
 
-        <main className="min-w-0 pb-20 lg:pb-0">
+        <main className="min-w-0 pb-20 lg:pb-0 border border border-b-0">
           <Outlet />
         </main>
 

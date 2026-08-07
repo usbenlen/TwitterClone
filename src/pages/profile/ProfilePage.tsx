@@ -1,9 +1,11 @@
 /** @format */
 
 import { useParams } from "react-router";
+import { useEffect } from "react";
 
 import { Spinner } from "@/ui";
 import { useAuth, useProfile } from "@/hooks";
+import { useFollow } from "@/hooks/useFollow";
 
 import { Profile } from "@/components/profile";
 
@@ -11,6 +13,15 @@ export default function ProfilePage() {
   const { username } = useParams<{ username: string }>();
   const { user: currentUser } = useAuth();
   const { user, tweets, isLoading, notFound } = useProfile(username);
+  const { getFollowers, getFollowing} = useFollow();
+
+  useEffect(() => {
+    if (!user?.id) return;
+
+    getFollowers(user.id);
+    getFollowing(user.id);
+
+  }, [user?.id]);;
 
   if (isLoading) {
     return (
