@@ -9,8 +9,9 @@ import {
   ProfileTabs,
 } from "@/components/profile";
 
-import type { Tweet } from "@/types/tweet";
-import type { User } from "@/types/user";
+import { FollowProvider } from "@/providers/FollowProvider";
+
+import type { Tweet, User } from "@/types";
 
 interface ProfileProps {
   user: User;
@@ -20,19 +21,21 @@ interface ProfileProps {
 
 export default function Profile({ user, tweets, isOwnProfile }: ProfileProps) {
   return (
-    <section className="max-w-3xl border-r border-border bg-background">
-      <ProfileHero user={user} isOwnProfile={isOwnProfile} />
+    <FollowProvider>
+      <section className="max-w-3xl border-r border-border bg-background">
+        <ProfileHero user={user} isOwnProfile={isOwnProfile} />
 
-      <ProfileInfo user={user} />
+        <ProfileInfo user={user} />
 
-      <ProfileStats user={user} />
+        <ProfileStats user={user} isOwnProfile={isOwnProfile} />
 
-      <ProfileTabs />
+        <ProfileTabs />
 
-      <FeedList
-        tweets={tweets}
-        emptyMessage="Користувач ще нічого не публікував."
-      />
-    </section>
+        <FeedList
+          tweets={tweets}
+          emptyMessage="Користувач ще нічого не публікував."
+        />
+      </section>
+    </FollowProvider>
   );
 }

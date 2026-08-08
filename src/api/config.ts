@@ -42,4 +42,12 @@ export const ENDPOINTS = {
   location: {
     search: "/locations/search",
   },
+  follows: {
+    follow: (userId: string) => `follows/${userId}`,
+    unfollow: (userId: string) => `follows/${userId}`,
+    followers: (userId: string) => `follows/${userId}/followers`,
+    following: (userId: string) => `follows/${userId}/following`,
+    removeFollower: (userId: string, followId: string) =>
+      `follows/${userId}/followers/${followId}`,
+  },
 } as const;

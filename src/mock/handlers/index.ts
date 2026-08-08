@@ -8,3 +8,4 @@ export * from "@/mock/handlers/mockUserApi";
 export * from "@/mock/handlers/mockMediaApi";
 export * from "@/mock/handlers/mockPollApi";
 export * from "@/mock/handlers/mockLocationApi";
+export * from "@/mock/handlers/mockFollowApi";

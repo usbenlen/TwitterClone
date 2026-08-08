@@ -6,5 +6,6 @@ export { useAuth } from "@/hooks/useAuth";
 export { useTheme } from "@/hooks/useTheme";
 export { useNavigation } from "@/hooks/useNavigation";
 export { useTweetLike } from "@/hooks/useTweetLike";
+export { useFollow } from "@/hooks/useFollow";
 
 export * from "@/hooks/composer";

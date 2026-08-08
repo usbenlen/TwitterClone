@@ -2,6 +2,8 @@
 
 import { Avatar, Button } from "@/ui";
 
+import { useFollow } from "@/hooks/useFollow";
+
 import type { User } from "@/types/user";
 
 interface ProfileHeroProps {
@@ -10,6 +12,10 @@ interface ProfileHeroProps {
 }
 
 export default function ProfileHero({ user, isOwnProfile }: ProfileHeroProps) {
+  const { follow, unfollow, isFollowing } = useFollow();
+
+  const following = isFollowing(user.id);
+
   return (
     <>
       <div className="h-40 w-full bg-muted">
@@ -34,7 +40,13 @@ export default function ProfileHero({ user, isOwnProfile }: ProfileHeroProps) {
                 Редагувати профіль
               </Button>
             ) : (
-              <Button size="sm">Читати</Button>
+              <Button
+                size="sm"
+                variant={following ? "outline" : "primary"}
+                onClick={() => (following ? unfollow(user.id) : follow(user))}
+              >
+                {following ? "Читаю" : "Читати"}
+              </Button>
             )}
           </div>
         </div>
