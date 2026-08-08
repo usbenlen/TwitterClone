@@ -1,7 +1,8 @@
 /** @format */
 
-import { MediaGrid } from "./media";
-import MediaItem from "./media/MediaItem";
+import { useState } from "react";
+
+import { MediaItem, MediaGrid, MediaViewer } from "@/components/tweet/media";
 
 import type { MediaAttachment } from "@/types/media";
 
@@ -10,16 +11,39 @@ interface Props {
 }
 
 export default function TweetMedia({ attachments }: Props) {
+  const [viewerIndex, setViewerIndex] = useState<number | null>(null);
+
+  const isSingleVideo =
+    attachments.length === 1 && attachments[0].type === "video";
+
+  const handleOpen = (index: number) => {
+    setViewerIndex(index);
+  };
+
   if (attachments.length === 0) return null;
 
   return (
-    <div className="mt-3">
+    <>
       <MediaGrid
         items={attachments}
-        renderItem={(attachment) => (
-          <MediaItem key={attachment.id} attachment={attachment} />
+        renderItem={(attachment, index) => (
+          <MediaItem
+            attachment={attachment}
+            onOpen={() => handleOpen(index)}
+            openOnClick={!isSingleVideo}
+          />
         )}
       />
-    </div>
+
+      {!isSingleVideo && (
+        <MediaViewer
+          attachments={attachments}
+          currentIndex={viewerIndex ?? 0}
+          open={viewerIndex !== null}
+          onClose={() => setViewerIndex(null)}
+          onChange={setViewerIndex}
+        />
+      )}
+    </>
   );
 }

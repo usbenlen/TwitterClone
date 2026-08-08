@@ -26,7 +26,7 @@ export default function TweetActions({
     <div className="mt-3 flex w-full items-center justify-between text-muted-foreground">
       <button
         type="button"
-        className="flex min-w-0 flex-1 items-center justify-center gap-2 rounded-full p-2 transition-colors hover:text-primary"
+        className="flex min-w-0 items-center justify-center gap-2 rounded-full p-2 transition-colors hover:text-primary"
       >
         <CommentIcon size={18} />
 
@@ -37,7 +37,7 @@ export default function TweetActions({
 
       <button
         type="button"
-        className="flex min-w-0 flex-1 items-center justify-center gap-2 rounded-full p-2 transition-colors hover:text-emerald-500"
+        className="flex min-w-0 items-center justify-center gap-2 rounded-full p-2 transition-colors hover:text-emerald-500"
       >
         <RetweetIcon size={18} />
 
@@ -51,7 +51,7 @@ export default function TweetActions({
         onClick={onLike}
         aria-pressed={likedByMe}
         className={cn(
-          "flex min-w-0 flex-1 items-center justify-center gap-2 rounded-full p-2 transition-colors hover:text-rose-500",
+          "flex min-w-0 items-center justify-center gap-2 rounded-full p-2 transition-colors hover:text-rose-500",
           likedByMe && "text-rose-500",
         )}
       >

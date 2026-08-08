@@ -5,6 +5,8 @@ import TweetPoll from "@/components/tweet/poll/TweetPoll";
 import TweetLocation from "@/components/tweet/location/TweetLocation";
 import TweetEmbed from "@/components/tweet/embed/TweetEmbed";
 
+import { Avatar } from "@/ui";
+
 import type { Tweet } from "@/types/tweet";
 
 import { useTweetLike } from "@/hooks/useTweetLike";
@@ -17,28 +19,38 @@ export default function TweetCard({ tweet }: TweetCardProps) {
   const like = useTweetLike(tweet);
 
   return (
-    <article className="border-b border-border p-5 transition-colors hover:bg-muted/40">
-      <TweetHeader
-        author={tweet.author}
-        createdAt={tweet.createdAt}
-        content={tweet.content}
-      />
+    <article className="grid grid-cols-[40px_minmax(0,1fr)] gap-x-3 border-b border-border p-5 transition-colors hover:bg-muted/40">
+      <div className="flex justify-center">
+        <Avatar
+          name={tweet.author.displayName}
+          src={tweet.author.avatarUrl}
+          className="size-11 shrink-0"
+        />
+      </div>
 
-      {tweet.location && <TweetLocation location={tweet.location} />}
+      <div className="min-w-0">
+        <TweetHeader
+          author={tweet.author}
+          createdAt={tweet.createdAt}
+          content={tweet.content}
+        />
 
-      {tweet.embed && <TweetEmbed embed={tweet.embed} />}
+        {tweet.location && <TweetLocation location={tweet.location} />}
 
-      {tweet.poll && <TweetPoll tweetId={tweet.id} poll={tweet.poll} />}
+        {tweet.embed && <TweetEmbed embed={tweet.embed} />}
 
-      <TweetMedia attachments={tweet.attachments} />
+        {tweet.poll && <TweetPoll tweetId={tweet.id} poll={tweet.poll} />}
 
-      <TweetActions
-        likedByMe={like.likedByMe}
-        likesCount={like.likesCount}
-        repliesCount={tweet.repliesCount}
-        retweetsCount={tweet.retweetsCount}
-        onLike={like.toggleLike}
-      />
+        <TweetMedia attachments={tweet.attachments} />
+
+        <TweetActions
+          likedByMe={like.likedByMe}
+          likesCount={like.likesCount}
+          repliesCount={tweet.repliesCount}
+          retweetsCount={tweet.retweetsCount}
+          onLike={like.toggleLike}
+        />
+      </div>
     </article>
   );
 }
