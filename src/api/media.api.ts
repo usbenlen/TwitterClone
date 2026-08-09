@@ -1,24 +1,26 @@
 /** @format */
 
+import { apiClient } from "@/api/client";
+import { ENDPOINTS } from "@/api/config";
 import { MOCK_ENABLED } from "@/mock/config";
 import { mockMediaApi } from "@/mock/handlers/mockMediaApi";
+
+import type { MediaAttachment } from "@/types/media";
 
 interface UploadMediaOptions {
   onProgress?: (progress: number) => void;
 }
 
 const realMediaApi = {
-  async upload(file: File, options?: UploadMediaOptions) {
+  async upload(
+    file: File,
+    _options?: UploadMediaOptions,
+  ): Promise<MediaAttachment> {
     const formData = new FormData();
+
     formData.append("file", file);
 
-    // приклад майбутньої реалізації
-    // const { data } = await api.post("/media", formData);
-
-    // return data;
-
-    // TODO: реалізувати після появи backend
-    throw new Error("Media upload API is not implemented yet.");
+    return apiClient.post<MediaAttachment>(ENDPOINTS.media.upload, formData);
   },
 };
 

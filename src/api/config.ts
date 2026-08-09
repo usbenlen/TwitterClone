@@ -50,4 +50,7 @@ export const ENDPOINTS = {
     removeFollower: (userId: string, followId: string) =>
       `follows/${userId}/followers/${followId}`,
   },
+  media: {
+    upload: "media",
+  },
 } as const;

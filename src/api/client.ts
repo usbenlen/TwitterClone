@@ -70,17 +70,26 @@ async function rawRequest<T>(
   const { body, skipAuth, headers, ...rest } = options;
 
   const finalHeaders = new Headers(headers);
-  if (body !== undefined) finalHeaders.set("Content-Type", "application/json");
+
+  if (body !== undefined && !(body instanceof FormData))
+    finalHeaders.set("Content-Type", "application/json");
 
   if (!skipAuth) {
     const token = tokenStorage.getAccessToken();
     if (token) finalHeaders.set("Authorization", `Bearer ${token}`);
   }
 
+  const requestBody =
+    body instanceof FormData
+      ? body
+      : body !== undefined
+        ? JSON.stringify(body)
+        : undefined;
+
   const response = await fetch(`${API_BASE_URL}${path}`, {
     ...rest,
     headers: finalHeaders,
-    body: body !== undefined ? JSON.stringify(body) : undefined,
+    body: requestBody,
   });
 
   // Спроба оновити токен один раз при 401
