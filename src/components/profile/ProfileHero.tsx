@@ -1,20 +1,31 @@
 /** @format */
 
+import { useState } from "react";
+
 import { Avatar, Button } from "@/ui";
 
 import { useFollow } from "@/hooks/useFollow";
 
+import { EditProfileModal } from "@/components/modal";
+
 import type { User } from "@/types/user";
+import type { UpdateProfileRequest } from "@/api/user.api";
 
 interface ProfileHeroProps {
   user: User;
   isOwnProfile: boolean;
+  onUpdateProfile: (data: UpdateProfileRequest) => Promise<void>;
 }
 
-export default function ProfileHero({ user, isOwnProfile }: ProfileHeroProps) {
+export default function ProfileHero({
+  user,
+  isOwnProfile,
+  onUpdateProfile,
+}: ProfileHeroProps) {
   const { follow, unfollow, isFollowing } = useFollow();
-
   const following = isFollowing(user.id);
+
+  const [isEditProfileOpen, setIsEditProfileOpen] = useState(false);
 
   return (
     <>
@@ -36,7 +47,10 @@ export default function ProfileHero({ user, isOwnProfile }: ProfileHeroProps) {
 
           <div className="pt-3">
             {isOwnProfile ? (
-              <Button variant="outline" size="sm">
+              <Button
+                variant="outline"
+                onClick={() => setIsEditProfileOpen(true)}
+              >
                 Редагувати профіль
               </Button>
             ) : (
@@ -51,6 +65,13 @@ export default function ProfileHero({ user, isOwnProfile }: ProfileHeroProps) {
           </div>
         </div>
       </div>
+
+      <EditProfileModal
+        open={isEditProfileOpen}
+        user={user}
+        onClose={() => setIsEditProfileOpen(false)}
+        onSave={onUpdateProfile}
+      />
     </>
   );
 }

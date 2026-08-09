@@ -1,10 +1,10 @@
 /** @format */
 import { useEffect, useState } from "react";
-import { userApi, tweetApi } from "@/api";
-import type { User } from "@/types/user";
-import type { Tweet } from "@/types/tweet";
 
-// Завантаження профілю та твітів користувача за нікнеймом
+import { userApi, tweetApi } from "@/api";
+
+import type { User, Tweet } from "@/types";
+
 export function useProfile(username: string | undefined) {
   const [user, setUser] = useState<User | null>(null);
   const [tweets, setTweets] = useState<Tweet[]>([]);
@@ -39,5 +39,9 @@ export function useProfile(username: string | undefined) {
     };
   }, [username]);
 
-  return { user, tweets, isLoading, notFound };
+  const updateUser = (updatedUser: User) => {
+    setUser(updatedUser);
+  };
+
+  return { user, tweets, isLoading, notFound, updateUser };
 }

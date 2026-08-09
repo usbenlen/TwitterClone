@@ -61,4 +61,8 @@ export const mockAuthApi = {
   ): Promise<void> {
     await delay(150);
   },
+
+  changePassword: async () => {
+    await delay(300);
+  },
 };

@@ -44,11 +44,9 @@ export function useComposerSubmit({
       const tweet = await tweetApi.create({
         content: content.trim(),
 
-        media: media.map((item) => ({
-          type: item.type,
-          attachmentId: item.attachmentId,
-          url: item.url,
-        })),
+        mediaIds: media
+          .filter((item) => item.type !== "gif" && item.attachmentId)
+          .map((item) => item.attachmentId!),
 
         poll:
           poll && poll.options.some((o) => o.text.trim())

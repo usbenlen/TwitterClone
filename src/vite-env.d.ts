@@ -10,7 +10,7 @@ interface ImportMetaEnv {
 
   readonly VITE_USE_MOCK?: string;
 
-  readonly VITE_GIPHY_API_KEY: string;
+  readonly VITE_MAX_BIO_LENGTH: number;
 
   readonly VITE_MAX_TWEET_LENGTH: number;
   readonly VITE_MAX_MEDIA_ATTACHMENTS: number;

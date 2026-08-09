@@ -15,6 +15,8 @@ import {
   ProfilePage,
   FollowingPage,
   FollowersPage,
+  SettingsPage,
+  ChangePasswordPage,
 } from "@/pages";
 
 import { APP_ROUTES } from "@/constants/routes";
@@ -42,6 +44,14 @@ export const routes = createBrowserRouter([
           {
             path: APP_ROUTES.FOLLOWERS,
             element: <FollowersPage />,
+          },
+          {
+            path: APP_ROUTES.SETTINGS,
+            element: <SettingsPage />,
+          },
+          {
+            path: APP_ROUTES.SETTINGS_CHANGE_PASSWORD,
+            element: <ChangePasswordPage />,
           },
         ],
       },

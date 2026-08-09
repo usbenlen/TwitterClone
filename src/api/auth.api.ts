@@ -49,6 +49,9 @@ const realAuthApi = {
       },
       { skipAuth: true },
     ),
+
+  changePassword: (data: { currentPassword: string; newPassword: string }) =>
+    apiClient.post<void>(ENDPOINTS.auth.changePassword, data),
 };
 
 export const authApi = MOCK_ENABLED ? mockAuthApi : realAuthApi;

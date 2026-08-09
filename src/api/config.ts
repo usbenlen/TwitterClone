@@ -30,9 +30,12 @@ export const ENDPOINTS = {
     forgotPassword: "auth/forgot-password",
     verifyResetCode: "auth/verify-reset-code",
     resetPassword: "auth/reset-password",
+
+    changePassword: "auth/change-password",
   },
   users: {
     byUsername: (username: string) => `users/${username}`,
+    updateProfile: "users/me",
   },
   tweets: {
     feed: "tweets/feed",
@@ -44,7 +47,10 @@ export const ENDPOINTS = {
     vote: (tweetId: string) => `tweets/${tweetId}/poll/vote`,
   },
   location: {
-    search: "/locations/search",
+    search: "locations/search",
+  },
+  gifs: {
+    search: "gifs/search",
   },
   follows: {
     follow: (userId: string) => `follows/${userId}`,

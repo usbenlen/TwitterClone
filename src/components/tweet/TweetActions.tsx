@@ -1,6 +1,6 @@
 /** @format */
-
-import { CommentIcon, HeartIcon, RetweetIcon } from "@/shared/icons";
+import { Repeat2, MessageCircle } from "lucide-react";
+import { HeartIcon } from "@/shared/icons";
 
 import { cn } from "@/utils/cn";
 import { formatCount } from "@/utils/format";
@@ -28,7 +28,7 @@ export default function TweetActions({
         type="button"
         className="flex min-w-0 items-center justify-center gap-2 rounded-full p-2 transition-colors hover:text-primary"
       >
-        <CommentIcon size={18} />
+        <MessageCircle size={18} />
 
         {repliesCount > 0 && (
           <span className="text-sm">{formatCount(repliesCount)}</span>
@@ -39,7 +39,7 @@ export default function TweetActions({
         type="button"
         className="flex min-w-0 items-center justify-center gap-2 rounded-full p-2 transition-colors hover:text-emerald-500"
       >
-        <RetweetIcon size={18} />
+        <Repeat2 size={18} />
 
         {retweetsCount > 0 && (
           <span className="text-sm">{formatCount(retweetsCount)}</span>

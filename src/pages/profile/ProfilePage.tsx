@@ -3,14 +3,25 @@
 import { useParams } from "react-router";
 
 import { Spinner } from "@/ui";
+
 import { useAuth, useProfile } from "@/hooks";
+
+import { userApi, type UpdateProfileRequest } from "@/api";
 
 import { Profile } from "@/components/profile";
 
 export default function ProfilePage() {
   const { username } = useParams<{ username: string }>();
-  const { user: currentUser } = useAuth();
-  const { user, tweets, isLoading, notFound } = useProfile(username);
+  const { user: currentUser, updateUser: updateAuthUser } = useAuth();
+  const { user, tweets, isLoading, notFound, updateUser } =
+    useProfile(username);
+
+  const handleUpdateProfile = async (data: UpdateProfileRequest) => {
+    const updatedUser = await userApi.updateProfile(data);
+
+    updateUser(updatedUser);
+    updateAuthUser(updatedUser);
+  };
 
   if (isLoading) {
     return (
@@ -39,6 +50,7 @@ export default function ProfilePage() {
       user={user}
       tweets={tweets}
       isOwnProfile={currentUser?.id === user.id}
+      onUpdateProfile={handleUpdateProfile}
     />
   );
 }

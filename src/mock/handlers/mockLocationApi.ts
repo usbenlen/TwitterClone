@@ -9,9 +9,8 @@ export const mockLocationApi = {
   async search(query: string): Promise<Location[]> {
     await delay(250);
 
-    if (!query.trim()) return locations.slice(0, 8);
-
-    const value = query.toLowerCase();
+    const value = query.trim().toLowerCase();
+    if (!value) return [];
 
     return locations.filter(
       (location) =>

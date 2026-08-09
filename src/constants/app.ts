@@ -3,8 +3,7 @@
 export const APP_NAME = import.meta.env.VITE_APP_NAME;
 
 export const MAX_TWEET_LENGTH = Number(import.meta.env.VITE_MAX_TWEET_LENGTH);
-
-export const GIPHY_API_KEY = import.meta.env.VITE_GIPHY_API_KEY;
+export const MAX_BIO_LENGTH = Number(import.meta.env.VITE_MAX_BIO_LENGTH);
 
 export const MEDIA = {
   MAX_ATTACHMENTS: Number(import.meta.env.VITE_MAX_MEDIA_ATTACHMENTS),
@@ -39,14 +38,9 @@ export const MEDIA_STATUS = {
 
 export const ENABLE_IMAGE_UPLOAD =
   import.meta.env.VITE_ENABLE_IMAGE_UPLOAD === "true";
-
 export const ENABLE_VIDEO_UPLOAD =
   import.meta.env.VITE_ENABLE_VIDEO_UPLOAD === "true";
-
 export const ENABLE_EMBED = import.meta.env.VITE_ENABLE_EMBED === "true";
-
 export const ENABLE_GIFS = import.meta.env.VITE_ENABLE_GIFS === "true";
-
 export const ENABLE_POLLS = import.meta.env.VITE_ENABLE_POLLS === "true";
-
 export const ENABLE_LOCATION = import.meta.env.VITE_ENABLE_LOCATION === "true";

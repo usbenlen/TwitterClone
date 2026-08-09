@@ -14,6 +14,9 @@ export const APP_ROUTES = {
   FOLLOWERS: "/:username/followers",
 
   SETTINGS: "/settings",
+  SETTINGS_THEME: "/settings/theme",
+  SETTINGS_CHANGE_PASSWORD: "/settings/change-password",
+
   NOT_FOUND: "*",
 
   profile: (username: string) => `/${username}`,

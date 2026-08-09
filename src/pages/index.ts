@@ -8,6 +8,9 @@ export { default as ResetPasswordPage } from "@/pages/auth/ResetPasswordPage";
 
 export { default as HomePage } from "@/pages/home/HomePage";
 
+export { default as SettingsPage } from "@/pages/settings/SettingsPage";
+export { default as ChangePasswordPage } from "@/pages/settings/ChangePasswordPage";
+
 export { default as ProfilePage } from "@/pages/profile/ProfilePage";
 export { default as FollowingPage } from "@/pages/profile/FollowingPage";
 export { default as FollowersPage } from "@/pages/profile/FollowersPage";
