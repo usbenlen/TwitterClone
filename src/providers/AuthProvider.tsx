@@ -23,6 +23,8 @@ export interface AuthContextValue {
   login(data: LoginRequest): Promise<void>;
   register(data: RegisterRequest): Promise<void>;
   logout(): Promise<void>;
+
+  updateUser(user: User): void;
 }
 
 export const AuthContext = createContext<AuthContextValue | null>(null);
@@ -100,6 +102,10 @@ export function AuthProvider({ children }: Props) {
     }
   }, []);
 
+  const updateUser = useCallback((updatedUser: User) => {
+    setUser(updatedUser);
+  }, []);
+
   return (
     <AuthContext.Provider
       value={{
@@ -109,6 +115,7 @@ export function AuthProvider({ children }: Props) {
         login,
         register,
         logout,
+        updateUser,
       }}
     >
       {children}

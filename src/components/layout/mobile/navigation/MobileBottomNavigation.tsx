@@ -17,11 +17,15 @@ export default function MobileBottomNavigation() {
   const navigation = useNavigation();
   const [drawerOpen, setDrawerOpen] = useState(false);
 
+  const bottomItems = navigation.filter((item) =>
+    item.mobilePlacement?.includes("bottom"),
+  );
+
   return (
     <>
       <nav className="fixed inset-x-0 bottom-0 z-50 border-t border-border bg-background lg:hidden">
         <div className="flex justify-around py-2">
-          {navigation.map((item) => {
+          {bottomItems.map((item) => {
             const Icon = item.icon;
 
             return (

@@ -22,22 +22,7 @@ export const mockTweetApi = {
   async create(payload: CreateTweetRequest): Promise<Tweet> {
     await delay(300);
 
-    const attachments = payload.media.flatMap((item) => {
-      if (item.type === "gif") {
-        return [
-          {
-            id: crypto.randomUUID(),
-            type: "gif" as const,
-            url: item.url!,
-            thumbnailUrl: item.url!,
-          },
-        ];
-      }
-
-      if (!item.attachmentId) return [];
-
-      return mediaStore.getMany([item.attachmentId]);
-    });
+    const attachments = mediaStore.getMany(payload.mediaIds);
 
     const poll: TweetPoll | undefined = payload.poll
       ? {

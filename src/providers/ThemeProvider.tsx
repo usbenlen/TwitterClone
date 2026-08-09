@@ -24,8 +24,13 @@ function getInitialTheme(): Theme {
   const stored = localStorage.getItem(STORAGE_KEY) as Theme | null;
   if (stored && THEMES.includes(stored)) return stored;
 
-  const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-  return prefersDark ? "dark" : "light";
+  return "system";
+}
+
+function getSystemTheme(): "light" | "dark" {
+  return window.matchMedia("(prefers-color-scheme: dark)").matches
+    ? "dark"
+    : "light";
 }
 
 interface ThemeProviderProps {
@@ -36,9 +41,28 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
   const [theme, setThemeState] = useState<Theme>(getInitialTheme);
 
   useEffect(() => {
-    document.documentElement.setAttribute("data-theme", theme);
+    const applyTheme = () => {
+      const actualTheme = theme === "system" ? getSystemTheme() : theme;
+      document.documentElement.setAttribute("data-theme", actualTheme);
+    };
+
+    applyTheme();
 
     localStorage.setItem(STORAGE_KEY, theme);
+
+    if (theme !== "system") return;
+
+    const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+
+    const handleChange = () => {
+      applyTheme();
+    };
+
+    mediaQuery.addEventListener("change", handleChange);
+
+    return () => {
+      mediaQuery.removeEventListener("change", handleChange);
+    };
   }, [theme]);
 
   const setTheme = useCallback((nextTheme: Theme) => {
@@ -46,7 +70,12 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
   }, []);
 
   const toggleTheme = useCallback(() => {
-    setThemeState((current) => (current === "dark" ? "light" : "dark"));
+    setThemeState((current) => {
+      if (current === "dark") return "light";
+      if (current === "light") return "dark";
+
+      return getSystemTheme() === "dark" ? "light" : "dark";
+    });
   }, []);
 
   return (

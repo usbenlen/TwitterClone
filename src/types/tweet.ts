@@ -25,7 +25,7 @@ export interface CreateTweetMedia {
 
 export interface CreateTweetRequest {
   content: string;
-  media: CreateTweetMedia[];
+  mediaIds: string[];
   embed?: Embed | null;
   poll?: {
     options: string[];

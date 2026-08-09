@@ -1,7 +1,6 @@
 /** @format */
 
-import { MAIN_NAVIGATION } from "@/constants/navigation";
-import { useAuth } from "@/hooks/useAuth";
+import { useNavigation } from "@/hooks/useNavigation";
 import { MobileSidebarItem } from "@/components/layout/mobile";
 
 interface MobileSidebarNavigationProps {
@@ -11,19 +10,21 @@ interface MobileSidebarNavigationProps {
 export default function MobileDrawerNavigation({
   onNavigate,
 }: MobileSidebarNavigationProps) {
-  const { user } = useAuth();
+  
+  const navigation = useNavigation();
+  const moreItems = navigation.filter((item) =>
+    item.mobilePlacement?.includes("more"),
+  );
 
   return (
-    <nav className="flex flex-col gap-1 px-2 py-4">
-      {MAIN_NAVIGATION.map((item) => {
-        if (item.requiresAuth && !user) return null;
-
+    <nav className="space-y-1">
+      {moreItems.map((item) => {
         const Icon = item.icon;
 
         return (
           <MobileSidebarItem
             key={item.label}
-            to={item.getPath(user)}
+            to={item.to}
             icon={<Icon />}
             onClick={onNavigate}
           >

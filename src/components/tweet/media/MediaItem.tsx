@@ -97,7 +97,7 @@ export default function MediaItem({
           />
 
           {openOnClick && (
-            <div className="absolute bottom-2 left-2 rounded-md bg-black/70 px-2 py-1 text-xs font-medium text-white backdrop-blur">
+            <div className="z-10 absolute bottom-2 left-2 rounded-md bg-black/70 px-2 py-1 text-xs font-medium text-white backdrop-blur">
               {formatTime(remainingTime)}
             </div>
           )}

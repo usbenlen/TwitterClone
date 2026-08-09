@@ -22,7 +22,7 @@ export default function LocationPicker({
   onSelect,
 }: LocationPickerProps) {
   return (
-    <div className="flex w-80 flex-col">
+    <div className="w-full min-w-0 flex flex-col">
       <input
         autoFocus
         value={query}

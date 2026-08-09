@@ -92,6 +92,15 @@ export default function LoginPage() {
           {...register("password")}
         />
 
+        <div className="flex justify-end">
+          <Link
+            to={APP_ROUTES.forgotPassword()}
+            className="text-sm text-muted-foreground transition-colors hover:text-foreground hover:underline font-semibold"
+          >
+            Забули пароль?
+          </Link>
+        </div>
+
         <Button type="submit" size="lg" fullWidth isLoading={isSubmitting}>
           Увійти
         </Button>

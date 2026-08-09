@@ -2,13 +2,17 @@
 
 import type { User } from "@/types/user";
 
+import { locations } from "@/mock/data/locations";
+
 export const currentUser: User = {
   id: "u1",
   username: "dev_user",
   displayName: "Розробник",
   email: "dev@example.com",
   bio: "Пишу клон Twitter на React + ASP.NET.",
+  location: locations[0],
   avatarUrl: undefined,
+  bannerUrl: undefined,
   followersCount: 128,
   followingCount: 87,
   createdAt: "2024-03-01T00:00:00Z",
@@ -16,6 +20,7 @@ export const currentUser: User = {
 
 export const sampleAuthors: User[] = [
   currentUser,
+
   {
     id: "u2",
     username: "ada",
@@ -25,6 +30,7 @@ export const sampleAuthors: User[] = [
     followingCount: 12,
     createdAt: "2023-01-01T00:00:00Z",
   },
+
   {
     id: "u3",
     username: "linus",
