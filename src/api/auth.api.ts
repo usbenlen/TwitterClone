@@ -21,6 +21,34 @@ const realAuthApi = {
 
   // Отримання поточного користувача за збереженим токеном
   me: () => apiClient.get<User>(ENDPOINTS.auth.me),
+
+  forgotPassword: (email: string) =>
+    apiClient.post(
+      ENDPOINTS.auth.forgotPassword,
+      { email },
+      { skipAuth: true },
+    ),
+
+  verifyResetCode: (email: string, code: string) =>
+    apiClient.post(
+      ENDPOINTS.auth.verifyResetCode,
+      {
+        email,
+        code,
+      },
+      { skipAuth: true },
+    ),
+
+  resetPassword: (email: string, code: string, password: string) =>
+    apiClient.post(
+      ENDPOINTS.auth.resetPassword,
+      {
+        email,
+        code,
+        password,
+      },
+      { skipAuth: true },
+    ),
 };
 
 export const authApi = MOCK_ENABLED ? mockAuthApi : realAuthApi;

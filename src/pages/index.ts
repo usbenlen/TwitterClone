@@ -2,6 +2,9 @@
 
 export { default as LoginPage } from "@/pages/auth/LoginPage";
 export { default as RegisterPage } from "@/pages/auth/RegisterPage";
+export { default as ForgotPasswordPage } from "@/pages/auth/ForgotPasswordPage";
+export { default as VerifyResetCodePage } from "@/pages/auth/VerifyResetCodePage";
+export { default as ResetPasswordPage } from "@/pages/auth/ResetPasswordPage";
 
 export { default as HomePage } from "@/pages/home/HomePage";
 

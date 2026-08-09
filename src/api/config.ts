@@ -26,6 +26,10 @@ export const ENDPOINTS = {
     refresh: "auth/refresh",
     logout: "auth/logout",
     me: "auth/me",
+
+    forgotPassword: "auth/forgot-password",
+    verifyResetCode: "auth/verify-reset-code",
+    resetPassword: "auth/reset-password",
   },
   users: {
     byUsername: (username: string) => `users/${username}`,

@@ -45,4 +45,20 @@ export const mockAuthApi = {
     await delay(200);
     return currentUser;
   },
+
+  async forgotPassword(_email: string): Promise<void> {
+    await delay(150);
+  },
+
+  async verifyResetCode(_email: string, _code: string): Promise<void> {
+    await delay(150);
+  },
+
+  async resetPassword(
+    _email: string,
+    _code: string,
+    _password: string,
+  ): Promise<void> {
+    await delay(150);
+  },
 };
