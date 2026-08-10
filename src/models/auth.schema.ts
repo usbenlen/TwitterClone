@@ -1,5 +1,8 @@
 /** @format */
+
 import { z } from "zod";
+
+import { AUTH_LIMITS, MAX_NAME_LENGTH } from "@/constants/app";
 
 /*
  * Схеми валідації форм. Повідомлення українською.
@@ -15,17 +18,32 @@ export const registerSchema = z.object({
   displayName: z
     .string()
     .min(1, "Введіть ім'я")
-    .max(50, "Максимум 50 символів"),
+    .max(MAX_NAME_LENGTH, `Максимум ${MAX_NAME_LENGTH} символів`),
+
   username: z
     .string()
-    .min(3, "Мінімум 3 символи")
-    .max(20, "Максимум 20 символів")
+    .min(
+      AUTH_LIMITS.USERNAME_MIN_LENGTH,
+      `Мінімум ${AUTH_LIMITS.USERNAME_MIN_LENGTH} символи`,
+    )
+    .max(
+      AUTH_LIMITS.USERNAME_MAX_LENGTH,
+      `Максимум ${AUTH_LIMITS.USERNAME_MAX_LENGTH} символів`,
+    )
     .regex(/^[a-zA-Z0-9_]+$/, "Лише літери, цифри та _"),
+
   email: z.string().min(1, "Введіть email").email("Некоректний email"),
+
   password: z
     .string()
-    .min(6, "Мінімум 6 символів")
-    .max(100, "Максимум 100 символів"),
+    .min(
+      AUTH_LIMITS.PASSWORD_MIN_LENGTH,
+      `Мінімум ${AUTH_LIMITS.PASSWORD_MIN_LENGTH} символів`,
+    )
+    .max(
+      AUTH_LIMITS.PASSWORD_MAX_LENGTH,
+      `Максимум ${AUTH_LIMITS.PASSWORD_MAX_LENGTH} символів`,
+    ),
 });
 
 export type LoginFormValues = z.infer<typeof loginSchema>;
