@@ -1,0 +1,78 @@
+/** @format */
+import { Repeat2, MessageCircle } from "lucide-react";
+import { HeartIcon } from "@/shared/icons";
+
+import { cn } from "@/utils/cn";
+import { formatCount } from "@/utils/format";
+
+interface TweetActionsProps {
+  likedByMe: boolean;
+  likesCount: number;
+  repostedByMe: boolean;
+
+  repliesCount: number;
+  retweetsCount: number;
+
+  onComment: () => void;
+  onRepost: () => void;
+  onLike: () => void;
+}
+
+export default function TweetActions({
+  likedByMe,
+  likesCount,
+  repostedByMe,
+  repliesCount,
+  retweetsCount,
+  onComment,
+  onRepost,
+  onLike,
+}: TweetActionsProps) {
+  return (
+    <div className="mt-3 flex w-full items-center justify-between text-muted-foreground">
+      <button
+        type="button"
+        onClick={onComment}
+        className="flex min-w-0 items-center justify-center gap-2 rounded-full p-2 transition-colors hover:text-primary"
+      >
+        <MessageCircle size={18} />
+
+        {repliesCount > 0 && (
+          <span className="text-sm">{formatCount(repliesCount)}</span>
+        )}
+      </button>
+
+      <button
+        type="button"
+        onClick={onRepost}
+        aria-pressed={repostedByMe}
+        className={cn(
+          "flex min-w-0 items-center justify-center gap-2 rounded-full p-2 transition-colors hover:text-emerald-500",
+          repostedByMe && "text-emerald-500",
+        )}
+      >
+        <Repeat2 size={18} />
+
+        {retweetsCount > 0 && (
+          <span className="text-sm">{formatCount(retweetsCount)}</span>
+        )}
+      </button>
+
+      <button
+        type="button"
+        onClick={onLike}
+        aria-pressed={likedByMe}
+        className={cn(
+          "flex min-w-0 items-center justify-center gap-2 rounded-full p-2 transition-colors hover:text-rose-500",
+          likedByMe && "text-rose-500",
+        )}
+      >
+        <HeartIcon size={18} filled={likedByMe} />
+
+        {likesCount > 0 && (
+          <span className="text-sm">{formatCount(likesCount)}</span>
+        )}
+      </button>
+    </div>
+  );
+}
