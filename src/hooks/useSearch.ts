@@ -3,11 +3,9 @@
 import { useEffect, useState } from "react";
 
 import { searchApi } from "@/api";
-import { mapPostToTweet } from "@/api/mappers/post.mapper";
+import { SEARCH_DEBOUNCE_MS } from "@/constants/app";
 
 import type { Tweet, UserShort } from "@/types";
-
-const SEARCH_DEBOUNCE = 350;
 
 export function useSearch(query: string) {
   const [users, setUsers] = useState<UserShort[]>([]);
@@ -41,7 +39,7 @@ export function useSearch(query: string) {
         if (!active) return;
 
         setUsers(userResults);
-        setPosts(postResults.map(mapPostToTweet));
+        setPosts(postResults);
       } catch (error) {
         if (!active) return;
 
@@ -52,11 +50,9 @@ export function useSearch(query: string) {
           error instanceof Error ? error.message : "Не вдалося виконати пошук.",
         );
       } finally {
-        if (active) {
-          setIsLoading(false);
-        }
+        if (active) setIsLoading(false);
       }
-    }, SEARCH_DEBOUNCE);
+    }, SEARCH_DEBOUNCE_MS);
 
     return () => {
       active = false;

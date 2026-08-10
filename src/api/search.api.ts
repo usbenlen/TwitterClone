@@ -3,8 +3,9 @@
 import { ENDPOINTS } from "@/api/config";
 import { apiClient } from "@/api/client";
 
-import type { BackendPost } from "@/api/mappers/post.mapper";
-import type { UserShort } from "@/types/user";
+import { mapPostToTweet, type BackendPost } from "@/api/mappers/post.mapper";
+
+import type { Tweet, UserShort } from "@/types";
 
 import { MOCK_ENABLED } from "@/mock/config";
 import { mockSearchApi } from "@/mock/handlers";
@@ -16,11 +17,11 @@ const realSearchApi = {
     ),
 
   posts: (query: string) =>
-    apiClient.get<BackendPost[]>(
-      `${ENDPOINTS.search.posts}?q=${encodeURIComponent(query)}`,
-    ),
+    apiClient
+      .get<
+        BackendPost[]
+      >(`${ENDPOINTS.search.posts}?q=${encodeURIComponent(query)}`)
+      .then((posts): Tweet[] => posts.map(mapPostToTweet)),
 };
 
 export const searchApi = MOCK_ENABLED ? mockSearchApi : realSearchApi;
-
-//Наступним кроком я б зробив навігацію з результату пошуку: клік по користувачу → /profile/:username, клік по допису → сторінка/модалка конкретного допису. Це вже буде завершувати весь search flow.
