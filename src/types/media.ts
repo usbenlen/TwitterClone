@@ -11,14 +11,3 @@ export interface MediaAttachment {
   sizeInBytes?: number;
   mimeType?: string;
 }
-
-// export interface MediaAttachment {
-//   id: string;
-//   type: "image" | "video" | "gif" | "embed";
-//   url: string;
-
-//   fileName?: string;
-//   contentType?: string;
-//   sizeInBytes?: number;
-//   sortOrder?: number;
-// }
