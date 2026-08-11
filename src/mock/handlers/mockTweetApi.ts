@@ -14,6 +14,11 @@ export const mockTweetApi = {
     return [...tweets];
   },
 
+  async getBookmarked(): Promise<Tweet[]> {
+    await delay();
+    return tweets.filter((t) => t.bookmarkedByMe);
+  },
+
   async getById(id: string): Promise<Tweet> {
     await delay();
 

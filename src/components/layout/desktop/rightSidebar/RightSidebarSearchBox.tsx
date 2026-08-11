@@ -44,7 +44,7 @@ export default function RightSidebarSearchBox() {
           <button
             type="button"
             onClick={clearSearch}
-            className="flex size-6 shrink-0 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-background hover:text-foreground"
+            className="flex size-6 shrink-0 items-center justify-center rounded-full text-muted-foreground transition-colors hover:text-foreground cursor-pointer"
             aria-label="Очистити пошук"
           >
             <X size={15} />

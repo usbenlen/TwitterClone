@@ -2,10 +2,9 @@
 
 import { useMemo, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router";
-import { Search } from "lucide-react";
 
-import SearchPostResult from "@/components/search/SearchPostResult";
 import SearchUserResult from "@/components/search/SearchUserResult";
+import { TweetCard } from "@/components/tweet";
 
 import { useSearch } from "@/hooks/useSearch";
 import { APP_ROUTES } from "@/constants/routes";
@@ -29,18 +28,13 @@ export default function SearchPage() {
 
   const query = searchParams.get("q") ?? "";
   const activeType = normalizeSearchType(searchParams.get("type"));
-  const [draftQuery, setDraftQuery] = useState(query);
+  const [draftQuery] = useState(query);
 
   const { users, posts, isLoading, error } = useSearch(query);
 
   const hasQuery = query.trim().length > 0;
   const activeResultsCount =
     activeType === "posts" ? posts.length : users.length;
-
-  const submitSearch = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    navigate(APP_ROUTES.search(draftQuery, activeType));
-  };
 
   const switchType = (type: SearchType) => {
     navigate(APP_ROUTES.search(query || draftQuery, type));
@@ -56,21 +50,6 @@ export default function SearchPage() {
     <section className="w-full max-w-3xl border-r border-border bg-background">
       <header className="sticky top-0 z-10 border-b border-border bg-background/80 px-4 py-4 backdrop-blur">
         <h1 className="text-xl font-bold text-foreground">Пошук</h1>
-
-        <form
-          onSubmit={submitSearch}
-          className="mt-4 flex items-center gap-2 rounded-full bg-muted px-4 py-2.5"
-        >
-          <Search size={18} className="shrink-0 text-muted-foreground" />
-
-          <input
-            type="text"
-            value={draftQuery}
-            onChange={(event) => setDraftQuery(event.target.value)}
-            placeholder="Пошук"
-            className="min-w-0 flex-1 bg-transparent text-sm outline-none placeholder:text-muted-foreground"
-          />
-        </form>
 
         <div className="mt-4 grid grid-cols-2 rounded-full bg-muted p-1">
           {SEARCH_TYPES.map((type) => (
@@ -106,10 +85,9 @@ export default function SearchPage() {
       ) : activeType === "posts" ? (
         <div className="divide-y divide-border">
           {posts.map((tweet) => (
-            <SearchPostResult
+            <TweetCard
               key={tweet.id}
               tweet={tweet}
-              onClick={() => navigate(APP_ROUTES.post(tweet.id))}
             />
           ))}
         </div>

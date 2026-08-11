@@ -19,6 +19,7 @@ import {
   SettingsPage,
   ChangePasswordPage,
   SearchPage,
+  BookmarksPage,
 } from "@/pages";
 
 import { APP_ROUTES } from "@/constants/routes";
@@ -42,6 +43,10 @@ export const routes = createBrowserRouter([
           {
             path: APP_ROUTES.SEARCH,
             element: <SearchPage />,
+          },
+          {
+            path: APP_ROUTES.BOOKMARKS,
+            element: <BookmarksPage />,
           },
           {
             path: APP_ROUTES.PROFILE,

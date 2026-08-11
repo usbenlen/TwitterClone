@@ -37,7 +37,7 @@ export default function SearchUserResult({
             <CheckCircle
               size={15}
               className="shrink-0 text-primary"
-              fill="currentColor"
+              fill="white"
             />
           )}
         </div>

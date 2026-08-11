@@ -16,11 +16,13 @@ import { Avatar } from "@/ui";
 
 import type { Tweet } from "@/types/tweet";
 
+import { useState } from "react";
 import { useTweetLike } from "@/hooks/useTweetLike";
 import { useTweetRepost } from "@/hooks/useTweetRepost";
 import { useTweetBookmark } from "@/hooks/useTweetBookmark";
 import { useTweetComments } from "@/hooks/useTweetComments";
 import { APP_ROUTES } from "@/constants/routes";
+import { CommentModal } from "@/components/modal";
 
 interface TweetCardProps {
   tweet: Tweet;
@@ -34,13 +36,14 @@ export default function TweetCard({
   commentsInitiallyOpen = false,
 }: TweetCardProps) {
   const navigate = useNavigate();
+  const [isCommentModalOpen, setIsCommentModalOpen] = useState(false);
   const like = useTweetLike(tweet);
   const repost = useTweetRepost(tweet);
   const bookmark = useTweetBookmark(tweet);
   const comments = useTweetComments(
     tweet.id,
     tweet.repliesCount,
-    commentsInitiallyOpen,
+    commentsInitiallyOpen || !navigateToPost,
   );
 
   const handleCardClick = (event: React.MouseEvent<HTMLElement>) => {
@@ -99,14 +102,14 @@ export default function TweetCard({
           viewsCount={tweet.viewsCount}
           bookmarkedByMe={bookmark.bookmarkedByMe}
           onComment={() => {
-            void comments.toggleOpen();
+            setIsCommentModalOpen(true);
           }}
           onRepost={repost.toggleRepost}
           onLike={like.toggleLike}
           onBookmark={bookmark.toggleBookmark}
         />
 
-        {comments.open && (
+        {!navigateToPost && comments.open && (
           <TweetComments
             comments={comments.comments}
             isLoading={comments.isLoading}
@@ -116,6 +119,14 @@ export default function TweetCard({
             onDelete={comments.deleteComment}
           />
         )}
+
+        <CommentModal
+          open={isCommentModalOpen}
+          tweet={tweet}
+          onClose={() => setIsCommentModalOpen(false)}
+          onSubmit={comments.createComment}
+          isSubmitting={comments.isSubmitting}
+        />
       </div>
     </article>
   );

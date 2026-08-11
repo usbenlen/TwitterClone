@@ -10,6 +10,7 @@ export const APP_ROUTES = {
   RESET_PASSWORD: "/reset-password",
   POST: "/post/:postId",
   SEARCH: "/search",
+  BOOKMARKS: "/bookmarks",
 
   PROFILE: "/:username",
   FOLLOWING: "/:username/following",
