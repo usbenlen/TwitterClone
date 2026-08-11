@@ -9,6 +9,7 @@ export const APP_ROUTES = {
   VERIFY_RESET_CODE: "/verify-reset-code",
   RESET_PASSWORD: "/reset-password",
   POST: "/post/:postId",
+  SEARCH: "/search",
 
   PROFILE: "/:username",
   FOLLOWING: "/:username/following",
@@ -24,6 +25,14 @@ export const APP_ROUTES = {
   following: (username: string) => `/${username}/following`,
   followers: (username: string) => `/${username}/followers`,
   post: (postId: string) => `/post/${postId}`,
+  search: (query = "", type: "posts" | "users" = "posts") => {
+    const params = new URLSearchParams();
+
+    if (query.trim()) params.set("q", query.trim());
+    params.set("type", type);
+
+    return `/search?${params.toString()}`;
+  },
 
   forgotPassword: () => "/forgot-password",
   verifyResetCode: () => "/verify-reset-code",

@@ -26,16 +26,18 @@ export default function TweetMedia({ attachments }: Props) {
 
   return (
     <>
-      <MediaGrid
-        items={safeAttachments}
-        renderItem={(safeAttachment, index) => (
-          <MediaItem
-            attachment={safeAttachment}
-            onOpen={() => handleOpen(index)}
-            openOnClick={!isSingleVideo}
-          />
-        )}
-      />
+      <div data-tweet-interactive="true">
+        <MediaGrid
+          items={safeAttachments}
+          renderItem={(safeAttachment, index) => (
+            <MediaItem
+              attachment={safeAttachment}
+              onOpen={() => handleOpen(index)}
+              openOnClick={!isSingleVideo}
+            />
+          )}
+        />
+      </div>
 
       {!isSingleVideo && (
         <MediaViewer

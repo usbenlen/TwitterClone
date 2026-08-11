@@ -15,6 +15,7 @@ export let tweets: Tweet[] = [
     viewsCount: 52,
     likedByMe: false,
     repostedByMe: true,
+    bookmarkedByMe: false,
     createdAt: new Date(Date.now() - 1000 * 60 * 12).toISOString(),
   },
   {
@@ -28,6 +29,7 @@ export let tweets: Tweet[] = [
     viewsCount: 52,
     likedByMe: true,
     repostedByMe: false,
+    bookmarkedByMe: true,
     createdAt: new Date(Date.now() - 1000 * 60 * 60 * 2).toISOString(),
   },
   {
@@ -41,6 +43,7 @@ export let tweets: Tweet[] = [
     viewsCount: 52,
     likedByMe: false,
     repostedByMe: false,
+    bookmarkedByMe: false,
     createdAt: new Date(Date.now() - 1000 * 60 * 60 * 26).toISOString(),
   },
 ];

@@ -59,6 +59,8 @@ export const ENDPOINTS = {
     unlike: (id: string) => `posts/${id}/like`,
     repost: (id: string) => `posts/${id}/repost`,
     unrepost: (id: string) => `posts/${id}/repost`,
+    bookmark: (id: string) => `posts/${id}/bookmark`,
+    unbookmark: (id: string) => `posts/${id}/bookmark`,
   },
   comments: {
     byPost: (postId: string) => `comments/post/${postId}`,

@@ -18,6 +18,7 @@ import type { Tweet } from "@/types/tweet";
 
 import { useTweetLike } from "@/hooks/useTweetLike";
 import { useTweetRepost } from "@/hooks/useTweetRepost";
+import { useTweetBookmark } from "@/hooks/useTweetBookmark";
 import { useTweetComments } from "@/hooks/useTweetComments";
 import { APP_ROUTES } from "@/constants/routes";
 
@@ -35,6 +36,7 @@ export default function TweetCard({
   const navigate = useNavigate();
   const like = useTweetLike(tweet);
   const repost = useTweetRepost(tweet);
+  const bookmark = useTweetBookmark(tweet);
   const comments = useTweetComments(
     tweet.id,
     tweet.repliesCount,
@@ -46,7 +48,13 @@ export default function TweetCard({
 
     const target = event.target as HTMLElement;
 
-    if (target.closest("button, a, textarea, input, video")) return;
+    if (
+      target.closest(
+        'button, a, textarea, input, video, [data-tweet-interactive="true"]',
+      )
+    ) {
+      return;
+    }
 
     navigate(APP_ROUTES.post(tweet.id));
   };
@@ -88,11 +96,14 @@ export default function TweetCard({
           repostedByMe={repost.repostedByMe}
           repliesCount={comments.commentsCount}
           retweetsCount={repost.repostsCount}
+          viewsCount={tweet.viewsCount}
+          bookmarkedByMe={bookmark.bookmarkedByMe}
           onComment={() => {
             void comments.toggleOpen();
           }}
           onRepost={repost.toggleRepost}
           onLike={like.toggleLike}
+          onBookmark={bookmark.toggleBookmark}
         />
 
         {comments.open && (

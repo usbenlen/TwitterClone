@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 
 import { locationApi } from "@/api/location.api";
+import { LOCATION_SEARCH_DEBOUNCE_MS } from "@/constants/app";
 
 import type { Location } from "@/types/location";
 
@@ -40,7 +41,7 @@ export function useLocationSearch() {
       } finally {
         if (!cancelled) setLoading(false);
       }
-    }, 200);
+    }, LOCATION_SEARCH_DEBOUNCE_MS);
 
     return () => {
       cancelled = true;

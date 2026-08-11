@@ -21,6 +21,7 @@ export interface Tweet {
 
   likedByMe: boolean;
   repostedByMe: boolean;
+  bookmarkedByMe: boolean;
 
   createdAt: string;
   updatedAt?: string | null;

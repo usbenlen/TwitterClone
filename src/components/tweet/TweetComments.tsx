@@ -65,80 +65,90 @@ function CommentList({
   depth = 0,
 }: CommentListProps) {
   return (
-    <div className={depth === 0 ? "space-y-4" : "mt-3 space-y-3"}>
+    <div className={depth === 0 ? "divide-y divide-border" : "space-y-3"}>
       {comments.map((comment) => {
         const isOwnComment = currentUserId === comment.author.id;
         const replies = repliesByParentId.get(comment.id) ?? [];
+        const displayName =
+          comment.author.displayName?.trim() || comment.author.username;
 
         return (
           <article
             key={comment.id}
-            className="flex gap-3 rounded-2xl bg-muted/40 p-3"
+            className={depth === 0 ? "py-4 first:pt-0 last:pb-0" : ""}
           >
-            <Avatar
-              name={comment.author.displayName}
-              fallbackName={comment.author.username}
-              src={comment.author.avatarUrl}
-              className="size-10"
-            />
+            <div className="grid grid-cols-[36px_minmax(0,1fr)] gap-3">
+              <div className="flex flex-col items-center">
+                <Avatar
+                  name={displayName}
+                  fallbackName={comment.author.username}
+                  src={comment.author.avatarUrl}
+                  className="size-9"
+                />
 
-            <div className="min-w-0 flex-1">
-              <div className="flex items-start justify-between gap-3">
-                <div className="min-w-0">
-                  <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
-                    <span className="font-semibold text-foreground">
-                      {comment.author.displayName}
-                    </span>
-                    <span className="text-sm text-muted-foreground">
-                      @{comment.author.username}
-                    </span>
-                    <span className="text-sm text-muted-foreground">
-                      · {formatRelativeTime(comment.createdAt)}
-                    </span>
-                  </div>
-                </div>
-
-                {isOwnComment && (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      void onDelete(comment.id);
-                    }}
-                    className="rounded-full p-2 text-muted-foreground transition-colors hover:bg-background hover:text-destructive"
-                    aria-label="Видалити коментар"
-                  >
-                    <Trash2 className="size-4" />
-                  </button>
+                {replies.length > 0 && (
+                  <div className="mt-2 w-px flex-1 bg-border" />
                 )}
               </div>
 
-              <p className="mt-2 whitespace-pre-wrap break-words text-sm text-foreground">
-                {comment.content}
-              </p>
+              <div className="min-w-0">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="min-w-0">
+                    <div className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1">
+                      <span className="truncate font-semibold text-foreground">
+                        {displayName}
+                      </span>
 
-              <div className="mt-3">
+                      <span className="truncate text-sm text-muted-foreground">
+                        @{comment.author.username}
+                      </span>
+
+                      <span className="text-sm text-muted-foreground">
+                        · {formatRelativeTime(comment.createdAt)}
+                      </span>
+                    </div>
+
+                    <p className="mt-1 whitespace-pre-wrap break-words text-[15px] leading-6 text-foreground">
+                      {comment.content}
+                    </p>
+                  </div>
+
+                  {isOwnComment && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        void onDelete(comment.id);
+                      }}
+                      className="rounded-full p-2 text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive"
+                      aria-label="Видалити коментар"
+                    >
+                      <Trash2 className="size-4" />
+                    </button>
+                  )}
+                </div>
+
                 <button
                   type="button"
                   onClick={() => onReply(comment)}
-                  className="inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-xs font-semibold text-muted-foreground transition-colors hover:bg-background hover:text-foreground"
+                  className="mt-2 inline-flex items-center gap-2 rounded-full py-1 pr-3 text-xs font-semibold text-muted-foreground transition-colors hover:text-primary"
                 >
                   <MessageCircleReply className="size-4" />
                   Відповісти
                 </button>
-              </div>
 
-              {replies.length > 0 && (
-                <div className="mt-3 border-l border-border/80 pl-4">
-                  <CommentList
-                    comments={replies}
-                    repliesByParentId={repliesByParentId}
-                    currentUserId={currentUserId}
-                    onReply={onReply}
-                    onDelete={onDelete}
-                    depth={depth + 1}
-                  />
-                </div>
-              )}
+                {replies.length > 0 && (
+                  <div className="mt-3">
+                    <CommentList
+                      comments={replies}
+                      repliesByParentId={repliesByParentId}
+                      currentUserId={currentUserId}
+                      onReply={onReply}
+                      onDelete={onDelete}
+                      depth={depth + 1}
+                    />
+                  </div>
+                )}
+              </div>
             </div>
           </article>
         );
@@ -183,8 +193,11 @@ export default function TweetComments({
   };
 
   return (
-    <div className="mt-4 border-t border-border pt-4">
-      <form onSubmit={handleSubmit} className="flex gap-3">
+    <section
+      className="mt-4 border-t border-border pt-4"
+      data-tweet-interactive="true"
+    >
+      <form onSubmit={handleSubmit} className="grid grid-cols-[40px_1fr] gap-3">
         <Avatar
           name={user?.displayName}
           fallbackName={user?.username}
@@ -192,9 +205,9 @@ export default function TweetComments({
           className="size-10"
         />
 
-        <div className="flex-1 space-y-3">
+        <div className="min-w-0">
           {replyTarget && (
-            <div className="flex items-center justify-between rounded-2xl bg-muted/50 px-4 py-3 text-sm">
+            <div className="mb-3 flex items-center justify-between gap-3 rounded-2xl border border-border bg-muted/40 px-4 py-2 text-sm">
               <span className="min-w-0 truncate text-muted-foreground">
                 Відповідь для{" "}
                 <span className="font-semibold text-foreground">
@@ -221,17 +234,11 @@ export default function TweetComments({
                 ? `Ваша відповідь для @${replyTarget.author.username}...`
                 : "Напишіть коментар..."
             }
-            rows={3}
-            className="min-h-24 w-full resize-none rounded-2xl border border-border bg-background px-4 py-3 text-sm text-foreground outline-none transition-colors placeholder:text-muted-foreground focus:border-primary"
+            rows={2}
+            className="min-h-20 w-full resize-none border-0 bg-transparent py-2 text-[15px] text-foreground outline-none placeholder:text-muted-foreground"
           />
 
-          <div className="flex items-center justify-between gap-3">
-            <div className="text-xs text-muted-foreground">
-              {replyTarget
-                ? "Відповідь буде прикріплена до обраного коментаря."
-                : "Ваш коментар буде видимий під цим постом."}
-            </div>
-
+          <div className="flex items-center justify-end border-t border-border pt-3">
             <Button
               type="submit"
               size="sm"
@@ -245,18 +252,18 @@ export default function TweetComments({
       </form>
 
       {error && (
-        <p className="mt-3 rounded-xl bg-destructive/10 px-4 py-3 text-sm text-destructive">
+        <p className="mt-4 rounded-2xl bg-destructive/10 px-4 py-3 text-sm text-destructive">
           {error}
         </p>
       )}
 
-      <div className="mt-4">
+      <div className="mt-5">
         {isLoading ? (
           <p className="text-sm text-muted-foreground">
             Завантаження коментарів...
           </p>
         ) : comments.length === 0 ? (
-          <p className="text-sm text-muted-foreground">
+          <p className="rounded-2xl border border-dashed border-border px-4 py-6 text-center text-sm text-muted-foreground">
             Поки що немає коментарів. Будьте першим.
           </p>
         ) : (
@@ -269,6 +276,6 @@ export default function TweetComments({
           />
         )}
       </div>
-    </div>
+    </section>
   );
 }

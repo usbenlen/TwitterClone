@@ -17,6 +17,11 @@ type ToggleRepostResponse = {
   repostsCount: number;
 };
 
+type ToggleBookmarkResponse = {
+  bookmarkedByMe?: boolean;
+  isBookmarkedByCurrentUser?: boolean;
+};
+
 const realTweetApi = {
   getAll: async () => {
     const posts = await apiClient.get<BackendPost[]>(ENDPOINTS.posts.all);
@@ -88,6 +93,14 @@ const realTweetApi = {
     apiClient.post<ToggleRepostResponse>(ENDPOINTS.posts.repost(id)),
   unrepost: (id: string) =>
     apiClient.delete<ToggleRepostResponse>(ENDPOINTS.posts.unrepost(id)),
+  bookmark: (id: string) =>
+    apiClient.post<ToggleBookmarkResponse | undefined>(
+      ENDPOINTS.posts.bookmark(id),
+    ),
+  unbookmark: (id: string) =>
+    apiClient.delete<ToggleBookmarkResponse | undefined>(
+      ENDPOINTS.posts.unbookmark(id),
+    ),
 
   toggleLike: (id: string, likedByMe: boolean): Promise<ToggleLikeResponse> => {
     if (likedByMe) return realTweetApi.unlike(id);
@@ -100,6 +113,14 @@ const realTweetApi = {
   ): Promise<ToggleRepostResponse> => {
     if (repostedByMe) return realTweetApi.unrepost(id);
     return realTweetApi.repost(id);
+  },
+
+  toggleBookmark: (
+    id: string,
+    bookmarkedByMe: boolean,
+  ): Promise<ToggleBookmarkResponse | undefined> => {
+    if (bookmarkedByMe) return realTweetApi.unbookmark(id);
+    return realTweetApi.bookmark(id);
   },
 };
 

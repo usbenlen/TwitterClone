@@ -56,6 +56,8 @@ export interface BackendPost {
 
   isLikedByCurrentUser: boolean;
   isRepostedByCurrentUser?: boolean;
+  isBookmarkedByCurrentUser?: boolean;
+  bookmarkedByMe?: boolean;
 
   createdAt: string;
   updatedAt?: string | null;
@@ -144,6 +146,8 @@ export const mapPostToTweet = (post: BackendPost): Tweet => {
 
     likedByMe: post.isLikedByCurrentUser,
     repostedByMe: post.isRepostedByCurrentUser ?? false,
+    bookmarkedByMe:
+      post.isBookmarkedByCurrentUser ?? post.bookmarkedByMe ?? false,
 
     createdAt: post.createdAt,
     updatedAt: post.updatedAt ?? null,

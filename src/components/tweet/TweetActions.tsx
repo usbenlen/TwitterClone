@@ -1,5 +1,5 @@
 /** @format */
-import { Repeat2, MessageCircle } from "lucide-react";
+import { Bookmark, Eye, MessageCircle, Repeat2 } from "lucide-react";
 import { HeartIcon } from "@/shared/icons";
 
 import { cn } from "@/utils/cn";
@@ -12,10 +12,13 @@ interface TweetActionsProps {
 
   repliesCount: number;
   retweetsCount: number;
+  viewsCount: number;
+  bookmarkedByMe: boolean;
 
   onComment: () => void;
   onRepost: () => void;
   onLike: () => void;
+  onBookmark: () => void;
 }
 
 export default function TweetActions({
@@ -24,12 +27,15 @@ export default function TweetActions({
   repostedByMe,
   repliesCount,
   retweetsCount,
+  viewsCount,
+  bookmarkedByMe,
   onComment,
   onRepost,
   onLike,
+  onBookmark,
 }: TweetActionsProps) {
   return (
-    <div className="mt-3 flex w-full items-center justify-between text-muted-foreground">
+    <div className="mt-3 flex w-full items-center gap-4 text-muted-foreground">
       <button
         type="button"
         onClick={onComment}
@@ -73,6 +79,33 @@ export default function TweetActions({
           <span className="text-sm">{formatCount(likesCount)}</span>
         )}
       </button>
+
+      <div className="ml-auto flex items-center gap-1">
+        <div
+          className="flex min-w-0 items-center justify-center gap-2 rounded-full p-2"
+          title="Views"
+          aria-label={`${viewsCount} views`}
+        >
+          <Eye size={18} />
+
+          <span className="text-sm">{formatCount(viewsCount)}</span>
+        </div>
+
+        <button
+          type="button"
+          onClick={onBookmark}
+          aria-pressed={bookmarkedByMe}
+          className={cn(
+            "flex min-w-0 items-center justify-center gap-2 rounded-full p-2 transition-colors hover:text-primary",
+            bookmarkedByMe && "text-primary",
+          )}
+        >
+          <Bookmark
+            size={18}
+            fill={bookmarkedByMe ? "currentColor" : "none"}
+          />
+        </button>
+      </div>
     </div>
   );
 }

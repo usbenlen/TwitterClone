@@ -9,6 +9,8 @@ import { TweetCard } from "@/components/tweet";
 import type { Tweet } from "@/types/tweet";
 import { Spinner } from "@/ui";
 
+const viewedPostIds = new Set<string>();
+
 export default function PostPage() {
   const { postId } = useParams<{ postId: string }>();
   const navigate = useNavigate();
@@ -18,17 +20,10 @@ export default function PostPage() {
   const [notFound, setNotFound] = useState(false);
 
   useEffect(() => {
-    if (!postId) {
-      setNotFound(true);
-      setIsLoading(false);
-      return;
-    }
+    if (!postId) return;
 
     let active = true;
     const currentPostId = postId;
-
-    setIsLoading(true);
-    setNotFound(false);
 
     async function loadPost() {
       try {
@@ -37,6 +32,24 @@ export default function PostPage() {
         if (!active) return;
 
         setTweet(result);
+
+        if (!viewedPostIds.has(currentPostId)) {
+          viewedPostIds.add(currentPostId);
+
+          try {
+            await tweetApi.view(currentPostId);
+
+            if (!active) return;
+
+            setTweet((current) =>
+              current && current.id === currentPostId
+                ? { ...current, viewsCount: current.viewsCount + 1 }
+                : current,
+            );
+          } catch {
+            viewedPostIds.delete(currentPostId);
+          }
+        }
       } catch {
         if (!active) return;
 
@@ -49,7 +62,13 @@ export default function PostPage() {
       }
     }
 
-    void loadPost();
+    queueMicrotask(() => {
+      if (!active) return;
+
+      setIsLoading(true);
+      setNotFound(false);
+      void loadPost();
+    });
 
     return () => {
       active = false;

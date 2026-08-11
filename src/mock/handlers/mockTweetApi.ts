@@ -70,6 +70,7 @@ export const mockTweetApi = {
 
       likedByMe: false,
       repostedByMe: false,
+      bookmarkedByMe: false,
 
       createdAt: new Date().toISOString(),
 
@@ -128,5 +129,41 @@ export const mockTweetApi = {
       repostedByMe: tweet.repostedByMe,
       repostsCount: tweet.retweetsCount,
     };
+  },
+
+  async toggleBookmark(id: string, bookmarkedByMe: boolean) {
+    await delay(150);
+
+    const updatedTweets = tweets.map((t) =>
+      t.id === id
+        ? {
+            ...t,
+            bookmarkedByMe: !bookmarkedByMe,
+          }
+        : t,
+    );
+
+    setTweets(updatedTweets);
+
+    const tweet = updatedTweets.find((t) => t.id === id)!;
+
+    return {
+      bookmarkedByMe: tweet.bookmarkedByMe,
+    };
+  },
+
+  async view(id: string) {
+    await delay(100);
+
+    const updatedTweets = tweets.map((t) =>
+      t.id === id
+        ? {
+            ...t,
+            viewsCount: t.viewsCount + 1,
+          }
+        : t,
+    );
+
+    setTweets(updatedTweets);
   },
 };
