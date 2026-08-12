@@ -3,6 +3,8 @@
 import { NavLink, useNavigate, useParams } from "react-router";
 import { ArrowLeft } from "lucide-react";
 
+import Tab from "@/ui/Tab";
+
 import type { User } from "@/types/user";
 
 interface FollowNavigationProps {
@@ -49,23 +51,22 @@ export default function FollowNavigation({ user }: FollowNavigationProps) {
         </div>
       </div>
 
-      <nav className="flex" aria-label="Навігація профілю">
+      <nav
+          className="flex"
+          aria-label="Навігація профілю"
+      >
         {tabs.map((tab) => (
-          <NavLink
-            key={tab.to}
-            to={tab.to}
-            className={({ isActive }) =>
-              [
-                "flex-1 border-b-2 px-4 py-3 text-center text-sm font-medium transition-colors",
-                "hover:bg-muted/50",
-                isActive
-                  ? "border-foreground bg-muted/50 font-semibold text-foreground"
-                  : "border-transparent text-muted-foreground",
-              ].join(" ")
-            }
-          >
-            {tab.label}
-          </NavLink>
+            <NavLink
+                key={tab.to}
+                to={tab.to}
+                className="flex flex-1 cursor-pointer justify-center rounded-t-sm px-4 pt-3 transition-colors hover:bg-muted"
+            >
+              {({ isActive }) => (
+                  <Tab active={isActive}>
+                    {tab.label}
+                  </Tab>
+              )}
+            </NavLink>
         ))}
       </nav>
     </header>
