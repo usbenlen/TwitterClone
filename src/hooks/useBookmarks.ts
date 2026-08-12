@@ -25,5 +25,19 @@ export function useBookmarks() {
     load();
   }, [load]);
 
+  useEffect(() => {
+    const handleBookmarkToggle = (e: Event) => {
+      const customEvent = e as CustomEvent<{ tweetId: string; bookmarked: boolean }>;
+      if (!customEvent.detail.bookmarked) {
+        setTweets((prev) => prev.filter((t) => t.id !== customEvent.detail.tweetId));
+      }
+    };
+
+    window.addEventListener("tweet-bookmark-toggled", handleBookmarkToggle);
+    return () => {
+      window.removeEventListener("tweet-bookmark-toggled", handleBookmarkToggle);
+    };
+  }, []);
+
   return { tweets, isLoading, error, reload: load };
 }

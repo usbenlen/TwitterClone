@@ -255,6 +255,7 @@ export default function MediaViewer({
   };
 
   const handleBackdropClick = (event: React.MouseEvent) => {
+    event.stopPropagation();
     //баг 50% (старий хітбокс мішає кліку по чорному фону щоб вийти з modalviewer)
     if (event.target === event.currentTarget) onClose();
   };

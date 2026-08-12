@@ -32,13 +32,29 @@ export function useTweetBookmark(tweet: Tweet) {
     const next = !bookmarkedByMe;
 
     setBookmarkedByMe(next);
+    window.dispatchEvent(
+      new CustomEvent("tweet-bookmark-toggled", {
+        detail: { tweetId: tweet.id, bookmarked: next },
+      })
+    );
     setPending(true);
 
     try {
       const result = await tweetApi.toggleBookmark(tweet.id, bookmarkedByMe);
-      setBookmarkedByMe(readBookmarkedState(result, next));
+      const finalState = readBookmarkedState(result, next);
+      setBookmarkedByMe(finalState);
+      window.dispatchEvent(
+        new CustomEvent("tweet-bookmark-toggled", {
+          detail: { tweetId: tweet.id, bookmarked: finalState },
+        })
+      );
     } catch {
       setBookmarkedByMe(previous);
+      window.dispatchEvent(
+        new CustomEvent("tweet-bookmark-toggled", {
+          detail: { tweetId: tweet.id, bookmarked: previous },
+        })
+      );
     } finally {
       setPending(false);
     }
