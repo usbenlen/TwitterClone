@@ -24,7 +24,7 @@ export default function ProfileStats({
   const countFollowers = isOwnProfile ? followersCount : user.followersCount;
 
   return (
-    <div className="px-4">
+    <div className="px-4 pb-3">
       <p className="text-sm text-muted-foreground">
         Приєднався {formatJoinDate(user.createdAt)}
       </p>

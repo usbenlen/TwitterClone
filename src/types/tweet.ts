@@ -6,7 +6,7 @@ export interface Tweet {
   id: string;
   content: string;
 
-  author: Pick<User, "id" | "username" | "displayName" | "avatarUrl">;
+  author: Pick<User, "id" | "username" | "displayName" | "avatarUrl" | "isVerified">;
 
   attachments: MediaAttachment[];
 
