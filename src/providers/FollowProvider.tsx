@@ -9,21 +9,21 @@ import {
 import { followApi } from "@/api/follow.api";
 import { useAuth } from "@/hooks/useAuth";
 
-import type { User, FollowUser } from "@/types";
+import type { UserShort } from "@/types";
 
 interface FollowContextValue {
-  following: FollowUser[];
-  followers: FollowUser[];
+  following: UserShort[];
+  followers: UserShort[];
 
   followingCount: number;
   followersCount: number;
 
-  follow: (user: User | FollowUser) => Promise<void>;
+  follow: (user: UserShort) => Promise<void>;
   unfollow: (userId: string) => Promise<void>;
   removeFollower: (userId: string, followerId: string) => Promise<void>;
 
-  loadFollowing: (userId: string) => Promise<FollowUser[]>;
-  loadFollowers: (userId: string) => Promise<FollowUser[]>;
+  loadFollowing: (userId: string) => Promise<UserShort[]>;
+  loadFollowers: (userId: string) => Promise<UserShort[]>;
 
   isFollowing: (userId: string) => boolean;
 }
@@ -37,14 +37,14 @@ interface FollowProviderProps {
 export function FollowProvider({ children }: FollowProviderProps) {
   const { user: currentUser } = useAuth();
 
-  const [following, setFollowing] = useState<FollowUser[]>([]);
-  const [followers, setFollowers] = useState<FollowUser[]>([]);
+  const [following, setFollowing] = useState<UserShort[]>([]);
+  const [followers, setFollowers] = useState<UserShort[]>([]);
 
   const followingCount = following.length;
   const followersCount = followers.length;
 
   const loadFollowing = useCallback(
-    async (userId: string): Promise<FollowUser[]> => {
+    async (userId: string): Promise<UserShort[]> => {
       try {
         const data = await followApi.following(userId);
         const result = data ?? [];
@@ -62,7 +62,7 @@ export function FollowProvider({ children }: FollowProviderProps) {
   );
 
   const loadFollowers = useCallback(
-    async (userId: string): Promise<FollowUser[]> => {
+    async (userId: string): Promise<UserShort[]> => {
       try {
         const data = await followApi.followers(userId);
         const result = data ?? [];
@@ -89,7 +89,7 @@ export function FollowProvider({ children }: FollowProviderProps) {
   }, [currentUser, loadFollowing, loadFollowers]);
 
   const follow = useCallback(
-    async (user: User | FollowUser): Promise<void> => {
+    async (user: UserShort): Promise<void> => {
       if (!currentUser) return;
       if (currentUser.id === user.id) return;
 
@@ -100,13 +100,10 @@ export function FollowProvider({ children }: FollowProviderProps) {
       setFollowing((previous) => {
         if (previous.some((item) => item.id === user.id)) return previous;
 
-        return [
-          ...previous,
-          toFollowUser(user),
-        ];
-      });
-    },
-    [currentUser],
+          return [...previous, user];
+        });
+      },
+      [currentUser],
   );
 
   const unfollow = useCallback(
@@ -167,13 +164,4 @@ export function FollowProvider({ children }: FollowProviderProps) {
       {children}
     </FollowContext.Provider>
   );
-}
-
-function toFollowUser(user: User | FollowUser): FollowUser {
-  return {
-    id: user.id,
-    username: user.username,
-    displayName: user.displayName ?? user.username,
-    avatarUrl: user.avatarUrl ?? undefined,
-  };
 }

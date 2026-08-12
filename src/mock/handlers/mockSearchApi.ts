@@ -25,6 +25,7 @@ export const mockSearchApi = {
         id: user.id,
         username: user.username,
         displayName: user.displayName,
+        bio: user.bio,
         location: user.location,
         avatarUrl: user.avatarUrl ?? null,
         isVerified: user.isVerified,

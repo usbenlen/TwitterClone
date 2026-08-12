@@ -1,6 +1,6 @@
 /** @format */
 
-import type { FollowRequest, FollowUser, RemoveFollower } from "@/types/follow";
+import type { FollowRequest, UserShort, RemoveFollower } from "@/types";
 
 import { delay } from "@/mock/utils/delay";
 import { currentUser, sampleAuthors } from "@/mock/data/users";
@@ -28,6 +28,7 @@ export const mockFollowApi = {
       username: targetUser.username,
       displayName: targetUser.displayName ?? targetUser.username,
       avatarUrl: targetUser.avatarUrl ?? undefined,
+      isVerified: targetUser.isVerified,
     });
 
     const alreadyFollower = mockFollowers[targetUserId].some(
@@ -40,6 +41,7 @@ export const mockFollowApi = {
         username: currentUser.username,
         displayName: currentUser.displayName ?? currentUser.username,
         avatarUrl: currentUser.avatarUrl ?? undefined,
+        isVerified: targetUser.isVerified,
       });
     }
   },
@@ -56,12 +58,12 @@ export const mockFollowApi = {
     );
   },
 
-  async following(userId: string): Promise<FollowUser[]> {
+  async following(userId: string): Promise<UserShort[]> {
     await delay();
     return [...(mockFollowing[userId] ?? [])];
   },
 
-  async followers(userId: string): Promise<FollowUser[]> {
+  async followers(userId: string): Promise<UserShort[]> {
     await delay();
     return [...(mockFollowers[userId] ?? [])];
   },

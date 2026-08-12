@@ -27,6 +27,7 @@ export interface UserShort {
   id: string;
   username: string;
   displayName?: string | null;
+  bio?: string | null;
   location?: Location | null;
   avatarUrl?: string | null;
   isVerified: boolean;

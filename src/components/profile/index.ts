@@ -7,4 +7,3 @@ export { default as ProfileStats } from "@/components/profile/ProfileStats";
 export { default as ProfileTabs } from "@/components/profile/ProfileTabs";
 
 export { default as FollowNavigation } from "@/components/profile/FollowNavigation";
-export { default as FollowUserItem } from "@/components/profile/FollowUserItem";

@@ -3,8 +3,9 @@
 import { ArrowLeft } from "lucide-react";
 import { useNavigate, useSearchParams } from "react-router";
 
-import { SearchUserResult, SearchPageSearchBox} from "@/components/search";
+import { SearchPageSearchBox} from "@/components/search";
 import { TweetCard } from "@/components/tweet";
+import { UserListItem } from "@/components/user";
 
 import { useSearch } from "@/hooks/useSearch";
 import { APP_ROUTES } from "@/constants/routes";
@@ -107,10 +108,9 @@ export default function SearchPage() {
         ) : (
             <div className="divide-y divide-border">
               {users.map((user) => (
-                  <SearchUserResult
+                  <UserListItem
                       key={user.id}
                       user={user}
-                      onClick={() => navigate(APP_ROUTES.profile(user.username))}
                   />
               ))}
             </div>

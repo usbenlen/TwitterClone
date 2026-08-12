@@ -7,9 +7,10 @@ import { useAuth, useFollow, useProfile } from "@/hooks";
 
 import { Spinner } from "@/ui";
 
-import { FollowNavigation, FollowUserItem } from "@/components/profile";
+import { FollowNavigation } from "@/components/profile";
+import { UserListItem } from "@/components/user";
 
-import type { FollowUser } from "@/types/follow";
+import type { UserShort } from "@/types";
 
 export default function FollowingPage() {
   const { username } = useParams<{
@@ -21,7 +22,7 @@ export default function FollowingPage() {
 
   const { following, loadFollowing } = useFollow();
 
-  const [profileFollowing, setProfileFollowing] = useState<FollowUser[]>([]);
+  const [profileFollowing, setProfileFollowing] = useState<UserShort[]>([]);
 
   useEffect(() => {
     if (user) loadFollowing(user.id).then(setProfileFollowing);
@@ -53,7 +54,10 @@ export default function FollowingPage() {
           </p>
         ) : (
           users.map((followedUser) => (
-            <FollowUserItem key={followedUser.id} user={followedUser} />
+              <UserListItem
+                  key={followedUser.id}
+                  user={followedUser}
+              />
           ))
         )}
       </div>
