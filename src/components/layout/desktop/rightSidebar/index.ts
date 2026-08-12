@@ -6,3 +6,4 @@ export { default as RightSidebarSuggestedUsers } from "@/components/layout/deskt
 export { default as RightSidebarTrendsCard } from "@/components/layout/desktop/rightSidebar/RightSidebarTrendsCard";
 export { default as RightSidebarFooterLinks } from "@/components/layout/desktop/rightSidebar/RightSidebarFooterLinks";
 export { default as RightSidebarCard } from "@/components/layout/desktop/rightSidebar/RightSidebarCard";
+export { default as RightSidebarSearchFilters} from "@/components/layout/desktop/rightSidebar/RightSidebarSearchFilters";
