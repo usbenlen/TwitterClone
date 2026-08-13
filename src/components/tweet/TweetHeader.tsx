@@ -5,20 +5,17 @@ import { Link } from "react-router";
 
 import { APP_ROUTES } from "@/constants/routes";
 import { formatRelativeTime } from "@/utils/format";
-import { TwemojiText } from "@/ui";
 
 import type { Tweet } from "@/types/tweet";
 
 interface TweetHeaderProps {
     author: Tweet["author"];
     createdAt: string;
-    content: string;
 }
 
 export default function TweetHeader({
                                         author,
                                         createdAt,
-                                        content,
                                     }: TweetHeaderProps) {
     return (
         <div className="min-w-0">
@@ -48,10 +45,6 @@ export default function TweetHeader({
           {formatRelativeTime(createdAt)}
         </span>
             </div>
-            <TwemojiText
-                text={content}
-                className="mt-1 wrap-break-word whitespace-pre-wrap"
-            />
         </div>
     );
 }

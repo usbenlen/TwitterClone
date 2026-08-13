@@ -5,12 +5,9 @@ import { useNavigate } from "react-router";
 import {
   TweetHeader,
   TweetActions,
-  TweetMedia,
+  TweetComments,
+  TweetContent,
 } from "@/components/tweet";
-import TweetPoll from "@/components/tweet/poll/TweetPoll";
-import TweetLocation from "@/components/tweet/location/TweetLocation";
-import TweetEmbed from "@/components/tweet/embed/TweetEmbed";
-import TweetComments from "@/components/tweet/TweetComments";
 
 import { Avatar } from "@/ui";
 
@@ -83,16 +80,9 @@ export default function TweetCard({
             <TweetHeader
               author={tweet.author}
               createdAt={tweet.createdAt}
-              content={tweet.content}
             />
 
-            {tweet.location && <TweetLocation location={tweet.location} />}
-
-            {tweet.embed && <TweetEmbed embed={tweet.embed} />}
-
-            {tweet.poll && <TweetPoll tweetId={tweet.id} poll={tweet.poll} />}
-
-            <TweetMedia attachments={tweet.attachments} />
+            <TweetContent tweet={tweet} />
 
             <TweetActions
               likedByMe={like.likedByMe}
