@@ -5,7 +5,7 @@ import { Link } from "react-router";
 
 import { APP_ROUTES } from "@/constants/routes";
 import { formatRelativeTime } from "@/utils/format";
-import { parseEmoji } from "@/utils/twemoji";
+import { TwemojiText } from "@/ui";
 
 import type { Tweet } from "@/types/tweet";
 
@@ -48,12 +48,9 @@ export default function TweetHeader({
           {formatRelativeTime(createdAt)}
         </span>
             </div>
-
-            <p
+            <TwemojiText
+                text={content}
                 className="mt-1 wrap-break-word whitespace-pre-wrap"
-                dangerouslySetInnerHTML={{
-                    __html: parseEmoji(content),
-                }}
             />
         </div>
     );

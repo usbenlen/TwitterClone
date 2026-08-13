@@ -2,6 +2,8 @@
 
 import type { RefObject } from "react";
 
+import { EmojiTextarea } from "@/ui";
+
 interface TweetComposerEditorProps {
   value: string;
   onChange: (value: string) => void;
@@ -14,13 +16,13 @@ export default function TweetComposerEditor({
   editorRef,
 }: TweetComposerEditorProps) {
   return (
-    <textarea
-      ref={editorRef}
-      value={value}
-      onChange={(e) => onChange(e.target.value)}
-      placeholder="Що відбувається?"
-      rows={3}
-      className="w-full resize-none bg-transparent text-lg text-foreground placeholder:text-muted-foreground focus:outline-none"
-    />
+      <EmojiTextarea
+          ref={editorRef}
+          value={value}
+          onChange={(event) => onChange(event.target.value)}
+          placeholder="Що відбувається?"
+          rows={3}
+          className="text-lg text-foreground placeholder:text-muted-foreground focus:outline-none"
+      />
   );
 }

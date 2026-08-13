@@ -8,6 +8,6 @@ const options = {
   className: "twemoji",
 };
 
-export function parseEmoji(text: string) {
-  return twemoji.parse(text, options);
+export function parseEmoji(target: string | HTMLElement): string | HTMLElement {
+  return twemoji.parse(target, options);
 }
