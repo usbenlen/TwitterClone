@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Link, useLocation, useNavigate } from "react-router";
-import { loginSchema, type LoginFormValues } from "@/models/auth.schema";
+import { loginSchema, type LoginFormValues } from "@/schemas/auth.schema";
 import { useAuth } from "@/hooks/useAuth";
 import { AuthShell } from "@/components/auth/AuthShell";
 import { Input, Button } from "@/ui";
