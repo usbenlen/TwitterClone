@@ -1,6 +1,15 @@
 /** @format */
 
 import {
+  autoUpdate,
+  flip,
+  FloatingPortal,
+  offset,
+  shift,
+  useFloating,
+} from "@floating-ui/react";
+
+import {
   useEffect,
   useMemo,
   useRef,
@@ -129,6 +138,35 @@ export default function TweetComments({
           null,
       );
 
+  //floating-ui
+  const {
+    refs,
+    floatingStyles,
+    update,
+  } = useFloating({
+    open: showEmojiPicker,
+
+    strategy: "fixed",
+
+    placement: "top-start",
+
+    whileElementsMounted:
+    autoUpdate,
+
+    middleware: [
+      offset(8),
+
+      flip({
+        padding: 8,
+        fallbackAxisSideDirection: "end",
+      }),
+
+      shift({
+        padding: 8,
+      }),
+    ],
+  });
+
   const {
     roots,
     repliesByParentId,
@@ -136,6 +174,15 @@ export default function TweetComments({
       () => groupReplies(comments),
       [comments],
   );
+
+  useEffect(() => {
+    if (!showEmojiPicker) return;
+
+    void update();
+  }, [
+    showEmojiPicker,
+    update,
+  ]);
 
   useEffect(() => {
     if (!showEmojiPicker) return;
@@ -251,16 +298,15 @@ export default function TweetComments({
 
   return (
       <section
-          className="mt-3 border-t border-border"
           data-tweet-interactive="true"
       >
 
         {/* Composer */}
         <form
             onSubmit={handleSubmit}
-            className="border-b border-border"
+            className="border-b border-border px-4 py-3"
         >
-          <div className="grid grid-cols-[40px_minmax(0,1fr)] gap-3 py-3">
+          <div className="grid grid-cols-[40px_minmax(0,1fr)] gap-3">
             {/* Current user avatar */}
             <div className="flex justify-center">
               <Avatar
@@ -356,6 +402,9 @@ export default function TweetComments({
                                       !previous,
                               );
                             }}
+                            emojiButtonRef={
+                              refs.setReference
+                            }
                         />
 
                         <Button
@@ -376,16 +425,26 @@ export default function TweetComments({
               )}
 
               {showEmojiPicker && (
-                  <div
-                      ref={pickerRef}
-                      className="absolute bottom-14 left-0 z-50 overflow-hidden rounded-2xl border border-border bg-background shadow-2xl"
-                  >
-                    <EmojiPicker
-                        onSelect={
-                          handleEmojiSelect
+                  <FloatingPortal>
+                    <div
+                        ref={(node) => {
+                          pickerRef.current =
+                              node;
+
+                          refs.setFloating(node);
+                        }}
+                        style={
+                          floatingStyles
                         }
-                    />
-                  </div>
+                        className="z-[9999] overflow-hidden rounded-2xl border border-border bg-background shadow-2xl"
+                    >
+                      <EmojiPicker
+                          onSelect={
+                            handleEmojiSelect
+                          }
+                      />
+                    </div>
+                  </FloatingPortal>
               )}
             </div>
           </div>

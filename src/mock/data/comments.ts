@@ -25,6 +25,8 @@ export const commentsByPostId: Record<string, Comment[]> = {
       content: "Класний старт, вітаю з деплоєм.",
       author: author(sampleAuthors[1]),
       likesCount: 4,
+      retweetsCount: 33,
+      repliesCount: 2,
       isLikedByCurrentUser: true,
       createdAt: new Date(
           Date.now() - 1000 * 60 * 18,
@@ -53,6 +55,8 @@ export const commentsByPostId: Record<string, Comment[]> = {
       content: "Дякую! Наступне вже майже готове.",
       author: author(currentUser),
       likesCount: 1,
+      retweetsCount: 2,
+      repliesCount: 1,
       isLikedByCurrentUser: false,
       createdAt: new Date(
           Date.now() - 1000 * 60 * 10,
@@ -94,7 +98,10 @@ export const commentsByPostId: Record<string, Comment[]> = {
       parentCommentId: null,
       content: "Виглядає дуже непогано 🔥",
       author: author(sampleAuthors[4]),
-      likesCount: 7,
+      likesCount: 54384565,
+      retweetsCount: 77700000,
+      repliesCount: 525200,
+      viewsCount: 142000000,
       isLikedByCurrentUser: false,
       createdAt: new Date(
           Date.now() - 1000 * 60 * 2,

@@ -372,7 +372,7 @@ export default function CommentModal({
                         isSubmitting
                     }
                     isLoading={isSubmitting}
-                    className="rounded-full px-5 py-2 font-bold"
+                    className="rounded-full px-5 py-2 h-9 font-bold text-[15px]"
                 >
                   Reply
                 </Button>

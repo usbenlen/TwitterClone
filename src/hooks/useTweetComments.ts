@@ -109,7 +109,7 @@ export function useTweetComments(
           });
 
       setComments((current) => {
-        const next = [...current, created];
+        const next = [created, ...current];
 
         if (!parentCommentId) {
           return next;

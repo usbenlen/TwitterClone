@@ -108,6 +108,7 @@ export default function PostPage() {
         <TweetCard
           tweet={tweet}
           navigateToPost={false}
+          variant="post"
           commentsInitiallyOpen={true}
         />
       )}

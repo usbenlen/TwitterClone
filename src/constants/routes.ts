@@ -8,9 +8,10 @@ export const APP_ROUTES = {
   FORGOT_PASSWORD: "/forgot-password",
   VERIFY_RESET_CODE: "/verify-reset-code",
   RESET_PASSWORD: "/reset-password",
-  POST: "/post/:postId",
   SEARCH: "/search",
   BOOKMARKS: "/bookmarks",
+
+  POST: "/post/:postId",
 
   PROFILE: "/:username",
   FOLLOWING: "/:username/following",
@@ -23,9 +24,12 @@ export const APP_ROUTES = {
   NOT_FOUND: "*",
 
   profile: (username: string) => `/${username}`,
+
   following: (username: string) => `/${username}/following`,
   followers: (username: string) => `/${username}/followers`,
+
   post: (postId: string) => `/post/${postId}`,
+
   search: (query = "", type: "posts" | "users" = "posts") => {
     const params = new URLSearchParams();
 

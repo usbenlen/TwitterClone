@@ -48,8 +48,8 @@ export default function CommentItem({
         <article
             className={
                 depth === 0
-                    ? "py-3"
-                    : "border-l border-border/80 pl-4"
+                    ? "px-4 py-3"
+                    : "border-l border-border/80 pl-4 py-2"
             }
         >
             <div className="grid grid-cols-[40px_minmax(0,1fr)] gap-3">
@@ -63,7 +63,7 @@ export default function CommentItem({
                     />
 
                     {replies.length > 0 && (
-                        <div className="mt-2 w-px flex-1 bg-border" />
+                        <div className="mt-2 w-px flex-1" />
                     )}
                 </div>
 

@@ -27,12 +27,14 @@ interface TweetCardProps {
   tweet: Tweet;
   navigateToPost?: boolean;
   commentsInitiallyOpen?: boolean;
+  variant?: "feed" | "post";
 }
 
 export default function TweetCard({
   tweet,
   navigateToPost = true,
   commentsInitiallyOpen = false,
+  variant = "feed",
 }: TweetCardProps) {
   const navigate = useNavigate();
   const [
@@ -123,28 +125,28 @@ export default function TweetCard({
               onLike={like.toggleLike}
               onBookmark={bookmark.toggleBookmark}
             />
-
-            {!navigateToPost && comments.open && (
-                <TweetComments
-                    comments={comments.comments}
-                    isLoading={comments.isLoading}
-                    isSubmitting={comments.isSubmitting}
-                    error={comments.error}
-                    replyingToUsername={tweet.author.username}
-                    onSubmit={async (content) => {
-                      return comments.createComment(
-                          content,
-                          commentModalTarget?.id ?? null,
-                      );}}
-                    onDelete={comments.deleteComment}
-                    onOpenReplyModal={
-                      openCommentModal
-                    }
-                />
-            )}
-
           </div>
         </article>
+
+        {variant === "post" && !navigateToPost && comments.open && (
+            <TweetComments
+                comments={comments.comments}
+                isLoading={comments.isLoading}
+                isSubmitting={comments.isSubmitting}
+                error={comments.error}
+                replyingToUsername={tweet.author.username}
+                onSubmit={async (content) => {
+                  return comments.createComment(
+                      content,
+                      commentModalTarget?.id ?? null,
+                  );}}
+                onDelete={comments.deleteComment}
+                onOpenReplyModal={
+                  openCommentModal
+                }
+            />
+        )}
+
         <CommentModal
             open={isCommentModalOpen}
             tweet={tweet}

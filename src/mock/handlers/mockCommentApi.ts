@@ -60,8 +60,10 @@ export const mockCommentApi = {
   async getByPostId(postId: string): Promise<Comment[]> {
     await delay(180);
 
-    return [...(commentsByPostId[postId] ?? [])].sort((a, b) =>
-      new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
+    return [...(commentsByPostId[postId] ?? [])].sort(
+        (a, b) =>
+            new Date(b.createdAt).getTime() -
+            new Date(a.createdAt).getTime(),
     );
   },
 

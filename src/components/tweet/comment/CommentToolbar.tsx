@@ -7,81 +7,106 @@ import {
     Image,
     MapPin,
     Smile,
+    type LucideIcon,
 } from "lucide-react";
 
 interface CommentToolbarProps {
     disabled?: boolean;
     showEmojiPicker: boolean;
     onToggleEmoji: () => void;
+    emojiButtonRef?: (
+        element: HTMLButtonElement | null,
+    ) => void;
 }
 
-// тут можна просто константу і потім мапити кнопки (потім зробити)
+interface ToolbarButton {
+    icon: LucideIcon;
+    label: string;
+    disabled?: boolean;
+    isEmoji?: boolean;
+    iconClassName?: string;
+}
+
+const BUTTONS: readonly ToolbarButton[] = [
+    {
+        icon: Image,
+        label: "Додати зображення",
+    },
+    {
+        icon: Film,
+        label: "GIF",
+    },
+    {
+        icon: BarChart2,
+        label: "Додати опитування",
+        iconClassName: "rotate-90",
+    },
+    {
+        icon: Smile,
+        label: "Додати емодзі",
+        isEmoji: true,
+    },
+    {
+        icon: Calendar,
+        label: "Запланувати",
+    },
+    {
+        icon: MapPin,
+        label: "Додати місце",
+        disabled: true,
+    },
+];
 
 export default function CommentToolbar({
                                            disabled = false,
                                            showEmojiPicker,
                                            onToggleEmoji,
+                                           emojiButtonRef,
                                        }: CommentToolbarProps) {
     return (
         <div className="flex items-center gap-1 text-primary">
-            <button
-                type="button"
-                disabled={disabled}
-                className="rounded-full p-2 transition-colors hover:bg-primary/10 disabled:pointer-events-none disabled:opacity-50"
-                aria-label="Додати зображення"
-            >
-                <Image size={19} />
-            </button>
+            {BUTTONS.map((button) => {
+                const Icon = button.icon;
 
-            <button
-                type="button"
-                disabled={disabled}
-                className="rounded-full p-2 transition-colors hover:bg-primary/10 disabled:pointer-events-none disabled:opacity-50"
-                aria-label="GIF"
-            >
-                <Film size={19} />
-            </button>
+                const isDisabled =
+                    disabled || button.disabled;
 
-            <button
-                type="button"
-                disabled={disabled}
-                className="rounded-full p-2 transition-colors hover:bg-primary/10 disabled:pointer-events-none disabled:opacity-50"
-                aria-label="Додати опитування"
-            >
-                <BarChart2
-                    size={19}
-                    className="rotate-90"
-                />
-            </button>
-
-            <button
-                type="button"
-                disabled={disabled}
-                onClick={onToggleEmoji}
-                className="rounded-full p-2 transition-colors hover:bg-primary/10 disabled:pointer-events-none disabled:opacity-50"
-                aria-label="Додати емодзі"
-                aria-expanded={showEmojiPicker}
-            >
-                <Smile size={19} />
-            </button>
-
-            <button
-                type="button"
-                disabled={disabled}
-                className="rounded-full p-2 transition-colors hover:bg-primary/10 disabled:pointer-events-none disabled:opacity-50"
-                aria-label="Запланувати"
-            >
-                <Calendar size={19} />
-            </button>
-
-            <button
-                type="button"
-                disabled
-                className="cursor-not-allowed rounded-full p-2 opacity-50"
-                aria-label="Додати місце"
-            >
-                <MapPin size={19} />
-            </button>
+                return (
+                    <button
+                        key={button.label}
+                        ref={
+                            button.isEmoji
+                                ? emojiButtonRef
+                                : undefined
+                        }
+                        type="button"
+                        disabled={isDisabled}
+                        onClick={
+                            button.isEmoji
+                                ? onToggleEmoji
+                                : undefined
+                        }
+                        className={
+                            button.disabled
+                                ? "rounded-full p-2 opacity-50"
+                                : "rounded-full p-2 transition-colors hover:bg-primary/10 disabled:pointer-events-none disabled:opacity-50"
+                        }
+                        aria-label={button.label}
+                        aria-expanded={
+                            button.isEmoji
+                                ? showEmojiPicker
+                                : undefined
+                        }
+                    >
+                        <Icon
+                            size={19}
+                            className={
+                                button.iconClassName
+                            }
+                        />
+                    </button>
+                );
+            })}
         </div>
     );
 }

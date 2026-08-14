@@ -1,22 +1,45 @@
 /** @format */
 
 import { useEffect, useRef, useState } from "react";
-import { MoreHorizontal, Trash2 } from "lucide-react";
+import {
+    MoreHorizontal,
+    Trash2,
+    type LucideIcon
+} from "lucide-react";
 
 interface CommentActionsMenuProps {
     onDelete: () => void;
 }
 
+interface ActionButton {
+    icon: LucideIcon;
+    label: string;
+    variant?: "danger" | "default";
+    onClick: () => void;
+}
+
 export default function CommentActionsMenu({
                                                onDelete,
                                            }: CommentActionsMenuProps) {
+    const ACTION_BUTTONS: readonly ActionButton[] = [
+        {
+            icon: Trash2,
+            label: "Видалити",
+            variant: "danger",
+            onClick: onDelete,
+        },
+    ];
+
     const [open, setOpen] = useState(false);
-    const menuRef = useRef<HTMLDivElement | null>(null);
+    const menuRef =
+        useRef<HTMLDivElement | null>(null);
 
     useEffect(() => {
         if (!open) return;
 
-        const handlePointerDown = (event: PointerEvent) => {
+        const handlePointerDown = (
+            event: PointerEvent,
+        ) => {
             const target = event.target;
 
             if (
@@ -42,11 +65,6 @@ export default function CommentActionsMenu({
         };
     }, [open]);
 
-    const handleDelete = () => {
-        setOpen(false);
-        onDelete();
-    };
-
     return (
         <div
             ref={menuRef}
@@ -58,11 +76,11 @@ export default function CommentActionsMenu({
                     event.stopPropagation();
                     setOpen((current) => !current);
                 }}
-                className="rounded-full text-muted-foreground transition-colors hover:text-foreground cursor-pointer"
+                className="cursor-pointer p-0.5 rounded-full text-muted-foreground transition-colors hover:text-foreground"
                 aria-label="Додаткові дії"
                 aria-expanded={open}
             >
-                <MoreHorizontal className="size-5" />
+                <MoreHorizontal size={18} />
             </button>
 
             {open && (
@@ -72,14 +90,29 @@ export default function CommentActionsMenu({
                         event.stopPropagation();
                     }}
                 >
-                    <button
-                        type="button"
-                        onClick={handleDelete}
-                        className="flex w-full items-center gap-3 px-4 py-2.5 text-sm font-medium text-destructive transition-colors hover:bg-destructive/10"
-                    >
-                        <Trash2 className="size-4" />
-                        Видалити
-                    </button>
+                    {ACTION_BUTTONS.map((action) => {
+                        const Icon = action.icon;
+
+                        return (
+                            <button
+                                key={action.label}
+                                type="button"
+                                onClick={() => {
+                                    setOpen(false);
+                                    action.onClick()
+                                }}
+                                className={
+                                    action.variant ===
+                                    "danger"
+                                        ? "flex w-full items-center gap-3 px-4 py-2.5 text-sm font-medium text-destructive transition-colors hover:bg-destructive/10"
+                                        : "flex w-full items-center gap-3 px-4 py-2.5 text-sm font-medium transition-colors hover:bg-muted"
+                                }
+                            >
+                                <Icon size={18} />
+                                {action.label}
+                            </button>
+                        );
+                    })}
                 </div>
             )}
         </div>
