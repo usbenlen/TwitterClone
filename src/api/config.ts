@@ -67,6 +67,14 @@ export const ENDPOINTS = {
     create: "comments",
     update: (id: string) => `comments/${id}`,
     delete: (id: string) => `comments/${id}`,
+
+    view: (id: string) => `comments/${id}/view`,
+    like: (id: string) => `comments/${id}/like`,
+    unlike: (id: string) => `comments/${id}/like`,
+    repost: (id: string) => `comments/${id}/repost`,
+    unrepost: (id: string) => `comments/${id}/repost`,
+    bookmark: (id: string) => `comments/${id}/bookmark`,
+    unbookmark: (id: string) => `comments/${id}/bookmark`,
   },
   poll: {
     vote: (postId: string) => `posts/${postId}/poll/vote`,

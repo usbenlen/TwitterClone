@@ -22,6 +22,27 @@ function currentUserShort() {
   };
 }
 
+function findComment(id: string) {
+  for (const [postId, comments] of Object.entries(
+      commentsByPostId,
+  )) {
+    const index = comments.findIndex(
+        (comment) => comment.id === id,
+    );
+
+    if (index !== -1) {
+      return {
+        postId,
+        comments,
+        index,
+        comment: comments[index],
+      };
+    }
+  }
+
+  return null;
+}
+
 function updateReplyCount(postId: string, delta: number) {
   setTweets(
     tweets.map((tweet) =>
@@ -50,11 +71,25 @@ export const mockCommentApi = {
     const comment: Comment = {
       id: nextCommentId(),
       postId: data.postId,
-      parentCommentId: data.parentCommentId ?? null,
+      parentCommentId:
+          data.parentCommentId ?? null,
+
       content: data.content.trim(),
+
       author: currentUserShort(),
+
       likesCount: 0,
       isLikedByCurrentUser: false,
+
+      retweetsCount: 0,
+      isRepostedByCurrentUser: false,
+
+      repliesCount: 0,
+
+      viewsCount: 0,
+
+      isBookmarkedByCurrentUser: false,
+
       createdAt: new Date().toISOString(),
       updatedAt: null,
     };
@@ -113,5 +148,198 @@ export const mockCommentApi = {
     }
 
     throw new Error("Коментар не знайдено.");
+  },
+
+  async like(id: string) {
+    await delay(120);
+
+    const found = findComment(id);
+
+    if (!found) {
+      throw new Error("Коментар не знайдено.");
+    }
+
+    const next = {
+      ...found.comment,
+      likesCount:
+          found.comment.likesCount + 1,
+      isLikedByCurrentUser: true,
+    };
+
+    found.comments[found.index] = next;
+
+    return {
+      likesCount: next.likesCount,
+      isLikedByCurrentUser:
+      next.isLikedByCurrentUser,
+    };
+  },
+
+  async unlike(id: string) {
+    await delay(120);
+
+    const found = findComment(id);
+
+    if (!found) {
+      throw new Error("Коментар не знайдено.");
+    }
+
+    const next = {
+      ...found.comment,
+      likesCount: Math.max(
+          0,
+          found.comment.likesCount - 1,
+      ),
+      isLikedByCurrentUser: false,
+    };
+
+    found.comments[found.index] = next;
+
+    return {
+      likesCount: next.likesCount,
+      isLikedByCurrentUser:
+      next.isLikedByCurrentUser,
+    };
+  },
+
+  async toggleLike(
+      id: string,
+      likedByMe: boolean,
+  ) {
+    return likedByMe
+        ? this.unlike(id)
+        : this.like(id);
+  },
+
+  async repost(id: string) {
+    await delay(120);
+
+    const found = findComment(id);
+
+    if (!found) {
+      throw new Error("Коментар не знайдено.");
+    }
+
+    const next = {
+      ...found.comment,
+      retweetsCount:
+          (found.comment.retweetsCount ?? 0) + 1,
+      isRepostedByCurrentUser: true,
+    };
+
+    found.comments[found.index] = next;
+
+    return {
+      retweetsCount:
+          next.retweetsCount ?? 0,
+      isRepostedByCurrentUser:
+          Boolean(
+              next.isRepostedByCurrentUser,
+          ),
+    };
+  },
+
+  async unrepost(id: string) {
+    await delay(120);
+
+    const found = findComment(id);
+
+    if (!found) {
+      throw new Error("Коментар не знайдено.");
+    }
+
+    const next = {
+      ...found.comment,
+      retweetsCount: Math.max(
+          0,
+          (found.comment.retweetsCount ?? 0) -
+          1,
+      ),
+      isRepostedByCurrentUser: false,
+    };
+
+    found.comments[found.index] = next;
+
+    return {
+      retweetsCount:
+          next.retweetsCount ?? 0,
+      isRepostedByCurrentUser: false,
+    };
+  },
+
+  async toggleRepost(
+      id: string,
+      repostedByMe: boolean,
+  ) {
+    return repostedByMe
+        ? this.unrepost(id)
+        : this.repost(id);
+  },
+
+  async bookmark(id: string) {
+    await delay(120);
+
+    const found = findComment(id);
+
+    if (!found) {
+      throw new Error("Коментар не знайдено.");
+    }
+
+    const next = {
+      ...found.comment,
+      isBookmarkedByCurrentUser: true,
+    };
+
+    found.comments[found.index] = next;
+
+    return {
+      isBookmarkedByCurrentUser: true,
+    };
+  },
+
+  async unbookmark(id: string) {
+    await delay(120);
+
+    const found = findComment(id);
+
+    if (!found) {
+      throw new Error("Коментар не знайдено.");
+    }
+
+    const next = {
+      ...found.comment,
+      isBookmarkedByCurrentUser: false,
+    };
+
+    found.comments[found.index] = next;
+
+    return {
+      isBookmarkedByCurrentUser: false,
+    };
+  },
+
+  async toggleBookmark(
+      id: string,
+      bookmarkedByMe: boolean,
+  ) {
+    return bookmarkedByMe
+        ? this.unbookmark(id)
+        : this.bookmark(id);
+  },
+
+  async view(id: string) {
+    await delay(80);
+
+    const found = findComment(id);
+
+    if (!found) {
+      throw new Error("Коментар не знайдено.");
+    }
+
+    found.comments[found.index] = {
+      ...found.comment,
+      viewsCount:
+          (found.comment.viewsCount ?? 0) + 1,
+    };
   },
 };

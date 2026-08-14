@@ -43,3 +43,18 @@ export interface CreateTweetRequest {
   };
   location?: Location | null;
 }
+
+export interface TogglePostLikeResponse {
+  likedByMe: boolean;
+  likesCount: number;
+}
+
+export interface TogglePostRepostResponse {
+  repostedByMe: boolean;
+  repostsCount: number;
+}
+
+export interface TogglePostBookmarkResponse {
+  bookmarkedByMe?: boolean;
+  isBookmarkedByCurrentUser?: boolean;
+}

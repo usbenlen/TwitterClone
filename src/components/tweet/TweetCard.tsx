@@ -9,17 +9,19 @@ import {
   TweetContent,
 } from "@/components/tweet";
 
+import { CommentModal } from "@/components/modal";
+
 import { Avatar } from "@/ui";
 
-import type { Tweet } from "@/types/tweet";
+import type { Tweet, Comment } from "@/types";
 
 import { useState } from "react";
 import { useTweetLike } from "@/hooks/useTweetLike";
 import { useTweetRepost } from "@/hooks/useTweetRepost";
 import { useTweetBookmark } from "@/hooks/useTweetBookmark";
 import { useTweetComments } from "@/hooks/useTweetComments";
+
 import { APP_ROUTES } from "@/constants/routes";
-import { CommentModal } from "@/components/modal";
 
 interface TweetCardProps {
   tweet: Tweet;
@@ -33,15 +35,37 @@ export default function TweetCard({
   commentsInitiallyOpen = false,
 }: TweetCardProps) {
   const navigate = useNavigate();
-  const [isCommentModalOpen, setIsCommentModalOpen] = useState(false);
+  const [
+    isCommentModalOpen,
+    setIsCommentModalOpen,
+  ] = useState(false);
+
+  const [
+    commentModalTarget,
+    setCommentModalTarget,
+  ] = useState<Comment | null>(null);
+
   const like = useTweetLike(tweet);
   const repost = useTweetRepost(tweet);
   const bookmark = useTweetBookmark(tweet);
+
   const comments = useTweetComments(
-    tweet.id,
-    tweet.repliesCount,
-    commentsInitiallyOpen || !navigateToPost,
+      tweet.id,
+      tweet.repliesCount,
+      commentsInitiallyOpen,
   );
+
+  const openCommentModal = (
+      comment: Comment | null = null,
+  ) => {
+    setCommentModalTarget(comment);
+    setIsCommentModalOpen(true);
+  };
+
+  const closeCommentModal = () => {
+    setIsCommentModalOpen(false);
+    setCommentModalTarget(null);
+  };
 
   const handleCardClick = (event: React.MouseEvent<HTMLElement>) => {
     if (!navigateToPost || isCommentModalOpen) return;
@@ -63,7 +87,7 @@ export default function TweetCard({
       <>
         <article
           onClick={handleCardClick}
-          className={`grid grid-cols-[40px_minmax(0,1fr)] gap-x-3 border-b border-border p-5 transition-colors ${
+          className={`grid grid-cols-[40px_minmax(0,1fr)] gap-x-3 border-b border-border px-4 py-3 transition-colors ${
             navigateToPost ? "cursor-pointer hover:bg-muted/40" : ""
           }`}
         >
@@ -92,23 +116,31 @@ export default function TweetCard({
               retweetsCount={repost.repostsCount}
               viewsCount={tweet.viewsCount}
               bookmarkedByMe={bookmark.bookmarkedByMe}
-              onComment={() => {
-                setIsCommentModalOpen(true);
-              }}
+              onComment={() =>
+                  openCommentModal()
+              }
               onRepost={repost.toggleRepost}
               onLike={like.toggleLike}
               onBookmark={bookmark.toggleBookmark}
             />
 
             {!navigateToPost && comments.open && (
-              <TweetComments
-                comments={comments.comments}
-                isLoading={comments.isLoading}
-                isSubmitting={comments.isSubmitting}
-                error={comments.error}
-                onSubmit={comments.createComment}
-                onDelete={comments.deleteComment}
-              />
+                <TweetComments
+                    comments={comments.comments}
+                    isLoading={comments.isLoading}
+                    isSubmitting={comments.isSubmitting}
+                    error={comments.error}
+                    replyingToUsername={tweet.author.username}
+                    onSubmit={async (content) => {
+                      return comments.createComment(
+                          content,
+                          commentModalTarget?.id ?? null,
+                      );}}
+                    onDelete={comments.deleteComment}
+                    onOpenReplyModal={
+                      openCommentModal
+                    }
+                />
             )}
 
           </div>
@@ -116,7 +148,8 @@ export default function TweetCard({
         <CommentModal
             open={isCommentModalOpen}
             tweet={tweet}
-            onClose={() => setIsCommentModalOpen(false)}
+            replyTo={commentModalTarget}
+            onClose={closeCommentModal}
             onSubmit={comments.createComment}
             isSubmitting={comments.isSubmitting}
         />

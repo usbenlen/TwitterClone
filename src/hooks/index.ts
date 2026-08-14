@@ -11,5 +11,6 @@ export { useBookmarks } from "@/hooks/useBookmarks";
 export { useTweetComments } from "@/hooks/useTweetComments";
 export { useFollow } from "@/hooks/useFollow";
 export { useSearch } from "@/hooks/useSearch";
+export { useCommentActions } from "@/hooks/useCommentActions";
 
 export * from "@/hooks/composer";
