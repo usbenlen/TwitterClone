@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 
+import { useImageCache } from "@/hooks/useImageCache";
 import { Avatar, Button } from "@/ui";
 
 import { useFollow } from "@/hooks/useFollow";
@@ -22,6 +23,7 @@ export default function ProfileHero({
   isOwnProfile,
   onUpdateProfile,
 }: ProfileHeroProps) {
+  const { src: cachedBannerUrl } = useImageCache(user.bannerUrl);
   const { follow, unfollow, isFollowing } = useFollow();
   const following = isFollowing(user.id);
 
@@ -30,8 +32,12 @@ export default function ProfileHero({
   return (
     <>
       <div className="h-40 w-full bg-muted">
-        {user.bannerUrl && (
-          <img src={user.bannerUrl} alt="" className="size-full object-cover" />
+        {cachedBannerUrl && (
+          <img
+            src={cachedBannerUrl}
+            alt=""
+            className="size-full object-cover"
+          />
         )}
       </div>
 

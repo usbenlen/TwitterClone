@@ -7,6 +7,7 @@ import type { Location, User } from "@/types";
 import type { UpdateProfileRequest } from "@/api/user.api";
 
 import { useLocationSearch } from "@/hooks/location/useLocationSearch";
+import { invalidateImageCache } from "@/hooks/useImageCache";
 
 import LocationPicker from "@/components/composer/location/LocationPicker";
 import { ConfirmModal } from "@/components/modal/ConfirmModal";
@@ -180,6 +181,13 @@ export default function EditProfileModal({
     setIsSaving(true);
 
     try {
+      if (avatar || removeAvatar) {
+        await invalidateImageCache(user.avatarUrl);
+      }
+      if (banner || removeBanner) {
+        await invalidateImageCache(user.bannerUrl);
+      }
+
       await onSave({
         displayName: displayName.trim() || user.username,
         bio: bio.trim() || undefined,

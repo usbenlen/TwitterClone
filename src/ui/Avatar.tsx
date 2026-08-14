@@ -1,4 +1,5 @@
 /** @format */
+import { useImageCache } from "@/hooks/useImageCache";
 import { cn } from "@/utils/cn";
 
 interface AvatarProps {
@@ -10,6 +11,7 @@ interface AvatarProps {
 
 /** Аватар користувача. Якщо немає картинки — показує ініціали. */
 export function Avatar({ src, name, fallbackName, className }: AvatarProps) {
+  const { src: cachedSrc } = useImageCache(src);
   const resolvedName = name?.trim() || fallbackName?.trim() || "User";
 
   const initials = resolvedName
@@ -26,8 +28,8 @@ export function Avatar({ src, name, fallbackName, className }: AvatarProps) {
         className,
       )}
     >
-      {src ? (
-        <img src={src} alt={resolvedName} className="size-full object-cover" />
+      {cachedSrc ? (
+        <img src={cachedSrc} alt={resolvedName} className="size-full object-cover" />
       ) : (
         <span aria-hidden="true">{initials}</span>
       )}
