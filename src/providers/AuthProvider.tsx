@@ -12,7 +12,7 @@ import { authApi } from "@/api/auth.api";
 import { setUnauthorizedHandler, clearUnauthorizedHandler } from "@/api/client";
 import { tokenStorage } from "@/utils/storage";
 
-import type { LoginRequest, RegisterRequest, AuthResponse } from "@/types/auth";
+import type { LoginRequest, RegisterRequest, VerifyEmailRequest, AuthResponse } from "@/types/auth";
 import type { User } from "@/types/user";
 
 export interface AuthContextValue {
@@ -22,6 +22,7 @@ export interface AuthContextValue {
 
   login(data: LoginRequest): Promise<void>;
   register(data: RegisterRequest): Promise<void>;
+  verifyEmail(data: VerifyEmailRequest): Promise<void>;
   logout(): Promise<void>;
 
   updateUser(user: User): void;
@@ -96,7 +97,14 @@ export function AuthProvider({ children }: Props) {
 
   const register = useCallback(
     async (data: RegisterRequest) => {
-      await authenticate(await authApi.register(data));
+      await authApi.register(data);
+    },
+    [],
+  );
+
+  const verifyEmail = useCallback(
+    async (data: VerifyEmailRequest) => {
+      await authenticate(await authApi.verifyEmail(data));
     },
     [authenticate],
   );
@@ -122,6 +130,7 @@ export function AuthProvider({ children }: Props) {
         isAuthenticated: Boolean(user),
         login,
         register,
+        verifyEmail,
         logout,
         updateUser,
       }}

@@ -13,6 +13,7 @@ import {
   ForgotPasswordPage,
   VerifyResetCodePage,
   ResetPasswordPage,
+  VerifyEmailPage,
   ProfilePage,
   FollowingPage,
   FollowersPage,
@@ -86,6 +87,10 @@ export const routes = createBrowserRouter([
       {
         path: APP_ROUTES.REGISTER,
         element: <RegisterPage />,
+      },
+      {
+        path: APP_ROUTES.VERIFY_EMAIL,
+        element: <VerifyEmailPage />,
       },
       {
         path: APP_ROUTES.FORGOT_PASSWORD,

@@ -8,6 +8,7 @@ export const APP_ROUTES = {
   FORGOT_PASSWORD: "/forgot-password",
   VERIFY_RESET_CODE: "/verify-reset-code",
   RESET_PASSWORD: "/reset-password",
+  VERIFY_EMAIL: "/verify-email",
   SEARCH: "/search",
   BOOKMARKS: "/bookmarks",
 

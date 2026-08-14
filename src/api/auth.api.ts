@@ -10,6 +10,8 @@ import type {
   ResetPasswordRequest,
   RegisterRequest,
   VerifyResetCodeRequest,
+  VerifyEmailRequest,
+  ResendVerificationCodeRequest
 } from "@/types/auth";
 import type { User } from "@/types/user";
 import { MOCK_ENABLED } from "@/mock/config";
@@ -22,7 +24,17 @@ const realAuthApi = {
     }),
 
   register: (data: RegisterRequest) =>
-    apiClient.post<AuthResponse>(ENDPOINTS.auth.register, data, {
+    apiClient.post<MessageResponse>(ENDPOINTS.auth.register, data, {
+      skipAuth: true,
+    }),
+
+  verifyEmail: (data: VerifyEmailRequest) =>
+    apiClient.post<AuthResponse>(ENDPOINTS.auth.verifyEmail, data, {
+      skipAuth: true,
+    }),
+
+  resendVerificationCode: (data: ResendVerificationCodeRequest) =>
+    apiClient.post<MessageResponse>(ENDPOINTS.auth.resendVerificationCode, data, {
       skipAuth: true,
     }),
 

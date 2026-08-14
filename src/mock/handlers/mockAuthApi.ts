@@ -9,6 +9,8 @@ import type {
   ResetPasswordRequest,
   RegisterRequest,
   VerifyResetCodeRequest,
+  VerifyEmailRequest,
+  ResendVerificationCodeRequest,
 } from "@/types/auth";
 import type { User } from "@/types/user";
 import { currentUser } from "@/mock/data/users";
@@ -16,7 +18,6 @@ import { currentUser } from "@/mock/data/users";
 import { delay } from "@/mock/utils/delay";
 
 let pendingPasswordChange = false;
-const mockPasswordChangeCode = "123456";
 
 export const mockAuthApi = {
   async login(data: LoginRequest): Promise<AuthResponse> {
@@ -32,15 +33,39 @@ export const mockAuthApi = {
     };
   },
 
-  async register(data: RegisterRequest): Promise<AuthResponse> {
+  async register(data: RegisterRequest): Promise<MessageResponse> {
     await delay();
+    void data;
+
+    return {
+      message: "Код підтвердження надіслано на вашу електронну пошту.",
+    };
+  },
+
+  async verifyEmail(data: VerifyEmailRequest): Promise<AuthResponse> {
+    await delay();
+
+    if (!data.code || data.code.trim().length === 0) {
+      throw new Error("Код підтвердження обов'язковий.");
+    }
 
     return {
       userId: currentUser.id,
-      username: data.username,
+      username: data.email.split("@")[0],
       accessToken: "mock-access-token",
       refreshToken: "mock-refresh-token",
       accessTokenExpiresAt: new Date(Date.now() + 15 * 60 * 1000).toISOString(),
+    };
+  },
+
+  async resendVerificationCode(
+    data: ResendVerificationCodeRequest,
+  ): Promise<MessageResponse> {
+    await delay();
+    void data;
+
+    return {
+      message: "Новий код підтвердження надіслано на вашу електронну пошту.",
     };
   },
 
@@ -89,7 +114,7 @@ export const mockAuthApi = {
         throw new Error("There is no pending password change request.");
       }
 
-      if (data.code !== mockPasswordChangeCode) {
+      if (!data.code.trim()) {
         throw new Error("Confirmation code is invalid or expired.");
       }
 

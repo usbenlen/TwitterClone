@@ -32,6 +32,8 @@ export const ENDPOINTS = {
     resetPassword: "auth/reset-password",
 
     changePassword: "auth/change-password",
+    verifyEmail: "auth/verify-email",
+    resendVerificationCode: "auth/resend-verification-code",
   },
   users: {
     all: "users",
