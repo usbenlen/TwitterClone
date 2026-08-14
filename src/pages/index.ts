@@ -12,7 +12,6 @@ export { default as SearchPage } from "@/pages/search/SearchPage";
 export { default as BookmarksPage } from "@/pages/bookmarks/BookmarksPage";
 
 export { default as SettingsPage } from "@/pages/settings/SettingsPage";
-export { default as ChangePasswordPage } from "@/pages/settings/ChangePasswordPage";
 
 export { default as ProfilePage } from "@/pages/profile/ProfilePage";
 export { default as FollowingPage } from "@/pages/profile/FollowingPage";

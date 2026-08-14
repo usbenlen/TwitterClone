@@ -12,6 +12,7 @@ import { ApiError } from "@/api/client";
 import { AuthShell } from "@/components/auth/AuthShell";
 import { Input, Button } from "@/ui";
 import { APP_ROUTES } from "@/constants/routes";
+import { type ChangePasswordFormValues } from "@/schemas/auth.schema";
 
 const resetPasswordSchema = z
   .object({
@@ -32,15 +33,22 @@ type ResetPasswordFormValues = z.infer<typeof resetPasswordSchema>;
 interface LocationState {
   email?: string;
   code?: string;
+  currentPassword?: string;
 }
 
-export default function ResetPasswordPage() {
+interface ResetPasswordPageProps {
+  variant?: "auth" | "settings";
+}
+
+export default function ResetPasswordPage({ variant = "auth" }: ResetPasswordPageProps) {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const { email, code } = (location.state as LocationState) ?? {};
+  const isSettings = variant === "settings";
+  const { email, code, currentPassword } = (location.state as LocationState) ?? {};
 
   const [serverError, setServerError] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   const {
     register,
@@ -54,24 +62,45 @@ export default function ResetPasswordPage() {
     },
   });
 
-  if (!email || !code) {
-    navigate(APP_ROUTES.FORGOT_PASSWORD, { replace: true });
-    return null;
+  if (isSettings) {
+    if (!email || !code || !currentPassword) {
+      navigate(APP_ROUTES.SETTINGS, { replace: true });
+      return null;
+    }
+  } else {
+    if (!email || !code) {
+      navigate(APP_ROUTES.FORGOT_PASSWORD, { replace: true });
+      return null;
+    }
   }
 
   const onSubmit = async (values: ResetPasswordFormValues) => {
     setServerError(null);
 
     try {
-      await authApi.resetPassword({
-        email,
-        code,
-        newPassword: values.password,
-      });
+      if (isSettings) {
+        const payload: ChangePasswordFormValues = {
+          currentPassword: currentPassword!,
+          code: code!,
+          newPassword: values.password,
+          confirmPassword: values.confirmPassword,
+        };
+        const response = await authApi.changePassword(payload);
+        setSuccessMessage(response.message || "Пароль успішно змінено.");
+        setTimeout(() => {
+          navigate(APP_ROUTES.SETTINGS, { replace: true });
+        }, 2000);
+      } else {
+        await authApi.resetPassword({
+          email: email!,
+          code: code!,
+          newPassword: values.password,
+        });
 
-      navigate(APP_ROUTES.LOGIN, {
-        replace: true,
-      });
+        navigate(APP_ROUTES.LOGIN, {
+          replace: true,
+        });
+      }
     } catch (error) {
       setServerError(
         error instanceof ApiError
@@ -81,25 +110,43 @@ export default function ResetPasswordPage() {
     }
   };
 
-  return (
-    <AuthShell
-      title="Новий пароль"
-      subtitle="Введіть новий пароль для вашого акаунта."
-      footer={
-        <>
-          <span>Згадали пароль?</span>{" "}
-          <a
-            href={APP_ROUTES.LOGIN}
-            className="font-semibold text-primary hover:underline"
-          >
-            Увійти
-          </a>
-        </>
-      }
+  const title = isSettings ? "Новий пароль" : "Новий пароль";
+  const subtitle = isSettings
+    ? "Введіть новий пароль для вашого акаунта, щоб завершити зміну."
+    : "Введіть новий пароль для вашого акаунта.";
+
+  const footer = isSettings ? (
+    <button
+      type="button"
+      onClick={() => navigate(APP_ROUTES.SETTINGS)}
+      className="font-semibold text-primary hover:underline cursor-pointer bg-transparent border-0"
     >
+      Назад до налаштувань
+    </button>
+  ) : (
+    <>
+      <span>Згадали пароль?</span>{" "}
+      <button
+        type="button"
+        onClick={() => navigate(APP_ROUTES.LOGIN)}
+        className="font-semibold text-primary hover:underline cursor-pointer bg-transparent border-0"
+      >
+        Увійти
+      </button>
+    </>
+  );
+
+  return (
+    <AuthShell title={title} subtitle={subtitle} footer={footer}>
       {serverError && (
         <p className="rounded-md bg-destructive/10 p-3 text-sm text-destructive">
           {serverError}
+        </p>
+      )}
+
+      {successMessage && (
+        <p className="rounded-md bg-green-500/10 p-3 text-sm text-green-600">
+          {successMessage}
         </p>
       )}
 
@@ -111,6 +158,7 @@ export default function ResetPasswordPage() {
           placeholder="••••••••"
           error={errors.password?.message}
           {...register("password")}
+          disabled={isSubmitting || !!successMessage}
         />
 
         <Input
@@ -120,9 +168,16 @@ export default function ResetPasswordPage() {
           placeholder="••••••••"
           error={errors.confirmPassword?.message}
           {...register("confirmPassword")}
+          disabled={isSubmitting || !!successMessage}
         />
 
-        <Button type="submit" size="lg" fullWidth isLoading={isSubmitting}>
+        <Button
+          type="submit"
+          size="lg"
+          fullWidth
+          isLoading={isSubmitting}
+          disabled={!!successMessage}
+        >
           Змінити пароль
         </Button>
       </form>

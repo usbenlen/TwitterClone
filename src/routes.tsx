@@ -17,7 +17,6 @@ import {
   FollowingPage,
   FollowersPage,
   SettingsPage,
-  ChangePasswordPage,
   SearchPage,
   BookmarksPage,
 } from "@/pages";
@@ -64,11 +63,15 @@ export const routes = createBrowserRouter([
             path: APP_ROUTES.SETTINGS,
             element: <SettingsPage />,
           },
-          {
-            path: APP_ROUTES.SETTINGS_CHANGE_PASSWORD,
-            element: <ChangePasswordPage />,
-          },
         ],
+      },
+      {
+        path: APP_ROUTES.SETTINGS_CHANGE_PASSWORD,
+        element: <VerifyResetCodePage variant="settings" />,
+      },
+      {
+        path: APP_ROUTES.SETTINGS_CHANGE_PASSWORD_RESET,
+        element: <ResetPasswordPage variant="settings" />,
       },
     ],
   },

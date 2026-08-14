@@ -20,6 +20,7 @@ export const APP_ROUTES = {
   SETTINGS: "/settings",
   SETTINGS_THEME: "/settings/theme",
   SETTINGS_CHANGE_PASSWORD: "/settings/change-password",
+  SETTINGS_CHANGE_PASSWORD_RESET: "/settings/change-password/reset",
 
   NOT_FOUND: "*",
 
