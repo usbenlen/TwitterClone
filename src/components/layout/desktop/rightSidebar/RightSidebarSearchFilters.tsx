@@ -7,7 +7,7 @@ export default function RightSidebarSearchFilters() {
     <RightSidebarCard title="Search filters">
       <div className="space-y-5">
         <div>
-          <h3 className="mb-2 text-sm font-bold text-foreground">People</h3>
+          <h3 className="mb-2 text-sm font-bold text-foreground cursor-default">People</h3>
 
           <div className="space-y-2">
             <button
@@ -33,7 +33,7 @@ export default function RightSidebarSearchFilters() {
         </div>
 
         <div>
-          <h3 className="mb-2 text-sm font-bold text-foreground">Location</h3>
+          <h3 className="mb-2 text-sm font-bold text-foreground cursor-default">Location</h3>
 
           <div className="space-y-2">
             <button

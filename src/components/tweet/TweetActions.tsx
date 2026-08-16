@@ -83,7 +83,7 @@ export default function TweetActions({
 
       <div className="ml-auto flex items-center gap-1">
         <div
-          className="flex min-w-0 items-center justify-center gap-2 rounded-full p-0.5"
+          className="flex min-w-0 items-center justify-center gap-2 rounded-full p-0.5 cursor-default select-none"
           title="Views"
           aria-label={`${viewsCount} views`}
         >

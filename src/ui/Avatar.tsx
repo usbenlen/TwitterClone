@@ -35,7 +35,7 @@ export function Avatar({ src, name, fallbackName, className }: AvatarProps) {
           className="size-full object-cover"
         />
       ) : (
-        <span aria-hidden="true">{initials}</span>
+        <span aria-hidden="true" className="cursor-default select-none">{initials}</span>
       )}
     </div>
   );
