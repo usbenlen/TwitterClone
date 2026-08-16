@@ -10,13 +10,17 @@ import type { Tweet } from "@/types/tweet";
 interface TweetHeaderProps {
   author: Tweet["author"];
   createdAt: string;
+  updatedAt?: string | null;
   onDelete?: () => void;
+  onEdit?: () => void;
 }
 
 export default function TweetHeader({
   author,
   createdAt,
+  updatedAt,
   onDelete,
+  onEdit,
 }: TweetHeaderProps) {
   return (
     <div className="relative flex items-start justify-between gap-2 min-w-0">
@@ -45,15 +49,22 @@ export default function TweetHeader({
         <span className="shrink-0 text-muted-foreground">
           {formatRelativeTime(createdAt)}
         </span>
+
+        {updatedAt && (
+          <>
+            <span className="text-muted-foreground">·</span>
+            <span className="shrink-0 text-muted-foreground italic">
+              Відредаговано
+            </span>
+          </>
+        )}
       </div>
 
-      {onDelete && (
+      {(onDelete || onEdit) && (
         <div className="absolute right-0 top-0">
-          <ActionsMenu onDelete={onDelete} />
+          <ActionsMenu onDelete={onDelete} onEdit={onEdit} />
         </div>
       )}
     </div>
   );
 }
-
-

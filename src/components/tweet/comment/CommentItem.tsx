@@ -1,4 +1,5 @@
 import { BadgeCheck } from "lucide-react";
+import { useState } from "react";
 import { Link } from "react-router";
 
 import { useCommentActions } from "@/hooks";
@@ -6,6 +7,7 @@ import { useCommentActions } from "@/hooks";
 import { Avatar, TwemojiText } from "@/ui";
 
 import { ActionsMenu, TweetActions } from "@/components/tweet";
+import { EditModal } from "@/components/modal";
 
 import { APP_ROUTES } from "@/constants/routes";
 import { formatRelativeTime } from "@/utils/format";
@@ -19,6 +21,8 @@ interface CommentItemProps {
   currentUserId?: string;
   depth?: number;
 
+  onUpdate: (commentId: string, content: string) => Promise<boolean>;
+
   onReply: (comment: Comment) => void;
   onDelete: (commentId: string) => Promise<void>;
 }
@@ -31,8 +35,10 @@ export default function CommentItem({
   depth = 0,
   onReply,
   onDelete,
+  onUpdate,
 }: CommentItemProps) {
   const actions = useCommentActions(comment);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
   const displayName = comment.author.displayName?.trim() || comment.author.username;
 
@@ -86,6 +92,15 @@ export default function CommentItem({
               <span className="text-sm text-muted-foreground">
                 · {formatRelativeTime(comment.createdAt)}
               </span>
+
+              {comment.updatedAt && (
+                <>
+                  <span className="text-sm text-muted-foreground">·</span>
+                  <span className="text-sm text-muted-foreground italic">
+                    Відредаговано
+                  </span>
+                </>
+              )}
             </div>
 
             {/* Three dots - тільки для власного коментаря */}
@@ -95,6 +110,7 @@ export default function CommentItem({
                   onDelete={() => {
                     void onDelete(comment.id);
                   }}
+                  onEdit={() => setIsEditModalOpen(true)}
                 />
               </div>
             )}
@@ -141,12 +157,23 @@ export default function CommentItem({
                   depth={depth + 1}
                   onReply={onReply}
                   onDelete={onDelete}
+                  onUpdate={onUpdate}
                 />
               ))}
             </div>
           )}
         </div>
       </div>
+
+      <EditModal
+        open={isEditModalOpen}
+        title="Редагувати коментар"
+        initialContent={comment.content}
+        onClose={() => setIsEditModalOpen(false)}
+        onSave={async (content) => {
+          await onUpdate(comment.id, content);
+        }}
+      />
     </article>
   );
 }

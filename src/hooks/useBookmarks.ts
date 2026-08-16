@@ -51,12 +51,24 @@ export function useBookmarks() {
 
     window.addEventListener("tweet-deleted", handleTweetDeleted);
 
+    const handleTweetUpdated = (e: Event) => {
+      const customEvent = e as CustomEvent<{ tweet: Tweet }>;
+      setTweets((prev) =>
+        prev.map((t) =>
+          t.id === customEvent.detail.tweet.id ? customEvent.detail.tweet : t,
+        ),
+      );
+    };
+
+    window.addEventListener("tweet-updated", handleTweetUpdated);
+
     return () => {
       window.removeEventListener(
         "tweet-bookmark-toggled",
         handleBookmarkToggle,
       );
       window.removeEventListener("tweet-deleted", handleTweetDeleted);
+      window.removeEventListener("tweet-updated", handleTweetUpdated);
     };
   }, []);
 

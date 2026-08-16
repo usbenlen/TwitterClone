@@ -42,6 +42,22 @@ export function useFeed() {
     };
   }, []);
 
+  useEffect(() => {
+    const handleTweetUpdated = (e: Event) => {
+      const customEvent = e as CustomEvent<{ tweet: Tweet }>;
+      setTweets((prev) =>
+        prev.map((t) =>
+          t.id === customEvent.detail.tweet.id ? customEvent.detail.tweet : t,
+        ),
+      );
+    };
+
+    window.addEventListener("tweet-updated", handleTweetUpdated);
+    return () => {
+      window.removeEventListener("tweet-updated", handleTweetUpdated);
+    };
+  }, []);
+
   const prepend = useCallback((tweet: Tweet) => {
     setTweets((prev) => [tweet, ...prev]);
   }, []);

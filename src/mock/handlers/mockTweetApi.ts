@@ -75,6 +75,7 @@ export const mockTweetApi = {
       bookmarkedByMe: false,
 
       createdAt: new Date().toISOString(),
+      updatedAt: null,
 
       location: payload.location ?? null,
       embed: payload.embed ?? null,
@@ -167,6 +168,30 @@ export const mockTweetApi = {
     );
 
     setTweets(updatedTweets);
+  },
+
+  async update(id: string, data: Partial<CreateTweetRequest>): Promise<Tweet> {
+    await delay(200);
+
+    const tweetIndex = tweets.findIndex((t) => t.id === id);
+    if (tweetIndex === -1) throw new Error("Пост не знайдено.");
+
+    const existing = tweets[tweetIndex];
+    if (existing.author.id !== currentUser.id)
+      throw new Error("Ви не можете редагувати цей пост.");
+
+    const updated: Tweet = {
+      ...existing,
+      content: data.content ?? existing.content,
+      location: data.location !== undefined ? data.location : existing.location,
+      updatedAt: new Date().toISOString(),
+    };
+
+    const nextTweets = [...tweets];
+    nextTweets[tweetIndex] = updated;
+    setTweets(nextTweets);
+
+    return updated;
   },
 
   async delete(id: string): Promise<void> {

@@ -153,6 +153,28 @@ export function useTweetComments(
     }
   };
 
+  const updateComment = async (commentId: string, content: string) => {
+    setError(null);
+
+    try {
+      const updated = await commentApi.update(commentId, { content });
+
+      setComments((current) =>
+        current.map((comment) =>
+          comment.id === commentId ? updated : comment,
+        ),
+      );
+
+      return true;
+    } catch (error) {
+      setError(
+        error instanceof Error ? error.message : "Не вдалося оновити коментар.",
+      );
+
+      return false;
+    }
+  };
+
   return {
     open,
     comments,
@@ -167,5 +189,6 @@ export function useTweetComments(
 
     createComment,
     deleteComment,
+    updateComment,
   };
 }

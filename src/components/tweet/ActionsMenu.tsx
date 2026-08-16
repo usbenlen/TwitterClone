@@ -1,8 +1,9 @@
 import { useEffect, useRef, useState } from "react";
-import { MoreHorizontal, Trash2, type LucideIcon } from "lucide-react";
+import { MoreHorizontal, Trash2, Pencil, type LucideIcon } from "lucide-react";
 
 interface ActionsMenuProps {
   onDelete?: () => void;
+  onEdit?: () => void;
 }
 
 interface ActionButton {
@@ -12,8 +13,17 @@ interface ActionButton {
   onClick: () => void;
 }
 
-export default function ActionsMenu({ onDelete }: ActionsMenuProps) {
+export default function ActionsMenu({ onDelete, onEdit }: ActionsMenuProps) {
   const ACTION_BUTTONS: readonly ActionButton[] = [
+    ...(onEdit
+      ? [
+          {
+            icon: Pencil,
+            label: "Редагувати",
+            onClick: onEdit,
+          },
+        ]
+      : []),
     ...(onDelete
       ? [
           {

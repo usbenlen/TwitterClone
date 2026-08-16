@@ -12,6 +12,8 @@ import {
   useClickOrDrag,
 } from "@/hooks";
 
+import { EditModal } from "@/components/modal";
+
 import { Avatar } from "@/ui";
 
 import {
@@ -45,6 +47,8 @@ export default function TweetCard({
   const [commentModalTarget, setCommentModalTarget] = useState<Comment | null>(
     null,
   );
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+
 
   const isOwnTweet = user?.id === tweet.author.id;
 
@@ -59,6 +63,18 @@ export default function TweetCard({
       }
     } catch (error) {
       console.error("Failed to delete tweet", error);
+    }
+  };
+
+  const handleUpdate = async (content: string) => {
+    try {
+      const updatedTweet = await tweetApi.update(tweet.id, { content });
+      window.dispatchEvent(
+        new CustomEvent("tweet-updated", { detail: { tweet: updatedTweet } }),
+      );
+    } catch (error) {
+      console.error("Failed to update tweet", error);
+      throw error;
     }
   };
 
@@ -109,7 +125,9 @@ export default function TweetCard({
           <TweetHeader
             author={tweet.author}
             createdAt={tweet.createdAt}
+            updatedAt={tweet.updatedAt}
             onDelete={isOwnTweet ? handleDelete : undefined}
+            onEdit={isOwnTweet ? () => setIsEditModalOpen(true) : undefined}
           />
 
           <TweetContent tweet={tweet} />
@@ -138,15 +156,21 @@ export default function TweetCard({
           error={comments.error}
           replyingToUsername={tweet.author.username}
           onSubmit={async (content) => {
-            return comments.createComment(
-              content,
-              commentModalTarget?.id ?? null,
-            );
+            return comments.createComment(content, null);
           }}
           onDelete={comments.deleteComment}
+          onUpdate={comments.updateComment}
           onOpenReplyModal={openCommentModal}
         />
       )}
+
+      <EditModal
+        open={isEditModalOpen}
+        title="Редагувати пост"
+        initialContent={tweet.content}
+        onClose={() => setIsEditModalOpen(false)}
+        onSave={handleUpdate}
+      />
 
       <CommentModal
         open={isCommentModalOpen}

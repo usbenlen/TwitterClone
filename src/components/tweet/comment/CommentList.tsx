@@ -8,6 +8,7 @@ interface CommentListProps {
   currentUserId?: string;
   onReply: (comment: Comment) => void;
   onDelete: (commentId: string) => Promise<void>;
+  onUpdate: (commentId: string, content: string) => Promise<boolean>;
 }
 
 export default function CommentList({
@@ -16,6 +17,7 @@ export default function CommentList({
   currentUserId,
   onReply,
   onDelete,
+  onUpdate,
 }: CommentListProps) {
   return (
     <div className="divide-y divide-border">
@@ -29,6 +31,7 @@ export default function CommentList({
           depth={0}
           onReply={onReply}
           onDelete={onDelete}
+          onUpdate={onUpdate}
         />
       ))}
     </div>

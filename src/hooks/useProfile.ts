@@ -139,6 +139,28 @@ export function useProfile(
     };
   }, [user, activeTab, loadedTabs]);
 
+  useEffect(() => {
+    const handleTweetUpdated = (e: Event) => {
+      const customEvent = e as CustomEvent<{ tweet: Tweet }>;
+      const updatedTweet = customEvent.detail.tweet;
+
+      setTabTweets((current) => {
+        const next = { ...current };
+        (Object.keys(next) as ProfileTab[]).forEach((tab) => {
+          next[tab] = next[tab].map((t) =>
+            t.id === updatedTweet.id ? updatedTweet : t,
+          );
+        });
+        return next;
+      });
+    };
+
+    window.addEventListener("tweet-updated", handleTweetUpdated);
+    return () => {
+      window.removeEventListener("tweet-updated", handleTweetUpdated);
+    };
+  }, []);
+
   const updateUser = (updatedUser: User) => {
     setUser(updatedUser);
   };
