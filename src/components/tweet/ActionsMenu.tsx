@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import { MoreHorizontal, Trash2, type LucideIcon } from "lucide-react";
 
-interface CommentActionsMenuProps {
-  onDelete: () => void;
+interface ActionsMenuProps {
+  onDelete?: () => void;
 }
 
 interface ActionButton {
@@ -12,16 +12,18 @@ interface ActionButton {
   onClick: () => void;
 }
 
-export default function CommentActionsMenu({
-  onDelete,
-}: CommentActionsMenuProps) {
+export default function ActionsMenu({ onDelete }: ActionsMenuProps) {
   const ACTION_BUTTONS: readonly ActionButton[] = [
-    {
-      icon: Trash2,
-      label: "Видалити",
-      variant: "danger",
-      onClick: onDelete,
-    },
+    ...(onDelete
+      ? [
+          {
+            icon: Trash2,
+            label: "Видалити",
+            variant: "danger" as const,
+            onClick: onDelete,
+          },
+        ]
+      : []),
   ];
 
   const [open, setOpen] = useState(false);
@@ -45,6 +47,8 @@ export default function CommentActionsMenu({
     };
   }, [open]);
 
+  if (ACTION_BUTTONS.length === 0) return null;
+
   return (
     <div ref={menuRef} className="relative">
       <button
@@ -53,7 +57,7 @@ export default function CommentActionsMenu({
           event.stopPropagation();
           setOpen((current) => !current);
         }}
-        className="cursor-pointer p-0.5 rounded-full text-muted-foreground transition-colors hover:text-foreground"
+        className="cursor-pointer p-0.5 rounded-full text-muted-foreground transition-colors hover:text-foreground flex items-center justify-center"
         aria-label="Додаткові дії"
         aria-expanded={open}
       >
@@ -62,7 +66,7 @@ export default function CommentActionsMenu({
 
       {open && (
         <div
-          className="absolute right-0 top-full z-40 mt-1 min-w-44 overflow-hidden rounded-xl border border-border bg-background py-1 shadow-xl"
+          className="absolute right-0 top-full z-40 mt-1 min-w-44 overflow-hidden rounded-xl border border-border bg-background shadow-xl"
           onClick={(event) => {
             event.stopPropagation();
           }}
@@ -80,8 +84,8 @@ export default function CommentActionsMenu({
                 }}
                 className={
                   action.variant === "danger"
-                    ? "flex w-full items-center gap-3 px-4 py-2.5 text-sm font-medium text-destructive transition-colors hover:bg-destructive/10"
-                    : "flex w-full items-center gap-3 px-4 py-2.5 text-sm font-medium transition-colors hover:bg-muted"
+                    ? "flex w-full items-center gap-3 px-4 py-2.5 text-sm font-medium text-destructive transition-colors hover:bg-destructive/10 first:rounded-t-xl last:rounded-b-xl"
+                    : "flex w-full items-center gap-3 px-4 py-2.5 text-sm font-medium transition-colors hover:bg-muted first:rounded-t-xl last:rounded-b-xl"
                 }
               >
                 <Icon size={18} />

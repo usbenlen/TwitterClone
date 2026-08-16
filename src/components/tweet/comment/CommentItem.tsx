@@ -5,8 +5,7 @@ import { useCommentActions } from "@/hooks";
 
 import { Avatar, TwemojiText } from "@/ui";
 
-import { TweetActions } from "@/components/tweet";
-import { CommentActionsMenu } from "@/components/tweet/comment";
+import { ActionsMenu, TweetActions } from "@/components/tweet";
 
 import { APP_ROUTES } from "@/constants/routes";
 import { formatRelativeTime } from "@/utils/format";
@@ -92,7 +91,7 @@ export default function CommentItem({
             {/* Three dots - тільки для власного коментаря */}
             {isOwnComment && (
               <div className="absolute right-0 top-0">
-                <CommentActionsMenu
+                <ActionsMenu
                   onDelete={() => {
                     void onDelete(comment.id);
                   }}

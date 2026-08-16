@@ -28,6 +28,20 @@ export function useFeed() {
     load();
   }, [load]);
 
+  useEffect(() => {
+    const handleTweetDeleted = (e: Event) => {
+      const customEvent = e as CustomEvent<{ tweetId: string }>;
+      setTweets((prev) =>
+        prev.filter((t) => t.id !== customEvent.detail.tweetId),
+      );
+    };
+
+    window.addEventListener("tweet-deleted", handleTweetDeleted);
+    return () => {
+      window.removeEventListener("tweet-deleted", handleTweetDeleted);
+    };
+  }, []);
+
   const prepend = useCallback((tweet: Tweet) => {
     setTweets((prev) => [tweet, ...prev]);
   }, []);

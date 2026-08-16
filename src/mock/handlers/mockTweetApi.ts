@@ -168,4 +168,9 @@ export const mockTweetApi = {
 
     setTweets(updatedTweets);
   },
+
+  async delete(id: string): Promise<void> {
+    await delay(180);
+    setTweets(tweets.filter((t) => t.id !== id));
+  },
 };

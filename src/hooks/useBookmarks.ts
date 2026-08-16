@@ -41,11 +41,22 @@ export function useBookmarks() {
     };
 
     window.addEventListener("tweet-bookmark-toggled", handleBookmarkToggle);
+
+    const handleTweetDeleted = (e: Event) => {
+      const customEvent = e as CustomEvent<{ tweetId: string }>;
+      setTweets((prev) =>
+        prev.filter((t) => t.id !== customEvent.detail.tweetId),
+      );
+    };
+
+    window.addEventListener("tweet-deleted", handleTweetDeleted);
+
     return () => {
       window.removeEventListener(
         "tweet-bookmark-toggled",
         handleBookmarkToggle,
       );
+      window.removeEventListener("tweet-deleted", handleTweetDeleted);
     };
   }, []);
 

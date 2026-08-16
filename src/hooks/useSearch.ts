@@ -60,6 +60,20 @@ export function useSearch(query: string) {
     };
   }, [query]);
 
+  useEffect(() => {
+    const handleTweetDeleted = (e: Event) => {
+      const customEvent = e as CustomEvent<{ tweetId: string }>;
+      setPosts((prev) =>
+        prev.filter((t) => t.id !== customEvent.detail.tweetId),
+      );
+    };
+
+    window.addEventListener("tweet-deleted", handleTweetDeleted);
+    return () => {
+      window.removeEventListener("tweet-deleted", handleTweetDeleted);
+    };
+  }, []);
+
   return {
     users,
     posts,

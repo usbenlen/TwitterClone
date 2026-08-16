@@ -1,6 +1,7 @@
 import { BadgeCheck } from "lucide-react";
 import { Link } from "react-router";
 
+import ActionsMenu from "@/components/tweet/ActionsMenu";
 import { APP_ROUTES } from "@/constants/routes";
 import { formatRelativeTime } from "@/utils/format";
 
@@ -9,12 +10,17 @@ import type { Tweet } from "@/types/tweet";
 interface TweetHeaderProps {
   author: Tweet["author"];
   createdAt: string;
+  onDelete?: () => void;
 }
 
-export default function TweetHeader({ author, createdAt }: TweetHeaderProps) {
+export default function TweetHeader({
+  author,
+  createdAt,
+  onDelete,
+}: TweetHeaderProps) {
   return (
-    <div className="min-w-0">
-      <div className="flex flex-wrap items-center gap-1 text-sm">
+    <div className="relative flex items-start justify-between gap-2 min-w-0">
+      <div className="flex min-w-0 flex-wrap items-center gap-1 pr-8 text-sm">
         <Link
           to={APP_ROUTES.profile(author.username)}
           className="truncate font-bold text-foreground hover:underline"
@@ -40,6 +46,14 @@ export default function TweetHeader({ author, createdAt }: TweetHeaderProps) {
           {formatRelativeTime(createdAt)}
         </span>
       </div>
+
+      {onDelete && (
+        <div className="absolute right-0 top-0">
+          <ActionsMenu onDelete={onDelete} />
+        </div>
+      )}
     </div>
   );
 }
+
+

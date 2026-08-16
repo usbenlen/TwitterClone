@@ -1,7 +1,10 @@
 import { useState } from "react";
 import { useNavigate } from "react-router";
 
+import { tweetApi } from "@/api/tweet.api";
+
 import {
+  useAuth,
   useTweetLike,
   useTweetRepost,
   useTweetBookmark,
@@ -37,10 +40,27 @@ export default function TweetCard({
   variant = "feed",
 }: TweetCardProps) {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [isCommentModalOpen, setIsCommentModalOpen] = useState(false);
   const [commentModalTarget, setCommentModalTarget] = useState<Comment | null>(
     null,
   );
+
+  const isOwnTweet = user?.id === tweet.author.id;
+
+  const handleDelete = async () => {
+    try {
+      await tweetApi.delete(tweet.id);
+      window.dispatchEvent(
+        new CustomEvent("tweet-deleted", { detail: { tweetId: tweet.id } }),
+      );
+      if (variant === "post") {
+        navigate(APP_ROUTES.HOME);
+      }
+    } catch (error) {
+      console.error("Failed to delete tweet", error);
+    }
+  };
 
   const like = useTweetLike(tweet);
   const repost = useTweetRepost(tweet);
@@ -86,7 +106,11 @@ export default function TweetCard({
         </div>
 
         <div className="min-w-0">
-          <TweetHeader author={tweet.author} createdAt={tweet.createdAt} />
+          <TweetHeader
+            author={tweet.author}
+            createdAt={tweet.createdAt}
+            onDelete={isOwnTweet ? handleDelete : undefined}
+          />
 
           <TweetContent tweet={tweet} />
 
