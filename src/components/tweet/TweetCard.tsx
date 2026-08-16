@@ -6,6 +6,7 @@ import {
   useTweetRepost,
   useTweetBookmark,
   useTweetComments,
+  useClickOrDrag,
 } from "@/hooks";
 
 import { Avatar } from "@/ui";
@@ -61,25 +62,16 @@ export default function TweetCard({
     setCommentModalTarget(null);
   };
 
-  const handleCardClick = (event: React.MouseEvent<HTMLElement>) => {
+  const clickOrDragHandlers = useClickOrDrag(() => {
     if (!navigateToPost || isCommentModalOpen) return;
 
-    const target = event.target as HTMLElement;
-
-    if (
-      target.closest(
-        'button, a, textarea, input, video, [data-tweet-interactive="true"]',
-      )
-    )
-      return;
-
     navigate(APP_ROUTES.post(tweet.id));
-  };
+  });
 
   return (
     <>
       <article
-        onClick={handleCardClick}
+        {...(navigateToPost ? clickOrDragHandlers : {})}
         className={`grid grid-cols-[40px_minmax(0,1fr)] gap-x-3 border-b border-border px-4 py-3 transition-colors ${
           navigateToPost ? "cursor-pointer hover:bg-muted/40" : ""
         }`}
