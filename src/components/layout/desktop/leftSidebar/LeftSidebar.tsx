@@ -1,4 +1,3 @@
-/** @format */
 import { useAuth } from "@/hooks/useAuth";
 
 import { Navigation } from "@/components/layout/desktop/navigation";

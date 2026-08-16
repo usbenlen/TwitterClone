@@ -1,19 +1,19 @@
-/** @format */
-
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { Pencil, X } from "lucide-react";
 
-import type { Location, User } from "@/types";
 import type { UpdateProfileRequest } from "@/api/user.api";
 
 import { useLocationSearch } from "@/hooks/location/useLocationSearch";
+import { invalidateImageCache } from "@/hooks/useImageCache";
+
+import { Avatar, Button, Input } from "@/ui";
 
 import LocationPicker from "@/components/composer/location/LocationPicker";
 import { ConfirmModal } from "@/components/modal/ConfirmModal";
 
-import { Avatar, Button, Input } from "@/ui";
+import { MAX_BIO_LENGTH, MAX_NAME_LENGTH } from "@/constants/app";
 
-import { MAX_BIO_LENGTH } from "@/constants/app";
+import type { Location, User } from "@/types";
 
 interface EditProfileModalProps {
   open: boolean;
@@ -22,7 +22,19 @@ interface EditProfileModalProps {
   onSave: (data: UpdateProfileRequest) => Promise<void>;
 }
 
-export default function EditProfileModal({
+export default function EditProfileModal(props: EditProfileModalProps) {
+  const { open, user } = props;
+  if (!open) return null;
+
+  return (
+    <EditProfileModalInner
+      key={open ? `edit-profile-${user.id}` : "closed"}
+      {...props}
+    />
+  );
+}
+
+function EditProfileModalInner({
   open,
   user,
   onClose,
@@ -31,7 +43,9 @@ export default function EditProfileModal({
   const avatarInputRef = useRef<HTMLInputElement | null>(null);
   const bannerInputRef = useRef<HTMLInputElement | null>(null);
 
-  const [displayName, setDisplayName] = useState(user.displayName);
+  const initialDisplayName = user.displayName?.trim() || user.username;
+
+  const [displayName, setDisplayName] = useState(initialDisplayName);
   const [bio, setBio] = useState(user.bio ?? "");
   const [location, setLocation] = useState<Location | null>(
     user.location ?? null,
@@ -46,35 +60,23 @@ export default function EditProfileModal({
   const [isLocationOpen, setIsLocationOpen] = useState(false);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
 
+  const [removeLocation, setRemoveLocation] = useState(false);
+  const [removeAvatar, setRemoveAvatar] = useState(false);
+  const [removeBanner, setRemoveBanner] = useState(false);
+
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const locationSearch = useLocationSearch();
 
-  useEffect(() => {
-    if (!open) return;
-
-    setDisplayName(user.displayName);
-    setBio(user.bio ?? "");
-    setLocation(user.location ?? null);
-
-    setAvatar(null);
-    setBanner(null);
-
-    setAvatarPreview(user.avatarUrl);
-    setBannerPreview(user.bannerUrl);
-
-    setIsLocationOpen(false);
-    locationSearch.reset();
-
-    setError(null);
-  }, [open, user]);
-
   const hasChanges =
-    displayName.trim() !== user.displayName ||
+    displayName.trim() !== initialDisplayName ||
     bio.trim() !== (user.bio ?? "") ||
     avatar !== null ||
     banner !== null ||
+    removeLocation ||
+    removeAvatar ||
+    removeBanner ||
     location?.id !== user.location?.id;
 
   const requestClose = () => {
@@ -93,7 +95,7 @@ export default function EditProfileModal({
     setIsLocationOpen(false);
     locationSearch.reset();
 
-    setDisplayName(user.displayName);
+    setDisplayName(user.displayName?.trim() || user.username);
     setBio(user.bio ?? "");
     setLocation(user.location ?? null);
 
@@ -102,6 +104,10 @@ export default function EditProfileModal({
 
     setAvatarPreview(user.avatarUrl);
     setBannerPreview(user.bannerUrl);
+
+    setRemoveLocation(false);
+    setRemoveAvatar(false);
+    setRemoveBanner(false);
 
     setError(null);
 
@@ -113,6 +119,7 @@ export default function EditProfileModal({
     if (!file) return;
 
     setAvatar(file);
+    setRemoveAvatar(false);
     setAvatarPreview(URL.createObjectURL(file));
   };
 
@@ -121,13 +128,37 @@ export default function EditProfileModal({
     if (!file) return;
 
     setBanner(file);
+    setRemoveBanner(false);
     setBannerPreview(URL.createObjectURL(file));
+  };
+
+  const handleRemoveAvatar = () => {
+    setAvatar(null);
+    setAvatarPreview(null);
+
+    // Якщо аватар вже був збережений на backend - повідомляємо backend, що його треба видалити.
+    setRemoveAvatar(Boolean(user.avatarUrl));
+  };
+
+  const handleRemoveBanner = () => {
+    setBanner(null);
+    setBannerPreview(null);
+
+    // Якщо банер вже був збережений на backend - повідомляємо backend, що його треба видалити.
+    setRemoveBanner(Boolean(user.bannerUrl));
   };
 
   const handleLocationSelect = (value: Location) => {
     setLocation(value);
+    setRemoveLocation(false);
+
     setIsLocationOpen(false);
     locationSearch.reset();
+  };
+
+  const handleRemoveLocation = () => {
+    setLocation(null);
+    setRemoveLocation(Boolean(user.location));
   };
 
   const handleSave = async () => {
@@ -135,10 +166,19 @@ export default function EditProfileModal({
     setIsSaving(true);
 
     try {
+      if (avatar || removeAvatar) await invalidateImageCache(user.avatarUrl);
+      if (banner || removeBanner) await invalidateImageCache(user.bannerUrl);
+
       await onSave({
-        displayName: displayName.trim(),
+        displayName: displayName.trim() || user.username,
         bio: bio.trim() || undefined,
-        location,
+
+        location: removeLocation ? undefined : location,
+
+        removeLocation,
+        removeAvatar,
+        removeBanner,
+
         avatar,
         banner,
       });
@@ -171,7 +211,7 @@ export default function EditProfileModal({
                 type="button"
                 onClick={requestClose}
                 disabled={isSaving}
-                className="flex size-9 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                className="cursor-pointer flex size-9 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
                 aria-label="Закрити"
               >
                 <X size={20} />
@@ -187,6 +227,7 @@ export default function EditProfileModal({
             </div>
 
             <Button
+              className={"cursor-pointer"}
               type="button"
               size="sm"
               isLoading={isSaving}
@@ -222,10 +263,24 @@ export default function EditProfileModal({
                 </div>
               </div>
 
+              {bannerPreview && (
+                <button
+                  type="button"
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    handleRemoveBanner();
+                  }}
+                  className="absolute right-3 top-3 z-20 flex size-9 items-center justify-center rounded-full bg-black/60 text-white transition hover:bg-black/80"
+                  aria-label="Видалити банер"
+                >
+                  <X size={18} />
+                </button>
+              )}
+
               <input
                 ref={bannerInputRef}
                 type="file"
-                accept="image/*"
+                accept="image/jpeg,image/png,image/webp"
                 className="hidden"
                 onChange={handleBannerChange}
               />
@@ -239,6 +294,7 @@ export default function EditProfileModal({
               >
                 <Avatar
                   name={displayName}
+                  fallbackName={user.username}
                   src={avatarPreview}
                   className="size-24 border-4 border-background"
                 />
@@ -249,10 +305,21 @@ export default function EditProfileModal({
                 </div>
               </div>
 
+              {avatarPreview && (
+                <button
+                  type="button"
+                  onClick={handleRemoveAvatar}
+                  className="absolute -right-1 -top-1 z-20 flex size-7 items-center justify-center rounded-full bg-black/70 text-white transition hover:bg-black"
+                  aria-label="Видалити аватар"
+                >
+                  <X size={15} />
+                </button>
+              )}
+
               <input
                 ref={avatarInputRef}
                 type="file"
-                accept="image/*"
+                accept="image/jpeg,image/png,image/webp"
                 className="hidden"
                 onChange={handleAvatarChange}
               />
@@ -270,7 +337,7 @@ export default function EditProfileModal({
                 label="Ім'я"
                 value={displayName}
                 onChange={(event) => setDisplayName(event.target.value)}
-                maxLength={50}
+                maxLength={MAX_NAME_LENGTH}
               />
 
               {/* Bio */}
@@ -323,16 +390,16 @@ export default function EditProfileModal({
                       tabIndex={0}
                       onClick={(event) => {
                         event.stopPropagation();
-                        setLocation(null);
+                        handleRemoveLocation();
                       }}
                       onKeyDown={(event) => {
                         if (event.key === "Enter" || event.key === " ") {
                           event.preventDefault();
                           event.stopPropagation();
-                          setLocation(null);
+                          handleRemoveLocation();
                         }
                       }}
-                      className="ml-2 flex size-7 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                      className="cursor-pointer ml-2 flex size-7 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
                       aria-label="Видалити локацію"
                     >
                       <X size={16} />

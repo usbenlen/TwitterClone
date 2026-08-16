@@ -1,11 +1,36 @@
-/** @format */
+import { Link } from "react-router";
 
-export default function ProfileTabs() {
+import type { ProfileTab } from "@/hooks/useProfile";
+
+import { Tab } from "@/ui";
+
+interface ProfileTabsProps {
+  activeTab: ProfileTab;
+}
+
+const PROFILE_TABS: Array<{
+  id: ProfileTab;
+  label: string;
+}> = [
+  { id: "posts", label: "Твіти" },
+  { id: "likes", label: "Лайки" },
+  { id: "reposts", label: "Репости" },
+];
+
+export default function ProfileTabs({ activeTab }: ProfileTabsProps) {
   return (
-    <div className="border-b border-border px-4">
-      <button className="border-b-2 border-primary px-4 py-3 font-semibold">
-        Твіти
-      </button>
-    </div>
+    <nav className="flex border-b border-border" aria-label="Профіль">
+      {PROFILE_TABS.map((tab) => (
+        <Link
+          key={tab.id}
+          to={{
+            search: tab.id === "posts" ? "" : `?tab=${tab.id}`,
+          }}
+          className="flex flex-1 justify-center px-4 pt-3 transition-colors hover:bg-muted rounded-t-sm"
+        >
+          <Tab active={tab.id === activeTab}>{tab.label}</Tab>
+        </Link>
+      ))}
+    </nav>
   );
 }

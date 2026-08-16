@@ -1,20 +1,32 @@
-/** @format */
-
-import { useParams } from "react-router";
-
-import { Spinner } from "@/ui";
-
-import { useAuth, useProfile } from "@/hooks";
+import { useParams, useSearchParams } from "react-router";
 
 import { userApi, type UpdateProfileRequest } from "@/api";
+
+import { useAuth, useProfile } from "@/hooks";
+import type { ProfileTab } from "@/hooks/useProfile";
+
+import { Spinner } from "@/ui";
 
 import { Profile } from "@/components/profile";
 
 export default function ProfilePage() {
   const { username } = useParams<{ username: string }>();
+  const [searchParams] = useSearchParams();
   const { user: currentUser, updateUser: updateAuthUser } = useAuth();
-  const { user, tweets, isLoading, notFound, updateUser } =
-    useProfile(username);
+  const tabParam = searchParams.get("tab");
+
+  const activeTab: ProfileTab =
+    tabParam === "likes" || tabParam === "reposts" ? tabParam : "posts";
+
+  const {
+    user,
+    tweets,
+    isLoading,
+    isTabLoading,
+    notFound,
+    tabError,
+    updateUser,
+  } = useProfile(username, activeTab);
 
   const handleUpdateProfile = async (data: UpdateProfileRequest) => {
     const updatedUser = await userApi.updateProfile(data);
@@ -49,6 +61,9 @@ export default function ProfilePage() {
     <Profile
       user={user}
       tweets={tweets}
+      activeTab={activeTab}
+      isTabLoading={isTabLoading}
+      tabError={tabError}
       isOwnProfile={currentUser?.id === user.id}
       onUpdateProfile={handleUpdateProfile}
     />

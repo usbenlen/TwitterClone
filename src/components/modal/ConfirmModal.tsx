@@ -1,5 +1,3 @@
-/** @format */
-
 interface ConfirmModalProps {
   open: boolean;
   title: string;
@@ -19,9 +17,7 @@ export function ConfirmModal({
   onCancel,
   onConfirm,
 }: ConfirmModalProps) {
-  if (!open) {
-    return null;
-  }
+  if (!open) return null;
 
   return (
     <div
@@ -46,7 +42,7 @@ export function ConfirmModal({
           <button
             type="button"
             onClick={onCancel}
-            className="rounded-lg border border-border px-4 py-2 font-semibold transition-colors hover:bg-muted"
+            className="cursor-pointer rounded-lg border border-border px-4 py-2 font-semibold transition-colors hover:bg-muted"
           >
             {cancelText}
           </button>
@@ -54,7 +50,7 @@ export function ConfirmModal({
           <button
             type="button"
             onClick={onConfirm}
-            className="rounded-lg bg-red-500 px-4 py-2 font-semibold text-white transition-colors hover:bg-red-600"
+            className="cursor-pointer rounded-lg bg-red-500 px-4 py-2 font-semibold text-white transition-colors hover:bg-red-600"
           >
             {confirmText}
           </button>

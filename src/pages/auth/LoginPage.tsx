@@ -1,13 +1,18 @@
-/** @format */
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { Link, useLocation, useNavigate } from "react-router";
-import { loginSchema, type LoginFormValues } from "@/models/auth.schema";
-import { useAuth } from "@/hooks/useAuth";
-import { AuthShell } from "@/components/auth/AuthShell";
-import { Input, Button } from "@/ui";
+
 import { ApiError } from "@/api/client";
+
+import { zodResolver } from "@hookform/resolvers/zod";
+import { loginSchema, type LoginFormValues } from "@/schemas/auth.schema";
+
+import { useAuth } from "@/hooks/useAuth";
+
+import { Input, Button } from "@/ui";
+
+import { AuthShell } from "@/components/auth/AuthShell";
+
 import { APP_ROUTES } from "@/constants/routes";
 
 interface LocationState {
@@ -26,7 +31,7 @@ export default function LoginPage() {
     formState: { errors, isSubmitting },
   } = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
-    defaultValues: { email: "", password: "" },
+    defaultValues: { emailOrUsername: "", password: "" },
   });
 
   const onSubmit = async (values: LoginFormValues) => {
@@ -76,12 +81,12 @@ export default function LoginPage() {
         )}
 
         <Input
-          label="Email"
-          type="email"
+          label="Email або username"
+          type="text"
           autoComplete="email"
-          placeholder="you@example.com"
-          error={errors.email?.message}
-          {...register("email")}
+          placeholder="you@example.com або username"
+          error={errors.emailOrUsername?.message}
+          {...register("emailOrUsername")}
         />
         <Input
           label="Пароль"

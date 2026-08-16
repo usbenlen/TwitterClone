@@ -1,12 +1,10 @@
-/** @format */
-
 import { useEffect, useState } from "react";
 
 import { gifApi } from "@/api/gif.api";
 
-import type { Gif } from "@/types/gif";
-
 import { useComposerPopup } from "@/hooks/composer/useComposerPopup";
+
+import type { Gif } from "@/types/gif";
 
 export function useComposerGif() {
   const popup = useComposerPopup();
@@ -26,19 +24,20 @@ export function useComposerGif() {
         setLoading(true);
         setError(null);
 
-        const result = query.trim()
-          ? await gifApi.search(query)
-          : await gifApi.trending();
+        const result = await gifApi.search(query);
 
         if (!controller.signal.aborted) setGifs(result);
       } catch {
-        if (!controller.signal.aborted) setError("Не вдалося завантажити GIF.");
+        if (!controller.signal.aborted) {
+          setGifs([]);
+          setError("Не вдалося завантажити GIF.");
+        }
       } finally {
         if (!controller.signal.aborted) setLoading(false);
       }
     }
 
-    load();
+    void load();
 
     return () => {
       controller.abort();
@@ -47,12 +46,10 @@ export function useComposerGif() {
 
   return {
     ...popup,
-
     gifs,
     query,
     loading,
     error,
-
     setQuery,
   };
 }

@@ -1,5 +1,3 @@
-/** @format */
-
 import type { Embed } from "@/types/embed";
 
 interface Props {

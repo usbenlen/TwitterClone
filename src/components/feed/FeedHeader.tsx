@@ -1,5 +1,3 @@
-/** @format */
-
 interface FeedHeaderProps {
   title: string;
 }

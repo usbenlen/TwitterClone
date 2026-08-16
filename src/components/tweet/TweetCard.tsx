@@ -1,56 +1,145 @@
-/** @format */
+import { useState } from "react";
+import { useNavigate } from "react-router";
 
-import { TweetHeader, TweetActions, TweetMedia } from "@/components/tweet";
-import TweetPoll from "@/components/tweet/poll/TweetPoll";
-import TweetLocation from "@/components/tweet/location/TweetLocation";
-import TweetEmbed from "@/components/tweet/embed/TweetEmbed";
+import {
+  useTweetLike,
+  useTweetRepost,
+  useTweetBookmark,
+  useTweetComments,
+} from "@/hooks";
 
 import { Avatar } from "@/ui";
 
-import type { Tweet } from "@/types/tweet";
+import {
+  TweetHeader,
+  TweetActions,
+  TweetComments,
+  TweetContent,
+} from "@/components/tweet";
+import { CommentModal } from "@/components/modal";
 
-import { useTweetLike } from "@/hooks/useTweetLike";
+import { APP_ROUTES } from "@/constants/routes";
+
+import type { Tweet, Comment } from "@/types";
 
 interface TweetCardProps {
   tweet: Tweet;
+  navigateToPost?: boolean;
+  commentsInitiallyOpen?: boolean;
+  variant?: "feed" | "post";
 }
 
-export default function TweetCard({ tweet }: TweetCardProps) {
+export default function TweetCard({
+  tweet,
+  navigateToPost = true,
+  commentsInitiallyOpen = false,
+  variant = "feed",
+}: TweetCardProps) {
+  const navigate = useNavigate();
+  const [isCommentModalOpen, setIsCommentModalOpen] = useState(false);
+  const [commentModalTarget, setCommentModalTarget] = useState<Comment | null>(
+    null,
+  );
+
   const like = useTweetLike(tweet);
+  const repost = useTweetRepost(tweet);
+  const bookmark = useTweetBookmark(tweet);
+
+  const comments = useTweetComments(
+    tweet.id,
+    tweet.repliesCount,
+    commentsInitiallyOpen,
+  );
+
+  const openCommentModal = (comment: Comment | null = null) => {
+    setCommentModalTarget(comment);
+    setIsCommentModalOpen(true);
+  };
+
+  const closeCommentModal = () => {
+    setIsCommentModalOpen(false);
+    setCommentModalTarget(null);
+  };
+
+  const handleCardClick = (event: React.MouseEvent<HTMLElement>) => {
+    if (!navigateToPost || isCommentModalOpen) return;
+
+    const target = event.target as HTMLElement;
+
+    if (
+      target.closest(
+        'button, a, textarea, input, video, [data-tweet-interactive="true"]',
+      )
+    )
+      return;
+
+    navigate(APP_ROUTES.post(tweet.id));
+  };
 
   return (
-    <article className="grid grid-cols-[40px_minmax(0,1fr)] gap-x-3 border-b border-border p-5 transition-colors hover:bg-muted/40">
-      <div className="flex justify-center">
-        <Avatar
-          name={tweet.author.displayName}
-          src={tweet.author.avatarUrl}
-          className="size-11 shrink-0"
+    <>
+      <article
+        onClick={handleCardClick}
+        className={`grid grid-cols-[40px_minmax(0,1fr)] gap-x-3 border-b border-border px-4 py-3 transition-colors ${
+          navigateToPost ? "cursor-pointer hover:bg-muted/40" : ""
+        }`}
+      >
+        <div className="flex justify-center">
+          <Avatar
+            name={tweet.author.displayName}
+            fallbackName={tweet.author.username}
+            src={tweet.author.avatarUrl}
+            className="size-11 shrink-0"
+          />
+        </div>
+
+        <div className="min-w-0">
+          <TweetHeader author={tweet.author} createdAt={tweet.createdAt} />
+
+          <TweetContent tweet={tweet} />
+
+          <TweetActions
+            likedByMe={like.likedByMe}
+            likesCount={like.likesCount}
+            repostedByMe={repost.repostedByMe}
+            repliesCount={comments.commentsCount}
+            retweetsCount={repost.repostsCount}
+            viewsCount={tweet.viewsCount}
+            bookmarkedByMe={bookmark.bookmarkedByMe}
+            onComment={() => openCommentModal()}
+            onRepost={repost.toggleRepost}
+            onLike={like.toggleLike}
+            onBookmark={bookmark.toggleBookmark}
+          />
+        </div>
+      </article>
+
+      {variant === "post" && !navigateToPost && comments.open && (
+        <TweetComments
+          comments={comments.comments}
+          isLoading={comments.isLoading}
+          isSubmitting={comments.isSubmitting}
+          error={comments.error}
+          replyingToUsername={tweet.author.username}
+          onSubmit={async (content) => {
+            return comments.createComment(
+              content,
+              commentModalTarget?.id ?? null,
+            );
+          }}
+          onDelete={comments.deleteComment}
+          onOpenReplyModal={openCommentModal}
         />
-      </div>
+      )}
 
-      <div className="min-w-0">
-        <TweetHeader
-          author={tweet.author}
-          createdAt={tweet.createdAt}
-          content={tweet.content}
-        />
-
-        {tweet.location && <TweetLocation location={tweet.location} />}
-
-        {tweet.embed && <TweetEmbed embed={tweet.embed} />}
-
-        {tweet.poll && <TweetPoll tweetId={tweet.id} poll={tweet.poll} />}
-
-        <TweetMedia attachments={tweet.attachments} />
-
-        <TweetActions
-          likedByMe={like.likedByMe}
-          likesCount={like.likesCount}
-          repliesCount={tweet.repliesCount}
-          retweetsCount={tweet.retweetsCount}
-          onLike={like.toggleLike}
-        />
-      </div>
-    </article>
+      <CommentModal
+        open={isCommentModalOpen}
+        tweet={tweet}
+        replyTo={commentModalTarget}
+        onClose={closeCommentModal}
+        onSubmit={comments.createComment}
+        isSubmitting={comments.isSubmitting}
+      />
+    </>
   );
 }

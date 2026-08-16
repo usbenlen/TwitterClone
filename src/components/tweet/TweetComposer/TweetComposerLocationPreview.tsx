@@ -1,5 +1,3 @@
-/** @format */
-
 import { MapPin, X } from "lucide-react";
 
 import type { Location } from "@/types/location";

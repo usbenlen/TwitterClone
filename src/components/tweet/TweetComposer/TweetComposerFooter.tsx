@@ -1,5 +1,3 @@
-/** @format */
-
 import { Button } from "@/ui";
 
 interface TweetComposerFooterProps {
@@ -27,7 +25,7 @@ export default function TweetComposerFooter({
         {remaining}
       </span>
 
-      <Button onClick={onSubmit} disabled={!canSubmit} isLoading={isPosting}>
+      <Button className={"cursor-pointer"} onClick={onSubmit} disabled={!canSubmit} isLoading={isPosting}>
         Опублікувати
       </Button>
     </div>

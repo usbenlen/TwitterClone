@@ -1,5 +1,3 @@
-/** @format */
-
 /**
  * Формує базову адресу до API з .env змінних.
  * VITE_PATH_TO_SERVER + VITE_PATH_TO_API, напр:
@@ -32,25 +30,60 @@ export const ENDPOINTS = {
     resetPassword: "auth/reset-password",
 
     changePassword: "auth/change-password",
+    verifyEmail: "auth/verify-email",
+    resendVerificationCode: "auth/resend-verification-code",
   },
   users: {
-    byUsername: (username: string) => `users/${username}`,
+    all: "users",
+    byId: (id: string) => `users/${id}`,
+    byUsername: (username: string) => `users/by-username/${username}`,
+    posts: (id: string) => `users/${id}/posts`,
+    likes: (username: string) => `users/${username}/likes`,
+    reposts: (username: string) => `users/${username}/reposts`,
     updateProfile: "users/me",
+    deleteMe: "users/me",
   },
-  tweets: {
-    feed: "tweets/feed",
-    create: "tweets",
-    byUsername: (username: string) => `tweets/user/${username}`,
-    like: (id: string) => `tweets/${id}/like`,
+  posts: {
+    all: "posts",
+    feed: "posts/feed",
+    liked: "posts/liked",
+    reposted: "posts/reposted",
+    byUser: (username: string) => `posts/user/${username}`,
+    byId: (id: string) => `posts/${id}`,
+    create: "posts",
+    update: (id: string) => `posts/${id}`,
+    delete: (id: string) => `posts/${id}`,
+
+    view: (id: string) => `posts/${id}/view`,
+    like: (id: string) => `posts/${id}/like`,
+    unlike: (id: string) => `posts/${id}/like`,
+    repost: (id: string) => `posts/${id}/repost`,
+    unrepost: (id: string) => `posts/${id}/repost`,
+    bookmark: (id: string) => `posts/${id}/bookmark`,
+    unbookmark: (id: string) => `posts/${id}/bookmark`,
+  },
+  comments: {
+    byPost: (postId: string) => `comments/post/${postId}`,
+    create: "comments",
+    update: (id: string) => `comments/${id}`,
+    delete: (id: string) => `comments/${id}`,
+
+    view: (id: string) => `comments/${id}/view`,
+    like: (id: string) => `comments/${id}/like`,
+    unlike: (id: string) => `comments/${id}/like`,
+    repost: (id: string) => `comments/${id}/repost`,
+    unrepost: (id: string) => `comments/${id}/repost`,
+    bookmark: (id: string) => `comments/${id}/bookmark`,
+    unbookmark: (id: string) => `comments/${id}/bookmark`,
   },
   poll: {
-    vote: (tweetId: string) => `tweets/${tweetId}/poll/vote`,
+    vote: (postId: string) => `posts/${postId}/poll/vote`,
   },
-  location: {
-    search: "locations/search",
-  },
-  gifs: {
-    search: "gifs/search",
+  search: {
+    users: "search/users",
+    posts: "search/posts",
+    gifs: "search/gifs",
+    locations: "search/locations",
   },
   follows: {
     follow: (userId: string) => `follows/${userId}`,
@@ -61,6 +94,7 @@ export const ENDPOINTS = {
       `follows/${userId}/followers/${followId}`,
   },
   media: {
-    upload: "media",
+    upload: "media/upload",
+    byId: (id: string) => `media/${id}`,
   },
 } as const;

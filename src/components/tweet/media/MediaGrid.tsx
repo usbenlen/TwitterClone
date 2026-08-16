@@ -1,5 +1,3 @@
-/** @format */
-
 interface MediaGridProps<T extends { id: string }> {
   items: T[];
   renderItem: (item: T, index: number) => React.ReactNode;

@@ -1,5 +1,5 @@
-/** @format */
 import { forwardRef, useId } from "react";
+
 import { cn } from "@/utils/cn";
 
 export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {

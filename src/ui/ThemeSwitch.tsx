@@ -1,9 +1,8 @@
-/** @format */
-
 import { Moon, Sun } from "lucide-react";
 
-import { cn } from "@/utils/cn";
 import { useTheme } from "@/hooks/useTheme";
+
+import { cn } from "@/utils/cn";
 
 interface ThemeSwitchProps {
   className?: string;

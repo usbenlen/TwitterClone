@@ -1,5 +1,3 @@
-/** @format */
-
 import { useComposerPopup } from "@/hooks/composer";
 import { useLocationSearch } from "@/hooks/location/useLocationSearch";
 

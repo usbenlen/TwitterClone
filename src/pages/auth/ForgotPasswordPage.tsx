@@ -1,5 +1,3 @@
-/** @format */
-
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -38,13 +36,9 @@ export default function ForgotPasswordPage() {
     setServerError(null);
 
     try {
-      await authApi.forgotPassword(values.email);
-
-      navigate(APP_ROUTES.VERIFY_RESET_CODE, {
-        state: { email: values.email },
+      await authApi.forgotPassword({
+        email: values.email,
       });
-
-      console.log("Forgot password:", values.email);
 
       navigate(APP_ROUTES.VERIFY_RESET_CODE, {
         state: { email: values.email },

@@ -1,5 +1,3 @@
-/** @format */
-
 import type { MediaAttachment } from "@/types/media";
 
 import { mockUpload } from "@/mock/utils/mockUpload";
@@ -20,9 +18,14 @@ export const mockMediaApi = {
 
     const attachment: MediaAttachment = {
       id: crypto.randomUUID(),
-      type: file.type.startsWith("image/") ? "image" : "video",
+      type:
+        file.type === "image/gif"
+          ? "gif"
+          : file.type.startsWith("image/")
+            ? "image"
+            : "video",
       url: URL.createObjectURL(file),
-      size: file.size,
+      sizeInBytes: file.size,
       mimeType: file.type,
     };
 

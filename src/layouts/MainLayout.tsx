@@ -1,5 +1,3 @@
-/** @format */
-
 import { Outlet } from "react-router";
 
 import { LeftSidebar } from "@/components/layout/desktop/leftSidebar";

@@ -1,20 +1,32 @@
-/** @format */
 import type { User, TweetPoll, Location, Embed } from "@/types";
 import type { MediaAttachment } from "@/types/media";
 
 export interface Tweet {
   id: string;
   content: string;
+
+  author: Pick<
+    User,
+    "id" | "username" | "displayName" | "avatarUrl" | "isVerified"
+  >;
+
   attachments: MediaAttachment[];
-  embed?: Embed | null;
+
   poll?: TweetPoll;
-  author: Pick<User, "id" | "username" | "displayName" | "avatarUrl">;
+  location?: Location | null;
+  embed?: Embed | null;
+
   likesCount: number;
   repliesCount: number;
   retweetsCount: number;
+  viewsCount: number;
+
   likedByMe: boolean;
-  location?: Location | null;
+  repostedByMe: boolean;
+  bookmarkedByMe: boolean;
+
   createdAt: string;
+  updatedAt?: string | null;
 }
 
 export interface CreateTweetMedia {
@@ -32,4 +44,19 @@ export interface CreateTweetRequest {
     duration: number;
   };
   location?: Location | null;
+}
+
+export interface TogglePostLikeResponse {
+  likedByMe: boolean;
+  likesCount: number;
+}
+
+export interface TogglePostRepostResponse {
+  repostedByMe: boolean;
+  repostsCount: number;
+}
+
+export interface TogglePostBookmarkResponse {
+  bookmarkedByMe?: boolean;
+  isBookmarkedByCurrentUser?: boolean;
 }

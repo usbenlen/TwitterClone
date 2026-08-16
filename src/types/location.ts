@@ -1,5 +1,3 @@
-/** @format */
-
 export interface Location {
   id: string;
 

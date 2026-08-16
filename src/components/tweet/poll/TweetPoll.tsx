@@ -1,12 +1,10 @@
-/** @format */
-
 import { useMemo } from "react";
 
 import { usePollVote, usePollCountdown } from "@/hooks/poll";
 
-import type { TweetPoll as TweetPollType } from "@/types/poll";
-
 import { cn } from "@/utils/cn";
+
+import type { TweetPoll as TweetPollType } from "@/types/poll";
 
 interface TweetPollProps {
   tweetId: string;
@@ -47,32 +45,13 @@ export default function TweetPoll({ poll, tweetId }: TweetPollProps) {
             aria-disabled={expired || hasVoted || loading}
             aria-label={`Голосувати за ${option.text}`}
             className={cn(
-              `
-                relative
-                overflow-hidden
-                rounded-xl
-                border
-                px-4
-                py-3
-                text-left
-                transition
-                disabled:cursor-default
-                disabled:hover:bg-transparent
-              `,
+              `relative overflow-hidden rounded-xl border px-4 py-3 text-left transition disabled:cursor-default disabled:hover:bg-transparent`,
               selected ? "border-border" : "border-border hover:bg-muted",
             )}
           >
             {(hasVoted || expired) && (
               <div
-                className="
-                  absolute
-                  inset-y-1
-                  left-1
-                  rounded-sm
-                  bg-primary/35
-                  transition-all
-                  duration-300
-                "
+                className="absolute inset-y-1 left-1 rounded-sm bg-primary/35 transition-all duration-300"
                 style={{
                   width: `calc(${percent}% - 8px)`,
                 }}

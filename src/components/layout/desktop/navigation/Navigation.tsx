@@ -1,7 +1,6 @@
-/** @format */
+import { useNavigation } from "@/hooks/useNavigation";
 
 import { NavigationItem } from "@/components/layout/desktop/navigation";
-import { useNavigation } from "@/hooks/useNavigation";
 
 interface NavigationProps {
   vertical?: boolean;

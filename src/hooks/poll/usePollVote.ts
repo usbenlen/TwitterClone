@@ -1,5 +1,3 @@
-/** @format */
-
 import { useState } from "react";
 
 import { pollApi } from "@/api/poll.api";

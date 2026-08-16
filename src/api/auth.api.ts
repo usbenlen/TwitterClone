@@ -1,7 +1,17 @@
-/** @format */
 import { apiClient } from "@/api/client";
 import { ENDPOINTS } from "@/api/config";
-import type { AuthResponse, LoginRequest, RegisterRequest } from "@/types/auth";
+import type {
+  AuthResponse,
+  ChangePasswordRequest,
+  ForgotPasswordRequest,
+  LoginRequest,
+  MessageResponse,
+  ResetPasswordRequest,
+  RegisterRequest,
+  VerifyResetCodeRequest,
+  VerifyEmailRequest,
+  ResendVerificationCodeRequest,
+} from "@/types/auth";
 import type { User } from "@/types/user";
 import { MOCK_ENABLED } from "@/mock/config";
 import { mockAuthApi } from "@/mock/handlers";
@@ -13,45 +23,46 @@ const realAuthApi = {
     }),
 
   register: (data: RegisterRequest) =>
-    apiClient.post<AuthResponse>(ENDPOINTS.auth.register, data, {
+    apiClient.post<MessageResponse>(ENDPOINTS.auth.register, data, {
       skipAuth: true,
     }),
+
+  verifyEmail: (data: VerifyEmailRequest) =>
+    apiClient.post<AuthResponse>(ENDPOINTS.auth.verifyEmail, data, {
+      skipAuth: true,
+    }),
+
+  resendVerificationCode: (data: ResendVerificationCodeRequest) =>
+    apiClient.post<MessageResponse>(
+      ENDPOINTS.auth.resendVerificationCode,
+      data,
+      {
+        skipAuth: true,
+      },
+    ),
 
   logout: () => apiClient.post<void>(ENDPOINTS.auth.logout),
 
   // Отримання поточного користувача за збереженим токеном
   me: () => apiClient.get<User>(ENDPOINTS.auth.me),
 
-  forgotPassword: (email: string) =>
-    apiClient.post(
-      ENDPOINTS.auth.forgotPassword,
-      { email },
-      { skipAuth: true },
-    ),
+  forgotPassword: (data: ForgotPasswordRequest) =>
+    apiClient.post<MessageResponse>(ENDPOINTS.auth.forgotPassword, data, {
+      skipAuth: true,
+    }),
 
-  verifyResetCode: (email: string, code: string) =>
-    apiClient.post(
-      ENDPOINTS.auth.verifyResetCode,
-      {
-        email,
-        code,
-      },
-      { skipAuth: true },
-    ),
+  verifyResetCode: (data: VerifyResetCodeRequest) =>
+    apiClient.post<MessageResponse>(ENDPOINTS.auth.verifyResetCode, data, {
+      skipAuth: true,
+    }),
 
-  resetPassword: (email: string, code: string, password: string) =>
-    apiClient.post(
-      ENDPOINTS.auth.resetPassword,
-      {
-        email,
-        code,
-        password,
-      },
-      { skipAuth: true },
-    ),
+  resetPassword: (data: ResetPasswordRequest) =>
+    apiClient.post<MessageResponse>(ENDPOINTS.auth.resetPassword, data, {
+      skipAuth: true,
+    }),
 
-  changePassword: (data: { currentPassword: string; newPassword: string }) =>
-    apiClient.post<void>(ENDPOINTS.auth.changePassword, data),
+  changePassword: (data: ChangePasswordRequest) =>
+    apiClient.post<MessageResponse>(ENDPOINTS.auth.changePassword, data),
 };
 
 export const authApi = MOCK_ENABLED ? mockAuthApi : realAuthApi;

@@ -1,5 +1,3 @@
-/** @format */
-
 import { useState } from "react";
 
 import { tweetApi } from "@/api/tweet.api";
@@ -45,7 +43,7 @@ export function useComposerSubmit({
         content: content.trim(),
 
         mediaIds: media
-          .filter((item) => item.type !== "gif" && item.attachmentId)
+          .filter((item) => item.attachmentId)
           .map((item) => item.attachmentId!),
 
         poll:

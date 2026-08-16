@@ -1,5 +1,3 @@
-/** @format */
-
 export default function RightSidebarFooterLinks() {
   const links = ["Про нас", "Конфіденційність", "Умови", "Допомога"];
 
@@ -7,7 +5,7 @@ export default function RightSidebarFooterLinks() {
     <div className="px-2 text-xs text-muted-foreground">
       <div className="flex flex-wrap gap-x-3 gap-y-1">
         {links.map((link) => (
-          <button key={link} className="hover:underline">
+          <button key={link} className="cursor-pointer hover:underline">
             {link}
           </button>
         ))}

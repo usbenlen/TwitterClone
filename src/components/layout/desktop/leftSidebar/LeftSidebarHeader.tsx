@@ -1,5 +1,3 @@
-/** @format */
-
 import AppLogo from "@/components/layout/common/AppLogo";
 
 export default function LeftSidebarHeader() {

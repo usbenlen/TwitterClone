@@ -1,5 +1,3 @@
-/** @format */
-
 import { compressImage, createPreview, validateMedia } from "@/utils/media";
 
 import type { ComposerMedia } from "@/types/composer";

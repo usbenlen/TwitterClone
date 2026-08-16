@@ -1,19 +1,26 @@
-/** @format */
+import { useState } from "react";
+import { useNavigate } from "react-router";
 
-import { Search } from "lucide-react";
+import { SearchBox } from "@/ui";
+
+import { APP_ROUTES } from "@/constants/routes";
 
 export default function RightSidebarSearchBox() {
-  return (
-    <div className="rounded-2xl bg-muted p-3">
-      <div className="flex items-center gap-3">
-        <Search className="size-5 text-muted-foreground" />
+  const navigate = useNavigate();
+  const [query, setQuery] = useState("");
 
-        <input
-          type="text"
-          placeholder="Пошук"
-          className="w-full bg-transparent outline-none placeholder:text-muted-foreground"
-        />
-      </div>
-    </div>
+  const hasQuery = query.trim().length > 0;
+
+  const submitSearch = () => {
+    if (!hasQuery) {
+      navigate(APP_ROUTES.SEARCH);
+      return;
+    }
+
+    navigate(APP_ROUTES.search(query, "posts"));
+  };
+
+  return (
+    <SearchBox value={query} onChange={setQuery} onSubmit={submitSearch} />
   );
 }

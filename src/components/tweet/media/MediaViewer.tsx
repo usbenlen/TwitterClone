@@ -1,5 +1,3 @@
-/** @format */
-
 import { useEffect, useRef, useState } from "react";
 import { ChevronLeft, ChevronRight, Minus, Plus, X } from "lucide-react";
 
@@ -31,7 +29,23 @@ interface DragState {
   startPanY: number;
 }
 
-export default function MediaViewer({
+export default function MediaViewer(props: MediaViewerProps) {
+  const { open, currentIndex, attachments } = props;
+
+  if (!open) return null;
+
+  const attachment = attachments[currentIndex];
+  if (!attachment) return null;
+
+  return (
+    <MediaViewerInner
+      key={open ? `media-viewer-${attachment.url}` : "closed"}
+      {...props}
+    />
+  );
+}
+
+function MediaViewerInner({
   attachments,
   currentIndex,
   open,
@@ -114,20 +128,13 @@ export default function MediaViewer({
   };
 
   useEffect(() => {
-    if (!open) return;
-
-    setZoom(1);
-    setIsPanning(false);
-    resetPan();
-  }, [open, attachment]);
-
-  useEffect(() => {
     if (!open || !mediaRef.current) return;
 
     const clamped = clampPan(panRef.current.x, panRef.current.y);
     panRef.current = clamped;
 
     applyTransform(clamped.x, clamped.y, zoom);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [zoom, open]);
 
   useEffect(() => {
@@ -255,7 +262,7 @@ export default function MediaViewer({
   };
 
   const handleBackdropClick = (event: React.MouseEvent) => {
-    //баг 50% (старий хітбокс мішає кліку по чорному фону щоб вийти з modalviewer)
+    event.stopPropagation();
     if (event.target === event.currentTarget) onClose();
   };
 
@@ -263,6 +270,7 @@ export default function MediaViewer({
 
   const mediaClassName = "select-none object-contain";
   const mediaStyle = {
+    // eslint-disable-next-line react-hooks/refs
     transition: dragRef.current.active ? "none" : "transform 200ms ease",
     touchAction: "none" as const,
   };

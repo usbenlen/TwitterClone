@@ -1,9 +1,8 @@
-/** @format */
-
 import type { ComponentType } from "react";
+import { Settings, UserRound, House, Bookmark } from "lucide-react";
 
-import { Settings, UserRound, House } from "lucide-react";
 import { APP_ROUTES } from "@/constants/routes";
+
 import type { User } from "@/types/user";
 
 export interface NavigationItem {
@@ -29,6 +28,13 @@ export const MAIN_NAVIGATION: NavigationItem[] = [
       user ? APP_ROUTES.profile(user.username) : APP_ROUTES.HOME,
     requiresAuth: true,
     mobilePlacement: ["bottom", "more"],
+  },
+  {
+    label: "Закладки",
+    icon: Bookmark,
+    getPath: () => APP_ROUTES.BOOKMARKS,
+    requiresAuth: true,
+    mobilePlacement: ["more"],
   },
   {
     label: "Налаштування",

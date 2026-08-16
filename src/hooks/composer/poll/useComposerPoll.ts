@@ -1,5 +1,3 @@
-/** @format */
-
 import { useState } from "react";
 
 import { useComposerPopup } from "@/hooks/composer/useComposerPopup";

@@ -1,8 +1,9 @@
-/** @format */
-
 import { useState } from "react";
 
+import { useMediaUpload } from "@/hooks/composer/media";
+
 import { MEDIA } from "@/constants/app";
+import { prepareMedia } from "@/utils/media";
 
 import type {
   ComposerMedia,
@@ -10,10 +11,6 @@ import type {
   ComposerMediaStatus,
 } from "@/types/composer";
 import type { Gif } from "@/types/gif";
-
-import { prepareMedia } from "@/utils/media";
-
-import { useMediaUpload } from "@/hooks/composer/media";
 
 export function useTweetComposerMedia() {
   const [media, setMedia] = useState<ComposerMedia[]>([]);
@@ -70,6 +67,25 @@ export function useTweetComposerMedia() {
     pushError,
   });
 
+  const createGifFile = async (gif: Gif): Promise<File> => {
+    const response = await fetch(gif.originalUrl);
+
+    if (!response.ok)
+      throw new Error(`Failed to download GIF: ${response.status}`);
+
+    const blob = await response.blob();
+    const file = new File([blob], `${gif.id}.gif`, {
+      type: blob.type || "image/gif",
+    });
+
+    const maxSizeBytes = MEDIA.GIF.MAX_SIZE_MB * 1024 * 1024;
+
+    if (file.size > maxSizeBytes)
+      throw new Error(`GIF exceeds ${MEDIA.GIF.MAX_SIZE_MB} MB.`);
+
+    return file;
+  };
+
   const addFiles = async (files: FileList | null) => {
     if (!files) return;
     clearErrors();
@@ -99,7 +115,7 @@ export function useTweetComposerMedia() {
     for (const item of added) upload(item);
   };
 
-  const addGif = (gif: Gif) => {
+  const addGif = async (gif: Gif) => {
     clearErrors();
 
     if (media.length >= MEDIA.MAX_ATTACHMENTS) {
@@ -107,20 +123,28 @@ export function useTweetComposerMedia() {
       return;
     }
 
-    const item: ComposerMedia = {
-      id: crypto.randomUUID(),
-      type: "gif",
-      url: gif.originalUrl,
-      previewUrl: gif.previewUrl,
-      width: gif.width,
-      height: gif.height,
-      name: gif.title,
-      size: 0,
-      progress: 100,
-      status: "ready",
-    };
+    try {
+      const file = await createGifFile(gif);
 
-    setMedia((current) => [...current, item]);
+      const item: ComposerMedia = {
+        id: crypto.randomUUID(),
+        file,
+        type: "gif",
+        url: gif.originalUrl,
+        previewUrl: gif.previewUrl,
+        width: gif.width,
+        height: gif.height,
+        name: gif.title,
+        size: file.size,
+        progress: 0,
+        status: "ready",
+      };
+
+      setMedia((current) => [...current, item]);
+      await upload(item);
+    } catch {
+      pushError(`Не вдалося підготувати GIF "${gif.title}".`);
+    }
   };
 
   const removeMedia = (id: string) => {

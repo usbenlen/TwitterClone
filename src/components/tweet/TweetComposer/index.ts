@@ -1,5 +1,3 @@
-/** @format */
-
 export { default as TweetComposer } from "@/components/tweet/TweetComposer/TweetComposer";
 export { default as TweetComposerEditor } from "@/components/tweet/TweetComposer/TweetComposerEditor";
 export { default as TweetComposerFooter } from "@/components/tweet/TweetComposer/TweetComposerFooter";

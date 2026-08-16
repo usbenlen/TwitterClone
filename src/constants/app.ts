@@ -1,9 +1,18 @@
-/** @format */
-
 export const APP_NAME = import.meta.env.VITE_APP_NAME;
 
 export const MAX_TWEET_LENGTH = Number(import.meta.env.VITE_MAX_TWEET_LENGTH);
+export const MAX_NAME_LENGTH = Number(import.meta.env.VITE_MAX_NAME_LENGTH);
 export const MAX_BIO_LENGTH = Number(import.meta.env.VITE_MAX_BIO_LENGTH);
+
+export const SEARCH_DEBOUNCE_MS = 350;
+export const LOCATION_SEARCH_DEBOUNCE_MS = 200;
+
+export const AUTH_LIMITS = {
+  USERNAME_MIN_LENGTH: 3,
+  USERNAME_MAX_LENGTH: 20,
+  PASSWORD_MIN_LENGTH: 6,
+  PASSWORD_MAX_LENGTH: 100,
+} as const;
 
 export const MEDIA = {
   MAX_ATTACHMENTS: Number(import.meta.env.VITE_MAX_MEDIA_ATTACHMENTS),
@@ -38,8 +47,10 @@ export const MEDIA_STATUS = {
 
 export const ENABLE_IMAGE_UPLOAD =
   import.meta.env.VITE_ENABLE_IMAGE_UPLOAD === "true";
+
 export const ENABLE_VIDEO_UPLOAD =
   import.meta.env.VITE_ENABLE_VIDEO_UPLOAD === "true";
+
 export const ENABLE_EMBED = import.meta.env.VITE_ENABLE_EMBED === "true";
 export const ENABLE_GIFS = import.meta.env.VITE_ENABLE_GIFS === "true";
 export const ENABLE_POLLS = import.meta.env.VITE_ENABLE_POLLS === "true";

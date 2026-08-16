@@ -1,6 +1,5 @@
-/** @format */
-
 import TweetCard from "@/components/tweet/TweetCard";
+
 import { Spinner } from "@/ui/Spinner";
 
 import type { Tweet } from "@/types/tweet";
@@ -43,7 +42,7 @@ export default function FeedList({
   return (
     <>
       {tweets.map((tweet) => (
-        <TweetCard key={tweet.id} tweet={tweet} />
+        <TweetCard key={tweet.id} tweet={tweet} variant="feed" />
       ))}
     </>
   );

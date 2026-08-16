@@ -1,5 +1,3 @@
-/** @format */
-
 interface MockUploadOptions {
   onProgress?: (progress: number) => void;
   interval?: number;

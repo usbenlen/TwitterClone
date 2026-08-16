@@ -1,5 +1,3 @@
-/** @format */
-
 import type { Tweet } from "@/types/tweet";
 import { currentUser, sampleAuthors } from "./users";
 
@@ -12,7 +10,10 @@ export let tweets: Tweet[] = [
     likesCount: 12,
     repliesCount: 3,
     retweetsCount: 1,
+    viewsCount: 52,
     likedByMe: false,
+    repostedByMe: true,
+    bookmarkedByMe: false,
     createdAt: new Date(Date.now() - 1000 * 60 * 12).toISOString(),
   },
   {
@@ -23,7 +24,10 @@ export let tweets: Tweet[] = [
     likesCount: 340,
     repliesCount: 21,
     retweetsCount: 58,
+    viewsCount: 52,
     likedByMe: true,
+    repostedByMe: false,
+    bookmarkedByMe: true,
     createdAt: new Date(Date.now() - 1000 * 60 * 60 * 2).toISOString(),
   },
   {
@@ -34,7 +38,10 @@ export let tweets: Tweet[] = [
     likesCount: 1200,
     repliesCount: 96,
     retweetsCount: 210,
+    viewsCount: 52,
     likedByMe: false,
+    repostedByMe: false,
+    bookmarkedByMe: false,
     createdAt: new Date(Date.now() - 1000 * 60 * 60 * 26).toISOString(),
   },
 ];

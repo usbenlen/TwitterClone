@@ -1,5 +1,3 @@
-/** @format */
-
 import { BarChart3, Image, MapPin, Smile, Video, Link2 } from "lucide-react";
 
 import {

@@ -1,34 +1,12 @@
-import {
-  createContext,
-  useCallback,
-  useEffect,
-  useState,
-  type ReactNode,
-} from "react";
+import { useCallback, useEffect, useState, type ReactNode } from "react";
 
 import { followApi } from "@/api/follow.api";
+
+import { FollowContext } from "@/providers/FollowContext";
+
 import { useAuth } from "@/hooks/useAuth";
 
-import type { User, FollowUser } from "@/types";
-
-interface FollowContextValue {
-  following: FollowUser[];
-  followers: FollowUser[];
-
-  followingCount: number;
-  followersCount: number;
-
-  follow: (user: User | FollowUser) => Promise<void>;
-  unfollow: (userId: string) => Promise<void>;
-  removeFollower: (userId: string, followerId: string) => Promise<void>;
-
-  loadFollowing: (userId: string) => Promise<FollowUser[]>;
-  loadFollowers: (userId: string) => Promise<FollowUser[]>;
-
-  isFollowing: (userId: string) => boolean;
-}
-
-export const FollowContext = createContext<FollowContextValue | null>(null);
+import type { UserShort } from "@/types";
 
 interface FollowProviderProps {
   children: ReactNode;
@@ -37,14 +15,14 @@ interface FollowProviderProps {
 export function FollowProvider({ children }: FollowProviderProps) {
   const { user: currentUser } = useAuth();
 
-  const [following, setFollowing] = useState<FollowUser[]>([]);
-  const [followers, setFollowers] = useState<FollowUser[]>([]);
+  const [following, setFollowing] = useState<UserShort[]>([]);
+  const [followers, setFollowers] = useState<UserShort[]>([]);
 
   const followingCount = following.length;
   const followersCount = followers.length;
 
   const loadFollowing = useCallback(
-    async (userId: string): Promise<FollowUser[]> => {
+    async (userId: string): Promise<UserShort[]> => {
       try {
         const data = await followApi.following(userId);
         const result = data ?? [];
@@ -62,7 +40,7 @@ export function FollowProvider({ children }: FollowProviderProps) {
   );
 
   const loadFollowers = useCallback(
-    async (userId: string): Promise<FollowUser[]> => {
+    async (userId: string): Promise<UserShort[]> => {
       try {
         const data = await followApi.followers(userId);
         const result = data ?? [];
@@ -82,14 +60,25 @@ export function FollowProvider({ children }: FollowProviderProps) {
   );
 
   useEffect(() => {
-    if (!currentUser) return;
+    if (!currentUser) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setFollowing([]);
+      setFollowers([]);
+      return;
+    }
 
-    loadFollowing(currentUser.id);
-    loadFollowers(currentUser.id);
+    const fetchFollowData = async () => {
+      await Promise.all([
+        loadFollowing(currentUser.id),
+        loadFollowers(currentUser.id),
+      ]);
+    };
+
+    void fetchFollowData();
   }, [currentUser, loadFollowing, loadFollowers]);
 
   const follow = useCallback(
-    async (user: User | FollowUser): Promise<void> => {
+    async (user: UserShort): Promise<void> => {
       if (!currentUser) return;
       if (currentUser.id === user.id) return;
 
@@ -100,15 +89,7 @@ export function FollowProvider({ children }: FollowProviderProps) {
       setFollowing((previous) => {
         if (previous.some((item) => item.id === user.id)) return previous;
 
-        return [
-          ...previous,
-          {
-            id: user.id,
-            username: user.username,
-            displayName: user.displayName,
-            avatarUrl: user.avatarUrl,
-          },
-        ];
+        return [...previous, user];
       });
     },
     [currentUser],

@@ -1,33 +1,18 @@
-/** @format */
-
-import {
-  createContext,
-  useCallback,
-  useEffect,
-  useState,
-  type ReactNode,
-} from "react";
+import { useCallback, useEffect, useState, type ReactNode } from "react";
 
 import { authApi } from "@/api/auth.api";
 import { setUnauthorizedHandler, clearUnauthorizedHandler } from "@/api/client";
-import { tokenStorage } from "@/utils/storage";
 
-import type { LoginRequest, RegisterRequest, AuthResponse } from "@/types/auth";
+import { AuthContext } from "@/providers/AuthContext";
+
+import type {
+  LoginRequest,
+  RegisterRequest,
+  VerifyEmailRequest,
+  AuthResponse,
+} from "@/types/auth";
 import type { User } from "@/types/user";
-
-export interface AuthContextValue {
-  user: User | null;
-  isLoading: boolean;
-  isAuthenticated: boolean;
-
-  login(data: LoginRequest): Promise<void>;
-  register(data: RegisterRequest): Promise<void>;
-  logout(): Promise<void>;
-
-  updateUser(user: User): void;
-}
-
-export const AuthContext = createContext<AuthContextValue | null>(null);
+import { tokenStorage } from "@/utils/storage";
 
 interface Props {
   children: ReactNode;
@@ -74,21 +59,33 @@ export function AuthProvider({ children }: Props) {
     };
   }, []);
 
-  const authenticate = useCallback((response: AuthResponse) => {
+  const authenticate = useCallback(async (response: AuthResponse) => {
     tokenStorage.setTokens(response.accessToken, response.refreshToken);
-    setUser(response.user);
+
+    try {
+      const currentUser = await authApi.me();
+      setUser(currentUser);
+    } catch (error) {
+      tokenStorage.clear();
+      setUser(null);
+      throw error;
+    }
   }, []);
 
   const login = useCallback(
     async (data: LoginRequest) => {
-      authenticate(await authApi.login(data));
+      await authenticate(await authApi.login(data));
     },
     [authenticate],
   );
 
-  const register = useCallback(
-    async (data: RegisterRequest) => {
-      authenticate(await authApi.register(data));
+  const register = useCallback(async (data: RegisterRequest) => {
+    await authApi.register(data);
+  }, []);
+
+  const verifyEmail = useCallback(
+    async (data: VerifyEmailRequest) => {
+      await authenticate(await authApi.verifyEmail(data));
     },
     [authenticate],
   );
@@ -114,6 +111,7 @@ export function AuthProvider({ children }: Props) {
         isAuthenticated: Boolean(user),
         login,
         register,
+        verifyEmail,
         logout,
         updateUser,
       }}

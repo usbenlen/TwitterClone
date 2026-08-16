@@ -1,8 +1,5 @@
-/** @format */
-
 import { useState } from "react";
 import { Link } from "react-router";
-
 import {
   LockKeyhole,
   Moon,
@@ -13,13 +10,13 @@ import {
   ArrowRight,
 } from "lucide-react";
 
-import { APP_ROUTES } from "@/constants/routes";
+import { userApi, type UpdateProfileRequest } from "@/api";
+
+import { useAuth, useTheme } from "@/hooks";
 
 import { EditProfileModal } from "@/components/modal";
 
-import { useAuth, useTheme } from "@/hooks";
-import { userApi, type UpdateProfileRequest } from "@/api";
-
+import { APP_ROUTES } from "@/constants/routes";
 import { cn } from "@/utils/cn";
 
 export default function SettingsPage() {

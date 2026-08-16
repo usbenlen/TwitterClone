@@ -1,8 +1,8 @@
-/** @format */
-
 import { useEffect, useState } from "react";
 
 import { locationApi } from "@/api/location.api";
+
+import { LOCATION_SEARCH_DEBOUNCE_MS } from "@/constants/app";
 
 import type { Location } from "@/types/location";
 
@@ -12,15 +12,19 @@ export function useLocationSearch() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    const normalizedQuery = query.trim();
-
-    if (!normalizedQuery) {
+  const handleSetQuery = (newQuery: string) => {
+    setQuery(newQuery);
+    if (!newQuery.trim()) {
       setLocations([]);
       setLoading(false);
       setError(null);
-      return;
     }
+  };
+
+  useEffect(() => {
+    const normalizedQuery = query.trim();
+
+    if (!normalizedQuery) return;
 
     let cancelled = false;
 
@@ -40,7 +44,7 @@ export function useLocationSearch() {
       } finally {
         if (!cancelled) setLoading(false);
       }
-    }, 200);
+    }, LOCATION_SEARCH_DEBOUNCE_MS);
 
     return () => {
       cancelled = true;
@@ -55,5 +59,5 @@ export function useLocationSearch() {
     setError(null);
   };
 
-  return { query, setQuery, locations, loading, error, reset };
+  return { query, setQuery: handleSetQuery, locations, loading, error, reset };
 }

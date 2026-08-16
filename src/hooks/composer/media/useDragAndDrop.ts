@@ -1,5 +1,3 @@
-/** @format */
-
 import { useState } from "react";
 
 interface UseDragAndDropProps {

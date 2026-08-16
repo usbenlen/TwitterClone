@@ -1,5 +1,3 @@
-/** @format */
-
 import type { MediaAttachment } from "@/types/media";
 
 const media = new Map<string, MediaAttachment>();
@@ -15,8 +13,10 @@ export const mediaStore = {
     return media.get(id);
   },
 
-  getMany(ids: string[]) {
-    return ids.map((id) => media.get(id)).filter(Boolean) as MediaAttachment[];
+  getMany(ids: string[]): MediaAttachment[] {
+    return ids
+      .map((id) => media.get(id))
+      .filter((item): item is MediaAttachment => item !== undefined);
   },
 
   remove(id: string) {

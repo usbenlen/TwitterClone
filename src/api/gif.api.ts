@@ -1,14 +1,18 @@
-/** @format */
-
-import type { Gif } from "@/types/gif";
-
 import { apiClient } from "@/api/client";
 import { ENDPOINTS } from "@/api/config";
 
-export const gifApi = {
-  search(query: string) {
+import type { Gif } from "@/types/gif";
+
+const realGifApi = {
+  search(query?: string) {
+    const normalizedQuery = query?.trim();
+
+    if (!normalizedQuery) return apiClient.get<Gif[]>(ENDPOINTS.search.gifs);
+
     return apiClient.get<Gif[]>(
-      `${ENDPOINTS.gifs.search}?q=${encodeURIComponent(query)}`,
+      `${ENDPOINTS.search.gifs}?q=${encodeURIComponent(normalizedQuery)}`,
     );
   },
 };
+
+export const gifApi = realGifApi;

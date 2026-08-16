@@ -1,10 +1,8 @@
-/** @format */
+import { mediaApi } from "@/api";
 
 import { MEDIA_STATUS } from "@/constants/app";
 
 import type { ComposerMedia, ComposerMediaStatus } from "@/types/composer";
-
-import { mediaApi } from "@/api";
 
 interface UseMediaUploadProps {
   setStatus: (id: string, status: ComposerMediaStatus) => void;

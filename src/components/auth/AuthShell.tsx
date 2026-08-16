@@ -1,4 +1,3 @@
-/** @format */
 import type { ReactNode } from "react";
 
 interface AuthShellProps {

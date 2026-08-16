@@ -1,5 +1,5 @@
-/** @format */
 import { Loader2 } from "lucide-react";
+
 import { cn } from "@/utils/cn";
 
 export function Spinner({ className }: { className?: string }) {

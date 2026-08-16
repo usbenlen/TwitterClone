@@ -1,28 +1,25 @@
-/** @format */
-
 import { apiClient } from "@/api/client";
 import { ENDPOINTS } from "@/api/config";
 import { MOCK_ENABLED, mockFollowApi } from "@/mock/handlers";
 
-import type { FollowRequest, FollowUser, RemoveFollower } from "@/types";
+import type { FollowRequest, UserShort, RemoveFollower } from "@/types";
 
 export const realFollowApi = {
   follow: (data: FollowRequest) =>
-    apiClient.post(ENDPOINTS.follows.follow(data.targetUserId), data),
+    apiClient.post<void>(ENDPOINTS.follows.follow(data.targetUserId)),
 
   unfollow: (data: FollowRequest) =>
-    apiClient.post<void>(ENDPOINTS.follows.unfollow(data.targetUserId), data),
+    apiClient.delete<void>(ENDPOINTS.follows.unfollow(data.targetUserId)),
 
   followers: (userId: string) =>
-    apiClient.get<FollowUser[]>(ENDPOINTS.follows.followers(userId)),
+    apiClient.get<UserShort[]>(ENDPOINTS.follows.followers(userId)),
 
   following: (userId: string) =>
-    apiClient.get<FollowUser[]>(ENDPOINTS.follows.following(userId)),
+    apiClient.get<UserShort[]>(ENDPOINTS.follows.following(userId)),
 
   removeFollower: (data: RemoveFollower) =>
-    apiClient.post<void>(
+    apiClient.delete<void>(
       ENDPOINTS.follows.removeFollower(data.userId, data.followId),
-      data,
     ),
 };
 

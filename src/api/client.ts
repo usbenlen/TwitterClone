@@ -1,4 +1,3 @@
-/** @format */
 import { API_BASE_URL, ENDPOINTS } from "@/api/config";
 import { tokenStorage } from "@/utils/storage";
 import type { RefreshResponse } from "@/types/auth";
@@ -16,7 +15,6 @@ export class ApiError extends Error {
 }
 
 interface RequestOptions extends Omit<RequestInit, "body"> {
-  // Тіло запиту (буде серіалізовано в JSON автоматично)
   body?: unknown;
   skipAuth?: boolean;
 }

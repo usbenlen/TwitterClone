@@ -1,5 +1,3 @@
-/** @format */
-
 import { useEffect, useState } from "react";
 import { useParams } from "react-router";
 
@@ -7,25 +5,26 @@ import { useAuth, useFollow, useProfile } from "@/hooks";
 
 import { Spinner } from "@/ui";
 
-import { FollowNavigation, FollowUserItem } from "@/components/profile";
+import { FollowNavigation } from "@/components/profile";
+import { UserListItem } from "@/components/user";
 import { ConfirmModal } from "@/components/modal";
 
-import type { FollowUser } from "@/types/follow";
+import type { UserShort } from "@/types";
 
 export default function FollowersPage() {
   const { username } = useParams<{
     username: string;
   }>();
 
-  const { user, isLoading } = useProfile(username);
+  const { user, isLoading } = useProfile(username, "posts");
   const { user: currentUser } = useAuth();
 
   const { followers, removeFollower, loadFollowers } = useFollow();
 
-  const [profileFollowers, setProfileFollowers] = useState<FollowUser[]>([]);
+  const [profileFollowers, setProfileFollowers] = useState<UserShort[]>([]);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedFollower, setSelectedFollower] = useState<FollowUser | null>(
+  const [selectedFollower, setSelectedFollower] = useState<UserShort | null>(
     null,
   );
 
@@ -68,11 +67,11 @@ export default function FollowersPage() {
           </p>
         ) : (
           users.map((follower) => (
-            <FollowUserItem
+            <UserListItem
               key={follower.id}
               user={follower}
-              showRemove={isOwnProfile}
-              onRemove={(follower) => {
+              showRemoveButton={isOwnProfile}
+              onRemove={() => {
                 setSelectedFollower(follower);
                 setIsModalOpen(true);
               }}

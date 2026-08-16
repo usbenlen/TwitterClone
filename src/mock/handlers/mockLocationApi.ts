@@ -1,8 +1,7 @@
-/** @format */
+import { locations } from "@/mock/data/locations";
 
 import type { Location } from "@/types/location";
 
-import { locations } from "@/mock/data/locations";
 import { delay } from "@/mock/utils/delay";
 
 export const mockLocationApi = {

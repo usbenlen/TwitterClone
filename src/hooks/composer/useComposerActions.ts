@@ -1,8 +1,4 @@
-/** @format */
-
 import { useRef } from "react";
-
-import type { ComposerAction } from "@/types/composer";
 
 import {
   useComposerPopup,
@@ -11,6 +7,8 @@ import {
   useComposerLocation,
   useComposerEmbed,
 } from "@/hooks/composer";
+
+import type { ComposerAction } from "@/types/composer";
 
 export function useComposerActions() {
   const imageInputRef = useRef<HTMLInputElement>(null);

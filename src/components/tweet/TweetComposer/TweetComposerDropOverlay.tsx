@@ -1,5 +1,3 @@
-/** @format */
-
 import { cn } from "@/utils/cn";
 
 interface TweetComposerDropOverlayProps {

@@ -1,17 +1,20 @@
-/** @format */
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { Link, useNavigate } from "react-router";
-import { registerSchema, type RegisterFormValues } from "@/models/auth.schema";
-import { useAuth } from "@/hooks/useAuth";
-import { AuthShell } from "@/components/auth/AuthShell";
-import { Input, Button } from "@/ui";
+
+import { authApi } from "@/api/auth.api";
 import { ApiError } from "@/api/client";
+
+import { zodResolver } from "@hookform/resolvers/zod";
+import { registerSchema, type RegisterFormValues } from "@/schemas/auth.schema";
+
+import { Input, Button } from "@/ui";
+
+import { AuthShell } from "@/components/auth/AuthShell";
+
 import { APP_ROUTES } from "@/constants/routes";
 
 export default function RegisterPage() {
-  const { register: registerUser } = useAuth();
   const navigate = useNavigate();
   const [serverError, setServerError] = useState<string | null>(null);
 
@@ -27,13 +30,15 @@ export default function RegisterPage() {
   const onSubmit = async (values: RegisterFormValues) => {
     setServerError(null);
     try {
-      await registerUser(values);
-      navigate(APP_ROUTES.HOME, { replace: true });
+      await authApi.register(values);
+      navigate(APP_ROUTES.VERIFY_EMAIL, {
+        state: { email: values.email },
+      });
     } catch (err) {
       setServerError(
         err instanceof ApiError
           ? err.message
-          : "He вдалося зареєструватися. Спробуйте пізніше.",
+          : "Не вдалося зареєструватися. Спробуйте пізніше.",
       );
     }
   };

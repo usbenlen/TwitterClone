@@ -1,10 +1,9 @@
-/** @format */
-
-import type { FollowRequest, FollowUser, RemoveFollower } from "@/types/follow";
-
-import { delay } from "@/mock/utils/delay";
 import { currentUser, sampleAuthors } from "@/mock/data/users";
 import { mockFollowing, mockFollowers } from "@/mock/data/follow";
+
+import type { FollowRequest, UserShort, RemoveFollower } from "@/types";
+
+import { delay } from "@/mock/utils/delay";
 
 export const mockFollowApi = {
   async follow({ targetUserId }: FollowRequest): Promise<void> {
@@ -26,8 +25,9 @@ export const mockFollowApi = {
     mockFollowing[currentUser.id].push({
       id: targetUser.id,
       username: targetUser.username,
-      displayName: targetUser.displayName,
-      avatarUrl: targetUser.avatarUrl,
+      displayName: targetUser.displayName ?? targetUser.username,
+      avatarUrl: targetUser.avatarUrl ?? undefined,
+      isVerified: targetUser.isVerified,
     });
 
     const alreadyFollower = mockFollowers[targetUserId].some(
@@ -38,8 +38,9 @@ export const mockFollowApi = {
       mockFollowers[targetUserId].push({
         id: currentUser.id,
         username: currentUser.username,
-        displayName: currentUser.displayName,
-        avatarUrl: currentUser.avatarUrl,
+        displayName: currentUser.displayName ?? currentUser.username,
+        avatarUrl: currentUser.avatarUrl ?? undefined,
+        isVerified: targetUser.isVerified,
       });
     }
   },
@@ -56,12 +57,12 @@ export const mockFollowApi = {
     );
   },
 
-  async following(userId: string): Promise<FollowUser[]> {
+  async following(userId: string): Promise<UserShort[]> {
     await delay();
     return [...(mockFollowing[userId] ?? [])];
   },
 
-  async followers(userId: string): Promise<FollowUser[]> {
+  async followers(userId: string): Promise<UserShort[]> {
     await delay();
     return [...(mockFollowers[userId] ?? [])];
   },

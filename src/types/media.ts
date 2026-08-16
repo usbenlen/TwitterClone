@@ -1,5 +1,3 @@
-/** @format */
-
 export interface MediaAttachment {
   id: string;
   type: "image" | "video" | "gif" | "embed";
@@ -8,6 +6,6 @@ export interface MediaAttachment {
   width?: number;
   height?: number;
   duration?: number;
-  size?: number;
+  sizeInBytes?: number;
   mimeType?: string;
 }

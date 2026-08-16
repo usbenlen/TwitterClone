@@ -1,7 +1,7 @@
-/** @format */
-
 import { useState } from "react";
+
 import { tweetApi } from "@/api/tweet.api";
+
 import type { Tweet } from "@/types/tweet";
 
 export function useTweetLike(tweet: Tweet) {
@@ -20,7 +20,7 @@ export function useTweetLike(tweet: Tweet) {
     setPending(true);
 
     try {
-      const result = await tweetApi.toggleLike(tweet.id);
+      const result = await tweetApi.toggleLike(tweet.id, likedByMe);
 
       setLikedByMe(result.likedByMe);
       setLikesCount(result.likesCount);
@@ -32,5 +32,10 @@ export function useTweetLike(tweet: Tweet) {
     }
   };
 
-  return { likedByMe, likesCount, pending, toggleLike };
+  return {
+    likedByMe,
+    likesCount,
+    pending,
+    toggleLike,
+  };
 }

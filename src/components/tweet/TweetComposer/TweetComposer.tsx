@@ -1,15 +1,10 @@
-/** @format */
-
 import { useAuth } from "@/hooks/useAuth";
 import { useTweetComposer } from "@/hooks/composer";
 import { useDragAndDrop } from "@/hooks/composer/media/useDragAndDrop";
 
-import ComposerPopovers from "@/components/composer/ComposerPopovers";
-
 import { Avatar } from "@/ui";
 
-import type { Tweet } from "@/types/tweet";
-
+import ComposerPopovers from "@/components/composer/ComposerPopovers";
 import {
   TweetComposerEditor,
   TweetComposerToolbar,
@@ -24,6 +19,8 @@ import {
 } from "@/components/tweet/TweetComposer";
 
 import { cn } from "@/utils/cn";
+
+import type { Tweet } from "@/types/tweet";
 
 interface TweetComposerProps {
   onCreated: (tweet: Tweet) => void;

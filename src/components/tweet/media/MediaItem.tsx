@@ -1,5 +1,3 @@
-/** @format */
-
 import { useEffect, useRef, useState } from "react";
 
 import type { MediaAttachment } from "@/types/media";
