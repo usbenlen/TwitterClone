@@ -57,7 +57,7 @@ export default function ActionsMenu({ onDelete }: ActionsMenuProps) {
           event.stopPropagation();
           setOpen((current) => !current);
         }}
-        className="cursor-pointer p-0.5 rounded-full text-muted-foreground transition-colors hover:text-foreground flex items-center justify-center"
+        className="p-0.5 rounded-full text-muted-foreground transition-colors hover:text-foreground flex items-center justify-center"
         aria-label="Додаткові дії"
         aria-expanded={open}
       >
@@ -84,8 +84,8 @@ export default function ActionsMenu({ onDelete }: ActionsMenuProps) {
                 }}
                 className={
                   action.variant === "danger"
-                    ? "flex w-full items-center gap-3 px-4 py-2.5 text-sm font-medium text-destructive transition-colors hover:bg-destructive/10 first:rounded-t-xl last:rounded-b-xl"
-                    : "flex w-full items-center gap-3 px-4 py-2.5 text-sm font-medium transition-colors hover:bg-muted first:rounded-t-xl last:rounded-b-xl"
+                    ? "cursor-pointer flex w-full items-center gap-3 px-4 py-2.5 text-sm font-medium text-destructive transition-colors hover:bg-destructive/10 first:rounded-t-xl last:rounded-b-xl"
+                    : "cursor-pointer flex w-full items-center gap-3 px-4 py-2.5 text-sm font-medium transition-colors hover:bg-muted first:rounded-t-xl last:rounded-b-xl"
                 }
               >
                 <Icon size={18} />
