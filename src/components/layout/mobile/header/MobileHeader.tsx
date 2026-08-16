@@ -1,4 +1,4 @@
-import AppLogo from "@/components/layout/common/AppLogo";
+import { AppLogo } from "@/ui";
 
 export default function MobileHeader() {
   return (

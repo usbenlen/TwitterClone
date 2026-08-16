@@ -1,5 +1,7 @@
 import type { ReactNode } from "react";
 
+import { AppLogo } from "@/ui";
+
 interface AuthShellProps {
   title: string;
   subtitle: string;
@@ -16,7 +18,7 @@ export function AuthShell({
   return (
     <div className="flex min-h-screen flex-col bg-background">
       <div className="flex items-center justify-between px-4 py-4">
-        <span className="text-3xl font-extrabold text-primary">Chirp</span>
+        <AppLogo />
       </div>
 
       <div className="flex flex-1 items-center justify-center px-4 pb-16">

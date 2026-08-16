@@ -1,3 +1,4 @@
+export { AppLogo } from "@/ui/AppLogo";
 export { Avatar } from "@/ui/Avatar";
 export { Button } from "@/ui/Button";
 export { Input } from "@/ui/Input";
