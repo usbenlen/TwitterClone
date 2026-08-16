@@ -1,5 +1,3 @@
-/** @format */
-
 import { useEffect, useMemo, useState } from "react";
 
 function formatRemaining(ms: number) {
@@ -14,6 +12,7 @@ function formatRemaining(ms: number) {
 }
 
 export function usePollCountdown(expiresAt: string) {
+  // eslint-disable-next-line react-hooks/purity
   const [now, setNow] = useState(Date.now());
 
   useEffect(() => {

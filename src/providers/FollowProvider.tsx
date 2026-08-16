@@ -1,34 +1,12 @@
-import {
-  createContext,
-  useCallback,
-  useEffect,
-  useState,
-  type ReactNode,
-} from "react";
+import { useCallback, useEffect, useState, type ReactNode } from "react";
 
 import { followApi } from "@/api/follow.api";
+
+import { FollowContext } from "@/providers/FollowContext";
+
 import { useAuth } from "@/hooks/useAuth";
 
 import type { UserShort } from "@/types";
-
-interface FollowContextValue {
-  following: UserShort[];
-  followers: UserShort[];
-
-  followingCount: number;
-  followersCount: number;
-
-  follow: (user: UserShort) => Promise<void>;
-  unfollow: (userId: string) => Promise<void>;
-  removeFollower: (userId: string, followerId: string) => Promise<void>;
-
-  loadFollowing: (userId: string) => Promise<UserShort[]>;
-  loadFollowers: (userId: string) => Promise<UserShort[]>;
-
-  isFollowing: (userId: string) => boolean;
-}
-
-export const FollowContext = createContext<FollowContextValue | null>(null);
 
 interface FollowProviderProps {
   children: ReactNode;
@@ -82,10 +60,21 @@ export function FollowProvider({ children }: FollowProviderProps) {
   );
 
   useEffect(() => {
-    if (!currentUser) return;
+    if (!currentUser) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setFollowing([]);
+      setFollowers([]);
+      return;
+    }
 
-    loadFollowing(currentUser.id);
-    loadFollowers(currentUser.id);
+    const fetchFollowData = async () => {
+      await Promise.all([
+        loadFollowing(currentUser.id),
+        loadFollowers(currentUser.id),
+      ]);
+    };
+
+    void fetchFollowData();
   }, [currentUser, loadFollowing, loadFollowers]);
 
   const follow = useCallback(
@@ -100,10 +89,10 @@ export function FollowProvider({ children }: FollowProviderProps) {
       setFollowing((previous) => {
         if (previous.some((item) => item.id === user.id)) return previous;
 
-          return [...previous, user];
-        });
-      },
-      [currentUser],
+        return [...previous, user];
+      });
+    },
+    [currentUser],
   );
 
   const unfollow = useCallback(

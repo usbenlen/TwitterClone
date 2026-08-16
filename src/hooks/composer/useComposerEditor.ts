@@ -1,5 +1,3 @@
-/** @format */
-
 import { useRef } from "react";
 
 export function useComposerEditor() {

@@ -1,5 +1,3 @@
-/** @format */
-
 import type { ReactNode } from "react";
 
 interface RightSidebarCardProps {

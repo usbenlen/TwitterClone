@@ -1,5 +1,3 @@
-/** @format */
-
 export * from "@/components/tweet/TweetComposer";
 export * from "@/components/tweet/media";
 

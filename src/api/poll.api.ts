@@ -1,5 +1,3 @@
-/** @format */
-
 import { apiClient } from "@/api/client";
 import { ENDPOINTS } from "@/api/config";
 import {

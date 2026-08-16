@@ -1,5 +1,3 @@
-/** @format */
-
 import { STORAGE_KEYS } from "@/constants/storage";
 
 // Обгортка над localStorage для роботи з токенами

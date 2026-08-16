@@ -1,5 +1,3 @@
-/** @format */
-
 import { delay } from "@/mock/utils/delay";
 
 import { tweets, setTweets } from "@/mock/data/tweets";

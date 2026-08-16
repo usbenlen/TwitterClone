@@ -1,6 +1,5 @@
-/** @format */
-
 import { useNavigation } from "@/hooks/useNavigation";
+
 import { MobileSidebarItem } from "@/components/layout/mobile";
 
 interface MobileSidebarNavigationProps {
@@ -10,7 +9,6 @@ interface MobileSidebarNavigationProps {
 export default function MobileDrawerNavigation({
   onNavigate,
 }: MobileSidebarNavigationProps) {
-  
   const navigation = useNavigation();
   const moreItems = navigation.filter((item) =>
     item.mobilePlacement?.includes("more"),

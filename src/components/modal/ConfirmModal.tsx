@@ -1,5 +1,3 @@
-/** @format */
-
 interface ConfirmModalProps {
   open: boolean;
   title: string;
@@ -19,9 +17,7 @@ export function ConfirmModal({
   onCancel,
   onConfirm,
 }: ConfirmModalProps) {
-  if (!open) {
-    return null;
-  }
+  if (!open) return null;
 
   return (
     <div

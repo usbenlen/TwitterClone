@@ -1,5 +1,3 @@
-/** @format */
-
 export default function RightSidebarFooterLinks() {
   const links = ["Про нас", "Конфіденційність", "Умови", "Допомога"];
 

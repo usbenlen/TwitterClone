@@ -1,5 +1,3 @@
-/** @format */
-
 /**
  * Формує базову адресу до API з .env змінних.
  * VITE_PATH_TO_SERVER + VITE_PATH_TO_API, напр:

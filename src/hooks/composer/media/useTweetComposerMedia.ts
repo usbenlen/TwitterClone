@@ -1,8 +1,9 @@
-/** @format */
-
 import { useState } from "react";
 
+import { useMediaUpload } from "@/hooks/composer/media";
+
 import { MEDIA } from "@/constants/app";
+import { prepareMedia } from "@/utils/media";
 
 import type {
   ComposerMedia,
@@ -10,10 +11,6 @@ import type {
   ComposerMediaStatus,
 } from "@/types/composer";
 import type { Gif } from "@/types/gif";
-
-import { prepareMedia } from "@/utils/media";
-
-import { useMediaUpload } from "@/hooks/composer/media";
 
 export function useTweetComposerMedia() {
   const [media, setMedia] = useState<ComposerMedia[]>([]);
@@ -73,9 +70,8 @@ export function useTweetComposerMedia() {
   const createGifFile = async (gif: Gif): Promise<File> => {
     const response = await fetch(gif.originalUrl);
 
-    if (!response.ok) {
+    if (!response.ok)
       throw new Error(`Failed to download GIF: ${response.status}`);
-    }
 
     const blob = await response.blob();
     const file = new File([blob], `${gif.id}.gif`, {
@@ -84,9 +80,8 @@ export function useTweetComposerMedia() {
 
     const maxSizeBytes = MEDIA.GIF.MAX_SIZE_MB * 1024 * 1024;
 
-    if (file.size > maxSizeBytes) {
+    if (file.size > maxSizeBytes)
       throw new Error(`GIF exceeds ${MEDIA.GIF.MAX_SIZE_MB} MB.`);
-    }
 
     return file;
   };

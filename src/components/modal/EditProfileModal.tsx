@@ -1,20 +1,19 @@
-/** @format */
-
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { Pencil, X } from "lucide-react";
 
-import type { Location, User } from "@/types";
 import type { UpdateProfileRequest } from "@/api/user.api";
 
 import { useLocationSearch } from "@/hooks/location/useLocationSearch";
 import { invalidateImageCache } from "@/hooks/useImageCache";
 
+import { Avatar, Button, Input } from "@/ui";
+
 import LocationPicker from "@/components/composer/location/LocationPicker";
 import { ConfirmModal } from "@/components/modal/ConfirmModal";
 
-import { Avatar, Button, Input } from "@/ui";
-
 import { MAX_BIO_LENGTH, MAX_NAME_LENGTH } from "@/constants/app";
+
+import type { Location, User } from "@/types";
 
 interface EditProfileModalProps {
   open: boolean;
@@ -23,7 +22,19 @@ interface EditProfileModalProps {
   onSave: (data: UpdateProfileRequest) => Promise<void>;
 }
 
-export default function EditProfileModal({
+export default function EditProfileModal(props: EditProfileModalProps) {
+  const { open, user } = props;
+  if (!open) return null;
+
+  return (
+    <EditProfileModalInner
+      key={open ? `edit-profile-${user.id}` : "closed"}
+      {...props}
+    />
+  );
+}
+
+function EditProfileModalInner({
   open,
   user,
   onClose,
@@ -57,30 +68,6 @@ export default function EditProfileModal({
   const [error, setError] = useState<string | null>(null);
 
   const locationSearch = useLocationSearch();
-
-  useEffect(() => {
-    if (!open) return;
-
-    setDisplayName(user.displayName?.trim() || user.username);
-    setBio(user.bio ?? "");
-    setLocation(user.location ?? null);
-
-    setAvatar(null);
-    setBanner(null);
-
-    setAvatarPreview(user.avatarUrl);
-    setBannerPreview(user.bannerUrl);
-
-    setRemoveLocation(false);
-    setRemoveAvatar(false);
-    setRemoveBanner(false);
-
-    setIsLocationOpen(false);
-    setIsConfirmOpen(false);
-
-    locationSearch.reset();
-    setError(null);
-  }, [open, user]);
 
   const hasChanges =
     displayName.trim() !== initialDisplayName ||
@@ -149,8 +136,7 @@ export default function EditProfileModal({
     setAvatar(null);
     setAvatarPreview(null);
 
-    // Якщо аватар вже був збережений на backend —
-    // повідомляємо backend, що його треба видалити.
+    // Якщо аватар вже був збережений на backend - повідомляємо backend, що його треба видалити.
     setRemoveAvatar(Boolean(user.avatarUrl));
   };
 
@@ -158,8 +144,7 @@ export default function EditProfileModal({
     setBanner(null);
     setBannerPreview(null);
 
-    // Якщо банер вже був збережений на backend —
-    // повідомляємо backend, що його треба видалити.
+    // Якщо банер вже був збережений на backend - повідомляємо backend, що його треба видалити.
     setRemoveBanner(Boolean(user.bannerUrl));
   };
 
@@ -181,12 +166,8 @@ export default function EditProfileModal({
     setIsSaving(true);
 
     try {
-      if (avatar || removeAvatar) {
-        await invalidateImageCache(user.avatarUrl);
-      }
-      if (banner || removeBanner) {
-        await invalidateImageCache(user.bannerUrl);
-      }
+      if (avatar || removeAvatar) await invalidateImageCache(user.avatarUrl);
+      if (banner || removeBanner) await invalidateImageCache(user.bannerUrl);
 
       await onSave({
         displayName: displayName.trim() || user.username,

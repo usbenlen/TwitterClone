@@ -1,5 +1,3 @@
-/** @format */
-
 import { useEffect, useState } from "react";
 
 import { userApi } from "@/api";
@@ -48,6 +46,7 @@ export function useProfile(
 
   useEffect(() => {
     if (!username) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setUser(null);
       setTabTweets(EMPTY_TABS);
       setLoadedTabs(EMPTY_LOADED_TABS);
@@ -85,9 +84,7 @@ export function useProfile(
           setLoadedTabs(EMPTY_LOADED_TABS);
         }
       } finally {
-        if (active) {
-          setIsLoading(false);
-        }
+        if (active) setIsLoading(false);
       }
     }
 
@@ -104,6 +101,7 @@ export function useProfile(
     let active = true;
     const currentUser = user;
 
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setIsTabLoading(true);
     setTabError(null);
 
@@ -130,9 +128,7 @@ export function useProfile(
           [activeTab]: [],
         }));
       } finally {
-        if (active) {
-          setIsTabLoading(false);
-        }
+        if (active) setIsTabLoading(false);
       }
     }
 

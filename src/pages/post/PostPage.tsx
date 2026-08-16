@@ -1,13 +1,14 @@
-/** @format */
-
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import { ArrowLeft } from "lucide-react";
 
 import { tweetApi } from "@/api/tweet.api";
-import { TweetCard } from "@/components/tweet";
-import type { Tweet } from "@/types/tweet";
+
 import { Spinner } from "@/ui";
+
+import { TweetCard } from "@/components/tweet";
+
+import type { Tweet } from "@/types/tweet";
 
 const viewedPostIds = new Set<string>();
 
@@ -56,9 +57,7 @@ export default function PostPage() {
         setNotFound(true);
         setTweet(null);
       } finally {
-        if (active) {
-          setIsLoading(false);
-        }
+        if (active) setIsLoading(false);
       }
     }
 

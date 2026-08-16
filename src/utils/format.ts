@@ -1,5 +1,3 @@
-/** @format */
-
 // Відносний час "2 хв", "3 год", "5 дн".
 export function formatRelativeTime(iso: string): string {
   const date = new Date(iso);

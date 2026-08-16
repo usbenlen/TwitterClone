@@ -1,8 +1,7 @@
-/** @format */
-
 import { useEffect, useState } from "react";
 
 import { searchApi } from "@/api";
+
 import { SEARCH_DEBOUNCE_MS } from "@/constants/app";
 
 import type { Tweet, UserShort } from "@/types";
@@ -17,6 +16,7 @@ export function useSearch(query: string) {
     const value = query.trim();
 
     if (!value) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setUsers([]);
       setPosts([]);
       setIsLoading(false);

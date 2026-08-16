@@ -1,5 +1,3 @@
-/** @format */
-
 import { ThemeSwitch } from "@/ui/ThemeSwitch";
 
 export default function MobileSidebarSettings() {

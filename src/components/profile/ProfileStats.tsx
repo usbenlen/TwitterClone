@@ -1,5 +1,3 @@
-/** @format */
-
 import { Link } from "react-router";
 
 import { formatCount, formatJoinDate } from "@/utils/format";

@@ -1,5 +1,3 @@
-/** @format */
-
 import RightSidebarCard from "@/components/layout/desktop/rightSidebar/RightSidebarCard";
 
 const trends = ["#React", "#TypeScript", "#ASPNET", "#TailwindCSS"];

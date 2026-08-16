@@ -1,13 +1,17 @@
-/** @format */
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { Link, useNavigate } from "react-router";
-import { registerSchema, type RegisterFormValues } from "@/schemas/auth.schema";
+
 import { authApi } from "@/api/auth.api";
-import { AuthShell } from "@/components/auth/AuthShell";
-import { Input, Button } from "@/ui";
 import { ApiError } from "@/api/client";
+
+import { zodResolver } from "@hookform/resolvers/zod";
+import { registerSchema, type RegisterFormValues } from "@/schemas/auth.schema";
+
+import { Input, Button } from "@/ui";
+
+import { AuthShell } from "@/components/auth/AuthShell";
+
 import { APP_ROUTES } from "@/constants/routes";
 
 export default function RegisterPage() {

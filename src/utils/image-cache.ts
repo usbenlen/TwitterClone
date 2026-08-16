@@ -1,5 +1,3 @@
-/** @format */
-
 const DB_NAME = "tc_image_cache";
 const STORE_NAME = "images";
 const DB_VERSION = 1;
@@ -15,9 +13,8 @@ class ImageCache {
 
       request.onupgradeneeded = () => {
         const db = request.result;
-        if (!db.objectStoreNames.contains(STORE_NAME)) {
+        if (!db.objectStoreNames.contains(STORE_NAME))
           db.createObjectStore(STORE_NAME);
-        }
       };
 
       request.onsuccess = () => {
@@ -39,11 +36,8 @@ class ImageCache {
 
         request.onsuccess = () => {
           const result = request.result;
-          if (result instanceof Blob) {
-            resolve(URL.createObjectURL(result));
-          } else {
-            resolve(null);
-          }
+          if (result instanceof Blob) resolve(URL.createObjectURL(result));
+          else resolve(null);
         };
         request.onerror = () => resolve(null);
       });
@@ -76,7 +70,7 @@ class ImageCache {
 
       const blob = await response.blob();
       await this.set(url, blob);
-      
+
       return URL.createObjectURL(blob);
     } catch (e) {
       console.error("Error fetching/caching image:", e);

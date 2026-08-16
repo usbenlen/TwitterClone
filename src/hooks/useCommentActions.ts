@@ -1,5 +1,3 @@
-/** @format */
-
 import { useState } from "react";
 
 import { commentApi } from "@/api/comment.api";
@@ -7,135 +5,124 @@ import { commentApi } from "@/api/comment.api";
 import type { Comment } from "@/types/comment";
 
 export function useCommentActions(comment: Comment) {
-    const [likedByMe, setLikedByMe] = useState(
-        Boolean(comment.isLikedByCurrentUser),
-    );
+  const [likedByMe, setLikedByMe] = useState(
+    Boolean(comment.isLikedByCurrentUser),
+  );
 
-    const [likesCount, setLikesCount] = useState(
-        comment.likesCount,
-    );
+  const [likesCount, setLikesCount] = useState(comment.likesCount);
 
-    const [repostedByMe, setRepostedByMe] = useState(
-        Boolean(comment.isRepostedByCurrentUser),
-    );
+  const [repostedByMe, setRepostedByMe] = useState(
+    Boolean(comment.isRepostedByCurrentUser),
+  );
 
-    const [repostsCount, setRepostsCount] = useState(
-        comment.retweetsCount ?? 0,
-    );
+  const [repostsCount, setRepostsCount] = useState(comment.retweetsCount ?? 0);
 
-    const [bookmarkedByMe, setBookmarkedByMe] = useState(
-        Boolean(comment.isBookmarkedByCurrentUser),
-    );
+  const [bookmarkedByMe, setBookmarkedByMe] = useState(
+    Boolean(comment.isBookmarkedByCurrentUser),
+  );
 
-    const [pendingAction, setPendingAction] = useState(false);
+  const [pendingAction, setPendingAction] = useState(false);
 
-    const toggleLike = async () => {
-        if (pendingAction) return;
+  const toggleLike = async () => {
+    if (pendingAction) return;
 
-        const previous = {
-            likedByMe,
-            likesCount,
-        };
-
-        const nextLiked = !likedByMe;
-
-        setLikedByMe(nextLiked);
-        setLikesCount((count) =>
-            nextLiked ? count + 1 : Math.max(0, count - 1),
-        );
-
-        setPendingAction(true);
-
-        try {
-            const result = await commentApi.toggleLike(
-                comment.id,
-                previous.likedByMe,
-            );
-
-            setLikedByMe(result.isLikedByCurrentUser);
-            setLikesCount(result.likesCount);
-        } catch {
-            setLikedByMe(previous.likedByMe);
-            setLikesCount(previous.likesCount);
-        } finally {
-            setPendingAction(false);
-        }
+    const previous = {
+      likedByMe,
+      likesCount,
     };
 
-    const toggleRepost = async () => {
-        if (pendingAction) return;
+    const nextLiked = !likedByMe;
 
-        const previous = {
-            repostedByMe,
-            repostsCount,
-        };
+    setLikedByMe(nextLiked);
+    setLikesCount((count) => (nextLiked ? count + 1 : Math.max(0, count - 1)));
 
-        const nextReposted = !repostedByMe;
+    setPendingAction(true);
 
-        setRepostedByMe(nextReposted);
-        setRepostsCount((count) =>
-            nextReposted ? count + 1 : Math.max(0, count - 1),
-        );
+    try {
+      const result = await commentApi.toggleLike(
+        comment.id,
+        previous.likedByMe,
+      );
 
-        setPendingAction(true);
+      setLikedByMe(result.isLikedByCurrentUser);
+      setLikesCount(result.likesCount);
+    } catch {
+      setLikedByMe(previous.likedByMe);
+      setLikesCount(previous.likesCount);
+    } finally {
+      setPendingAction(false);
+    }
+  };
 
-        try {
-            const result = await commentApi.toggleRepost(
-                comment.id,
-                previous.repostedByMe,
-            );
+  const toggleRepost = async () => {
+    if (pendingAction) return;
 
-            setRepostedByMe(result.isRepostedByCurrentUser);
-            setRepostsCount(result.retweetsCount);
-        } catch {
-            setRepostedByMe(previous.repostedByMe);
-            setRepostsCount(previous.repostsCount);
-        } finally {
-            setPendingAction(false);
-        }
+    const previous = {
+      repostedByMe,
+      repostsCount,
     };
 
-    const toggleBookmark = async () => {
-        if (pendingAction) return;
+    const nextReposted = !repostedByMe;
 
-        const previous = bookmarkedByMe;
-        const nextBookmarked = !previous;
+    setRepostedByMe(nextReposted);
+    setRepostsCount((count) =>
+      nextReposted ? count + 1 : Math.max(0, count - 1),
+    );
 
-        setBookmarkedByMe(nextBookmarked);
-        setPendingAction(true);
+    setPendingAction(true);
 
-        try {
-            const result = await commentApi.toggleBookmark(
-                comment.id,
-                previous,
-            );
+    try {
+      const result = await commentApi.toggleRepost(
+        comment.id,
+        previous.repostedByMe,
+      );
 
-            setBookmarkedByMe(
-                result.isBookmarkedByCurrentUser,
-            );
-        } catch {
-            setBookmarkedByMe(previous);
-        } finally {
-            setPendingAction(false);
-        }
-    };
+      setRepostedByMe(result.isRepostedByCurrentUser);
+      setRepostsCount(result.retweetsCount);
+    } catch {
+      setRepostedByMe(previous.repostedByMe);
+      setRepostsCount(previous.repostsCount);
+    } finally {
+      setPendingAction(false);
+    }
+  };
 
-    return {
-        likedByMe,
-        likesCount,
+  const toggleBookmark = async () => {
+    if (pendingAction) return;
 
-        repostedByMe,
-        repostsCount,
+    const previous = bookmarkedByMe;
+    const nextBookmarked = !previous;
 
-        bookmarkedByMe,
+    setBookmarkedByMe(nextBookmarked);
+    setPendingAction(true);
 
-        viewsCount: comment.viewsCount ?? 0,
-        repliesCount: comment.repliesCount ?? 0,
+    try {
+      const result = await commentApi.toggleBookmark(comment.id, previous);
 
-        pendingAction,
+      setBookmarkedByMe(result.isBookmarkedByCurrentUser);
+    } catch {
+      setBookmarkedByMe(previous);
+    } finally {
+      setPendingAction(false);
+    }
+  };
 
-        toggleLike,
-        toggleRepost,
-        toggleBookmark,
-    };
+  return {
+    likedByMe,
+    likesCount,
+
+    repostedByMe,
+    repostsCount,
+
+    bookmarkedByMe,
+
+    viewsCount: comment.viewsCount ?? 0,
+    repliesCount: comment.repliesCount ?? 0,
+
+    pendingAction,
+
+    toggleLike,
+    toggleRepost,
+    toggleBookmark,
+  };
 }

@@ -1,5 +1,3 @@
-/** @format */
-
 import { MEDIA } from "@/constants/app";
 
 interface TweetComposerFileInputsProps {

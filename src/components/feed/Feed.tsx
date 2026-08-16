@@ -1,5 +1,3 @@
-/** @format */
-
 import { useFeed } from "@/hooks/useFeed";
 
 import { FeedHeader, FeedList } from "@/components/feed";

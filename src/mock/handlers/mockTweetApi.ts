@@ -1,11 +1,10 @@
-/** @format */
+import { currentUser } from "@/mock/data/users";
+import { tweets, setTweets, nextTweetId } from "@/mock/data/tweets";
 
 import type { Tweet, CreateTweetRequest } from "@/types/tweet";
 import type { TweetPoll } from "@/types/poll";
 
 import { delay } from "@/mock/utils/delay";
-import { currentUser } from "@/mock/data/users";
-import { tweets, setTweets, nextTweetId } from "@/mock/data/tweets";
 import { mediaStore } from "@/mock/stores/mediaStore";
 
 export const mockTweetApi = {
@@ -24,9 +23,7 @@ export const mockTweetApi = {
 
     const tweet = tweets.find((item) => item.id === id);
 
-    if (!tweet) {
-      throw new Error("Пост не знайдено.");
-    }
+    if (!tweet) throw new Error("Пост не знайдено.");
 
     return tweet;
   },

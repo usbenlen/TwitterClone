@@ -1,11 +1,6 @@
-/** @format */
-
 import type { Comment } from "@/types";
 
-import {
-  currentUser,
-  sampleAuthors,
-} from "@/mock/data/users";
+import { currentUser, sampleAuthors } from "@/mock/data/users";
 
 const author = (user: (typeof sampleAuthors)[number]) => ({
   id: user.id,
@@ -28,9 +23,7 @@ export const commentsByPostId: Record<string, Comment[]> = {
       retweetsCount: 33,
       repliesCount: 2,
       isLikedByCurrentUser: true,
-      createdAt: new Date(
-          Date.now() - 1000 * 60 * 18,
-      ).toISOString(),
+      createdAt: new Date(Date.now() - 1000 * 60 * 18).toISOString(),
       updatedAt: null,
     },
 
@@ -42,9 +35,7 @@ export const commentsByPostId: Record<string, Comment[]> = {
       author: author(sampleAuthors[2]),
       likesCount: 2,
       isLikedByCurrentUser: false,
-      createdAt: new Date(
-          Date.now() - 1000 * 60 * 14,
-      ).toISOString(),
+      createdAt: new Date(Date.now() - 1000 * 60 * 14).toISOString(),
       updatedAt: null,
     },
 
@@ -58,9 +49,7 @@ export const commentsByPostId: Record<string, Comment[]> = {
       retweetsCount: 2,
       repliesCount: 1,
       isLikedByCurrentUser: false,
-      createdAt: new Date(
-          Date.now() - 1000 * 60 * 10,
-      ).toISOString(),
+      createdAt: new Date(Date.now() - 1000 * 60 * 10).toISOString(),
       updatedAt: null,
     },
 
@@ -72,9 +61,7 @@ export const commentsByPostId: Record<string, Comment[]> = {
       author: author(sampleAuthors[3]),
       likesCount: 0,
       isLikedByCurrentUser: false,
-      createdAt: new Date(
-          Date.now() - 1000 * 60 * 7,
-      ).toISOString(),
+      createdAt: new Date(Date.now() - 1000 * 60 * 7).toISOString(),
       updatedAt: null,
     },
 
@@ -86,9 +73,7 @@ export const commentsByPostId: Record<string, Comment[]> = {
       author: author(sampleAuthors[2]),
       likesCount: 3,
       isLikedByCurrentUser: false,
-      createdAt: new Date(
-          Date.now() - 1000 * 60 * 5,
-      ).toISOString(),
+      createdAt: new Date(Date.now() - 1000 * 60 * 5).toISOString(),
       updatedAt: null,
     },
 
@@ -103,9 +88,7 @@ export const commentsByPostId: Record<string, Comment[]> = {
       repliesCount: 525200,
       viewsCount: 142000000,
       isLikedByCurrentUser: false,
-      createdAt: new Date(
-          Date.now() - 1000 * 60 * 2,
-      ).toISOString(),
+      createdAt: new Date(Date.now() - 1000 * 60 * 2).toISOString(),
       updatedAt: null,
     },
   ],

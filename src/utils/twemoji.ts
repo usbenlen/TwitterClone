@@ -1,5 +1,3 @@
-/** @format */
-
 import twemoji from "twemoji";
 
 const options = {

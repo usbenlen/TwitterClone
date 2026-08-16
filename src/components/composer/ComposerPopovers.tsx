@@ -1,5 +1,3 @@
-/** @format */
-
 import ComposerPopover from "@/components/composer/ComposerPopover";
 
 import EmojiPicker from "@/components/composer/emoji/EmojiPicker";

@@ -1,5 +1,3 @@
-/** @format */
-
 import { X } from "lucide-react";
 
 import type { Embed } from "@/types/embed";

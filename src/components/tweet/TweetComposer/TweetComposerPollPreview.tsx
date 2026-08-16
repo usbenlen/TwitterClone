@@ -1,5 +1,3 @@
-/** @format */
-
 import { Trash2 } from "lucide-react";
 
 import type { ComposerPoll } from "@/types/poll";

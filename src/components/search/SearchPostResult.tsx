@@ -1,5 +1,3 @@
-/** @format */
-
 import { Avatar } from "@/ui";
 
 import type { Tweet } from "@/types";

@@ -1,5 +1,3 @@
-/** @format */
-
 import type { MediaAttachment } from "@/types/media";
 
 const media = new Map<string, MediaAttachment>();

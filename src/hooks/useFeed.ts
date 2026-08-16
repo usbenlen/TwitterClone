@@ -1,6 +1,7 @@
-/** @format */
 import { useCallback, useEffect, useState } from "react";
+
 import { tweetApi } from "@/api/tweet.api";
+
 import type { Tweet } from "@/types/tweet";
 
 // Завантаження та локальне керування стрічкою твітів
@@ -23,6 +24,7 @@ export function useFeed() {
   }, []);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     load();
   }, [load]);
 

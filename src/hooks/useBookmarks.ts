@@ -1,6 +1,7 @@
-/** @format */
 import { useCallback, useEffect, useState } from "react";
+
 import { tweetApi } from "@/api/tweet.api";
+
 import type { Tweet } from "@/types/tweet";
 
 export function useBookmarks() {
@@ -22,20 +23,29 @@ export function useBookmarks() {
   }, []);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     load();
   }, [load]);
 
   useEffect(() => {
     const handleBookmarkToggle = (e: Event) => {
-      const customEvent = e as CustomEvent<{ tweetId: string; bookmarked: boolean }>;
+      const customEvent = e as CustomEvent<{
+        tweetId: string;
+        bookmarked: boolean;
+      }>;
       if (!customEvent.detail.bookmarked) {
-        setTweets((prev) => prev.filter((t) => t.id !== customEvent.detail.tweetId));
+        setTweets((prev) =>
+          prev.filter((t) => t.id !== customEvent.detail.tweetId),
+        );
       }
     };
 
     window.addEventListener("tweet-bookmark-toggled", handleBookmarkToggle);
     return () => {
-      window.removeEventListener("tweet-bookmark-toggled", handleBookmarkToggle);
+      window.removeEventListener(
+        "tweet-bookmark-toggled",
+        handleBookmarkToggle,
+      );
     };
   }, []);
 

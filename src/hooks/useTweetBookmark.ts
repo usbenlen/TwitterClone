@@ -7,9 +7,8 @@ import type { Tweet } from "@/types/tweet";
 function readBookmarkedState(result: unknown, fallback: boolean): boolean {
   if (!result || typeof result !== "object") return fallback;
 
-  if ("bookmarkedByMe" in result) {
+  if ("bookmarkedByMe" in result)
     return Boolean((result as { bookmarkedByMe: unknown }).bookmarkedByMe);
-  }
 
   if ("isBookmarkedByCurrentUser" in result) {
     return Boolean(
@@ -35,7 +34,7 @@ export function useTweetBookmark(tweet: Tweet) {
     window.dispatchEvent(
       new CustomEvent("tweet-bookmark-toggled", {
         detail: { tweetId: tweet.id, bookmarked: next },
-      })
+      }),
     );
     setPending(true);
 
@@ -46,14 +45,14 @@ export function useTweetBookmark(tweet: Tweet) {
       window.dispatchEvent(
         new CustomEvent("tweet-bookmark-toggled", {
           detail: { tweetId: tweet.id, bookmarked: finalState },
-        })
+        }),
       );
     } catch {
       setBookmarkedByMe(previous);
       window.dispatchEvent(
         new CustomEvent("tweet-bookmark-toggled", {
           detail: { tweetId: tweet.id, bookmarked: previous },
-        })
+        }),
       );
     } finally {
       setPending(false);

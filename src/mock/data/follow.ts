@@ -1,5 +1,3 @@
-/** @format */
-
 import type { UserShort } from "@/types";
 
 export const mockFollowing: Record<string, UserShort[]> = {

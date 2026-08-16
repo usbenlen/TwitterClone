@@ -1,5 +1,3 @@
-/** @format */
-
 import { FeedList } from "@/components/feed";
 
 import {
@@ -11,9 +9,11 @@ import {
 
 import { FollowProvider } from "@/providers/FollowProvider";
 
-import type { Tweet, User } from "@/types";
 import type { UpdateProfileRequest } from "@/api/user.api";
+
 import type { ProfileTab } from "@/hooks/useProfile";
+
+import type { Tweet, User } from "@/types";
 
 interface ProfileProps {
   user: User;

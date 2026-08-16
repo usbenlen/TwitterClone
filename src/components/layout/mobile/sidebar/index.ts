@@ -1,5 +1,3 @@
-/** @format */
-
 export { default as MobileSidebar } from "@/components/layout/mobile/sidebar/MobileSidebar";
 export { default as MobileSidebarItem } from "@/components/layout/mobile/sidebar/MobileSidebarItem";
 export { default as MobileSidebarProfile } from "@/components/layout/mobile/sidebar/MobileSidebarProfile";

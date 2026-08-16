@@ -1,6 +1,5 @@
-/** @format */
-
 import { useEffect, useState } from "react";
+
 import { imageCache } from "@/utils/image-cache";
 
 /**
@@ -8,8 +7,7 @@ import { imageCache } from "@/utils/image-cache";
  */
 export async function invalidateImageCache(url: string | null | undefined) {
   if (!url) return;
-  // Ми не можемо легко видалити з IndexedDB за objectURL, 
-  // але ми можемо видалити за оригінальним URL.
+  // Ми не можемо легко видалити з IndexedDB за objectURL, але ми можемо видалити за оригінальним URL.
   await imageCache.remove(url);
 }
 
@@ -19,9 +17,8 @@ export async function invalidateImageCache(url: string | null | undefined) {
  */
 export function useImageCache(url?: string | null) {
   const [cachedUrl, setCachedUrl] = useState<string | null>(() => {
-    if (!url || url.startsWith("blob:") || url.startsWith("data:")) {
+    if (!url || url.startsWith("blob:") || url.startsWith("data:"))
       return url ?? null;
-    }
     return null;
   });
   const [isLoading, setIsLoading] = useState(false);
@@ -29,6 +26,7 @@ export function useImageCache(url?: string | null) {
   useEffect(() => {
     if (!url || url.startsWith("blob:") || url.startsWith("data:")) {
       // Якщо URL вже відповідає стану, нічого не робимо (запобігає циклу)
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setCachedUrl((prev) => (prev === (url ?? null) ? prev : (url ?? null)));
       return;
     }
@@ -48,7 +46,7 @@ export function useImageCache(url?: string | null) {
 
     return () => {
       isMounted = false;
-      // Примітка: Ми не робимо URL.revokeObjectURL тут, бо 
+      // Примітка: Ми не робимо URL.revokeObjectURL тут, бо
       // зображення може використовуватись в інших місцях.
       // IndexedDB wrapper повертає нові objectURL, які будуть жити до перезавантаження.
     };

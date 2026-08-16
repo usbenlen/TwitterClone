@@ -1,6 +1,5 @@
-/** @format */
-
 import { NavLink } from "react-router";
+
 import { APP_ROUTES } from "@/constants/routes";
 
 export default function AppLogo() {

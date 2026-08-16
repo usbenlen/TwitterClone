@@ -1,13 +1,11 @@
-/** @format */
-
 import { useParams, useSearchParams } from "react-router";
 
-import { Spinner } from "@/ui";
+import { userApi, type UpdateProfileRequest } from "@/api";
 
 import { useAuth, useProfile } from "@/hooks";
 import type { ProfileTab } from "@/hooks/useProfile";
 
-import { userApi, type UpdateProfileRequest } from "@/api";
+import { Spinner } from "@/ui";
 
 import { Profile } from "@/components/profile";
 
@@ -20,8 +18,15 @@ export default function ProfilePage() {
   const activeTab: ProfileTab =
     tabParam === "likes" || tabParam === "reposts" ? tabParam : "posts";
 
-  const { user, tweets, isLoading, isTabLoading, notFound, tabError, updateUser } =
-    useProfile(username, activeTab);
+  const {
+    user,
+    tweets,
+    isLoading,
+    isTabLoading,
+    notFound,
+    tabError,
+    updateUser,
+  } = useProfile(username, activeTab);
 
   const handleUpdateProfile = async (data: UpdateProfileRequest) => {
     const updatedUser = await userApi.updateProfile(data);

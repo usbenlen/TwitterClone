@@ -1,5 +1,3 @@
-/** @format */
-
 interface Props {
   errors: {
     id: string;

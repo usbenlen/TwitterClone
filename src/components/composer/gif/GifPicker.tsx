@@ -1,8 +1,6 @@
-/** @format */
+import { GifGrid, GifSearch } from "@/components/composer/gif";
 
 import type { Gif } from "@/types/gif";
-
-import { GifGrid, GifSearch } from "@/components/composer/gif";
 
 interface GifPickerProps {
   gifs: Gif[];

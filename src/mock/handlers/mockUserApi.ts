@@ -49,6 +49,9 @@ export const mockUserApi = {
   async getLikes(username: string): Promise<Tweet[]> {
     await delay();
 
+    if (username === currentUser.username)
+      return tweets.filter((tweet) => tweet.likedByMe);
+
     const likedIds = likedTweetsByUsername[username] ?? [];
 
     return tweets.filter((tweet) => likedIds.includes(tweet.id));
@@ -57,9 +60,8 @@ export const mockUserApi = {
   async getReposts(username: string): Promise<Tweet[]> {
     await delay();
 
-    if (username === currentUser.username) {
+    if (username === currentUser.username)
       return tweets.filter((tweet) => tweet.repostedByMe);
-    }
 
     const repostedIds = repostedTweetsByUsername[username] ?? [];
 

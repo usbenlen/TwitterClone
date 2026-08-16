@@ -1,5 +1,3 @@
-/** @format */
-
 import { z } from "zod";
 
 import { AUTH_LIMITS, MAX_NAME_LENGTH } from "@/constants/app";
@@ -50,17 +48,25 @@ export const changePasswordBaseSchema = z.object({
   currentPassword: z.string().min(1, "Введіть поточний пароль"),
   newPassword: z
     .string()
-    .min(AUTH_LIMITS.PASSWORD_MIN_LENGTH, `Мінімум ${AUTH_LIMITS.PASSWORD_MIN_LENGTH} символів`)
-    .max(AUTH_LIMITS.PASSWORD_MAX_LENGTH, `Максимум ${AUTH_LIMITS.PASSWORD_MAX_LENGTH} символів`),
+    .min(
+      AUTH_LIMITS.PASSWORD_MIN_LENGTH,
+      `Мінімум ${AUTH_LIMITS.PASSWORD_MIN_LENGTH} символів`,
+    )
+    .max(
+      AUTH_LIMITS.PASSWORD_MAX_LENGTH,
+      `Максимум ${AUTH_LIMITS.PASSWORD_MAX_LENGTH} символів`,
+    ),
   confirmPassword: z.string().min(1, "Підтвердіть новий пароль"),
   code: z.string().optional(),
 });
 
-export const changePasswordSchema = changePasswordBaseSchema
-  .refine((data) => data.newPassword === data.confirmPassword, {
+export const changePasswordSchema = changePasswordBaseSchema.refine(
+  (data) => data.newPassword === data.confirmPassword,
+  {
     message: "Паролі не збігаються",
     path: ["confirmPassword"],
-  });
+  },
+);
 
 export type LoginFormValues = z.infer<typeof loginSchema>;
 export type RegisterFormValues = z.infer<typeof registerSchema>;

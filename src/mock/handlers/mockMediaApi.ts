@@ -1,5 +1,3 @@
-/** @format */
-
 import type { MediaAttachment } from "@/types/media";
 
 import { mockUpload } from "@/mock/utils/mockUpload";

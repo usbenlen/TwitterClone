@@ -1,5 +1,3 @@
-/** @format */
-
 import { useRef, useState } from "react";
 
 interface CodeInputProps {
@@ -63,7 +61,6 @@ export default function CodeInput({
     }
 
     const digit = pastedDigits[0];
-
     if (!digit) return;
 
     const nextDigits = [...digits];

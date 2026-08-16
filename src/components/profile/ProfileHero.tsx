@@ -1,16 +1,13 @@
-/** @format */
-
 import { useState } from "react";
 
-import { useImageCache } from "@/hooks/useImageCache";
 import { Avatar, Button } from "@/ui";
 
-import { useFollow } from "@/hooks/useFollow";
+import { useImageCache, useFollow } from "@/hooks";
 
 import { EditProfileModal } from "@/components/modal";
 
-import type { User } from "@/types/user";
 import type { UpdateProfileRequest } from "@/api/user.api";
+import type { User } from "@/types/user";
 
 interface ProfileHeroProps {
   user: User;

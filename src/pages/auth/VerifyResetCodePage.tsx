@@ -1,19 +1,25 @@
-/** @format */
-
 import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { useLocation, useNavigate } from "react-router";
+
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+
+import {
+  changePasswordBaseSchema,
+  type ChangePasswordFormValues,
+} from "@/schemas/auth.schema";
 
 import { authApi } from "@/api/auth.api";
 import { ApiError } from "@/api/client";
-import { AuthShell, CodeInput } from "@/components/auth";
-import { Button, Input } from "@/ui";
-import { APP_ROUTES } from "@/constants/routes";
-import { useAuth } from "@/hooks";
-import { changePasswordBaseSchema, type ChangePasswordFormValues } from "@/schemas/auth.schema";
 
-import { z } from "zod";
+import { useAuth } from "@/hooks";
+
+import { Button, Input } from "@/ui";
+
+import { AuthShell, CodeInput } from "@/components/auth";
+
+import { APP_ROUTES } from "@/constants/routes";
 
 const verifyResetCodeSchema = z.object({
   code: z
@@ -24,8 +30,13 @@ const verifyResetCodeSchema = z.object({
 
 type VerifyResetCodeFormValues = z.infer<typeof verifyResetCodeSchema>;
 
-const currentPasswordSchema = changePasswordBaseSchema.pick({ currentPassword: true });
-type CurrentPasswordFormValues = Pick<ChangePasswordFormValues, "currentPassword">;
+const currentPasswordSchema = changePasswordBaseSchema.pick({
+  currentPassword: true,
+});
+type CurrentPasswordFormValues = Pick<
+  ChangePasswordFormValues,
+  "currentPassword"
+>;
 
 interface LocationState {
   email?: string;
@@ -36,15 +47,20 @@ interface VerifyResetCodePageProps {
   variant?: "auth" | "settings";
 }
 
-export default function VerifyResetCodePage({ variant = "auth" }: VerifyResetCodePageProps) {
+export default function VerifyResetCodePage({
+  variant = "auth",
+}: VerifyResetCodePageProps) {
   const navigate = useNavigate();
   const location = useLocation();
   const { user } = useAuth();
 
   const isSettings = variant === "settings";
-  const email = isSettings ? user?.email : (location.state as LocationState)?.email;
+  const email = isSettings
+    ? user?.email
+    : (location.state as LocationState)?.email;
 
-  const [currentPasswordVal, setCurrentPasswordVal] = useState<ChangePasswordFormValues["currentPassword"]>("");
+  const [currentPasswordVal, setCurrentPasswordVal] =
+    useState<ChangePasswordFormValues["currentPassword"]>("");
   const [codeSent, setCodeSent] = useState(false);
   const [code, setCode] = useState("");
   const [serverError, setServerError] = useState<string | null>(null);
@@ -73,9 +89,8 @@ export default function VerifyResetCodePage({ variant = "auth" }: VerifyResetCod
   });
 
   useEffect(() => {
-    if (!isSettings && !email) {
+    if (!isSettings && !email)
       navigate(APP_ROUTES.FORGOT_PASSWORD, { replace: true });
-    }
   }, [email, navigate, isSettings]);
 
   if (!email && !isSettings) return null;
@@ -90,7 +105,9 @@ export default function VerifyResetCodePage({ variant = "auth" }: VerifyResetCod
       });
       setCurrentPasswordVal(values.currentPassword);
       setCodeSent(true);
-      setInfoMessage(response.message || "Код підтвердження надіслано на email.");
+      setInfoMessage(
+        response.message || "Код підтвердження надіслано на email.",
+      );
     } catch (error) {
       setServerError(
         error instanceof ApiError
@@ -171,7 +188,11 @@ export default function VerifyResetCodePage({ variant = "auth" }: VerifyResetCod
       )}
 
       {isSettings && !codeSent ? (
-        <form onSubmit={handleSubmitCurrent(handleSendCode)} className="space-y-4" noValidate>
+        <form
+          onSubmit={handleSubmitCurrent(handleSendCode)}
+          className="space-y-4"
+          noValidate
+        >
           <Input
             label="Поточний пароль"
             type="password"
@@ -180,7 +201,12 @@ export default function VerifyResetCodePage({ variant = "auth" }: VerifyResetCod
             error={currentErrors.currentPassword?.message}
             {...registerCurrent("currentPassword")}
           />
-          <Button type="submit" size="lg" fullWidth isLoading={isCurrentSubmitting}>
+          <Button
+            type="submit"
+            size="lg"
+            fullWidth
+            isLoading={isCurrentSubmitting}
+          >
             Надіслати код підтвердження
           </Button>
         </form>

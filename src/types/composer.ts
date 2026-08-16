@@ -1,15 +1,7 @@
-/** @format */
-
 import { MEDIA_STATUS } from "@/constants/app";
 
 export type ComposerAction =
-  | "image"
-  | "gif"
-  | "video"
-  | "emoji"
-  | "poll"
-  | "location"
-  | "embed";
+  "image" | "gif" | "video" | "emoji" | "poll" | "location" | "embed";
 
 export type ComposerMediaStatus =
   (typeof MEDIA_STATUS)[keyof typeof MEDIA_STATUS];

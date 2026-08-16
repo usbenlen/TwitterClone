@@ -1,9 +1,8 @@
-/** @format */
-
 import type { ComponentType } from "react";
-
 import { Settings, UserRound, House, Bookmark } from "lucide-react";
+
 import { APP_ROUTES } from "@/constants/routes";
+
 import type { User } from "@/types/user";
 
 export interface NavigationItem {

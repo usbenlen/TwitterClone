@@ -1,5 +1,3 @@
-/** @format */
-
 import type { UserShort } from "@/types/user";
 
 export interface Comment {

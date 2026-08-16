@@ -1,6 +1,5 @@
-/** @format */
-
 import { MEDIA_STATUS } from "@/constants/app";
+
 import type { ComposerMedia } from "@/types/composer";
 
 export function createPreview(

@@ -1,4 +1,3 @@
-/** @format */
 import type { User, TweetPoll, Location, Embed } from "@/types";
 import type { MediaAttachment } from "@/types/media";
 
@@ -6,7 +5,10 @@ export interface Tweet {
   id: string;
   content: string;
 
-  author: Pick<User, "id" | "username" | "displayName" | "avatarUrl" | "isVerified">;
+  author: Pick<
+    User,
+    "id" | "username" | "displayName" | "avatarUrl" | "isVerified"
+  >;
 
   attachments: MediaAttachment[];
 

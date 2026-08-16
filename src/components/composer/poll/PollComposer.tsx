@@ -1,5 +1,3 @@
-/** @format */
-
 import { Plus, Trash2 } from "lucide-react";
 
 import type { ComposerPoll } from "@/types/poll";
@@ -32,32 +30,14 @@ export default function PollComposer({
               value={option.text}
               onChange={(e) => onOptionChange(option.id, e.target.value)}
               placeholder={`Варіант ${index + 1}`}
-              className="
-                flex-1
-                rounded-xl
-                border
-                border-border
-                bg-background
-                px-3
-                py-2
-                outline-none
-                focus:border-primary
-              "
+              className="flex-1 rounded-xl border border-border bg-background px-3 py-2 outline-none focus:border-primary"
             />
 
             {poll.options.length > 2 && (
               <button
                 type="button"
                 onClick={() => onRemoveOption(option.id)}
-                className="
-                  flex
-                  size-9
-                  items-center
-                  justify-center
-                  rounded-full
-                  text-destructive
-                  hover:bg-destructive/10
-                "
+                className="flex size-9 items-center justify-center rounded-full text-destructive hover:bg-destructive/10"
               >
                 <Trash2 size={18} />
               </button>
@@ -70,17 +50,7 @@ export default function PollComposer({
         <button
           type="button"
           onClick={onAddOption}
-          className="
-            flex
-            items-center
-            gap-2
-            self-start
-            rounded-full
-            px-3
-            py-2
-            text-primary
-            hover:bg-primary/10
-          "
+          className="flex items-center gap-2 self-start rounded-full px-3 py-2 text-primary hover:bg-primary/10"
         >
           <Plus size={18} />
           Додати варіант
@@ -93,14 +63,7 @@ export default function PollComposer({
         <select
           value={poll.duration}
           onChange={(e) => onDurationChange(Number(e.target.value))}
-          className="
-            rounded-lg
-            border
-            border-border
-            bg-background
-            px-3
-            py-2
-          "
+          className="rounded-lg border border-border bg-background px-3 py-2"
         >
           <option value={30}>30 хв</option>
           <option value={60}>1 година</option>

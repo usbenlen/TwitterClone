@@ -1,5 +1,3 @@
-/** @format */
-
 import { Button } from "@/ui";
 
 interface TweetComposerFooterProps {

@@ -1,5 +1,3 @@
-/** @format */
-
 import {
   autoUpdate,
   flip,
@@ -10,6 +8,7 @@ import {
   useFloating,
   useInteractions,
 } from "@floating-ui/react";
+
 import { useEffect } from "react";
 
 interface ComposerPopoverProps {
@@ -45,6 +44,7 @@ export default function ComposerPopover({
   return (
     <FloatingPortal>
       <div
+        // eslint-disable-next-line react-hooks/refs
         ref={refs.setFloating}
         style={floatingStyles}
         className="z-50 overflow-hidden rounded-2xl border border-border bg-background shadow-xl"

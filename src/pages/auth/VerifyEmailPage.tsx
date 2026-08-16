@@ -1,18 +1,20 @@
-/** @format */
-
 import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { useLocation, useNavigate } from "react-router";
+
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
 
 import { authApi } from "@/api/auth.api";
 import { ApiError } from "@/api/client";
-import { AuthShell, CodeInput } from "@/components/auth";
-import { Button } from "@/ui";
-import { APP_ROUTES } from "@/constants/routes";
+
 import { useAuth } from "@/hooks";
 
-import { z } from "zod";
+import { Button } from "@/ui";
+
+import { AuthShell, CodeInput } from "@/components/auth";
+
+import { APP_ROUTES } from "@/constants/routes";
 
 const verifyEmailSchema = z.object({
   code: z
@@ -51,9 +53,7 @@ export default function VerifyEmailPage() {
   });
 
   useEffect(() => {
-    if (!email) {
-      navigate(APP_ROUTES.REGISTER, { replace: true });
-    }
+    if (!email) navigate(APP_ROUTES.REGISTER, { replace: true });
   }, [email, navigate]);
 
   if (!email) return null;

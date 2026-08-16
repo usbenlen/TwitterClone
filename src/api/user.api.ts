@@ -1,11 +1,9 @@
-/** @format */
-
 import { apiClient } from "@/api/client";
 import { ENDPOINTS } from "@/api/config";
+import { mapPostToTweet, type BackendPost } from "@/api/mappers/post.mapper";
+
 import { MOCK_ENABLED } from "@/mock/config";
 import { mockUserApi } from "@/mock/handlers";
-
-import { mapPostToTweet, type BackendPost } from "@/api/mappers/post.mapper";
 
 import type { Location, User } from "@/types";
 
@@ -38,7 +36,9 @@ const realUserApi = {
   },
 
   getLikes: async (username: string) => {
-    const posts = await apiClient.get<BackendPost[]>(ENDPOINTS.users.likes(username));
+    const posts = await apiClient.get<BackendPost[]>(
+      ENDPOINTS.users.likes(username),
+    );
 
     return posts.map(mapPostToTweet);
   },

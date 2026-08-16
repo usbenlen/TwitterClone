@@ -1,5 +1,3 @@
-/** @format */
-
 import Picker, { Theme } from "emoji-picker-react";
 
 interface EmojiPickerProps {

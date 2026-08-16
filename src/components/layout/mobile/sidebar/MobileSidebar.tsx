@@ -1,9 +1,8 @@
-/** @format */
-
 import { useEffect, type ReactNode } from "react";
 import { X } from "lucide-react";
 
 import { Button } from "@/ui";
+
 import { cn } from "@/utils/cn";
 
 import AppLogo from "@/components/layout/common/AppLogo";

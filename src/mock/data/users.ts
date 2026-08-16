@@ -1,5 +1,3 @@
-/** @format */
-
 import type { User } from "@/types/user";
 
 import { locations } from "@/mock/data/locations";

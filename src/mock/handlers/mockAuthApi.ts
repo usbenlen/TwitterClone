@@ -1,5 +1,3 @@
-/** @format */
-
 import type {
   AuthResponse,
   ChangePasswordRequest,
@@ -13,6 +11,7 @@ import type {
   ResendVerificationCodeRequest,
 } from "@/types/auth";
 import type { User } from "@/types/user";
+
 import { currentUser } from "@/mock/data/users";
 
 import { delay } from "@/mock/utils/delay";
@@ -45,9 +44,8 @@ export const mockAuthApi = {
   async verifyEmail(data: VerifyEmailRequest): Promise<AuthResponse> {
     await delay();
 
-    if (!data.code || data.code.trim().length === 0) {
+    if (!data.code || data.code.trim().length === 0)
       throw new Error("Код підтвердження обов'язковий.");
-    }
 
     return {
       userId: currentUser.id,
@@ -110,13 +108,11 @@ export const mockAuthApi = {
     await delay(300);
 
     if (data.code) {
-      if (!pendingPasswordChange) {
+      if (!pendingPasswordChange)
         throw new Error("There is no pending password change request.");
-      }
 
-      if (!data.code.trim()) {
+      if (!data.code.trim())
         throw new Error("Confirmation code is invalid or expired.");
-      }
 
       pendingPasswordChange = false;
 

@@ -1,5 +1,3 @@
-/** @format */
-
 import { useEffect, useState } from "react";
 import { Loader2, AlertCircle, CheckCircle2 } from "lucide-react";
 
@@ -21,6 +19,7 @@ export default function TweetComposerMediaStatus({
   useEffect(() => {
     if (status !== MEDIA_STATUS.UPLOADED) return;
 
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setShowUploaded(true);
 
     const timer = setTimeout(() => {

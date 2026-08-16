@@ -1,24 +1,10 @@
-/** @format */
+import { useCallback, useEffect, useState, type ReactNode } from "react";
 
-import {
-  createContext,
-  useCallback,
-  useEffect,
-  useState,
-  type ReactNode,
-} from "react";
+import { ThemeContext } from "@/providers";
 
 import { THEMES, type Theme } from "@/types/theme";
 
 const STORAGE_KEY = "tc_theme";
-
-export interface ThemeContextValue {
-  theme: Theme;
-  setTheme: (theme: Theme) => void;
-  toggleTheme: () => void;
-}
-
-export const ThemeContext = createContext<ThemeContextValue | null>(null);
 
 function getInitialTheme(): Theme {
   const stored = localStorage.getItem(STORAGE_KEY) as Theme | null;

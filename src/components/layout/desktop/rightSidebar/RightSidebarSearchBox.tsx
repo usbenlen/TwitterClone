@@ -1,5 +1,3 @@
-/** @format */
-
 import { useState } from "react";
 import { useNavigate } from "react-router";
 
@@ -23,10 +21,6 @@ export default function RightSidebarSearchBox() {
   };
 
   return (
-      <SearchBox
-          value={query}
-          onChange={setQuery}
-          onSubmit={submitSearch}
-      />
+    <SearchBox value={query} onChange={setQuery} onSubmit={submitSearch} />
   );
 }

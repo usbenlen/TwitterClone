@@ -1,14 +1,11 @@
-/** @format */
-
 import { X } from "lucide-react";
 
+import TweetComposerMediaStatus from "@/components/tweet/TweetComposer/TweetComposerMediaStatus";
+
+import { MEDIA_STATUS } from "@/constants/app";
 import { cn } from "@/utils/cn";
 
 import type { ComposerMedia } from "@/types/composer";
-
-import { MEDIA_STATUS } from "@/constants/app";
-
-import TweetComposerMediaStatus from "@/components/tweet/TweetComposer/TweetComposerMediaStatus";
 
 interface ComposerMediaItemProps {
   media: ComposerMedia;

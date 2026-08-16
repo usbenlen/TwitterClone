@@ -1,6 +1,5 @@
-/** @format */
-
 import { useAuth } from "@/hooks/useAuth";
+
 import { MAIN_NAVIGATION } from "@/constants/navigation";
 
 export function useNavigation() {

@@ -1,5 +1,3 @@
-/** @format */
-
 import { useEffect, useState } from "react";
 import { useParams } from "react-router";
 
@@ -54,10 +52,7 @@ export default function FollowingPage() {
           </p>
         ) : (
           users.map((followedUser) => (
-              <UserListItem
-                  key={followedUser.id}
-                  user={followedUser}
-              />
+            <UserListItem key={followedUser.id} user={followedUser} />
           ))
         )}
       </div>

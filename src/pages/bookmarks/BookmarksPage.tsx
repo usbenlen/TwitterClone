@@ -1,5 +1,5 @@
-/** @format */
 import { useBookmarks } from "@/hooks/useBookmarks";
+
 import { FeedHeader, FeedList } from "@/components/feed";
 
 export default function BookmarksPage() {

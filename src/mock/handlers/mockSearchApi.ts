@@ -1,5 +1,3 @@
-/** @format */
-
 import type { Tweet, UserShort } from "@/types";
 
 import { sampleAuthors, tweets } from "@/mock/data";

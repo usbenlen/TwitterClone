@@ -1,5 +1,3 @@
-/** @format */
-
 interface GifSearchProps {
   value: string;
   onChange: (value: string) => void;

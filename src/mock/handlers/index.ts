@@ -1,5 +1,3 @@
-/** @format */
-
 export { MOCK_ENABLED } from "@/mock/config";
 
 export * from "@/mock/handlers/mockAuthApi";

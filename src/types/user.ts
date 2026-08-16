@@ -1,6 +1,5 @@
 import type { Location } from "@/types/location";
 
-// Профіль користувача, який повертає сервер
 export interface User {
   id: string;
   username: string;

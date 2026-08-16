@@ -1,10 +1,4 @@
-/** @format */
-
 import { useMemo, useState } from "react";
-
-import type { Tweet, Gif, Location, Embed } from "@/types";
-
-import { MAX_TWEET_LENGTH, MEDIA_STATUS } from "@/constants/app";
 
 import { useTweetComposerMedia } from "@/hooks/composer/media/useTweetComposerMedia";
 import {
@@ -12,6 +6,10 @@ import {
   useComposerSubmit,
   useComposerEditor,
 } from "@/hooks/composer";
+
+import { MAX_TWEET_LENGTH, MEDIA_STATUS } from "@/constants/app";
+
+import type { Tweet, Gif, Location, Embed } from "@/types";
 
 interface UseTweetComposerProps {
   onCreated: (tweet: Tweet) => void;

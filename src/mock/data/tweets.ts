@@ -1,5 +1,3 @@
-/** @format */
-
 import type { Tweet } from "@/types/tweet";
 import { currentUser, sampleAuthors } from "./users";
 

@@ -1,4 +1,3 @@
-/** @format */
 import { apiClient } from "@/api/client";
 import { ENDPOINTS } from "@/api/config";
 import type {
@@ -11,7 +10,7 @@ import type {
   RegisterRequest,
   VerifyResetCodeRequest,
   VerifyEmailRequest,
-  ResendVerificationCodeRequest
+  ResendVerificationCodeRequest,
 } from "@/types/auth";
 import type { User } from "@/types/user";
 import { MOCK_ENABLED } from "@/mock/config";
@@ -34,9 +33,13 @@ const realAuthApi = {
     }),
 
   resendVerificationCode: (data: ResendVerificationCodeRequest) =>
-    apiClient.post<MessageResponse>(ENDPOINTS.auth.resendVerificationCode, data, {
-      skipAuth: true,
-    }),
+    apiClient.post<MessageResponse>(
+      ENDPOINTS.auth.resendVerificationCode,
+      data,
+      {
+        skipAuth: true,
+      },
+    ),
 
   logout: () => apiClient.post<void>(ENDPOINTS.auth.logout),
 

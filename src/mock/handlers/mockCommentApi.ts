@@ -1,15 +1,14 @@
-/** @format */
-
 import type {
   Comment,
   CreateCommentRequest,
   UpdateCommentRequest,
 } from "@/types/comment";
 
+import { tweets, setTweets } from "@/mock/data/tweets";
 import { commentsByPostId, nextCommentId } from "@/mock/data/comments";
 import { currentUser } from "@/mock/data/users";
+
 import { delay } from "@/mock/utils/delay";
-import { tweets, setTweets } from "@/mock/data/tweets";
 
 function currentUserShort() {
   return {
@@ -23,12 +22,8 @@ function currentUserShort() {
 }
 
 function findComment(id: string) {
-  for (const [postId, comments] of Object.entries(
-      commentsByPostId,
-  )) {
-    const index = comments.findIndex(
-        (comment) => comment.id === id,
-    );
+  for (const [postId, comments] of Object.entries(commentsByPostId)) {
+    const index = comments.findIndex((comment) => comment.id === id);
 
     if (index !== -1) {
       return {
@@ -61,9 +56,8 @@ export const mockCommentApi = {
     await delay(180);
 
     return [...(commentsByPostId[postId] ?? [])].sort(
-        (a, b) =>
-            new Date(b.createdAt).getTime() -
-            new Date(a.createdAt).getTime(),
+      (a, b) =>
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
     );
   },
 
@@ -73,8 +67,7 @@ export const mockCommentApi = {
     const comment: Comment = {
       id: nextCommentId(),
       postId: data.postId,
-      parentCommentId:
-          data.parentCommentId ?? null,
+      parentCommentId: data.parentCommentId ?? null,
 
       content: data.content.trim(),
 
@@ -96,7 +89,10 @@ export const mockCommentApi = {
       updatedAt: null,
     };
 
-    commentsByPostId[data.postId] = [...(commentsByPostId[data.postId] ?? []), comment];
+    commentsByPostId[data.postId] = [
+      ...(commentsByPostId[data.postId] ?? []),
+      comment,
+    ];
     updateReplyCount(data.postId, 1);
 
     return comment;
@@ -112,9 +108,8 @@ export const mockCommentApi = {
 
       const existing = comments[commentIndex];
 
-      if (existing.author.id !== currentUser.id) {
+      if (existing.author.id !== currentUser.id)
         throw new Error("Ви не можете редагувати цей коментар.");
-      }
 
       const updated: Comment = {
         ...existing,
@@ -140,9 +135,8 @@ export const mockCommentApi = {
 
       if (!existing) continue;
 
-      if (existing.author.id !== currentUser.id) {
+      if (existing.author.id !== currentUser.id)
         throw new Error("Ви не можете видалити цей коментар.");
-      }
 
       commentsByPostId[postId] = comments.filter((item) => item.id !== id);
       updateReplyCount(postId, -1);
@@ -157,14 +151,11 @@ export const mockCommentApi = {
 
     const found = findComment(id);
 
-    if (!found) {
-      throw new Error("Коментар не знайдено.");
-    }
+    if (!found) throw new Error("Коментар не знайдено.");
 
     const next = {
       ...found.comment,
-      likesCount:
-          found.comment.likesCount + 1,
+      likesCount: found.comment.likesCount + 1,
       isLikedByCurrentUser: true,
     };
 
@@ -172,8 +163,7 @@ export const mockCommentApi = {
 
     return {
       likesCount: next.likesCount,
-      isLikedByCurrentUser:
-      next.isLikedByCurrentUser,
+      isLikedByCurrentUser: next.isLikedByCurrentUser,
     };
   },
 
@@ -182,16 +172,11 @@ export const mockCommentApi = {
 
     const found = findComment(id);
 
-    if (!found) {
-      throw new Error("Коментар не знайдено.");
-    }
+    if (!found) throw new Error("Коментар не знайдено.");
 
     const next = {
       ...found.comment,
-      likesCount: Math.max(
-          0,
-          found.comment.likesCount - 1,
-      ),
+      likesCount: Math.max(0, found.comment.likesCount - 1),
       isLikedByCurrentUser: false,
     };
 
@@ -199,18 +184,12 @@ export const mockCommentApi = {
 
     return {
       likesCount: next.likesCount,
-      isLikedByCurrentUser:
-      next.isLikedByCurrentUser,
+      isLikedByCurrentUser: next.isLikedByCurrentUser,
     };
   },
 
-  async toggleLike(
-      id: string,
-      likedByMe: boolean,
-  ) {
-    return likedByMe
-        ? this.unlike(id)
-        : this.like(id);
+  async toggleLike(id: string, likedByMe: boolean) {
+    return likedByMe ? this.unlike(id) : this.like(id);
   },
 
   async repost(id: string) {
@@ -218,26 +197,19 @@ export const mockCommentApi = {
 
     const found = findComment(id);
 
-    if (!found) {
-      throw new Error("Коментар не знайдено.");
-    }
+    if (!found) throw new Error("Коментар не знайдено.");
 
     const next = {
       ...found.comment,
-      retweetsCount:
-          (found.comment.retweetsCount ?? 0) + 1,
+      retweetsCount: (found.comment.retweetsCount ?? 0) + 1,
       isRepostedByCurrentUser: true,
     };
 
     found.comments[found.index] = next;
 
     return {
-      retweetsCount:
-          next.retweetsCount ?? 0,
-      isRepostedByCurrentUser:
-          Boolean(
-              next.isRepostedByCurrentUser,
-          ),
+      retweetsCount: next.retweetsCount ?? 0,
+      isRepostedByCurrentUser: Boolean(next.isRepostedByCurrentUser),
     };
   },
 
@@ -246,36 +218,24 @@ export const mockCommentApi = {
 
     const found = findComment(id);
 
-    if (!found) {
-      throw new Error("Коментар не знайдено.");
-    }
+    if (!found) throw new Error("Коментар не знайдено.");
 
     const next = {
       ...found.comment,
-      retweetsCount: Math.max(
-          0,
-          (found.comment.retweetsCount ?? 0) -
-          1,
-      ),
+      retweetsCount: Math.max(0, (found.comment.retweetsCount ?? 0) - 1),
       isRepostedByCurrentUser: false,
     };
 
     found.comments[found.index] = next;
 
     return {
-      retweetsCount:
-          next.retweetsCount ?? 0,
+      retweetsCount: next.retweetsCount ?? 0,
       isRepostedByCurrentUser: false,
     };
   },
 
-  async toggleRepost(
-      id: string,
-      repostedByMe: boolean,
-  ) {
-    return repostedByMe
-        ? this.unrepost(id)
-        : this.repost(id);
+  async toggleRepost(id: string, repostedByMe: boolean) {
+    return repostedByMe ? this.unrepost(id) : this.repost(id);
   },
 
   async bookmark(id: string) {
@@ -283,9 +243,7 @@ export const mockCommentApi = {
 
     const found = findComment(id);
 
-    if (!found) {
-      throw new Error("Коментар не знайдено.");
-    }
+    if (!found) throw new Error("Коментар не знайдено.");
 
     const next = {
       ...found.comment,
@@ -304,9 +262,7 @@ export const mockCommentApi = {
 
     const found = findComment(id);
 
-    if (!found) {
-      throw new Error("Коментар не знайдено.");
-    }
+    if (!found) throw new Error("Коментар не знайдено.");
 
     const next = {
       ...found.comment,
@@ -320,13 +276,8 @@ export const mockCommentApi = {
     };
   },
 
-  async toggleBookmark(
-      id: string,
-      bookmarkedByMe: boolean,
-  ) {
-    return bookmarkedByMe
-        ? this.unbookmark(id)
-        : this.bookmark(id);
+  async toggleBookmark(id: string, bookmarkedByMe: boolean) {
+    return bookmarkedByMe ? this.unbookmark(id) : this.bookmark(id);
   },
 
   async view(id: string) {
@@ -334,14 +285,11 @@ export const mockCommentApi = {
 
     const found = findComment(id);
 
-    if (!found) {
-      throw new Error("Коментар не знайдено.");
-    }
+    if (!found) throw new Error("Коментар не знайдено.");
 
     found.comments[found.index] = {
       ...found.comment,
-      viewsCount:
-          (found.comment.viewsCount ?? 0) + 1,
+      viewsCount: (found.comment.viewsCount ?? 0) + 1,
     };
   },
 };

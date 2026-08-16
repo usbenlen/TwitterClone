@@ -1,7 +1,9 @@
-/** @format */
 import { Navigate, Outlet, useLocation } from "react-router";
+
 import { useAuth } from "@/hooks/useAuth";
+
 import { Spinner } from "@/ui/Spinner";
+
 import { APP_ROUTES } from "@/constants/routes";
 
 // Пускає далі лише авторизованих, поки триває перевірка токена показує спінер

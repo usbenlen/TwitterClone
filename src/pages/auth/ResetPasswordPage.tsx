@@ -1,18 +1,20 @@
-/** @format */
-
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { useLocation, useNavigate } from "react-router";
-
-import { z } from "zod";
 
 import { authApi } from "@/api/auth.api";
 import { ApiError } from "@/api/client";
-import { AuthShell } from "@/components/auth/AuthShell";
-import { Input, Button } from "@/ui";
-import { APP_ROUTES } from "@/constants/routes";
+
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+
 import { type ChangePasswordFormValues } from "@/schemas/auth.schema";
+
+import { Input, Button } from "@/ui";
+
+import { AuthShell } from "@/components/auth/AuthShell";
+
+import { APP_ROUTES } from "@/constants/routes";
 
 const resetPasswordSchema = z
   .object({
@@ -40,12 +42,15 @@ interface ResetPasswordPageProps {
   variant?: "auth" | "settings";
 }
 
-export default function ResetPasswordPage({ variant = "auth" }: ResetPasswordPageProps) {
+export default function ResetPasswordPage({
+  variant = "auth",
+}: ResetPasswordPageProps) {
   const navigate = useNavigate();
   const location = useLocation();
 
   const isSettings = variant === "settings";
-  const { email, code, currentPassword } = (location.state as LocationState) ?? {};
+  const { email, code, currentPassword } =
+    (location.state as LocationState) ?? {};
 
   const [serverError, setServerError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
