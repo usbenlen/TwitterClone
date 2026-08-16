@@ -211,7 +211,7 @@ function EditProfileModalInner({
                 type="button"
                 onClick={requestClose}
                 disabled={isSaving}
-                className="flex size-9 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                className="cursor-pointer flex size-9 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
                 aria-label="Закрити"
               >
                 <X size={20} />
@@ -227,6 +227,7 @@ function EditProfileModalInner({
             </div>
 
             <Button
+              className={"cursor-pointer"}
               type="button"
               size="sm"
               isLoading={isSaving}
@@ -398,7 +399,7 @@ function EditProfileModalInner({
                           handleRemoveLocation();
                         }
                       }}
-                      className="ml-2 flex size-7 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                      className="cursor-pointer ml-2 flex size-7 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
                       aria-label="Видалити локацію"
                     >
                       <X size={16} />

@@ -274,7 +274,7 @@ export default function TweetComments({
                     type="submit"
                     disabled={!content.trim() || isSubmitting}
                     isLoading={isSubmitting}
-                    className="shrink-0 self-center rounded-full px-5 h-9 font-bold text-[15px]"
+                    className="cursor-pointer shrink-0 self-center rounded-full px-5 h-9 font-bold text-[15px]"
                   >
                     Reply
                   </Button>

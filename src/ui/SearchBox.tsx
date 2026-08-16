@@ -51,7 +51,7 @@ export default function SearchBox({
           <button
             type="button"
             onClick={clearSearch}
-            className="flex size-6 shrink-0 items-center justify-center rounded-full text-muted-foreground transition-colors hover:text-foreground"
+            className="cursor-pointer flex size-6 shrink-0 items-center justify-center rounded-full text-muted-foreground transition-colors hover:text-foreground"
             aria-label="Очистити пошук"
           >
             <X size={15} />

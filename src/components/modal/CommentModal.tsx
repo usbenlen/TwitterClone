@@ -163,7 +163,7 @@ function CommentModalInner({
             type="button"
             onClick={onClose}
             disabled={isSubmitting}
-            className="rounded-full p-2 transition-colors hover:bg-muted disabled:pointer-events-none disabled:opacity-50"
+            className="cursor-pointer rounded-full p-2 transition-colors hover:bg-muted disabled:pointer-events-none disabled:opacity-50"
             aria-label="Закрити"
           >
             <X size={20} />
@@ -171,7 +171,7 @@ function CommentModalInner({
 
           <button
             type="button"
-            className="text-sm font-semibold text-primary hover:underline"
+            className="cursor-pointer text-sm font-semibold text-primary hover:underline"
           >
             Drafts
           </button>
@@ -270,7 +270,7 @@ function CommentModalInner({
                 type="submit"
                 disabled={!content.trim() || isSubmitting}
                 isLoading={isSubmitting}
-                className="rounded-full px-5 py-2 h-9 font-bold text-[15px]"
+                className="cursor-pointer rounded-full px-5 py-2 h-9 font-bold text-[15px]"
               >
                 Reply
               </Button>

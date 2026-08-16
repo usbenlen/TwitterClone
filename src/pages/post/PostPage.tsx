@@ -80,7 +80,7 @@ export default function PostPage() {
         <button
           type="button"
           onClick={() => navigate(-1)}
-          className="rounded-full p-2 text-foreground transition-colors hover:bg-muted"
+          className="cursor-pointer rounded-full p-2 text-foreground transition-colors hover:bg-muted"
           aria-label="Назад"
         >
           <ArrowLeft className="size-5" />

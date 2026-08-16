@@ -12,7 +12,7 @@ export default function RightSidebarSearchFilters() {
           <div className="space-y-2">
             <button
               type="button"
-              className="flex w-full items-center justify-between text-sm text-foreground"
+              className="cursor-pointer flex w-full items-center justify-between text-sm text-foreground"
             >
               <span>From anyone</span>
 
@@ -23,7 +23,7 @@ export default function RightSidebarSearchFilters() {
 
             <button
               type="button"
-              className="flex w-full items-center justify-between text-sm text-foreground"
+              className="cursor-pointer flex w-full items-center justify-between text-sm text-foreground"
             >
               <span>People you follow</span>
 
@@ -38,7 +38,7 @@ export default function RightSidebarSearchFilters() {
           <div className="space-y-2">
             <button
               type="button"
-              className="flex w-full items-center justify-between text-sm text-foreground"
+              className="cursor-pointer flex w-full items-center justify-between text-sm text-foreground"
             >
               <span>Anywhere</span>
 
@@ -49,7 +49,7 @@ export default function RightSidebarSearchFilters() {
 
             <button
               type="button"
-              className="flex w-full items-center justify-between text-sm text-foreground"
+              className="cursor-pointer flex w-full items-center justify-between text-sm text-foreground"
             >
               <span>Near you</span>
 
@@ -60,7 +60,7 @@ export default function RightSidebarSearchFilters() {
 
         <button
           type="button"
-          className="text-sm text-primary transition hover:underline"
+          className="cursor-pointer text-sm text-primary transition hover:underline"
         >
           Advanced search
         </button>

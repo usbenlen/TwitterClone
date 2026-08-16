@@ -52,6 +52,7 @@ export default function ProfileHero({
           <div className="pt-3">
             {isOwnProfile ? (
               <Button
+                className={"cursor-pointer"}
                 variant="outline"
                 onClick={() => setIsEditProfileOpen(true)}
               >
@@ -59,6 +60,7 @@ export default function ProfileHero({
               </Button>
             ) : (
               <Button
+                className={"cursor-pointer"}
                 size="sm"
                 variant={following ? "outline" : "primary"}
                 onClick={() => (following ? unfollow(user.id) : follow(user))}

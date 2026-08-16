@@ -9,7 +9,7 @@ export default function RightSidebarTrendsCard() {
         {trends.map((trend) => (
           <button
             key={trend}
-            className="block text-left text-primary transition hover:underline"
+            className="cursor-pointer block text-left text-primary transition hover:underline"
           >
             {trend}
           </button>
