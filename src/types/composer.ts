@@ -1,7 +1,16 @@
 import { MEDIA_STATUS } from "@/constants/app";
+import type { Location } from "@/types/location";
+import type { Embed } from "@/types/embed";
 
 export type ComposerAction =
-  "image" | "gif" | "video" | "emoji" | "poll" | "location" | "embed";
+  | "image"
+  | "gif"
+  | "video"
+  | "emoji"
+  | "poll"
+  | "location"
+  | "embed"
+  | "schedule";
 
 export type ComposerMediaStatus =
   (typeof MEDIA_STATUS)[keyof typeof MEDIA_STATUS];
@@ -24,4 +33,15 @@ export interface ComposerMedia {
 export interface ComposerMediaError {
   id: string;
   message: string;
+}
+
+export interface ComposerSubmitData {
+  content: string;
+  mediaIds: string[];
+  poll?: {
+    options: string[];
+    duration: number;
+  } | null;
+  location?: Location | null;
+  embed?: Embed | null;
 }

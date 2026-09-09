@@ -27,7 +27,7 @@ export default function ComposerPopover({
   const { refs, floatingStyles, context } = useFloating({
     open,
     onOpenChange,
-    placement: "top-start",
+    placement: "bottom-start",
     middleware: [offset(8), flip({ padding: 12 }), shift({ padding: 12 })],
     whileElementsMounted: autoUpdate,
   });
@@ -37,9 +37,9 @@ export default function ComposerPopover({
   }, [reference, refs]);
 
   const dismiss = useDismiss(context);
-  useInteractions([dismiss]);
+  const { getFloatingProps } = useInteractions([dismiss]);
 
-  if (!open) return null;
+  if (!open || !reference) return null;
 
   return (
     <FloatingPortal>
@@ -47,7 +47,8 @@ export default function ComposerPopover({
         // eslint-disable-next-line react-hooks/refs
         ref={refs.setFloating}
         style={floatingStyles}
-        className="z-50 overflow-hidden rounded-2xl border border-border bg-background shadow-xl"
+        {...getFloatingProps()}
+        className="z-popover overflow-hidden rounded-2xl border border-border bg-background shadow-xl"
       >
         {children}
       </div>

@@ -1,10 +1,11 @@
-import ComposerPopover from "@/components/composer/ComposerPopover";
-
-import EmojiPicker from "@/components/composer/emoji/EmojiPicker";
-import GifPicker from "@/components/composer/gif/GifPicker";
-import PollComposer from "@/components/composer/poll/PollComposer";
-import LocationPicker from "@/components/composer/location/LocationPicker";
-import EmbedPicker from "@/components/composer/embed/EmbedPicker";
+import {
+  ComposerPopover,
+  EmojiPicker,
+  GifPicker,
+  PollComposer,
+  LocationPicker,
+  EmbedPicker,
+} from "@/components/composer";
 
 import type { Gif, ComposerPoll, Location, Embed } from "@/types";
 

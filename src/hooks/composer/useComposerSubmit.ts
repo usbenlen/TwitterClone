@@ -8,6 +8,7 @@ import type {
   ComposerPoll,
   Location,
   Embed,
+  ComposerSubmitData,
 } from "@/types";
 
 interface UseComposerSubmitProps {
@@ -21,6 +22,7 @@ interface UseComposerSubmitProps {
   clearErrors: () => void;
 
   onCreated: (tweet: Tweet) => void;
+  onSubmit?: (data: ComposerSubmitData) => Promise<unknown>;
 }
 
 export function useComposerSubmit({
@@ -32,6 +34,7 @@ export function useComposerSubmit({
   clearMedia,
   clearErrors,
   onCreated,
+  onSubmit,
 }: UseComposerSubmitProps) {
   const [isPosting, setIsPosting] = useState(false);
 
@@ -39,31 +42,46 @@ export function useComposerSubmit({
     setIsPosting(true);
 
     try {
-      const tweet = await tweetApi.create({
-        content: content.trim(),
+      const pollData =
+        poll && poll.options.some((o) => o.text.trim())
+          ? {
+              options: poll.options.map((o) => o.text.trim()).filter(Boolean),
+              duration: poll.duration,
+            }
+          : poll === null
+            ? null
+            : undefined;
 
+      const payload = {
+        content: content.trim(),
         mediaIds: media
           .filter((item) => item.attachmentId)
           .map((item) => item.attachmentId!),
-
-        poll:
-          poll && poll.options.some((o) => o.text.trim())
-            ? {
-                options: poll.options.map((o) => o.text.trim()).filter(Boolean),
-                duration: poll.duration,
-              }
-            : undefined,
-
+        poll: pollData,
         location,
         embed,
-      });
+      };
 
-      onCreated(tweet);
+      let result;
+      if (onSubmit) result = await onSubmit(payload);
+      else {
+        result = await tweetApi.create({
+          content: payload.content,
+          mediaIds: payload.mediaIds,
+          poll: pollData || undefined,
+          location: payload.location,
+          embed: payload.embed,
+        });
+      }
 
-      clearMedia();
-      clearErrors();
+      onCreated(result as Tweet);
 
-      return true;
+      if (result !== false) {
+        clearMedia();
+        clearErrors();
+      }
+
+      return result ?? true;
     } finally {
       setIsPosting(false);
     }

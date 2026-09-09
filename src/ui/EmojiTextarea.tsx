@@ -8,7 +8,7 @@ const EmojiTextarea = forwardRef<HTMLTextAreaElement, EmojiTextareaProps>(
       <textarea
         ref={ref}
         {...props}
-        className={`w-full resize-none bg-transparent outline-none ${className}`}
+        className={`w-full resize-none overflow-y-auto bg-transparent outline-none ${className}`}
       />
     );
   },

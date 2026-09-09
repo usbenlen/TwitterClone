@@ -1,6 +1,6 @@
 import { X } from "lucide-react";
 
-import TweetComposerMediaStatus from "@/components/tweet/TweetComposer/TweetComposerMediaStatus";
+import { TweetComposerMediaStatus } from "@/components/tweet/TweetComposer";
 
 import { MEDIA_STATUS } from "@/constants/app";
 import { cn } from "@/utils/cn";
@@ -31,7 +31,7 @@ export default function ComposerMediaItem({
         type="button"
         onClick={() => onRemove(media.id)}
         className={cn(
-          "absolute right-3 top-3 z-30 flex size-8 items-center justify-center rounded-full bg-black/70 text-white transition-opacity duration-200",
+          "absolute right-3 top-3 z-content flex size-8 items-center justify-center rounded-full bg-black/70 text-white transition-opacity duration-200",
           media.status === MEDIA_STATUS.UPLOADING ||
             media.status === MEDIA_STATUS.COMPRESSING
             ? "opacity-100"

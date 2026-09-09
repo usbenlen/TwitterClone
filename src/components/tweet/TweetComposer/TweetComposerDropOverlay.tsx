@@ -18,7 +18,7 @@ export default function TweetComposerDropOverlay({
   return (
     <div
       className={cn(
-        "absolute inset-0 z-20 flex items-center justify-center rounded-xl border-2 border-dashed border-primary bg-primary/10 backdrop-blur-sm",
+        "absolute inset-0 z-content flex items-center justify-center rounded-xl border-2 border-dashed border-primary bg-primary/10 backdrop-blur-sm",
         className,
       )}
     >

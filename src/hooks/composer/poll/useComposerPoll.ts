@@ -6,23 +6,24 @@ import type { ComposerPoll } from "@/types/poll";
 
 const DEFAULT_DURATION = 1440;
 
-export function useComposerPoll() {
+export function useComposerPoll(initialPoll?: ComposerPoll | null) {
   const popup = useComposerPopup();
 
-  const [poll, setPoll] = useState<ComposerPoll>({
-    duration: DEFAULT_DURATION,
-
-    options: [
-      {
-        id: crypto.randomUUID(),
-        text: "",
-      },
-      {
-        id: crypto.randomUUID(),
-        text: "",
-      },
-    ],
-  });
+  const [poll, setPoll] = useState<ComposerPoll>(
+    initialPoll ?? {
+      duration: DEFAULT_DURATION,
+      options: [
+        {
+          id: crypto.randomUUID(),
+          text: "",
+        },
+        {
+          id: crypto.randomUUID(),
+          text: "",
+        },
+      ],
+    },
+  );
 
   const hasPoll = poll.options.some((option) => option.text.trim().length > 0);
 

@@ -8,9 +8,9 @@ import {
   useComposerEmbed,
 } from "@/hooks/composer";
 
-import type { ComposerAction } from "@/types/composer";
+import type { ComposerAction, ComposerPoll } from "@/types";
 
-export function useComposerActions() {
+export function useComposerActions(initialPoll?: ComposerPoll | null) {
   const imageInputRef = useRef<HTMLInputElement>(null);
   const videoInputRef = useRef<HTMLInputElement>(null);
 
@@ -34,7 +34,7 @@ export function useComposerActions() {
 
   const emoji = useComposerPopup();
   const gif = useComposerGif();
-  const poll = useComposerPoll();
+  const poll = useComposerPoll(initialPoll);
   const location = useComposerLocation();
   const embed = useComposerEmbed();
 

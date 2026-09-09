@@ -32,7 +32,7 @@ export default function TweetComposerMediaStatus({
   switch (status) {
     case MEDIA_STATUS.COMPRESSING:
       return (
-        <div className="absolute inset-0 z-20 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+        <div className="absolute inset-0 z-content flex items-center justify-center bg-black/50 backdrop-blur-sm">
           <div className="flex items-center gap-2 rounded-xl bg-background/90 px-4 py-2 shadow">
             <Loader2 className="size-4 animate-spin text-primary" />
             <span className="text-sm font-medium">Оптимізація…</span>
@@ -42,7 +42,7 @@ export default function TweetComposerMediaStatus({
 
     case MEDIA_STATUS.UPLOADING:
       return (
-        <div className="absolute inset-x-0 bottom-0 z-20 bg-black/70 p-3">
+        <div className="absolute inset-x-0 bottom-0 z-content bg-black/70 p-3">
           <div className="mb-2 h-1.5 overflow-hidden rounded-full bg-white/20">
             <div
               className="h-full rounded-full bg-primary transition-all duration-200"
@@ -59,7 +59,7 @@ export default function TweetComposerMediaStatus({
 
     case MEDIA_STATUS.ERROR:
       return (
-        <div className="absolute inset-0 z-20 flex items-center justify-center bg-red-500/70 backdrop-blur-sm">
+        <div className="absolute inset-0 z-content flex items-center justify-center bg-red-500/70 backdrop-blur-sm">
           <div className="flex items-center gap-2 rounded-xl bg-background/90 px-4 py-2 shadow">
             <AlertCircle className="size-4 text-red-500" />
             <span className="text-sm font-medium">Помилка завантаження</span>
@@ -71,7 +71,7 @@ export default function TweetComposerMediaStatus({
       if (!showUploaded) return null;
 
       return (
-        <div className="absolute inset-0 z-20 flex items-center justify-center bg-black/40 backdrop-blur-sm">
+        <div className="absolute inset-0 z-content flex items-center justify-center bg-black/40 backdrop-blur-sm">
           <div className="flex items-center gap-2 rounded-xl bg-background/90 px-4 py-2 shadow">
             <CheckCircle2 className="size-5 text-green-500" />
 

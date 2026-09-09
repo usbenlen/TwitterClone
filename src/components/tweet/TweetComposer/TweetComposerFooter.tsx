@@ -5,6 +5,8 @@ interface TweetComposerFooterProps {
   canSubmit: boolean;
   isPosting: boolean;
   onSubmit: () => void;
+  submitLabel?: string;
+  disabled?: boolean;
 }
 
 export default function TweetComposerFooter({
@@ -12,9 +14,11 @@ export default function TweetComposerFooter({
   canSubmit,
   isPosting,
   onSubmit,
+  submitLabel = "Post",
+  disabled,
 }: TweetComposerFooterProps) {
   return (
-    <div className="flex items-center justify-between">
+    <div className="flex items-center justify-between gap-3">
       <span
         className={
           remaining < 0
@@ -25,8 +29,13 @@ export default function TweetComposerFooter({
         {remaining}
       </span>
 
-      <Button className={"cursor-pointer"} onClick={onSubmit} disabled={!canSubmit} isLoading={isPosting}>
-        Опублікувати
+      <Button
+        className="h-9 cursor-pointer rounded-full px-5 py-2 text-[15px] font-bold"
+        onClick={onSubmit}
+        disabled={disabled ?? !canSubmit}
+        isLoading={isPosting}
+      >
+        {submitLabel}
       </Button>
     </div>
   );
