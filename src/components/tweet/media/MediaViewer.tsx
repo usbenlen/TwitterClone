@@ -277,7 +277,7 @@ function MediaViewerInner({
 
   return (
     <div
-      className="fixed inset-0 z-40 flex items-center justify-center bg-black/90"
+      className="fixed inset-0 z-media-viewer flex items-center justify-center bg-black/90"
       onClick={handleBackdropClick}
     >
       {/* Close */}
@@ -287,7 +287,7 @@ function MediaViewerInner({
           event.stopPropagation();
           onClose();
         }}
-        className="fixed right-5 top-5 z-50 flex size-10 items-center justify-center rounded-full bg-black/70 text-white backdrop-blur transition hover:bg-black/90"
+        className="fixed right-5 top-5 z-media-controls flex size-10 items-center justify-center rounded-full bg-black/70 text-white backdrop-blur transition hover:bg-black/90"
         aria-label="Закрити"
       >
         <X size={20} />
@@ -301,7 +301,7 @@ function MediaViewerInner({
             event.stopPropagation();
             onChange(currentIndex - 1);
           }}
-          className="fixed left-5 top-1/2 z-50 flex size-12 -translate-y-1/2 items-center justify-center rounded-full bg-black/70 text-2xl text-white backdrop-blur transition hover:bg-black/90"
+          className="fixed left-5 top-1/2 z-media-controls flex size-12 -translate-y-1/2 items-center justify-center rounded-full bg-black/70 text-2xl text-white backdrop-blur transition hover:bg-black/90"
           aria-label="Попереднє вкладення"
         >
           <ChevronLeft size={20} />
@@ -316,7 +316,7 @@ function MediaViewerInner({
             event.stopPropagation();
             onChange(currentIndex + 1);
           }}
-          className="fixed right-5 top-1/2 z-50 flex size-12 -translate-y-1/2 items-center justify-center rounded-full bg-black/70 text-2xl text-white backdrop-blur transition hover:bg-black/90"
+          className="fixed right-5 top-1/2 z-media-controls flex size-12 -translate-y-1/2 items-center justify-center rounded-full bg-black/70 text-2xl text-white backdrop-blur transition hover:bg-black/90"
           aria-label="Наступне вкладення"
         >
           <ChevronRight size={20} />
@@ -384,7 +384,7 @@ function MediaViewerInner({
 
       {/* Zoom controls */}
       <div
-        className="fixed bottom-5 left-1/2 z-50 flex -translate-x-1/2 items-center gap-1 rounded-full bg-black/70 p-1 text-white backdrop-blur"
+        className="fixed bottom-5 left-1/2 z-media-controls flex -translate-x-1/2 items-center gap-1 rounded-full bg-black/70 p-1 text-white backdrop-blur"
         onClick={(event) => event.stopPropagation()}
       >
         <button

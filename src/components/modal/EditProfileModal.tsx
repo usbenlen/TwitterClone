@@ -1,14 +1,14 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Pencil, X } from "lucide-react";
 
 import type { UpdateProfileRequest } from "@/api/user.api";
 
-import { useLocationSearch } from "@/hooks/location/useLocationSearch";
+import { useLocationSearch, useUnsavedChangesGuard } from "@/hooks";
 import { invalidateImageCache } from "@/hooks/useImageCache";
 
 import { Avatar, Button, Input } from "@/ui";
 
-import LocationPicker from "@/components/composer/location/LocationPicker";
+import { LocationPicker } from "@/components/composer";
 import { ConfirmModal } from "@/components/modal/ConfirmModal";
 
 import { MAX_BIO_LENGTH, MAX_NAME_LENGTH } from "@/constants/app";
@@ -24,14 +24,10 @@ interface EditProfileModalProps {
 
 export default function EditProfileModal(props: EditProfileModalProps) {
   const { open, user } = props;
+
   if (!open) return null;
 
-  return (
-    <EditProfileModalInner
-      key={open ? `edit-profile-${user.id}` : "closed"}
-      {...props}
-    />
-  );
+  return <EditProfileModalInner key={`edit-profile-${user.id}`} {...props} />;
 }
 
 function EditProfileModalInner({
@@ -43,13 +39,16 @@ function EditProfileModalInner({
   const avatarInputRef = useRef<HTMLInputElement | null>(null);
   const bannerInputRef = useRef<HTMLInputElement | null>(null);
 
+  const avatarPreviewUrlRef = useRef<string | null>(null);
+  const bannerPreviewUrlRef = useRef<string | null>(null);
+
   const initialDisplayName = user.displayName?.trim() || user.username;
+  const initialBio = user.bio ?? "";
+  const initialLocation = user.location ?? null;
 
   const [displayName, setDisplayName] = useState(initialDisplayName);
-  const [bio, setBio] = useState(user.bio ?? "");
-  const [location, setLocation] = useState<Location | null>(
-    user.location ?? null,
-  );
+  const [bio, setBio] = useState(initialBio);
+  const [location, setLocation] = useState<Location | null>(initialLocation);
 
   const [avatar, setAvatar] = useState<File | null>(null);
   const [banner, setBanner] = useState<File | null>(null);
@@ -58,7 +57,6 @@ function EditProfileModalInner({
   const [bannerPreview, setBannerPreview] = useState(user.bannerUrl);
 
   const [isLocationOpen, setIsLocationOpen] = useState(false);
-  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
 
   const [removeLocation, setRemoveLocation] = useState(false);
   const [removeAvatar, setRemoveAvatar] = useState(false);
@@ -69,38 +67,50 @@ function EditProfileModalInner({
 
   const locationSearch = useLocationSearch();
 
+  useEffect(() => {
+    return () => {
+      if (avatarPreviewUrlRef.current) URL.revokeObjectURL(avatarPreviewUrlRef.current);
+      if (bannerPreviewUrlRef.current) URL.revokeObjectURL(bannerPreviewUrlRef.current);
+    };
+  }, []);
+
   const hasChanges =
     displayName.trim() !== initialDisplayName ||
-    bio.trim() !== (user.bio ?? "") ||
+    bio.trim() !== initialBio ||
     avatar !== null ||
     banner !== null ||
     removeLocation ||
     removeAvatar ||
     removeBanner ||
-    location?.id !== user.location?.id;
+    location?.id !== initialLocation?.id;
 
-  const requestClose = () => {
-    if (isSaving) return;
-
-    if (hasChanges) {
-      setIsConfirmOpen(true);
-      return;
-    }
-
-    onClose();
-  };
+  const { isConfirmOpen, requestClose, cancelDiscard, confirmDiscard } =
+    useUnsavedChangesGuard({
+      hasChanges,
+      isBusy: isSaving,
+      onClose,
+    });
 
   const handleDiscardChanges = () => {
-    setIsConfirmOpen(false);
     setIsLocationOpen(false);
     locationSearch.reset();
 
-    setDisplayName(user.displayName?.trim() || user.username);
-    setBio(user.bio ?? "");
-    setLocation(user.location ?? null);
+    setDisplayName(initialDisplayName);
+    setBio(initialBio);
+    setLocation(initialLocation);
 
     setAvatar(null);
     setBanner(null);
+
+    if (avatarPreviewUrlRef.current) {
+      URL.revokeObjectURL(avatarPreviewUrlRef.current);
+      avatarPreviewUrlRef.current = null;
+    }
+
+    if (bannerPreviewUrlRef.current) {
+      URL.revokeObjectURL(bannerPreviewUrlRef.current);
+      bannerPreviewUrlRef.current = null;
+    }
 
     setAvatarPreview(user.avatarUrl);
     setBannerPreview(user.bannerUrl);
@@ -111,32 +121,50 @@ function EditProfileModalInner({
 
     setError(null);
 
-    onClose();
+    confirmDiscard();
   };
 
   const handleAvatarChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
+
     if (!file) return;
+
+    if (avatarPreviewUrlRef.current) URL.revokeObjectURL(avatarPreviewUrlRef.current);
+
+    const previewUrl = URL.createObjectURL(file);
+
+    avatarPreviewUrlRef.current = previewUrl;
 
     setAvatar(file);
     setRemoveAvatar(false);
-    setAvatarPreview(URL.createObjectURL(file));
+    setAvatarPreview(previewUrl);
   };
 
   const handleBannerChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
+
     if (!file) return;
+
+    if (bannerPreviewUrlRef.current) URL.revokeObjectURL(bannerPreviewUrlRef.current);
+
+    const previewUrl = URL.createObjectURL(file);
+
+    bannerPreviewUrlRef.current = previewUrl;
 
     setBanner(file);
     setRemoveBanner(false);
-    setBannerPreview(URL.createObjectURL(file));
+    setBannerPreview(previewUrl);
   };
 
   const handleRemoveAvatar = () => {
     setAvatar(null);
     setAvatarPreview(null);
 
-    // Якщо аватар вже був збережений на backend - повідомляємо backend, що його треба видалити.
+    if (avatarPreviewUrlRef.current) {
+      URL.revokeObjectURL(avatarPreviewUrlRef.current);
+      avatarPreviewUrlRef.current = null;
+    }
+
     setRemoveAvatar(Boolean(user.avatarUrl));
   };
 
@@ -144,7 +172,11 @@ function EditProfileModalInner({
     setBanner(null);
     setBannerPreview(null);
 
-    // Якщо банер вже був збережений на backend - повідомляємо backend, що його треба видалити.
+    if (bannerPreviewUrlRef.current) {
+      URL.revokeObjectURL(bannerPreviewUrlRef.current);
+      bannerPreviewUrlRef.current = null;
+    }
+
     setRemoveBanner(Boolean(user.bannerUrl));
   };
 
@@ -167,6 +199,7 @@ function EditProfileModalInner({
 
     try {
       if (avatar || removeAvatar) await invalidateImageCache(user.avatarUrl);
+
       if (banner || removeBanner) await invalidateImageCache(user.bannerUrl);
 
       await onSave({
@@ -198,20 +231,20 @@ function EditProfileModalInner({
   return (
     <>
       <div
-        className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm"
+        className="fixed inset-0 z-modal flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm"
         onMouseDown={(event) => {
           if (event.target === event.currentTarget) requestClose();
         }}
       >
         <div className="flex max-h-[90vh] w-full max-w-2xl flex-col overflow-hidden rounded-2xl border border-border bg-background shadow-2xl">
           {/* Header */}
-          <div className="sticky top-0 z-20 flex items-center justify-between border-b border-border bg-background/95 px-5 py-4 backdrop-blur">
+          <div className="sticky top-0 z-content flex items-center justify-between border-b border-border bg-background/95 px-5 py-4 backdrop-blur">
             <div className="flex items-center gap-3">
               <button
                 type="button"
                 onClick={requestClose}
                 disabled={isSaving}
-                className="cursor-pointer flex size-9 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                className="flex size-9 cursor-pointer items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground disabled:cursor-not-allowed disabled:opacity-50"
                 aria-label="Закрити"
               >
                 <X size={20} />
@@ -227,7 +260,7 @@ function EditProfileModalInner({
             </div>
 
             <Button
-              className={"cursor-pointer"}
+              className="cursor-pointer"
               type="button"
               size="sm"
               isLoading={isSaving}
@@ -270,7 +303,7 @@ function EditProfileModalInner({
                     event.stopPropagation();
                     handleRemoveBanner();
                   }}
-                  className="absolute right-3 top-3 z-20 flex size-9 items-center justify-center rounded-full bg-black/60 text-white transition hover:bg-black/80"
+                  className="absolute right-3 top-3 z-content flex size-9 items-center justify-center rounded-full bg-black/60 text-white transition hover:bg-black/80"
                   aria-label="Видалити банер"
                 >
                   <X size={18} />
@@ -309,7 +342,7 @@ function EditProfileModalInner({
                 <button
                   type="button"
                   onClick={handleRemoveAvatar}
-                  className="absolute -right-1 -top-1 z-20 flex size-7 items-center justify-center rounded-full bg-black/70 text-white transition hover:bg-black"
+                  className="absolute -right-1 -top-1 z-content flex size-7 items-center justify-center rounded-full bg-black/70 text-white transition hover:bg-black"
                   aria-label="Видалити аватар"
                 >
                   <X size={15} />
@@ -370,7 +403,10 @@ function EditProfileModalInner({
                   type="button"
                   onClick={() => {
                     setIsLocationOpen((value) => !value);
-                    if (isLocationOpen) locationSearch.reset();
+
+                    if (isLocationOpen) {
+                      locationSearch.reset();
+                    }
                   }}
                   className="flex min-h-10 w-full items-center justify-between rounded-lg border border-border bg-background px-3 text-left outline-none transition-colors hover:bg-muted/50 focus:ring-2 focus:ring-ring"
                 >
@@ -399,7 +435,7 @@ function EditProfileModalInner({
                           handleRemoveLocation();
                         }
                       }}
-                      className="cursor-pointer ml-2 flex size-7 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                      className="ml-2 flex size-7 cursor-pointer items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
                       aria-label="Видалити локацію"
                     >
                       <X size={16} />
@@ -424,13 +460,14 @@ function EditProfileModalInner({
           </div>
         </div>
       </div>
+
       <ConfirmModal
         open={isConfirmOpen}
         title="Вийти без збереження?"
         description="У вас є незбережені зміни. Якщо вийти зараз, вони будуть втрачені."
         confirmText="Вийти без збереження"
         cancelText="Скасувати"
-        onCancel={() => setIsConfirmOpen(false)}
+        onCancel={cancelDiscard}
         onConfirm={handleDiscardChanges}
       />
     </>

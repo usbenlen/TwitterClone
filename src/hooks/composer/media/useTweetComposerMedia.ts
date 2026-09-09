@@ -3,17 +3,18 @@ import { useState } from "react";
 import { useMediaUpload } from "@/hooks/composer/media";
 
 import { MEDIA } from "@/constants/app";
+
 import { prepareMedia } from "@/utils/media";
 
 import type {
   ComposerMedia,
   ComposerMediaError,
   ComposerMediaStatus,
-} from "@/types/composer";
-import type { Gif } from "@/types/gif";
+  Gif,
+} from "@/types";
 
-export function useTweetComposerMedia() {
-  const [media, setMedia] = useState<ComposerMedia[]>([]);
+export function useTweetComposerMedia(initialMedia?: ComposerMedia[]) {
+  const [media, setMedia] = useState<ComposerMedia[]>(initialMedia ?? []);
   const [errors, setErrors] = useState<ComposerMediaError[]>([]);
 
   const updateMedia = (

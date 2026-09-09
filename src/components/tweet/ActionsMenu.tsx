@@ -1,5 +1,8 @@
 import { useEffect, useRef, useState } from "react";
+
 import { MoreHorizontal, Trash2, Pencil, type LucideIcon } from "lucide-react";
+
+import { cn } from "@/utils/cn.ts";
 
 interface ActionsMenuProps {
   onDelete?: () => void;
@@ -76,7 +79,7 @@ export default function ActionsMenu({ onDelete, onEdit }: ActionsMenuProps) {
 
       {open && (
         <div
-          className="absolute right-0 top-full z-40 mt-1 min-w-44 overflow-hidden rounded-xl border border-border bg-background shadow-xl"
+          className="absolute right-0 top-full z-popover mt-1 min-w-44 overflow-hidden rounded-xl border border-border bg-background shadow-xl"
           onClick={(event) => {
             event.stopPropagation();
           }}
@@ -92,10 +95,10 @@ export default function ActionsMenu({ onDelete, onEdit }: ActionsMenuProps) {
                   setOpen(false);
                   action.onClick();
                 }}
-                className={
+                className={cn("cursor-pointer flex w-full items-center gap-3 px-4 py-2.5 text-sm font-medium transition-colors first:rounded-t-xl last:rounded-b-xl",
                   action.variant === "danger"
-                    ? "cursor-pointer flex w-full items-center gap-3 px-4 py-2.5 text-sm font-medium text-destructive transition-colors hover:bg-destructive/10 first:rounded-t-xl last:rounded-b-xl"
-                    : "cursor-pointer flex w-full items-center gap-3 px-4 py-2.5 text-sm font-medium transition-colors hover:bg-muted first:rounded-t-xl last:rounded-b-xl"
+                  ? "text-destructive  hover:bg-destructive/10"
+                  : "hover:bg-muted")
                 }
               >
                 <Icon size={18} />

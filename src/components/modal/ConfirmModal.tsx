@@ -21,7 +21,7 @@ export function ConfirmModal({
 
   return (
     <div
-      className="fixed inset-0 z-1000 flex items-center justify-center bg-black/50 p-4"
+      className="fixed inset-0 z-confirm-modal flex items-center justify-center bg-black/50 p-4"
       role="dialog"
       aria-modal="true"
       aria-labelledby="confirm-modal-title"
