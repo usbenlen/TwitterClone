@@ -21,7 +21,7 @@ export default function MobileBottomNavigation() {
 
   return (
     <>
-      <nav className="fixed inset-x-0 bottom-0 z-50 border-t border-border bg-background lg:hidden">
+      <nav className="fixed inset-x-0 bottom-0 z-bottom-navigation border-t border-border bg-background lg:hidden">
         <div className="flex justify-around py-2">
           {bottomItems.map((item) => {
             const Icon = item.icon;

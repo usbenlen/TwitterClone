@@ -47,7 +47,7 @@ export default function SearchPage() {
 
   return (
     <section className="w-full max-w-3xl border-r border-border bg-background">
-      <header className="sticky top-0 z-10 border-b border-border bg-background/80 pt-4 backdrop-blur">
+      <header className="sticky top-0 z-header border-b border-border bg-background/80 pt-4 backdrop-blur">
         <div className="flex items-center gap-2 px-4">
           <button
             type="button"
