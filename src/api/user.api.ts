@@ -1,6 +1,11 @@
 import { apiClient } from "@/api/client";
 import { ENDPOINTS } from "@/api/config";
-import { mapPostToTweet, type BackendPost } from "@/api/mappers/post.mapper";
+import {
+  mapInteractionCollection,
+  mapPostToTweet,
+  type BackendInteractionCollection,
+  type BackendPost,
+} from "@/api/mappers/post.mapper";
 
 import { MOCK_ENABLED } from "@/mock/config";
 import { mockUserApi } from "@/mock/handlers";
@@ -22,8 +27,6 @@ export interface UpdateProfileRequest {
 }
 
 const realUserApi = {
-  getAll: () => apiClient.get<User[]>(ENDPOINTS.users.all),
-
   getById: (id: string) => apiClient.get<User>(ENDPOINTS.users.byId(id)),
 
   getByUsername: (username: string) =>
@@ -38,27 +41,19 @@ const realUserApi = {
   },
 
   getLikes: async (username: string) => {
-    const posts = await apiClient.get<BackendPost[]>(
+    const collection = await apiClient.get<BackendInteractionCollection>(
       ENDPOINTS.users.likes(username),
     );
 
-    return posts.map(mapPostToTweet);
+    return mapInteractionCollection(collection);
   },
 
   getReposts: async (username: string) => {
-    const posts = await apiClient.get<BackendPost[]>(
+    const collection = await apiClient.get<BackendInteractionCollection>(
       ENDPOINTS.users.reposts(username),
     );
 
-    return posts.map(mapPostToTweet);
-  },
-
-  getReplies: async (username: string) => {
-    const posts = await apiClient.get<BackendPost[]>(
-      ENDPOINTS.users.replies(username),
-    );
-
-    return posts.map(mapPostToTweet);
+    return mapInteractionCollection(collection);
   },
 
   updateProfile: async (data: UpdateProfileRequest) => {

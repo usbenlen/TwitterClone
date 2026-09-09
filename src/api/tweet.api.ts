@@ -1,6 +1,11 @@
 import { apiClient } from "@/api/client";
 import { ENDPOINTS } from "@/api/config";
-import { mapPostToTweet, type BackendPost } from "@/api/mappers/post.mapper";
+import {
+  mapInteractionCollection,
+  mapPostToTweet,
+  type BackendInteractionCollection,
+  type BackendPost,
+} from "@/api/mappers/post.mapper";
 
 import { MOCK_ENABLED } from "@/mock/config";
 import { mockTweetApi } from "@/mock/handlers";
@@ -14,12 +19,6 @@ import type {
 } from "@/types/tweet";
 
 const realTweetApi = {
-  getAll: async () => {
-    const posts = await apiClient.get<BackendPost[]>(ENDPOINTS.posts.all);
-
-    return posts.map(mapPostToTweet);
-  },
-
   getFeed: async () => {
     const posts = await apiClient.get<BackendPost[]>(ENDPOINTS.posts.feed);
 
@@ -27,23 +26,27 @@ const realTweetApi = {
   },
 
   getBookmarked: async () => {
-    const posts = await apiClient.get<BackendPost[]>(
+    const collection = await apiClient.get<BackendInteractionCollection>(
       ENDPOINTS.posts.bookmarked,
     );
 
-    return posts.map(mapPostToTweet);
+    return mapInteractionCollection(collection);
   },
 
   getLiked: async () => {
-    const posts = await apiClient.get<BackendPost[]>(ENDPOINTS.posts.liked);
+    const collection = await apiClient.get<BackendInteractionCollection>(
+      ENDPOINTS.posts.liked,
+    );
 
-    return posts.map(mapPostToTweet);
+    return mapInteractionCollection(collection);
   },
 
   getReposted: async () => {
-    const posts = await apiClient.get<BackendPost[]>(ENDPOINTS.posts.reposted);
+    const collection = await apiClient.get<BackendInteractionCollection>(
+      ENDPOINTS.posts.reposted,
+    );
 
-    return posts.map(mapPostToTweet);
+    return mapInteractionCollection(collection);
   },
 
   getByUsername: async (username: string) => {

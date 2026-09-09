@@ -61,6 +61,17 @@ function updateCommentCount(postId: string, delta: number) {
 }
 
 export const mockCommentApi = {
+  async getById(id: string): Promise<Tweet> {
+    await delay(180);
+
+    const found = findComment(id);
+    if (!found) throw new Error("Коментар не знайдено.");
+
+    const rootPost = tweets.find((tweet) => tweet.id === found.postId);
+
+    return withAncestors(found.comment, rootPost, found.comments);
+  },
+
   async getByPostId(postId: string): Promise<Tweet[]> {
     await delay(180);
 

@@ -6,7 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 
 import {
-  changePasswordBaseSchema,
+  changePasswordSchema,
   type ChangePasswordFormValues,
 } from "@/schemas/auth.schema";
 
@@ -29,14 +29,6 @@ const verifyResetCodeSchema = z.object({
 });
 
 type VerifyResetCodeFormValues = z.infer<typeof verifyResetCodeSchema>;
-
-const currentPasswordSchema = changePasswordBaseSchema.pick({
-  currentPassword: true,
-});
-type CurrentPasswordFormValues = Pick<
-  ChangePasswordFormValues,
-  "currentPassword"
->;
 
 interface LocationState {
   email?: string;
@@ -78,13 +70,15 @@ export default function VerifyResetCodePage({
   });
 
   const {
-    register: registerCurrent,
-    handleSubmit: handleSubmitCurrent,
-    formState: { errors: currentErrors, isSubmitting: isCurrentSubmitting },
-  } = useForm<CurrentPasswordFormValues>({
-    resolver: zodResolver(currentPasswordSchema),
+    register: registerPasswordChange,
+    handleSubmit: handleSubmitPasswordChange,
+    formState: { errors: passwordErrors, isSubmitting: isPasswordSubmitting },
+  } = useForm<ChangePasswordFormValues>({
+    resolver: zodResolver(changePasswordSchema),
     defaultValues: {
       currentPassword: "",
+      newPassword: "",
+      confirmPassword: "",
     },
   });
 
@@ -95,13 +89,14 @@ export default function VerifyResetCodePage({
 
   if (!email && !isSettings) return null;
 
-  const handleSendCode = async (values: CurrentPasswordFormValues) => {
+  const handleSendCode = async (values: ChangePasswordFormValues) => {
     setServerError(null);
     setInfoMessage(null);
 
     try {
       const response = await authApi.changePassword({
         currentPassword: values.currentPassword,
+        newPassword: values.newPassword,
       });
       setCurrentPasswordVal(values.currentPassword);
       setCodeSent(true);
@@ -121,10 +116,23 @@ export default function VerifyResetCodePage({
     setServerError(null);
 
     if (isSettings) {
-      // In settings, we pass currentPassword and code to the next step
-      navigate(APP_ROUTES.SETTINGS_CHANGE_PASSWORD + "/reset", {
-        state: { email, currentPassword: currentPasswordVal, code },
-      });
+      try {
+        const response = await authApi.changePassword({
+          currentPassword: currentPasswordVal,
+          code,
+        });
+
+        setInfoMessage(response.message || "Пароль успішно змінено.");
+        setTimeout(() => {
+          navigate(APP_ROUTES.SETTINGS, { replace: true });
+        }, 1500);
+      } catch (error) {
+        setServerError(
+          error instanceof ApiError
+            ? error.message
+            : "Не вдалося змінити пароль. Спробуйте ще раз.",
+        );
+      }
     } else {
       try {
         await authApi.verifyResetCode({
@@ -146,11 +154,12 @@ export default function VerifyResetCodePage({
   };
 
   const title = isSettings ? "Зміна пароля" : "Підтвердження коду";
+  const emailDestination = email || "вашу email адресу";
   const subtitle = isSettings
     ? !codeSent
-      ? "Введіть ваш поточний пароль, щоб отримати код підтвердження на email"
-      : `Введіть 6-значний код, який ми надіслали на ${email}`
-    : `Введіть 6-значний код, який ми надіслали на ${email}`;
+      ? `Введіть ваш поточний пароль, щоб отримати код підтвердження на ${emailDestination}`
+      : `Введіть 6-значний код, який ми надіслали на ${emailDestination}`
+    : `Введіть 6-значний код, який ми надіслали на ${emailDestination}`;
 
   const footer = isSettings ? (
     <button
@@ -189,7 +198,7 @@ export default function VerifyResetCodePage({
 
       {isSettings && !codeSent ? (
         <form
-          onSubmit={handleSubmitCurrent(handleSendCode)}
+          onSubmit={handleSubmitPasswordChange(handleSendCode)}
           className="space-y-4"
           noValidate
         >
@@ -198,14 +207,30 @@ export default function VerifyResetCodePage({
             type="password"
             autoComplete="current-password"
             placeholder="Введіть поточний пароль"
-            error={currentErrors.currentPassword?.message}
-            {...registerCurrent("currentPassword")}
+            error={passwordErrors.currentPassword?.message}
+            {...registerPasswordChange("currentPassword")}
+          />
+          <Input
+            label="Новий пароль"
+            type="password"
+            autoComplete="new-password"
+            placeholder="Введіть новий пароль"
+            error={passwordErrors.newPassword?.message}
+            {...registerPasswordChange("newPassword")}
+          />
+          <Input
+            label="Підтвердження нового пароля"
+            type="password"
+            autoComplete="new-password"
+            placeholder="Повторіть новий пароль"
+            error={passwordErrors.confirmPassword?.message}
+            {...registerPasswordChange("confirmPassword")}
           />
           <Button
             type="submit"
             size="lg"
             fullWidth
-            isLoading={isCurrentSubmitting}
+            isLoading={isPasswordSubmitting}
           >
             Надіслати код підтвердження
           </Button>

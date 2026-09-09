@@ -1,4 +1,10 @@
-import { tweets, setTweets, nextTweetId, currentUser } from "@/mock/data";
+import {
+  commentsByPostId,
+  tweets,
+  setTweets,
+  nextTweetId,
+  currentUser,
+} from "@/mock/data";
 
 import type {
   Tweet,
@@ -28,7 +34,25 @@ export const mockTweetApi = {
   async getBookmarked(): Promise<Tweet[]> {
     await delay();
 
-    return tweets.filter((tweet) => tweet.bookmarkedByMe);
+    return [...tweets, ...Object.values(commentsByPostId).flat()].filter(
+      (tweet) => tweet.bookmarkedByMe,
+    );
+  },
+
+  async getLiked(): Promise<Tweet[]> {
+    await delay();
+
+    return [...tweets, ...Object.values(commentsByPostId).flat()].filter(
+      (tweet) => tweet.likedByMe,
+    );
+  },
+
+  async getReposted(): Promise<Tweet[]> {
+    await delay();
+
+    return [...tweets, ...Object.values(commentsByPostId).flat()].filter(
+      (tweet) => tweet.repostedByMe,
+    );
   },
 
   async getById(id: string): Promise<Tweet> {

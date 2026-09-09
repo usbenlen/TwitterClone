@@ -1,33 +1,37 @@
 import { useEffect, useState } from "react";
 
-import { userApi } from "@/api";
+import { tweetApi, userApi } from "@/api";
 
 import type { User, Tweet } from "@/types";
 
-export type ProfileTab = "posts" | "replies" | "likes" | "reposts";
+export type ProfileTab = "posts" | "likes" | "reposts";
 
 const EMPTY_TABS: Record<ProfileTab, Tweet[]> = {
   posts: [],
-  replies: [],
   likes: [],
   reposts: [],
 };
 
 const EMPTY_LOADED_TABS: Record<ProfileTab, boolean> = {
   posts: false,
-  replies: false,
   likes: false,
   reposts: false,
 };
 
-async function loadProfileTab(user: User, tab: ProfileTab): Promise<Tweet[]> {
+async function loadProfileTab(
+  user: User,
+  tab: ProfileTab,
+  isOwnProfile: boolean,
+): Promise<Tweet[]> {
   switch (tab) {
-    case "replies":
-      return userApi.getReplies(user.username);
     case "likes":
-      return userApi.getLikes(user.username);
+      return isOwnProfile
+        ? tweetApi.getLiked()
+        : userApi.getLikes(user.username);
     case "reposts":
-      return userApi.getReposts(user.username);
+      return isOwnProfile
+        ? tweetApi.getReposted()
+        : userApi.getReposts(user.username);
     case "posts":
     default:
       return userApi.getPosts(user.username);
@@ -37,6 +41,7 @@ async function loadProfileTab(user: User, tab: ProfileTab): Promise<Tweet[]> {
 export function useProfile(
   username: string | undefined,
   activeTab: ProfileTab,
+  currentUserId?: string,
 ) {
   const [user, setUser] = useState<User | null>(null);
   const [tabTweets, setTabTweets] =
@@ -111,7 +116,11 @@ export function useProfile(
 
     async function loadCurrentTab() {
       try {
-        const tweets = await loadProfileTab(currentUser, activeTab);
+        const tweets = await loadProfileTab(
+          currentUser,
+          activeTab,
+          currentUser.id === currentUserId,
+        );
 
         if (!active) return;
 
@@ -141,7 +150,7 @@ export function useProfile(
     return () => {
       active = false;
     };
-  }, [user, activeTab, loadedTabs]);
+  }, [user, activeTab, loadedTabs, currentUserId]);
 
   useEffect(() => {
     const handleTweetUpdated = (e: Event) => {

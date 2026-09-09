@@ -25,6 +25,7 @@ export interface TweetBase {
   repostedByMe: boolean;
   bookmarkedByMe: boolean;
 
+  actionAt?: string | null;
   createdAt: string;
   updatedAt?: string | null;
 

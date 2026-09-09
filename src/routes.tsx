@@ -39,6 +39,10 @@ export const routes = createBrowserRouter([
             element: <PostPage />,
           },
           {
+            path: APP_ROUTES.COMMENT,
+            element: <PostPage />,
+          },
+          {
             path: APP_ROUTES.SEARCH,
             element: <SearchPage />,
           },

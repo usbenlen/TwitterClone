@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router";
 
+import { commentApi } from "@/api/comment.api";
 import { tweetApi } from "@/api/tweet.api";
 
 import {
@@ -40,6 +41,11 @@ interface TweetCardProps {
   commentsInitiallyOpen?: boolean;
   className?: string;
   variant?: "feed" | "post";
+  onDeleteComment?: (commentId: string) => Promise<void>;
+  onUpdateComment?: (
+    commentId: string,
+    data: ComposerSubmitData | string,
+  ) => Promise<Tweet | false>;
 }
 
 export default function TweetCard({
@@ -48,6 +54,8 @@ export default function TweetCard({
   commentsInitiallyOpen = false,
   className,
   variant = "feed",
+  onDeleteComment,
+  onUpdateComment,
 }: TweetCardProps) {
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -61,7 +69,13 @@ export default function TweetCard({
 
   const handleDelete = async () => {
     try {
-      await tweetApi.delete(tweet.id);
+      if (tweet.isComment && onDeleteComment) {
+        await onDeleteComment(tweet.id);
+      } else if (tweet.isComment) {
+        await commentApi.delete(tweet.id);
+      } else {
+        await tweetApi.delete(tweet.id);
+      }
 
       window.dispatchEvent(
         new CustomEvent("tweet-deleted", {
@@ -69,7 +83,7 @@ export default function TweetCard({
         }),
       );
 
-      if (variant === "post") navigate(APP_ROUTES.HOME);
+      if (variant === "post" && !tweet.isComment) navigate(APP_ROUTES.HOME);
     } catch (error) {
       console.error("Failed to delete tweet", error);
     }
@@ -77,7 +91,14 @@ export default function TweetCard({
 
   const handleUpdate = async (data: ComposerSubmitData) => {
     try {
-      const updatedTweet = await tweetApi.update(tweet.id, data);
+      const updatedTweet =
+        tweet.isComment && onUpdateComment
+          ? await onUpdateComment(tweet.id, data)
+          : tweet.isComment
+            ? await commentApi.update(tweet.id, data)
+            : await tweetApi.update(tweet.id, data);
+
+      if (!updatedTweet) return false;
 
       window.dispatchEvent(
         new CustomEvent("tweet-updated", {
@@ -118,7 +139,11 @@ export default function TweetCard({
   const clickOrDragHandlers = useClickOrDrag(() => {
     if (!navigateToPost || isCommentModalOpen) return;
 
-    navigate(APP_ROUTES.post(tweet.id));
+    navigate(
+      tweet.isComment
+        ? APP_ROUTES.comment(tweet.id)
+        : APP_ROUTES.post(tweet.id),
+    );
   });
 
   return (
@@ -186,7 +211,7 @@ export default function TweetCard({
 
       <EditModal
         open={isEditModalOpen}
-        title="Редагувати пост"
+        title={tweet.isComment ? "Редагувати коментар" : "Редагувати пост"}
         initialContent={tweet.content}
         initialMedia={mapMediaToComposerMedia(tweet.attachments)}
         initialPoll={mapPollToComposerPoll(tweet.poll)}

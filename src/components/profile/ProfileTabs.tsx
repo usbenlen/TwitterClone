@@ -13,7 +13,6 @@ const PROFILE_TABS: Array<{
   label: string;
 }> = [
   { id: "posts", label: "Твіти" },
-  { id: "replies", label: "Відповіді" },
   { id: "likes", label: "Лайки" },
   { id: "reposts", label: "Репости" },
 ];

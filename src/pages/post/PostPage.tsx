@@ -7,14 +7,17 @@ import { tweetApi, commentApi } from "@/api";
 import { Spinner } from "@/ui";
 import { TweetCard } from "@/components/tweet";
 
-import { withAncestorContext } from "@/utils/ancestors";
+import { withAncestorContext, withAncestors } from "@/utils/ancestors";
 
 import type { Tweet } from "@/types/tweet";
 
 const viewedPostIds = new Set<string>();
 
 export default function PostPage() {
-  const { postId } = useParams<{ postId: string }>();
+  const { postId, commentId } = useParams<{
+    postId?: string;
+    commentId?: string;
+  }>();
   const navigate = useNavigate();
 
   const [thread, setThread] = useState<{
@@ -28,10 +31,12 @@ export default function PostPage() {
   const targetRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    if (!postId) return;
+    const itemId = commentId ?? postId;
+    if (!itemId) return;
 
     let active = true;
-    const currentId = postId;
+    const currentId = itemId;
+    const isComment = Boolean(commentId);
 
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setIsLoading(true);
@@ -40,39 +45,57 @@ export default function PostPage() {
 
     async function loadThread() {
       try {
-        const threadData = await commentApi.getThread(currentId);
+        let target: Tweet;
+        let replies: Tweet[];
+
+        if (isComment) {
+          const comment = await commentApi.getById(currentId);
+          const [rootPost, comments] = await Promise.all([
+            tweetApi.getById(comment.postId!),
+            commentApi.getByPostId(comment.postId!),
+          ]);
+
+          target = withAncestors(comment, rootPost, comments);
+          replies = comments.filter(
+            (reply) => reply.parentCommentId === comment.id,
+          );
+        } else {
+          [target, replies] = await Promise.all([
+            tweetApi.getById(currentId),
+            commentApi.getByPostId(currentId),
+          ]);
+        }
 
         if (!active) return;
 
         setThread({
-          target: {
-            ...threadData.target,
-            ancestors: threadData.ancestors,
-          },
-          replies: threadData.replies,
+          target,
+          replies,
         });
 
         if (!viewedPostIds.has(currentId)) {
           viewedPostIds.add(currentId);
 
           try {
-            if (!threadData.target.isComment) {
+            if (isComment) {
+              await commentApi.view(currentId);
+            } else {
               await tweetApi.view(currentId);
-
-              if (!active) return;
-
-              setThread((current) =>
-                current && current.target.id === currentId
-                  ? {
-                      ...current,
-                      target: {
-                        ...current.target,
-                        viewsCount: current.target.viewsCount + 1,
-                      },
-                    }
-                  : current,
-              );
             }
+
+            if (!active) return;
+
+            setThread((current) =>
+              current && current.target.id === currentId
+                ? {
+                    ...current,
+                    target: {
+                      ...current.target,
+                      viewsCount: current.target.viewsCount + 1,
+                    },
+                  }
+                : current,
+            );
           } catch {
             viewedPostIds.delete(currentId);
           }
@@ -98,7 +121,7 @@ export default function PostPage() {
     return () => {
       active = false;
     };
-  }, [postId]);
+  }, [commentId, postId]);
 
   useEffect(() => {
     if (!thread || !targetRef.current) return;

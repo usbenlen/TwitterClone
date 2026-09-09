@@ -2,6 +2,7 @@ import { apiClient } from "@/api/client";
 import { ENDPOINTS } from "@/api/config";
 import { MOCK_ENABLED } from "@/mock/config";
 import { mockCommentApi } from "@/mock/handlers";
+import { mapPostToTweet, type BackendPost } from "@/api/mappers/post.mapper";
 
 import type {
   CreateCommentRequest,
@@ -9,24 +10,42 @@ import type {
   ToggleLikeResponse,
   ToggleRepostResponse,
   UpdateCommentRequest,
-  Tweet,
-  ThreadResponse,
 } from "@/types/tweet";
 
 const realCommentApi = {
-  getByPostId: (postId: string) =>
-    apiClient.get<Tweet[]>(ENDPOINTS.comments.byPost(postId)),
+  getById: async (id: string) => {
+    const comment = await apiClient.get<BackendPost>(
+      ENDPOINTS.comments.byId(id),
+    );
 
-  getThread: (id: string) =>
-    apiClient.get<ThreadResponse>(ENDPOINTS.comments.thread(id)),
+    return mapPostToTweet(comment);
+  },
 
-  getBookmarked: () => apiClient.get<Tweet[]>(ENDPOINTS.comments.bookmarked),
+  getByPostId: async (postId: string) => {
+    const comments = await apiClient.get<BackendPost[]>(
+      ENDPOINTS.comments.byPost(postId),
+    );
 
-  create: (data: CreateCommentRequest) =>
-    apiClient.post<Tweet>(ENDPOINTS.comments.create, data),
+    return comments.map(mapPostToTweet);
+  },
 
-  update: (id: string, data: UpdateCommentRequest) =>
-    apiClient.put<Tweet>(ENDPOINTS.comments.update(id), data),
+  create: async (data: CreateCommentRequest) => {
+    const comment = await apiClient.post<BackendPost>(
+      ENDPOINTS.comments.create,
+      data,
+    );
+
+    return mapPostToTweet(comment);
+  },
+
+  update: async (id: string, data: UpdateCommentRequest) => {
+    const comment = await apiClient.put<BackendPost>(
+      ENDPOINTS.comments.update(id),
+      data,
+    );
+
+    return mapPostToTweet(comment);
+  },
 
   delete: (id: string) => apiClient.delete<void>(ENDPOINTS.comments.delete(id)),
 

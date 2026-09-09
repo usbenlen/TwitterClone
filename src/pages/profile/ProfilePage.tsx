@@ -16,7 +16,7 @@ export default function ProfilePage() {
   const tabParam = searchParams.get("tab");
 
   const activeTab: ProfileTab =
-    tabParam === "replies" || tabParam === "likes" || tabParam === "reposts"
+    tabParam === "likes" || tabParam === "reposts"
       ? tabParam
       : "posts";
 
@@ -28,7 +28,7 @@ export default function ProfilePage() {
     notFound,
     tabError,
     updateUser,
-  } = useProfile(username, activeTab);
+  } = useProfile(username, activeTab, currentUser?.id);
 
   const handleUpdateProfile = async (data: UpdateProfileRequest) => {
     const updatedUser = await userApi.updateProfile(data);

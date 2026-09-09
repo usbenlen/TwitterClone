@@ -11,6 +11,7 @@ export const APP_ROUTES = {
   BOOKMARKS: "/bookmarks",
 
   POST: "/post/:postId",
+  COMMENT: "/comment/:commentId",
 
   PROFILE: "/:username",
   FOLLOWING: "/:username/following",
@@ -29,6 +30,7 @@ export const APP_ROUTES = {
   followers: (username: string) => `/${username}/followers`,
 
   post: (postId: string) => `/post/${postId}`,
+  comment: (commentId: string) => `/comment/${commentId}`,
 
   search: (query = "", type: "posts" | "users" = "posts") => {
     const params = new URLSearchParams();

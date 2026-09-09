@@ -48,7 +48,8 @@ export interface BackendPost {
   embed?: Tweet["embed"];
 
   likesCount: number;
-  commentsCount: number;
+  commentsCount?: number;
+  repliesCount?: number;
   repostsCount: number;
   viewsCount: number;
 
@@ -57,6 +58,7 @@ export interface BackendPost {
   isBookmarkedByCurrentUser?: boolean;
   bookmarkedByMe?: boolean;
 
+  actionAt?: string | null;
   createdAt: string;
   updatedAt?: string | null;
 
@@ -64,6 +66,11 @@ export interface BackendPost {
   postId?: string;
   parentCommentId?: string | null;
   replyToUsername?: string | null;
+}
+
+export interface BackendInteractionCollection {
+  posts: BackendPost[];
+  comments: BackendPost[];
 }
 
 function normalizeMediaType(
@@ -142,7 +149,7 @@ export const mapPostToTweet = (post: BackendPost): Tweet => {
     embed: post.embed ?? null,
 
     likesCount: post.likesCount,
-    repliesCount: post.commentsCount,
+    repliesCount: post.commentsCount ?? post.repliesCount ?? 0,
     retweetsCount: post.repostsCount,
     viewsCount: post.viewsCount,
 
@@ -151,12 +158,25 @@ export const mapPostToTweet = (post: BackendPost): Tweet => {
     bookmarkedByMe:
       post.isBookmarkedByCurrentUser ?? post.bookmarkedByMe ?? false,
 
+    actionAt: post.actionAt ?? null,
     createdAt: post.createdAt,
     updatedAt: post.updatedAt ?? null,
 
-    isComment: post.isComment,
+    isComment: post.isComment ?? post.postId !== undefined,
     postId: post.postId,
     parentCommentId: post.parentCommentId ?? null,
     replyToUsername: post.replyToUsername ?? null,
   };
 };
+
+export function mapInteractionCollection(
+  collection: BackendInteractionCollection,
+): Tweet[] {
+  return [...collection.posts, ...collection.comments]
+    .map(mapPostToTweet)
+    .sort(
+      (first, second) =>
+        new Date(second.actionAt ?? 0).getTime() -
+        new Date(first.actionAt ?? 0).getTime(),
+    );
+}

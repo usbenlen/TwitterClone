@@ -25,7 +25,7 @@ interface TweetCommentsProps {
   onUpdate: (
     commentId: string,
     data: ComposerSubmitData | string,
-  ) => Promise<boolean>;
+  ) => Promise<Tweet | false>;
 
   onOpenReplyModal: (comment: Tweet) => void;
 }
@@ -36,6 +36,8 @@ export default function TweetComments({
   error,
   replyingToUsername,
   onSubmit,
+  onDelete,
+  onUpdate,
 }: TweetCommentsProps) {
 
   const composer = useTweetComposer({
@@ -82,6 +84,8 @@ export default function TweetComments({
               tweet={reply}
               variant="feed"
               navigateToPost
+              onDeleteComment={onDelete}
+              onUpdateComment={onUpdate}
             />
           ))}
         </div>

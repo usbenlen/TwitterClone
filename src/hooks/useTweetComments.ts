@@ -175,7 +175,7 @@ export function useTweetComments({
         ),
       );
 
-      return true;
+      return updated;
     } catch (error) {
       setError(
         error instanceof Error ? error.message : "Не вдалося оновити коментар.",
