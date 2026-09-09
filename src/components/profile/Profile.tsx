@@ -39,7 +39,9 @@ export default function Profile({
       ? "У цій вкладці ще немає лайкнутих постів."
       : activeTab === "reposts"
         ? "У цій вкладці ще немає репостів."
-        : "Користувач ще нічого не публікував.";
+        : activeTab === "replies"
+          ? "У цій вкладці ще немає відповідей."
+          : "Користувач ще нічого не публікував.";
 
   return (
     <FollowProvider>
@@ -58,6 +60,7 @@ export default function Profile({
 
         <FeedList
           tweets={tweets}
+          variant={activeTab === "replies" ? "replies" : "feed"}
           isLoading={isTabLoading}
           error={tabError}
           emptyMessage={emptyMessage}

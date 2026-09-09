@@ -16,7 +16,9 @@ export default function ProfilePage() {
   const tabParam = searchParams.get("tab");
 
   const activeTab: ProfileTab =
-    tabParam === "likes" || tabParam === "reposts" ? tabParam : "posts";
+    tabParam === "replies" || tabParam === "likes" || tabParam === "reposts"
+      ? tabParam
+      : "posts";
 
   const {
     user,

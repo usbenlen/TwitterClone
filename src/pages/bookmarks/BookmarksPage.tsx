@@ -11,6 +11,7 @@ export default function BookmarksPage() {
 
       <FeedList
         tweets={tweets}
+        variant="bookmarks"
         isLoading={isLoading}
         error={error}
         emptyMessage="Ви ще не додали жодного поста в закладки. Зробіть це, щоб зберегти їх на майбутнє!"

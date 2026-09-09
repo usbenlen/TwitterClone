@@ -4,22 +4,26 @@ import { userApi } from "@/api";
 
 import type { User, Tweet } from "@/types";
 
-export type ProfileTab = "posts" | "likes" | "reposts";
+export type ProfileTab = "posts" | "replies" | "likes" | "reposts";
 
 const EMPTY_TABS: Record<ProfileTab, Tweet[]> = {
   posts: [],
+  replies: [],
   likes: [],
   reposts: [],
 };
 
 const EMPTY_LOADED_TABS: Record<ProfileTab, boolean> = {
   posts: false,
+  replies: false,
   likes: false,
   reposts: false,
 };
 
 async function loadProfileTab(user: User, tab: ProfileTab): Promise<Tweet[]> {
   switch (tab) {
+    case "replies":
+      return userApi.getReplies(user.username);
     case "likes":
       return userApi.getLikes(user.username);
     case "reposts":
