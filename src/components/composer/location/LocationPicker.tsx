@@ -22,7 +22,6 @@ export default function LocationPicker({
   return (
     <div className="w-full min-w-0 flex flex-col">
       <input
-        autoFocus
         value={query}
         placeholder="Пошук місця..."
         onChange={(e) => onQueryChange(e.target.value)}

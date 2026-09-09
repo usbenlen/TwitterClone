@@ -23,7 +23,6 @@ export default function EmbedPicker({
     <div className="flex w-96 flex-col">
       <div className="border-b border-border p-4">
         <input
-          autoFocus
           value={url}
           placeholder="Вставте URL YouTube або Vimeo..."
           onChange={(e) => onUrlChange(e.target.value)}

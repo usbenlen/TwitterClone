@@ -6,10 +6,11 @@ interface EmojiPickerProps {
 
 export default function EmojiPicker({ onSelect }: EmojiPickerProps) {
   return (
-    <Picker
-      theme={Theme.AUTO}
-      lazyLoadEmojis
-      onEmojiClick={(emoji) => onSelect(emoji.emoji)}
-    />
+      <Picker
+        theme={Theme.AUTO}
+        lazyLoadEmojis
+        autoFocusSearch={false}
+        onEmojiClick={(emoji) => onSelect(emoji.emoji)}
+      />
   );
 }
