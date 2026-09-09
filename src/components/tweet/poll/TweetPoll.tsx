@@ -59,10 +59,10 @@ export default function TweetPoll({ poll, tweetId }: TweetPollProps) {
             )}
 
             {loading && (
-              <div className="absolute inset-0 z-20 bg-background/40 backdrop-blur-[1px]" />
+              <div className="absolute inset-0 z-content bg-background/40 backdrop-blur-[1px]" />
             )}
 
-            <div className="relative z-10 flex items-center justify-between">
+            <div className="relative z-poll-overlay flex items-center justify-between">
               <span className={cn(selected && "font-semibold text-foreground")}>
                 {option.text}
               </span>

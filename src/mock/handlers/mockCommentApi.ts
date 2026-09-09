@@ -1,21 +1,30 @@
 import type {
-  Comment,
   CreateCommentRequest,
+  Tweet,
+  ThreadResponse,
   UpdateCommentRequest,
-} from "@/types/comment";
+} from "@/types";
 
 import { tweets, setTweets } from "@/mock/data/tweets";
-import { commentsByPostId, nextCommentId } from "@/mock/data/comments";
-import { currentUser } from "@/mock/data/users";
+import { commentsByPostId, nextCommentId, currentUser } from "@/mock/data";
 
+import { getCommentAncestors, withAncestors } from "@/utils/ancestors";
 import { delay } from "@/mock/utils/delay";
 
-function currentUserShort() {
+import { mediaStore } from "@/mock/stores/mediaStore";
+
+import {
+  toggleLikeInList,
+  toggleRepostInList,
+  toggleBookmarkInList,
+  incrementViewsInList,
+} from "@/mock/utils/mockTweetActions";
+
+function currentUserAuthor() {
   return {
     id: currentUser.id,
     username: currentUser.username,
     displayName: currentUser.displayName,
-    location: currentUser.location,
     avatarUrl: currentUser.avatarUrl ?? null,
     isVerified: currentUser.isVerified,
   };
@@ -38,7 +47,7 @@ function findComment(id: string) {
   return null;
 }
 
-function updateReplyCount(postId: string, delta: number) {
+function updateCommentCount(postId: string, delta: number) {
   setTweets(
     tweets.map((tweet) =>
       tweet.id === postId
@@ -52,244 +61,298 @@ function updateReplyCount(postId: string, delta: number) {
 }
 
 export const mockCommentApi = {
-  async getByPostId(postId: string): Promise<Comment[]> {
+  async getByPostId(postId: string): Promise<Tweet[]> {
     await delay(180);
 
-    return [...(commentsByPostId[postId] ?? [])].sort(
-      (a, b) =>
-        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
-    );
+    const comments = commentsByPostId[postId] ?? [];
+
+    const rootPost = tweets.find((tweet) => tweet.id === postId);
+
+    return [...comments]
+      .sort(
+        (a, b) =>
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+      )
+      .map((comment) => withAncestors(comment, rootPost, comments));
   },
 
-  async create(data: CreateCommentRequest): Promise<Comment> {
+  async getThread(id: string): Promise<ThreadResponse> {
+    await delay(180);
+
+    const tweet = tweets.find((item) => item.id === id);
+
+    // Original post
+    if (tweet) {
+      const comments = commentsByPostId[tweet.id] ?? [];
+
+      const replies = comments
+        .filter((comment) => !comment.parentCommentId)
+        .map((comment) => ({
+          ...withAncestors(comment, tweet, comments),
+          replyToUsername: tweet.author.username,
+        }));
+
+      return {
+        ancestors: [],
+        target: tweet,
+        replies,
+      };
+    }
+
+    // Comment
+    const found = findComment(id);
+
+    if (!found) {
+      throw new Error("Пост або коментар не знайдено.");
+    }
+
+    const targetComment = found.comment;
+
+    const rootPost = tweets.find((tweet) => tweet.id === targetComment.postId);
+
+    const ancestors = getCommentAncestors(
+      targetComment,
+      rootPost,
+      found.comments,
+    );
+
+    const target: Tweet = {
+      ...targetComment,
+      ancestors,
+      replyToUsername:
+        ancestors.at(-1)?.author.username ?? rootPost?.author.username ?? null,
+    };
+
+    const replies = found.comments
+      .filter((comment) => comment.parentCommentId === targetComment.id)
+      .map((comment) => ({
+        ...withAncestors(comment, rootPost, found.comments),
+        replyToUsername: targetComment.author.username,
+      }));
+
+    return {
+      ancestors,
+      target,
+      replies,
+    };
+  },
+
+  async getBookmarked(): Promise<Tweet[]> {
+    await delay(150);
+
+    return Object.values(commentsByPostId)
+      .flat()
+      .filter((comment) => comment.bookmarkedByMe)
+      .map((comment) => {
+        const comments = commentsByPostId[comment.postId ?? ""] ?? [];
+
+        const rootPost = tweets.find((tweet) => tweet.id === comment.postId);
+
+        return withAncestors(comment, rootPost, comments);
+      });
+  },
+
+  async create(data: CreateCommentRequest): Promise<Tweet> {
     await delay(220);
 
-    const comment: Comment = {
-      id: nextCommentId(),
-      postId: data.postId,
-      parentCommentId: data.parentCommentId ?? null,
+    const attachments = data.mediaIds ? mediaStore.getMany(data.mediaIds) : [];
 
+    const poll = data.poll
+      ? {
+          id: crypto.randomUUID(),
+          totalVotes: 0,
+          isClosed: false,
+          expiresAt: new Date(
+            Date.now() + data.poll.duration * 60 * 1000,
+          ).toISOString(),
+          options: data.poll.options.map((text) => ({
+            id: crypto.randomUUID(),
+            text,
+            votesCount: 0,
+          })),
+        }
+      : undefined;
+
+    const parent = data.parentCommentId
+      ? findComment(data.parentCommentId)?.comment
+      : undefined;
+
+    const post = tweets.find((tweet) => tweet.id === data.postId);
+
+    const comment: Tweet = {
+      id: nextCommentId(),
       content: data.content.trim(),
 
-      author: currentUserShort(),
+      author: currentUserAuthor(),
+
+      attachments,
+      poll,
+      location: data.location ?? null,
+      embed: data.embed ?? null,
 
       likesCount: 0,
-      isLikedByCurrentUser: false,
-
-      retweetsCount: 0,
-      isRepostedByCurrentUser: false,
-
       repliesCount: 0,
-
+      retweetsCount: 0,
       viewsCount: 0,
 
-      isBookmarkedByCurrentUser: false,
+      likedByMe: false,
+      repostedByMe: false,
+      bookmarkedByMe: false,
 
       createdAt: new Date().toISOString(),
       updatedAt: null,
+
+      isComment: true,
+      postId: data.postId,
+      parentCommentId: data.parentCommentId ?? null,
+
+      replyToUsername: parent?.author.username ?? post?.author.username ?? null,
     };
 
     commentsByPostId[data.postId] = [
       ...(commentsByPostId[data.postId] ?? []),
       comment,
     ];
-    updateReplyCount(data.postId, 1);
 
-    return comment;
+    updateCommentCount(data.postId, 1);
+
+    const comments = commentsByPostId[data.postId] ?? [];
+    const rootPost = tweets.find((tweet) => tweet.id === data.postId);
+
+    return withAncestors(comment, rootPost, comments);
   },
 
-  async update(id: string, data: UpdateCommentRequest): Promise<Comment> {
+  async update(id: string, data: UpdateCommentRequest): Promise<Tweet> {
     await delay(180);
 
-    for (const [postId, comments] of Object.entries(commentsByPostId)) {
-      const commentIndex = comments.findIndex((item) => item.id === id);
+    const found = findComment(id);
 
-      if (commentIndex === -1) continue;
+    if (!found) throw new Error("Коментар не знайдено.");
 
-      const existing = comments[commentIndex];
+    const existing = found.comment;
 
-      if (existing.author.id !== currentUser.id)
-        throw new Error("Ви не можете редагувати цей коментар.");
+    if (existing.author.id !== currentUser.id)
+      throw new Error("Ви не можете редагувати цей коментар.");
 
-      const updated: Comment = {
-        ...existing,
-        content: data.content.trim(),
-        updatedAt: new Date().toISOString(),
+    const attachments = data.mediaIds
+      ? mediaStore.getMany(data.mediaIds)
+      : existing.attachments;
+
+    let poll = existing.poll;
+
+    if (data.poll === null) {
+      poll = undefined;
+    } else if (data.poll && data.poll.options.length > 0) {
+      poll = {
+        id: existing.poll?.id ?? crypto.randomUUID(),
+
+        totalVotes: existing.poll?.totalVotes ?? 0,
+
+        isClosed: existing.poll?.isClosed ?? false,
+
+        expiresAt: new Date(
+          Date.now() + (data.poll.duration || 1440) * 60 * 1000,
+        ).toISOString(),
+
+        options: data.poll.options.map((text, index) => ({
+          id: existing.poll?.options[index]?.id ?? crypto.randomUUID(),
+
+          text,
+
+          votesCount: existing.poll?.options[index]?.votesCount ?? 0,
+        })),
       };
-
-      commentsByPostId[postId] = comments.map((item) =>
-        item.id === id ? updated : item,
-      );
-
-      return updated;
     }
 
-    throw new Error("Коментар не знайдено.");
+    const updated: Tweet = {
+      ...existing,
+
+      content:
+        data.content !== undefined ? data.content.trim() : existing.content,
+
+      attachments,
+      poll,
+
+      location: data.location !== undefined ? data.location : existing.location,
+
+      embed: data.embed !== undefined ? data.embed : existing.embed,
+
+      updatedAt: new Date().toISOString(),
+    };
+
+    found.comments[found.index] = updated;
+
+    const rootPost = tweets.find((tweet) => tweet.id === updated.postId);
+
+    return withAncestors(updated, rootPost, found.comments);
   },
 
   async delete(id: string): Promise<void> {
     await delay(180);
 
-    for (const [postId, comments] of Object.entries(commentsByPostId)) {
-      const existing = comments.find((item) => item.id === id);
-
-      if (!existing) continue;
-
-      if (existing.author.id !== currentUser.id)
-        throw new Error("Ви не можете видалити цей коментар.");
-
-      commentsByPostId[postId] = comments.filter((item) => item.id !== id);
-      updateReplyCount(postId, -1);
-      return;
-    }
-
-    throw new Error("Коментар не знайдено.");
-  },
-
-  async like(id: string) {
-    await delay(120);
-
     const found = findComment(id);
 
     if (!found) throw new Error("Коментар не знайдено.");
 
-    const next = {
-      ...found.comment,
-      likesCount: found.comment.likesCount + 1,
-      isLikedByCurrentUser: true,
-    };
+    if (found.comment.author.id !== currentUser.id)
+      throw new Error("Ви не можете видалити цей коментар.");
 
-    found.comments[found.index] = next;
+    found.comments.splice(found.index, 1);
 
-    return {
-      likesCount: next.likesCount,
-      isLikedByCurrentUser: next.isLikedByCurrentUser,
-    };
-  },
-
-  async unlike(id: string) {
-    await delay(120);
-
-    const found = findComment(id);
-
-    if (!found) throw new Error("Коментар не знайдено.");
-
-    const next = {
-      ...found.comment,
-      likesCount: Math.max(0, found.comment.likesCount - 1),
-      isLikedByCurrentUser: false,
-    };
-
-    found.comments[found.index] = next;
-
-    return {
-      likesCount: next.likesCount,
-      isLikedByCurrentUser: next.isLikedByCurrentUser,
-    };
+    updateCommentCount(found.postId, -1);
   },
 
   async toggleLike(id: string, likedByMe: boolean) {
-    return likedByMe ? this.unlike(id) : this.like(id);
-  },
-
-  async repost(id: string) {
-    await delay(120);
+    await delay(150);
 
     const found = findComment(id);
 
     if (!found) throw new Error("Коментар не знайдено.");
 
-    const next = {
-      ...found.comment,
-      retweetsCount: (found.comment.retweetsCount ?? 0) + 1,
-      isRepostedByCurrentUser: true,
-    };
+    const result = toggleLikeInList(found.comments, id, likedByMe);
 
-    found.comments[found.index] = next;
+    found.comments.splice(0, found.comments.length, ...result.items);
 
-    return {
-      retweetsCount: next.retweetsCount ?? 0,
-      isRepostedByCurrentUser: Boolean(next.isRepostedByCurrentUser),
-    };
-  },
-
-  async unrepost(id: string) {
-    await delay(120);
-
-    const found = findComment(id);
-
-    if (!found) throw new Error("Коментар не знайдено.");
-
-    const next = {
-      ...found.comment,
-      retweetsCount: Math.max(0, (found.comment.retweetsCount ?? 0) - 1),
-      isRepostedByCurrentUser: false,
-    };
-
-    found.comments[found.index] = next;
-
-    return {
-      retweetsCount: next.retweetsCount ?? 0,
-      isRepostedByCurrentUser: false,
-    };
+    return result.response;
   },
 
   async toggleRepost(id: string, repostedByMe: boolean) {
-    return repostedByMe ? this.unrepost(id) : this.repost(id);
-  },
-
-  async bookmark(id: string) {
-    await delay(120);
+    await delay(150);
 
     const found = findComment(id);
 
     if (!found) throw new Error("Коментар не знайдено.");
 
-    const next = {
-      ...found.comment,
-      isBookmarkedByCurrentUser: true,
-    };
+    const result = toggleRepostInList(found.comments, id, repostedByMe);
 
-    found.comments[found.index] = next;
+    found.comments.splice(0, found.comments.length, ...result.items);
 
-    return {
-      isBookmarkedByCurrentUser: true,
-    };
-  },
-
-  async unbookmark(id: string) {
-    await delay(120);
-
-    const found = findComment(id);
-
-    if (!found) throw new Error("Коментар не знайдено.");
-
-    const next = {
-      ...found.comment,
-      isBookmarkedByCurrentUser: false,
-    };
-
-    found.comments[found.index] = next;
-
-    return {
-      isBookmarkedByCurrentUser: false,
-    };
+    return result.response;
   },
 
   async toggleBookmark(id: string, bookmarkedByMe: boolean) {
-    return bookmarkedByMe ? this.unbookmark(id) : this.bookmark(id);
-  },
-
-  async view(id: string) {
-    await delay(80);
+    await delay(150);
 
     const found = findComment(id);
 
     if (!found) throw new Error("Коментар не знайдено.");
 
-    found.comments[found.index] = {
-      ...found.comment,
-      viewsCount: (found.comment.viewsCount ?? 0) + 1,
-    };
+    const result = toggleBookmarkInList(found.comments, id, bookmarkedByMe);
+
+    found.comments.splice(0, found.comments.length, ...result.items);
+
+    return result.response;
+  },
+
+  async view(id: string): Promise<void> {
+    await delay(100);
+
+    const found = findComment(id);
+
+    if (!found) throw new Error("Коментар не знайдено.");
+
+    const updated = incrementViewsInList(found.comments, id);
+
+    found.comments.splice(0, found.comments.length, ...updated);
   },
 };

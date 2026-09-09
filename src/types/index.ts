@@ -10,4 +10,3 @@ export * from "@/types/poll";
 export * from "@/types/location";
 export * from "@/types/embed";
 export * from "@/types/follow";
-export * from "@/types/comment";

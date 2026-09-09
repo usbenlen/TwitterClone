@@ -2,15 +2,23 @@ import { useCallback, useEffect, useState } from "react";
 
 import { commentApi } from "@/api/comment.api";
 
-import type { Comment } from "@/types/comment";
+import type { Tweet, ComposerSubmitData } from "@/types";
 
-export function useTweetComments(
-  postId: string,
-  initialCount: number,
+interface UseTweetCommentsOptions {
+  postId: string;
+  parentCommentId?: string | null;
+  initialCount: number;
+  initiallyOpen?: boolean;
+}
+
+export function useTweetComments({
+  postId,
+  parentCommentId = null,
+  initialCount,
   initiallyOpen = false,
-) {
+}: UseTweetCommentsOptions) {
   const [open, setOpen] = useState(initiallyOpen);
-  const [comments, setComments] = useState<Comment[]>([]);
+  const [comments, setComments] = useState<Tweet[]>([]);
   const [commentsCount, setCommentsCount] = useState(initialCount);
   const [isLoading, setIsLoading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -24,8 +32,11 @@ export function useTweetComments(
     try {
       const result = await commentApi.getByPostId(postId);
 
-      setComments(result);
-      setCommentsCount(result.length);
+      const directReplies = result.filter(
+        (comment) => (comment.parentCommentId ?? null) === parentCommentId,
+      );
+
+      setComments(directReplies);
       setIsLoaded(true);
     } catch (error) {
       setError(
@@ -36,7 +47,7 @@ export function useTweetComments(
     } finally {
       setIsLoading(false);
     }
-  }, [postId]);
+  }, [postId, parentCommentId]);
 
   const toggleOpen = async () => {
     const nextOpen = !open;
@@ -54,8 +65,8 @@ export function useTweetComments(
   }, [initiallyOpen, isLoaded, loadComments]);
 
   const createComment = async (
-    content: string,
-    parentCommentId?: string | null,
+    data: ComposerSubmitData,
+    childParentCommentId?: string | null,
   ) => {
     if (isSubmitting) return false;
 
@@ -63,28 +74,22 @@ export function useTweetComments(
     setError(null);
 
     try {
+      const parentId = childParentCommentId ?? parentCommentId ?? null;
+
       const created = await commentApi.create({
         postId,
-        parentCommentId: parentCommentId ?? null,
-        content,
+        parentCommentId: parentId,
+        content: data.content,
+        mediaIds: data.mediaIds,
+        poll: data.poll ?? undefined,
+        location: data.location,
+        embed: data.embed,
       });
 
-      setComments((current) => {
-        const next = [created, ...current];
-
-        if (!parentCommentId) return next;
-
-        return next.map((comment) =>
-          comment.id === parentCommentId
-            ? {
-                ...comment,
-                repliesCount: (comment.repliesCount ?? 0) + 1,
-              }
-            : comment,
-        );
-      });
-
-      setCommentsCount((count) => count + 1);
+      if ((created.parentCommentId ?? null) === parentCommentId) {
+        setComments((current) => [created, ...current]);
+        setCommentsCount((count) => count + 1);
+      }
 
       setIsLoaded(true);
 
@@ -153,11 +158,16 @@ export function useTweetComments(
     }
   };
 
-  const updateComment = async (commentId: string, content: string) => {
+  const updateComment = async (
+    commentId: string,
+    data: ComposerSubmitData | string,
+  ) => {
     setError(null);
 
     try {
-      const updated = await commentApi.update(commentId, { content });
+      const payload = typeof data === "string" ? { content: data } : data;
+
+      const updated = await commentApi.update(commentId, payload);
 
       setComments((current) =>
         current.map((comment) =>

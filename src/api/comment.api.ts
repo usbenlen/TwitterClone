@@ -4,60 +4,64 @@ import { MOCK_ENABLED } from "@/mock/config";
 import { mockCommentApi } from "@/mock/handlers";
 
 import type {
-  Comment,
   CreateCommentRequest,
-  ToggleCommentBookmarkResponse,
-  ToggleCommentLikeResponse,
-  ToggleCommentRepostResponse,
+  ToggleBookmarkResponse,
+  ToggleLikeResponse,
+  ToggleRepostResponse,
   UpdateCommentRequest,
-} from "@/types/comment";
+  Tweet,
+  ThreadResponse,
+} from "@/types/tweet";
 
 const realCommentApi = {
   getByPostId: (postId: string) =>
-    apiClient.get<Comment[]>(ENDPOINTS.comments.byPost(postId)),
+    apiClient.get<Tweet[]>(ENDPOINTS.comments.byPost(postId)),
+
+  getThread: (id: string) =>
+    apiClient.get<ThreadResponse>(ENDPOINTS.comments.thread(id)),
+
+  getBookmarked: () => apiClient.get<Tweet[]>(ENDPOINTS.comments.bookmarked),
 
   create: (data: CreateCommentRequest) =>
-    apiClient.post<Comment>(ENDPOINTS.comments.create, data),
+    apiClient.post<Tweet>(ENDPOINTS.comments.create, data),
 
   update: (id: string, data: UpdateCommentRequest) =>
-    apiClient.put<Comment>(ENDPOINTS.comments.update(id), data),
+    apiClient.put<Tweet>(ENDPOINTS.comments.update(id), data),
 
   delete: (id: string) => apiClient.delete<void>(ENDPOINTS.comments.delete(id)),
 
   like: (id: string) =>
-    apiClient.post<ToggleCommentLikeResponse>(ENDPOINTS.comments.like(id)),
+    apiClient.post<ToggleLikeResponse>(ENDPOINTS.comments.like(id)),
 
   unlike: (id: string) =>
-    apiClient.delete<ToggleCommentLikeResponse>(ENDPOINTS.comments.unlike(id)),
+    apiClient.delete<ToggleLikeResponse>(ENDPOINTS.comments.unlike(id)),
 
-  toggleLike: (id: string, likedByMe: boolean): Promise<ToggleCommentLikeResponse> =>
+  toggleLike: (id: string, likedByMe: boolean): Promise<ToggleLikeResponse> =>
     likedByMe ? realCommentApi.unlike(id) : realCommentApi.like(id),
 
   repost: (id: string) =>
-    apiClient.post<ToggleCommentRepostResponse>(ENDPOINTS.comments.repost(id)),
+    apiClient.post<ToggleRepostResponse>(ENDPOINTS.comments.repost(id)),
 
   unrepost: (id: string) =>
-    apiClient.delete<ToggleCommentRepostResponse>(
-      ENDPOINTS.comments.unrepost(id),
-    ),
+    apiClient.delete<ToggleRepostResponse>(ENDPOINTS.comments.unrepost(id)),
 
-  toggleRepost: (id: string, repostedByMe: boolean): Promise<ToggleCommentRepostResponse> =>
+  toggleRepost: (
+    id: string,
+    repostedByMe: boolean,
+  ): Promise<ToggleRepostResponse> =>
     repostedByMe ? realCommentApi.unrepost(id) : realCommentApi.repost(id),
 
   bookmark: (id: string) =>
-    apiClient.post<ToggleCommentBookmarkResponse>(
-      ENDPOINTS.comments.bookmark(id),
-    ),
+    apiClient.post<ToggleBookmarkResponse>(ENDPOINTS.comments.bookmark(id)),
 
   unbookmark: (id: string) =>
-    apiClient.delete<ToggleCommentBookmarkResponse>(
-      ENDPOINTS.comments.unbookmark(id),
-    ),
+    apiClient.delete<ToggleBookmarkResponse>(ENDPOINTS.comments.unbookmark(id)),
 
-  toggleBookmark: (id: string, bookmarkedByMe: boolean): Promise<ToggleCommentBookmarkResponse> =>
-    bookmarkedByMe
-      ? realCommentApi.unbookmark(id)
-      : realCommentApi.bookmark(id),
+  toggleBookmark: (
+    id: string,
+    bookmarkedByMe: boolean,
+  ): Promise<ToggleBookmarkResponse> =>
+    bookmarkedByMe ? realCommentApi.unbookmark(id) : realCommentApi.bookmark(id),
 
   view: (id: string) => apiClient.post<void>(ENDPOINTS.comments.view(id)),
 };

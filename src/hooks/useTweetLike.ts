@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-import { tweetApi } from "@/api/tweet.api";
+import { tweetApi, commentApi } from "@/api";
 
 import type { Tweet } from "@/types/tweet";
 
@@ -20,10 +20,15 @@ export function useTweetLike(tweet: Tweet) {
     setPending(true);
 
     try {
-      const result = await tweetApi.toggleLike(tweet.id, likedByMe);
-
-      setLikedByMe(result.likedByMe);
-      setLikesCount(result.likesCount);
+      if (tweet.isComment) {
+        const result = await commentApi.toggleLike(tweet.id, likedByMe);
+        setLikedByMe(result.likedByMe);
+        setLikesCount(result.likesCount);
+      } else {
+        const result = await tweetApi.toggleLike(tweet.id, likedByMe);
+        setLikedByMe(result.likedByMe);
+        setLikesCount(result.likesCount);
+      }
     } catch {
       setLikedByMe(previous.likedByMe);
       setLikesCount(previous.likesCount);

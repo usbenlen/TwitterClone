@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 
-import { tweetApi } from "@/api/tweet.api";
+import { tweetApi, commentApi } from "@/api";
 
 import type { Tweet } from "@/types/tweet";
 
@@ -13,8 +13,17 @@ export function useBookmarks() {
     setIsLoading(true);
     setError(null);
     try {
-      const data = await tweetApi.getBookmarked();
-      setTweets(data);
+      const [bookmarkedTweets, bookmarkedComments] = await Promise.all([
+        tweetApi.getBookmarked(),
+        commentApi.getBookmarked(),
+      ]);
+
+      const combined = [...bookmarkedTweets, ...bookmarkedComments].sort(
+        (a, b) =>
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+      );
+
+      setTweets(combined);
     } catch {
       setError("Не вдалося завантажити закладки.");
     } finally {

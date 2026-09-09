@@ -7,9 +7,10 @@ import { mockTweetApi } from "@/mock/handlers";
 
 import type {
   CreateTweetRequest,
-  TogglePostBookmarkResponse,
-  TogglePostLikeResponse,
-  TogglePostRepostResponse,
+  UpdateTweetRequest,
+  ToggleBookmarkResponse,
+  ToggleLikeResponse,
+  ToggleRepostResponse,
 } from "@/types/tweet";
 
 const realTweetApi = {
@@ -66,7 +67,7 @@ const realTweetApi = {
     return mapPostToTweet(post);
   },
 
-  update: async (id: string, data: Partial<CreateTweetRequest>) => {
+  update: async (id: string, data: UpdateTweetRequest) => {
     const post = await apiClient.put<BackendPost>(
       ENDPOINTS.posts.update(id),
       data,
@@ -80,33 +81,39 @@ const realTweetApi = {
   view: (id: string) => apiClient.post(ENDPOINTS.posts.view(id)),
 
   like: (id: string) =>
-    apiClient.post<TogglePostLikeResponse>(ENDPOINTS.posts.like(id)),
+    apiClient.post<ToggleLikeResponse>(ENDPOINTS.posts.like(id)),
   unlike: (id: string) =>
-    apiClient.delete<TogglePostLikeResponse>(ENDPOINTS.posts.unlike(id)),
+    apiClient.delete<ToggleLikeResponse>(ENDPOINTS.posts.unlike(id)),
   repost: (id: string) =>
-    apiClient.post<TogglePostRepostResponse>(ENDPOINTS.posts.repost(id)),
+    apiClient.post<ToggleRepostResponse>(ENDPOINTS.posts.repost(id)),
   unrepost: (id: string) =>
-    apiClient.delete<TogglePostRepostResponse>(ENDPOINTS.posts.unrepost(id)),
+    apiClient.delete<ToggleRepostResponse>(ENDPOINTS.posts.unrepost(id)),
   bookmark: (id: string) =>
-    apiClient.post<TogglePostBookmarkResponse | undefined>(
+    apiClient.post<ToggleBookmarkResponse | undefined>(
       ENDPOINTS.posts.bookmark(id),
     ),
   unbookmark: (id: string) =>
-    apiClient.delete<TogglePostBookmarkResponse | undefined>(
+    apiClient.delete<ToggleBookmarkResponse | undefined>(
       ENDPOINTS.posts.unbookmark(id),
     ),
 
-  toggleLike: (id: string, likedByMe: boolean): Promise<TogglePostLikeResponse> => {
+  toggleLike: (id: string, likedByMe: boolean): Promise<ToggleLikeResponse> => {
     if (likedByMe) return realTweetApi.unlike(id);
     return realTweetApi.like(id);
   },
 
-  toggleRepost: (id: string, repostedByMe: boolean): Promise<TogglePostRepostResponse> => {
+  toggleRepost: (
+    id: string,
+    repostedByMe: boolean,
+  ): Promise<ToggleRepostResponse> => {
     if (repostedByMe) return realTweetApi.unrepost(id);
     return realTweetApi.repost(id);
   },
 
-  toggleBookmark: (id: string, bookmarkedByMe: boolean): Promise<TogglePostBookmarkResponse | undefined> => {
+  toggleBookmark: (
+    id: string,
+    bookmarkedByMe: boolean,
+  ): Promise<ToggleBookmarkResponse | undefined> => {
     if (bookmarkedByMe) return realTweetApi.unbookmark(id);
     return realTweetApi.bookmark(id);
   },

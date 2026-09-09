@@ -1,7 +1,15 @@
 import type { User, Tweet } from "@/types";
+
 import type { UpdateProfileRequest } from "@/api";
 
-import { sampleAuthors, tweets, currentUser } from "@/mock/data";
+import {
+  sampleAuthors,
+  tweets,
+  currentUser,
+  commentsByPostId,
+} from "@/mock/data";
+
+import { withAncestors } from "@/utils/ancestors";
 import { delay } from "@/mock/utils/delay";
 
 const likedTweetsByUsername: Record<string, string[]> = {
@@ -66,6 +74,46 @@ export const mockUserApi = {
     const repostedIds = repostedTweetsByUsername[username] ?? [];
 
     return tweets.filter((tweet) => repostedIds.includes(tweet.id));
+  },
+
+  async getReplies(username: string): Promise<Tweet[]> {
+    await delay();
+
+    const result: Tweet[] = [];
+
+    for (const [postId, comments] of Object.entries(commentsByPostId)) {
+      const rootPost = tweets.find((tweet) => tweet.id === postId);
+
+      const userComments = comments.filter(
+        (comment) => comment.author.username === username,
+      );
+
+      for (const comment of userComments) {
+        const reply = withAncestors(
+          {
+            ...comment,
+            isComment: true,
+            postId,
+            parentCommentId: comment.parentCommentId ?? null,
+          },
+          rootPost,
+          comments,
+        );
+
+        result.push({
+          ...reply,
+          replyToUsername:
+            reply.ancestors?.at(-1)?.author.username ??
+            rootPost?.author.username ??
+            null,
+        });
+      }
+    }
+
+    return result.sort(
+      (a, b) =>
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+    );
   },
 
   async updateProfile(data: UpdateProfileRequest): Promise<User> {

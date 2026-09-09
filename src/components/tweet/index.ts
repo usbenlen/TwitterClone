@@ -8,3 +8,6 @@ export { default as ActionsMenu } from "@/components/tweet/ActionsMenu";
 export { default as TweetMedia } from "@/components/tweet/TweetMedia";
 export { default as TweetComments } from "@/components/tweet/TweetComments";
 export { default as TweetContent } from "@/components/tweet/TweetContent";
+export { default as TweetPoll } from "@/components/tweet/poll/TweetPoll";
+export { default as TweetLocation } from "@/components/tweet/location/TweetLocation";
+export { default as TweetEmbed } from "@/components/tweet/embed/TweetEmbed";

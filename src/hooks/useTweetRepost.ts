@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-import { tweetApi } from "@/api/tweet.api";
+import { tweetApi, commentApi } from "@/api";
 
 import type { Tweet } from "@/types/tweet";
 
@@ -20,10 +20,15 @@ export function useTweetRepost(tweet: Tweet) {
     setPending(true);
 
     try {
-      const result = await tweetApi.toggleRepost(tweet.id, repostedByMe);
-
-      setRepostedByMe(result.repostedByMe);
-      setRepostsCount(result.repostsCount);
+      if (tweet.isComment) {
+        const result = await commentApi.toggleRepost(tweet.id, repostedByMe);
+        setRepostedByMe(result.repostedByMe);
+        setRepostsCount(result.repostsCount);
+      } else {
+        const result = await tweetApi.toggleRepost(tweet.id, repostedByMe);
+        setRepostedByMe(result.repostedByMe);
+        setRepostsCount(result.repostsCount);
+      }
     } catch {
       setRepostedByMe(previous.repostedByMe);
       setRepostsCount(previous.repostsCount);

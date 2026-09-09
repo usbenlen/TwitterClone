@@ -1,32 +1,56 @@
 import { useMemo, useState } from "react";
 
-import { useTweetComposerMedia } from "@/hooks/composer/media/useTweetComposerMedia";
 import {
   useComposerActions,
   useComposerSubmit,
   useComposerEditor,
+  useTweetComposerMedia,
 } from "@/hooks/composer";
 
 import { MAX_TWEET_LENGTH, MEDIA_STATUS } from "@/constants/app";
 
-import type { Tweet, Gif, Location, Embed } from "@/types";
+import type {
+  Gif,
+  Location,
+  Embed,
+  ComposerMedia,
+  ComposerPoll,
+  Tweet,
+  ComposerSubmitData,
+} from "@/types";
 
 interface UseTweetComposerProps {
-  onCreated: (tweet: Tweet) => void;
+  initialContent?: string;
+  initialMedia?: ComposerMedia[];
+  initialPoll?: ComposerPoll | null;
+  initialLocation?: Location | null;
+  initialEmbed?: Embed | null;
+  onCreated?: (tweet: Tweet) => void;
+  onSubmit?: (data: ComposerSubmitData) => Promise<unknown>;
 }
 
-export function useTweetComposer({ onCreated }: UseTweetComposerProps) {
-  const [content, setContent] = useState("");
+export function useTweetComposer({
+  initialContent = "",
+  initialMedia = [],
+  initialPoll = null,
+  initialLocation = null,
+  initialEmbed = null,
+  onCreated,
+  onSubmit,
+}: UseTweetComposerProps = {}) {
+  const [content, setContent] = useState(initialContent);
   const [selectedLocation, setSelectedLocation] = useState<Location | null>(
-    null,
+    initialLocation,
   );
-  const [selectedEmbed, setSelectedEmbed] = useState<Embed | null>(null);
+  const [selectedEmbed, setSelectedEmbed] = useState<Embed | null>(
+    initialEmbed,
+  );
 
   const cursor = useComposerEditor();
 
   const remaining = useMemo(() => MAX_TWEET_LENGTH - content.length, [content]);
 
-  const mediaManager = useTweetComposerMedia();
+  const mediaManager = useTweetComposerMedia(initialMedia);
 
   const hasBlockedMedia = mediaManager.media.some(
     (item) =>
@@ -48,7 +72,7 @@ export function useTweetComposer({ onCreated }: UseTweetComposerProps) {
     poll,
     location,
     embed,
-  } = useComposerActions();
+  } = useComposerActions(initialPoll);
 
   const { submit: submitComposer, isPosting } = useComposerSubmit({
     content,
@@ -60,11 +84,25 @@ export function useTweetComposer({ onCreated }: UseTweetComposerProps) {
     clearMedia: mediaManager.clearMedia,
     clearErrors: mediaManager.clearErrors,
 
-    onCreated,
+    onCreated: onCreated || (() => {}),
+    onSubmit,
   });
 
+  const hasChanges =
+    content.trim().length > 0 ||
+    mediaManager.media.length > 0 ||
+    poll.hasPoll ||
+    selectedLocation !== null ||
+    selectedEmbed !== null;
+
   const canSubmit =
-    (content.trim().length > 0 || mediaManager.media.length > 0) &&
+    Boolean(
+      content.trim().length > 0 ||
+      mediaManager.media.length > 0 ||
+      poll.hasPoll ||
+      selectedLocation ||
+      selectedEmbed,
+    ) &&
     remaining >= 0 &&
     !isPosting &&
     !hasBlockedMedia;
@@ -84,6 +122,7 @@ export function useTweetComposer({ onCreated }: UseTweetComposerProps) {
       closeAllPopups();
       poll.reset();
     }
+    return created;
   };
 
   const removePoll = () => {
@@ -192,6 +231,7 @@ export function useTweetComposer({ onCreated }: UseTweetComposerProps) {
     remaining,
 
     canSubmit,
+    hasChanges,
 
     isPosting,
 

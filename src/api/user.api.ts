@@ -51,6 +51,14 @@ const realUserApi = {
     return posts.map(mapPostToTweet);
   },
 
+  getReplies: async (username: string) => {
+    const posts = await apiClient.get<BackendPost[]>(
+      ENDPOINTS.users.replies(username),
+    );
+
+    return posts.map(mapPostToTweet);
+  },
+
   updateProfile: async (data: UpdateProfileRequest) => {
     const formData = new FormData();
 

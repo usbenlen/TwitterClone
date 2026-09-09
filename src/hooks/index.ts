@@ -9,9 +9,11 @@ export { useBookmarks } from "@/hooks/useBookmarks";
 export { useTweetComments } from "@/hooks/useTweetComments";
 export { useFollow } from "@/hooks/useFollow";
 export { useSearch } from "@/hooks/useSearch";
-export { useCommentActions } from "@/hooks/useCommentActions";
 export { useImageCache } from "@/hooks/useImageCache";
 export { useTweetBookmark } from "@/hooks/useTweetBookmark";
 export { useClickOrDrag } from "@/hooks/useClickOrDrag";
+export { useUnsavedChangesGuard } from "@/hooks/useUnsavedChangesGuard";
+
+export { useLocationSearch } from "@/hooks/location/useLocationSearch"
 
 export * from "@/hooks/composer";

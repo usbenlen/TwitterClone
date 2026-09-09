@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-import { tweetApi } from "@/api/tweet.api";
+import { tweetApi, commentApi } from "@/api";
 
 import type { Tweet } from "@/types/tweet";
 
@@ -39,7 +39,10 @@ export function useTweetBookmark(tweet: Tweet) {
     setPending(true);
 
     try {
-      const result = await tweetApi.toggleBookmark(tweet.id, bookmarkedByMe);
+      const result = tweet.isComment
+        ? await commentApi.toggleBookmark(tweet.id, bookmarkedByMe)
+        : await tweetApi.toggleBookmark(tweet.id, bookmarkedByMe);
+
       const finalState = readBookmarkedState(result, next);
       setBookmarkedByMe(finalState);
       window.dispatchEvent(

@@ -38,6 +38,7 @@ export const ENDPOINTS = {
     byId: (id: string) => `users/${id}`,
     byUsername: (username: string) => `users/by-username/${username}`,
     posts: (id: string) => `users/${id}/posts`,
+    replies: (username: string) => `users/${username}/replies`,
     likes: (username: string) => `users/${username}/likes`,
     reposts: (username: string) => `users/${username}/reposts`,
     updateProfile: "users/me",
@@ -64,6 +65,8 @@ export const ENDPOINTS = {
   },
   comments: {
     byPost: (postId: string) => `comments/post/${postId}`,
+    thread: (id: string) => `comments/${id}/thread`,
+    bookmarked: "comments/bookmarked",
     create: "comments",
     update: (id: string) => `comments/${id}`,
     delete: (id: string) => `comments/${id}`,

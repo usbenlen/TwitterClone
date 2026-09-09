@@ -1,6 +1,4 @@
-import type { Tweet } from "@/types";
-import type { TweetPoll } from "@/types/poll";
-import type { MediaAttachment } from "@/types/media";
+import type { Tweet, TweetPoll, MediaAttachment } from "@/types";
 
 export interface BackendPostMedia {
   id: string;
@@ -61,6 +59,11 @@ export interface BackendPost {
 
   createdAt: string;
   updatedAt?: string | null;
+
+  isComment?: boolean;
+  postId?: string;
+  parentCommentId?: string | null;
+  replyToUsername?: string | null;
 }
 
 function normalizeMediaType(
@@ -69,8 +72,7 @@ function normalizeMediaType(
 ): MediaAttachment["type"] {
   const normalizedType = type.toLowerCase();
 
-  if (normalizedType === "video" || mimeType?.startsWith("video/"))
-    return "video";
+  if (normalizedType === "video" || mimeType?.startsWith("video/")) return "video";
   if (normalizedType === "gif" || mimeType === "image/gif") return "gif";
   if (normalizedType === "embed") return "embed";
 
@@ -151,5 +153,10 @@ export const mapPostToTweet = (post: BackendPost): Tweet => {
 
     createdAt: post.createdAt,
     updatedAt: post.updatedAt ?? null,
+
+    isComment: post.isComment,
+    postId: post.postId,
+    parentCommentId: post.parentCommentId ?? null,
+    replyToUsername: post.replyToUsername ?? null,
   };
 };

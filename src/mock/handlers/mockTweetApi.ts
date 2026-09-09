@@ -1,27 +1,40 @@
-import { currentUser } from "@/mock/data/users";
-import { tweets, setTweets, nextTweetId } from "@/mock/data/tweets";
+import { tweets, setTweets, nextTweetId, currentUser } from "@/mock/data";
 
-import type { Tweet, CreateTweetRequest } from "@/types/tweet";
-import type { TweetPoll } from "@/types/poll";
+import type {
+  Tweet,
+  CreateTweetRequest,
+  UpdateTweetRequest,
+  TweetPoll,
+} from "@/types";
 
 import { delay } from "@/mock/utils/delay";
+
 import { mediaStore } from "@/mock/stores/mediaStore";
+
+import {
+  toggleLikeInList,
+  toggleRepostInList,
+  toggleBookmarkInList,
+  incrementViewsInList,
+} from "@/mock/utils/mockTweetActions";
 
 export const mockTweetApi = {
   async getFeed(): Promise<Tweet[]> {
     await delay();
+
     return [...tweets];
   },
 
   async getBookmarked(): Promise<Tweet[]> {
     await delay();
-    return tweets.filter((t) => t.bookmarkedByMe);
+
+    return tweets.filter((tweet) => tweet.bookmarkedByMe);
   },
 
   async getById(id: string): Promise<Tweet> {
     await delay();
 
-    const tweet = tweets.find((item) => item.id === id);
+    const tweet = tweets.find((tweet) => tweet.id === id);
 
     if (!tweet) throw new Error("Пост не знайдено.");
 
@@ -30,24 +43,23 @@ export const mockTweetApi = {
 
   async getByUsername(username: string): Promise<Tweet[]> {
     await delay();
-    return tweets.filter((t) => t.author.username === username);
+
+    return tweets.filter((tweet) => tweet.author.username === username);
   },
 
   async create(payload: CreateTweetRequest): Promise<Tweet> {
     await delay(300);
 
-    const attachments = mediaStore.getMany(payload.mediaIds) ?? [];
+    const attachments = mediaStore.getMany(payload.mediaIds);
 
     const poll: TweetPoll | undefined = payload.poll
       ? {
           id: crypto.randomUUID(),
           totalVotes: 0,
           isClosed: false,
-
           expiresAt: new Date(
             Date.now() + payload.poll.duration * 60 * 1000,
           ).toISOString(),
-
           options: payload.poll.options.map((text) => ({
             id: crypto.randomUUID(),
             text,
@@ -86,109 +98,55 @@ export const mockTweetApi = {
     return tweet;
   },
 
-  async toggleLike(id: string, likedByMe: boolean) {
-    await delay(150);
-
-    const updatedTweets = tweets.map((t) =>
-      t.id === id
-        ? {
-            ...t,
-            likedByMe: !likedByMe,
-            likesCount: likedByMe ? t.likesCount - 1 : t.likesCount + 1,
-          }
-        : t,
-    );
-
-    setTweets(updatedTweets);
-
-    const tweet = updatedTweets.find((t) => t.id === id)!;
-
-    return {
-      likedByMe: tweet.likedByMe,
-      likesCount: tweet.likesCount,
-    };
-  },
-
-  async toggleRepost(id: string, repostedByMe: boolean) {
-    await delay(150);
-
-    const updatedTweets = tweets.map((t) =>
-      t.id === id
-        ? {
-            ...t,
-            repostedByMe: !repostedByMe,
-            retweetsCount: repostedByMe
-              ? t.retweetsCount - 1
-              : t.retweetsCount + 1,
-          }
-        : t,
-    );
-
-    setTweets(updatedTweets);
-
-    const tweet = updatedTweets.find((t) => t.id === id)!;
-
-    return {
-      repostedByMe: tweet.repostedByMe,
-      repostsCount: tweet.retweetsCount,
-    };
-  },
-
-  async toggleBookmark(id: string, bookmarkedByMe: boolean) {
-    await delay(150);
-
-    const updatedTweets = tweets.map((t) =>
-      t.id === id
-        ? {
-            ...t,
-            bookmarkedByMe: !bookmarkedByMe,
-          }
-        : t,
-    );
-
-    setTweets(updatedTweets);
-
-    const tweet = updatedTweets.find((t) => t.id === id)!;
-
-    return {
-      bookmarkedByMe: tweet.bookmarkedByMe,
-    };
-  },
-
-  async view(id: string) {
-    await delay(100);
-
-    const updatedTweets = tweets.map((t) =>
-      t.id === id
-        ? {
-            ...t,
-            viewsCount: t.viewsCount + 1,
-          }
-        : t,
-    );
-
-    setTweets(updatedTweets);
-  },
-
-  async update(id: string, data: Partial<CreateTweetRequest>): Promise<Tweet> {
+  async update(id: string, data: UpdateTweetRequest): Promise<Tweet> {
     await delay(200);
 
-    const tweetIndex = tweets.findIndex((t) => t.id === id);
+    const tweetIndex = tweets.findIndex((tweet) => tweet.id === id);
+
     if (tweetIndex === -1) throw new Error("Пост не знайдено.");
 
     const existing = tweets[tweetIndex];
+
     if (existing.author.id !== currentUser.id)
       throw new Error("Ви не можете редагувати цей пост.");
 
+    const attachments = data.mediaIds
+      ? mediaStore.getMany(data.mediaIds)
+      : existing.attachments;
+
+    let poll = existing.poll;
+
+    if (data.poll === null) {
+      poll = undefined;
+    } else if (data.poll && data.poll.options.length > 0) {
+      poll = {
+        id: existing.poll?.id ?? crypto.randomUUID(),
+        totalVotes: existing.poll?.totalVotes ?? 0,
+        isClosed: existing.poll?.isClosed ?? false,
+        expiresAt: new Date(
+          Date.now() + (data.poll.duration || 1440) * 60 * 1000,
+        ).toISOString(),
+        options: data.poll.options.map((text, index) => ({
+          id: existing.poll?.options[index]?.id ?? crypto.randomUUID(),
+          text,
+          votesCount: existing.poll?.options[index]?.votesCount ?? 0,
+        })),
+      };
+    }
+
     const updated: Tweet = {
       ...existing,
-      content: data.content ?? existing.content,
+      content: data.content !== undefined ? data.content : existing.content,
+      attachments,
+      poll,
       location: data.location !== undefined ? data.location : existing.location,
+      embed: data.embed !== undefined ? data.embed : existing.embed,
       updatedAt: new Date().toISOString(),
     };
 
     const nextTweets = [...tweets];
     nextTweets[tweetIndex] = updated;
+
     setTweets(nextTweets);
 
     return updated;
@@ -196,6 +154,52 @@ export const mockTweetApi = {
 
   async delete(id: string): Promise<void> {
     await delay(180);
-    setTweets(tweets.filter((t) => t.id !== id));
+
+    const tweet = tweets.find((item) => item.id === id);
+
+    if (!tweet) throw new Error("Пост не знайдено.");
+
+    if (tweet.author.id !== currentUser.id)
+      throw new Error("Ви не можете видалити цей пост.");
+
+    setTweets(tweets.filter((item) => item.id !== id));
+  },
+
+  async toggleLike(id: string, likedByMe: boolean) {
+    await delay(150);
+
+    const result = toggleLikeInList(tweets, id, likedByMe);
+
+    setTweets(result.items);
+
+    return result.response;
+  },
+
+  async toggleRepost(id: string, repostedByMe: boolean) {
+    await delay(150);
+
+    const result = toggleRepostInList(tweets, id, repostedByMe);
+
+    setTweets(result.items);
+
+    return result.response;
+  },
+
+  async toggleBookmark(id: string, bookmarkedByMe: boolean) {
+    await delay(150);
+
+    const result = toggleBookmarkInList(tweets, id, bookmarkedByMe);
+
+    setTweets(result.items);
+
+    return result.response;
+  },
+
+  async view(id: string): Promise<void> {
+    await delay(100);
+
+    const updated = incrementViewsInList(tweets, id);
+
+    setTweets(updated);
   },
 };

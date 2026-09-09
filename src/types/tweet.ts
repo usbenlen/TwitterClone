@@ -1,7 +1,7 @@
 import type { User, TweetPoll, Location, Embed } from "@/types";
 import type { MediaAttachment } from "@/types/media";
 
-export interface Tweet {
+export interface TweetBase {
   id: string;
   content: string;
 
@@ -27,6 +27,29 @@ export interface Tweet {
 
   createdAt: string;
   updatedAt?: string | null;
+
+  isComment?: boolean;
+  postId?: string;
+  parentCommentId?: string | null;
+  replyToUsername?: string | null;
+}
+
+export type TweetAncestor = TweetBase;
+
+export interface Tweet extends TweetBase {
+  ancestors?: TweetAncestor[];
+}
+
+export interface ThreadResponse {
+  ancestors: TweetAncestor[];
+  target: Tweet;
+  replies: Tweet[];
+}
+
+export interface CommentThreadItem {
+  id: string;
+  target: Tweet;
+  ancestors: TweetAncestor[];
 }
 
 export interface CreateTweetMedia {
@@ -46,17 +69,56 @@ export interface CreateTweetRequest {
   location?: Location | null;
 }
 
-export interface TogglePostLikeResponse {
+export interface UpdateTweetRequest {
+  content?: string;
+  mediaIds?: string[];
+  embed?: Embed | null;
+  poll?: {
+    options: string[];
+    duration: number;
+  } | null;
+  location?: Location | null;
+}
+
+export interface CreateCommentRequest {
+  postId: string;
+  parentCommentId?: string | null;
+
+  content: string;
+  mediaIds?: string[];
+
+  poll?: {
+    options: string[];
+    duration: number;
+  };
+
+  location?: Location | null;
+  embed?: Embed | null;
+}
+
+export interface UpdateCommentRequest {
+  content?: string;
+  mediaIds?: string[];
+
+  poll?: {
+    options: string[];
+    duration: number;
+  } | null;
+
+  location?: Location | null;
+  embed?: Embed | null;
+}
+
+export interface ToggleLikeResponse {
   likedByMe: boolean;
   likesCount: number;
 }
 
-export interface TogglePostRepostResponse {
+export interface ToggleRepostResponse {
   repostedByMe: boolean;
   repostsCount: number;
 }
 
-export interface TogglePostBookmarkResponse {
+export interface ToggleBookmarkResponse {
   bookmarkedByMe?: boolean;
-  isBookmarkedByCurrentUser?: boolean;
 }

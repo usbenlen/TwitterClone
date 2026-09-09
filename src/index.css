@@ -85,6 +85,56 @@
   --destructive-foreground: #ffffff;
 }
 
+@layer utilities {
+  .z-poll-overlay {
+    z-index: 10;
+  }
+
+  .z-thread {
+    z-index: 10;
+  }
+
+  .z-content {
+    z-index: 20;
+  }
+
+  .z-header {
+    z-index: 50;
+  }
+
+  .z-sidebar {
+    z-index: 55;
+  }
+
+  .z-bottom-navigation {
+    z-index: 60;
+  }
+
+  .z-media-viewer {
+    z-index: 100;
+  }
+
+  .z-media-controls {
+    z-index: 110;
+  }
+
+  .z-tooltip {
+    z-index: 130;
+  }
+
+  .z-modal {
+    z-index: 200;
+  }
+
+  .z-popover {
+    z-index: 205;
+  }
+
+  .z-confirm-modal {
+    z-index: 210;
+  }
+}
+
 * {
   border-color: var(--border);
 }

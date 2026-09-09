@@ -25,13 +25,20 @@ import {
 import { CommentModal } from "@/components/modal";
 
 import { APP_ROUTES } from "@/constants/routes";
+import {
+  mapMediaToComposerMedia,
+  mapPollToComposerPoll,
+} from "@/utils/mappers";
 
-import type { Tweet, Comment } from "@/types";
+import { cn } from "@/utils/cn";
+
+import type { Tweet, ComposerSubmitData } from "@/types";
 
 interface TweetCardProps {
   tweet: Tweet;
   navigateToPost?: boolean;
   commentsInitiallyOpen?: boolean;
+  className?: string;
   variant?: "feed" | "post";
 }
 
@@ -39,39 +46,46 @@ export default function TweetCard({
   tweet,
   navigateToPost = true,
   commentsInitiallyOpen = false,
+  className,
   variant = "feed",
 }: TweetCardProps) {
   const navigate = useNavigate();
   const { user } = useAuth();
   const [isCommentModalOpen, setIsCommentModalOpen] = useState(false);
-  const [commentModalTarget, setCommentModalTarget] = useState<Comment | null>(
+  const [commentModalTarget, setCommentModalTarget] = useState<Tweet | null>(
     null,
   );
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-
 
   const isOwnTweet = user?.id === tweet.author.id;
 
   const handleDelete = async () => {
     try {
       await tweetApi.delete(tweet.id);
+
       window.dispatchEvent(
-        new CustomEvent("tweet-deleted", { detail: { tweetId: tweet.id } }),
+        new CustomEvent("tweet-deleted", {
+          detail: { tweetId: tweet.id },
+        }),
       );
-      if (variant === "post") {
-        navigate(APP_ROUTES.HOME);
-      }
+
+      if (variant === "post") navigate(APP_ROUTES.HOME);
     } catch (error) {
       console.error("Failed to delete tweet", error);
     }
   };
 
-  const handleUpdate = async (content: string) => {
+  const handleUpdate = async (data: ComposerSubmitData) => {
     try {
-      const updatedTweet = await tweetApi.update(tweet.id, { content });
+      const updatedTweet = await tweetApi.update(tweet.id, data);
+
       window.dispatchEvent(
-        new CustomEvent("tweet-updated", { detail: { tweet: updatedTweet } }),
+        new CustomEvent("tweet-updated", {
+          detail: { tweet: updatedTweet },
+        }),
       );
+
+      return updatedTweet;
     } catch (error) {
       console.error("Failed to update tweet", error);
       throw error;
@@ -82,13 +96,16 @@ export default function TweetCard({
   const repost = useTweetRepost(tweet);
   const bookmark = useTweetBookmark(tweet);
 
-  const comments = useTweetComments(
-    tweet.id,
-    tweet.repliesCount,
-    commentsInitiallyOpen,
-  );
+  const rootPostId = tweet.isComment ? tweet.postId : tweet.id;
 
-  const openCommentModal = (comment: Comment | null = null) => {
+  const comments = useTweetComments({
+    postId: rootPostId ?? tweet.id,
+    parentCommentId: tweet.isComment ? tweet.id : null,
+    initialCount: tweet.repliesCount,
+    initiallyOpen: commentsInitiallyOpen,
+  });
+
+  const openCommentModal = (comment: Tweet | null = null) => {
     setCommentModalTarget(comment);
     setIsCommentModalOpen(true);
   };
@@ -108,9 +125,11 @@ export default function TweetCard({
     <>
       <article
         {...(navigateToPost ? clickOrDragHandlers : {})}
-        className={`grid grid-cols-[40px_minmax(0,1fr)] gap-x-3 border-b border-border px-4 py-3 transition-colors ${
-          navigateToPost ? "cursor-pointer hover:bg-muted/40" : ""
-        }`}
+        className={cn(
+          "grid grid-cols-[40px_minmax(0,1fr)] gap-x-3 border-b border-border px-4 py-3 transition-colors",
+          navigateToPost && "cursor-pointer hover:bg-muted/40",
+          className,
+        )}
       >
         <div className="flex justify-center">
           <Avatar
@@ -126,6 +145,7 @@ export default function TweetCard({
             author={tweet.author}
             createdAt={tweet.createdAt}
             updatedAt={tweet.updatedAt}
+            // replyToUsername={tweet.replyToUsername} якщо десь знадобиться "У відповідь @dev_user"
             onDelete={isOwnTweet ? handleDelete : undefined}
             onEdit={isOwnTweet ? () => setIsEditModalOpen(true) : undefined}
           />
@@ -140,7 +160,7 @@ export default function TweetCard({
             retweetsCount={repost.repostsCount}
             viewsCount={tweet.viewsCount}
             bookmarkedByMe={bookmark.bookmarkedByMe}
-            onComment={() => openCommentModal()}
+            onComment={() => openCommentModal(tweet)}
             onRepost={repost.toggleRepost}
             onLike={like.toggleLike}
             onBookmark={bookmark.toggleBookmark}
@@ -155,8 +175,8 @@ export default function TweetCard({
           isSubmitting={comments.isSubmitting}
           error={comments.error}
           replyingToUsername={tweet.author.username}
-          onSubmit={async (content) => {
-            return comments.createComment(content, null);
+          onSubmit={async (data) => {
+            return comments.createComment(data, null);
           }}
           onDelete={comments.deleteComment}
           onUpdate={comments.updateComment}
@@ -168,6 +188,10 @@ export default function TweetCard({
         open={isEditModalOpen}
         title="Редагувати пост"
         initialContent={tweet.content}
+        initialMedia={mapMediaToComposerMedia(tweet.attachments)}
+        initialPoll={mapPollToComposerPoll(tweet.poll)}
+        initialLocation={tweet.location}
+        initialEmbed={tweet.embed}
         onClose={() => setIsEditModalOpen(false)}
         onSave={handleUpdate}
       />
