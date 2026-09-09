@@ -30,7 +30,7 @@ async function loadProfileTab(user: User, tab: ProfileTab): Promise<Tweet[]> {
       return userApi.getReposts(user.username);
     case "posts":
     default:
-      return userApi.getPosts(user.id);
+      return userApi.getPosts(user.username);
   }
 }
 

@@ -27,9 +27,11 @@ const realTweetApi = {
   },
 
   getBookmarked: async () => {
-    const posts = await apiClient.get<BackendPost[]>(ENDPOINTS.posts.all);
+    const posts = await apiClient.get<BackendPost[]>(
+      ENDPOINTS.posts.bookmarked,
+    );
 
-    return posts.map(mapPostToTweet).filter((t) => t.bookmarkedByMe);
+    return posts.map(mapPostToTweet);
   },
 
   getLiked: async () => {

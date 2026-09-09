@@ -48,10 +48,10 @@ export const mockUserApi = {
     return { ...found };
   },
 
-  async getPosts(id: string): Promise<Tweet[]> {
+  async getPosts(username: string): Promise<Tweet[]> {
     await delay();
 
-    return tweets.filter((tweet) => tweet.author.id === id);
+    return tweets.filter((tweet) => tweet.author.username === username);
   },
 
   async getLikes(username: string): Promise<Tweet[]> {

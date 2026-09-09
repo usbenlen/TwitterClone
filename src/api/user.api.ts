@@ -29,8 +29,10 @@ const realUserApi = {
   getByUsername: (username: string) =>
     apiClient.get<User>(ENDPOINTS.users.byUsername(username)),
 
-  getPosts: async (id: string) => {
-    const posts = await apiClient.get<BackendPost[]>(ENDPOINTS.users.posts(id));
+  getPosts: async (username: string) => {
+    const posts = await apiClient.get<BackendPost[]>(
+      ENDPOINTS.users.posts(username),
+    );
 
     return posts.map(mapPostToTweet);
   },
