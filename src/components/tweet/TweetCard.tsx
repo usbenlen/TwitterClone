@@ -42,6 +42,7 @@ interface TweetCardProps {
   className?: string;
   variant?: "feed" | "post";
   repostedBy?: Pick<User, "username" | "displayName">;
+  onOpenReplyModal?: (comment: Tweet) => void;
 }
 
 export default function TweetCard({
@@ -51,6 +52,7 @@ export default function TweetCard({
   className,
   variant = "feed",
   repostedBy,
+  onOpenReplyModal,
 }: TweetCardProps) {
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -118,6 +120,15 @@ export default function TweetCard({
     setCommentModalTarget(null);
   };
 
+  const handleOpenReplyModal = () => {
+    if (onOpenReplyModal) {
+      onOpenReplyModal(tweet);
+      return;
+    }
+
+    openCommentModal(tweet);
+  };
+
   const clickOrDragHandlers = useClickOrDrag(() => {
     if (!navigateToPost || isCommentModalOpen) return;
 
@@ -180,7 +191,7 @@ export default function TweetCard({
             retweetsCount={repost.repostsCount}
             viewsCount={tweet.viewsCount}
             bookmarkedByMe={bookmark.bookmarkedByMe}
-            onComment={() => openCommentModal(tweet)}
+            onComment={handleOpenReplyModal}
             onRepost={repost.toggleRepost}
             onLike={like.toggleLike}
             onBookmark={bookmark.toggleBookmark}
@@ -195,6 +206,8 @@ export default function TweetCard({
           isSubmitting={comments.isSubmitting}
           error={comments.error}
           replyingToUsername={tweet.author.username}
+          parentCommentId={tweet.isComment ? tweet.id : null}
+          threadAuthorId={tweet.author.id}
           onSubmit={async (data) => {
             return comments.createComment(data, null);
           }}

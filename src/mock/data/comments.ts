@@ -116,7 +116,7 @@ export const commentsByPostId: Record<string, Tweet[]> = {
       replyToUsername: currentUser.username,
 
       content: "Тоді обов'язково покажи результат.",
-      author: author(sampleAuthors[2]),
+      author: author(sampleAuthors[1]),
       attachments: [],
 
       likesCount: 3,

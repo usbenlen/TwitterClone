@@ -25,6 +25,11 @@ export function useTweetComments({
   const [error, setError] = useState<string | null>(null);
   const [isLoaded, setIsLoaded] = useState(false);
 
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setCommentsCount(initialCount);
+  }, [initialCount]);
+
   const loadComments = useCallback(async () => {
     setIsLoading(true);
     setError(null);
@@ -32,11 +37,7 @@ export function useTweetComments({
     try {
       const result = await commentApi.getByPostId(postId);
 
-      const directReplies = result.filter(
-        (comment) => (comment.parentCommentId ?? null) === parentCommentId,
-      );
-
-      setComments(directReplies);
+      setComments(result);
       setIsLoaded(true);
     } catch (error) {
       setError(
@@ -47,7 +48,7 @@ export function useTweetComments({
     } finally {
       setIsLoading(false);
     }
-  }, [postId, parentCommentId]);
+  }, [postId]);
 
   const toggleOpen = async () => {
     const nextOpen = !open;
@@ -86,8 +87,19 @@ export function useTweetComments({
         embed: data.embed,
       });
 
+      setComments((current) => [
+        created,
+        ...current.map((comment) =>
+          comment.id === created.parentCommentId
+            ? {
+                ...comment,
+                repliesCount: comment.repliesCount + 1,
+              }
+            : comment,
+        ),
+      ]);
+
       if ((created.parentCommentId ?? null) === parentCommentId) {
-        setComments((current) => [created, ...current]);
         setCommentsCount((count) => count + 1);
       }
 
@@ -148,7 +160,15 @@ export function useTweetComments({
           ),
       );
 
-      setCommentsCount((count) => Math.max(0, count - idsToDelete.size));
+      const directRepliesDeleted = comments.filter(
+        (comment) =>
+          idsToDelete.has(comment.id) &&
+          (comment.parentCommentId ?? null) === parentCommentId,
+      ).length;
+
+      setCommentsCount((count) =>
+        Math.max(0, count - directRepliesDeleted),
+      );
     } catch (error) {
       setError(
         error instanceof Error
