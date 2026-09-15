@@ -146,6 +146,15 @@ export const mockUserApi = {
     if (data.removeLocation) user.location = null;
     else if (data.location !== undefined) user.location = data.location;
 
+    if (data.removeBirthDate) user.birthDate = null;
+    else if (data.birthDate !== undefined) user.birthDate = data.birthDate;
+
+    if (data.birthDateVisibility !== undefined)
+      user.birthDateVisibility = data.birthDateVisibility;
+
+    if (data.birthYearVisibility !== undefined)
+      user.birthYearVisibility = data.birthYearVisibility;
+
     if (data.removeAvatar) user.avatarUrl = null;
     else if (data.avatar) user.avatarUrl = URL.createObjectURL(data.avatar);
 

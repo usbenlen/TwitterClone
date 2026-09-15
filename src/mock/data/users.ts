@@ -9,6 +9,9 @@ export const currentUser: User = {
   email: "dev@example.com",
   bio: "Пишу клон Twitter на React + ASP.NET.",
   location: locations[0],
+  birthDate: "1995-09-15",
+  birthDateVisibility: "only_me",
+  birthYearVisibility: "only_me",
   avatarUrl: undefined,
   bannerUrl: undefined,
 
@@ -30,6 +33,9 @@ export const sampleAuthors: User[] = [
     username: "ada",
     displayName: "Ada Lovelace",
     email: "ada@example.com",
+    birthDate: "1815-12-10",
+    birthDateVisibility: "public",
+    birthYearVisibility: "public",
 
     followersCount: 9001,
     followingCount: 12,
@@ -46,6 +52,9 @@ export const sampleAuthors: User[] = [
     username: "linus",
     displayName: "Linus",
     email: "linus@example.com",
+    birthDate: "1969-12-28",
+    birthDateVisibility: "followers",
+    birthYearVisibility: "only_me",
 
     followersCount: 4200,
     followingCount: 3,

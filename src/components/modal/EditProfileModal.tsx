@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Pencil, X } from "lucide-react";
+import { Balloon, Pencil, X } from "lucide-react";
 
 import type { UpdateProfileRequest } from "@/api/user.api";
 
@@ -10,10 +10,39 @@ import { Avatar, Button, Input } from "@/ui";
 
 import { LocationPicker } from "@/components/composer";
 import { ConfirmModal } from "@/components/modal/ConfirmModal";
+import BirthDateEditor from "@/components/modal/BirthDateEditor";
 
 import { MAX_BIO_LENGTH, MAX_NAME_LENGTH } from "@/constants/app";
 
-import type { Location, User } from "@/types";
+import type { BirthDateVisibility, Location, User } from "@/types";
+import { formatBirthMonthDay, getBirthYear } from "@/utils/format";
+
+const DEFAULT_BIRTH_DATE_VISIBILITY: BirthDateVisibility = "only_me";
+
+function parseBirthDate(value?: string | null) {
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value ?? "");
+
+  return {
+    year: match?.[1] ?? "",
+    month: match ? String(Number(match[2])) : "",
+    day: match ? String(Number(match[3])) : "",
+  };
+}
+
+function buildBirthDate(year: string, month: string, day: string) {
+  if (!year || !month || !day) return null;
+
+  const date = new Date(Number(year), Number(month) - 1, Number(day));
+  const isValid =
+    date.getFullYear() === Number(year) &&
+    date.getMonth() === Number(month) - 1 &&
+    date.getDate() === Number(day) &&
+    date <= new Date();
+
+  if (!isValid) return null;
+
+  return `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
+}
 
 interface EditProfileModalProps {
   open: boolean;
@@ -45,10 +74,23 @@ function EditProfileModalInner({
   const initialDisplayName = user.displayName?.trim() || user.username;
   const initialBio = user.bio ?? "";
   const initialLocation = user.location ?? null;
+  const initialBirthDate = user.birthDate ?? null;
+  const initialBirthDateParts = parseBirthDate(initialBirthDate);
+  const initialBirthDateVisibility =
+    user.birthDateVisibility ?? DEFAULT_BIRTH_DATE_VISIBILITY;
+  const initialBirthYearVisibility =
+    user.birthYearVisibility ?? DEFAULT_BIRTH_DATE_VISIBILITY;
 
   const [displayName, setDisplayName] = useState(initialDisplayName);
   const [bio, setBio] = useState(initialBio);
   const [location, setLocation] = useState<Location | null>(initialLocation);
+  const [birthMonth, setBirthMonth] = useState(initialBirthDateParts.month);
+  const [birthDay, setBirthDay] = useState(initialBirthDateParts.day);
+  const [birthYear, setBirthYear] = useState(initialBirthDateParts.year);
+  const [birthDateVisibility, setBirthDateVisibility] =
+    useState<BirthDateVisibility>(initialBirthDateVisibility);
+  const [birthYearVisibility, setBirthYearVisibility] =
+    useState<BirthDateVisibility>(initialBirthYearVisibility);
 
   const [avatar, setAvatar] = useState<File | null>(null);
   const [banner, setBanner] = useState<File | null>(null);
@@ -57,8 +99,11 @@ function EditProfileModalInner({
   const [bannerPreview, setBannerPreview] = useState(user.bannerUrl);
 
   const [isLocationOpen, setIsLocationOpen] = useState(false);
+  const [isBirthDateEditing, setIsBirthDateEditing] = useState(false);
+  const [isBirthDateConfirmOpen, setIsBirthDateConfirmOpen] = useState(false);
 
   const [removeLocation, setRemoveLocation] = useState(false);
+  const [removeBirthDate, setRemoveBirthDate] = useState(false);
   const [removeAvatar, setRemoveAvatar] = useState(false);
   const [removeBanner, setRemoveBanner] = useState(false);
 
@@ -80,9 +125,15 @@ function EditProfileModalInner({
     avatar !== null ||
     banner !== null ||
     removeLocation ||
+    removeBirthDate ||
     removeAvatar ||
     removeBanner ||
-    location?.id !== initialLocation?.id;
+    location?.id !== initialLocation?.id ||
+    birthMonth !== initialBirthDateParts.month ||
+    birthDay !== initialBirthDateParts.day ||
+    birthYear !== initialBirthDateParts.year ||
+    birthDateVisibility !== initialBirthDateVisibility ||
+    birthYearVisibility !== initialBirthYearVisibility;
 
   const { isConfirmOpen, requestClose, cancelDiscard, confirmDiscard } =
     useUnsavedChangesGuard({
@@ -98,6 +149,13 @@ function EditProfileModalInner({
     setDisplayName(initialDisplayName);
     setBio(initialBio);
     setLocation(initialLocation);
+    setBirthMonth(initialBirthDateParts.month);
+    setBirthDay(initialBirthDateParts.day);
+    setBirthYear(initialBirthDateParts.year);
+    setBirthDateVisibility(initialBirthDateVisibility);
+    setBirthYearVisibility(initialBirthYearVisibility);
+    setIsBirthDateEditing(false);
+    setIsBirthDateConfirmOpen(false);
 
     setAvatar(null);
     setBanner(null);
@@ -116,6 +174,7 @@ function EditProfileModalInner({
     setBannerPreview(user.bannerUrl);
 
     setRemoveLocation(false);
+    setRemoveBirthDate(false);
     setRemoveAvatar(false);
     setRemoveBanner(false);
 
@@ -193,7 +252,86 @@ function EditProfileModalInner({
     setRemoveLocation(Boolean(user.location));
   };
 
+  const handleBirthMonthChange = (value: string) => {
+    setBirthMonth(value);
+    setRemoveBirthDate(false);
+    setError(null);
+
+    if (!birthDay) return;
+
+    const today = new Date();
+    const selectedYear = Number(birthYear) || 2000;
+    const daysInMonth = new Date(selectedYear, Number(value), 0).getDate();
+    const maxDay =
+      selectedYear === today.getFullYear() &&
+      Number(value) === today.getMonth() + 1
+        ? Math.min(daysInMonth, today.getDate())
+        : daysInMonth;
+
+    if (Number(birthDay) > maxDay) setBirthDay(String(maxDay));
+  };
+
+  const handleBirthYearChange = (value: string) => {
+    setBirthYear(value);
+    setRemoveBirthDate(false);
+    setError(null);
+
+    const today = new Date();
+    let selectedMonth = Number(birthMonth);
+
+    if (
+      Number(value) === today.getFullYear() &&
+      selectedMonth > today.getMonth() + 1
+    ) {
+      selectedMonth = today.getMonth() + 1;
+      setBirthMonth(String(selectedMonth));
+    }
+
+    if (!selectedMonth || !birthDay) return;
+
+    const daysInMonth = new Date(
+      Number(value),
+      selectedMonth,
+      0,
+    ).getDate();
+    const maxDay =
+      Number(value) === today.getFullYear() &&
+      selectedMonth === today.getMonth() + 1
+        ? Math.min(daysInMonth, today.getDate())
+        : daysInMonth;
+
+    if (Number(birthDay) > maxDay) setBirthDay(String(maxDay));
+  };
+
+  const handleCancelBirthDateEditing = () => {
+    setBirthMonth(initialBirthDateParts.month);
+    setBirthDay(initialBirthDateParts.day);
+    setBirthYear(initialBirthDateParts.year);
+    setBirthDateVisibility(initialBirthDateVisibility);
+    setBirthYearVisibility(initialBirthYearVisibility);
+    setRemoveBirthDate(false);
+    setIsBirthDateEditing(false);
+    setError(null);
+  };
+
+  const handleRemoveBirthDate = () => {
+    setBirthMonth("");
+    setBirthDay("");
+    setBirthYear("");
+    setRemoveBirthDate(Boolean(initialBirthDate));
+    setIsBirthDateEditing(false);
+    setError(null);
+  };
+
   const handleSave = async () => {
+    const hasAnyBirthDatePart = Boolean(birthMonth || birthDay || birthYear);
+    const birthDate = buildBirthDate(birthYear, birthMonth, birthDay);
+
+    if (!removeBirthDate && hasAnyBirthDatePart && !birthDate) {
+      setError("Оберіть коректні місяць, день і рік народження.");
+      return;
+    }
+
     setError(null);
     setIsSaving(true);
 
@@ -208,7 +346,12 @@ function EditProfileModalInner({
 
         location: removeLocation ? undefined : location,
 
+        birthDate: removeBirthDate ? undefined : birthDate ?? undefined,
+        birthDateVisibility,
+        birthYearVisibility,
+
         removeLocation,
+        removeBirthDate,
         removeAvatar,
         removeBanner,
 
@@ -225,6 +368,13 @@ function EditProfileModalInner({
       setIsSaving(false);
     }
   };
+
+  const currentBirthDate = removeBirthDate
+    ? null
+    : buildBirthDate(birthYear, birthMonth, birthDay);
+  const currentBirthDateLabel = currentBirthDate
+    ? `${formatBirthMonthDay(currentBirthDate)} ${getBirthYear(currentBirthDate)} р.`
+    : null;
 
   if (!open) return null;
 
@@ -456,10 +606,76 @@ function EditProfileModalInner({
                   </div>
                 )}
               </div>
+
+              {/* Birth date */}
+              {isBirthDateEditing ? (
+                <BirthDateEditor
+                  month={birthMonth}
+                  day={birthDay}
+                  year={birthYear}
+                  dateVisibility={birthDateVisibility}
+                  yearVisibility={birthYearVisibility}
+                  canRemove={Boolean(initialBirthDate)}
+                  onMonthChange={handleBirthMonthChange}
+                  onDayChange={(value) => {
+                    setBirthDay(value);
+                    setRemoveBirthDate(false);
+                    setError(null);
+                  }}
+                  onYearChange={handleBirthYearChange}
+                  onDateVisibilityChange={(value) => {
+                    setBirthDateVisibility(value);
+                    setError(null);
+                  }}
+                  onYearVisibilityChange={(value) => {
+                    setBirthYearVisibility(value);
+                    setError(null);
+                  }}
+                  onCancel={handleCancelBirthDateEditing}
+                  onRemove={handleRemoveBirthDate}
+                />
+              ) : (
+                <div className="flex items-center justify-between gap-4 rounded-xl border border-border p-4">
+                  <div className="flex min-w-0 items-center gap-3">
+                    <Balloon
+                      className="size-5 shrink-0 text-muted-foreground"
+                      aria-hidden="true"
+                    />
+                    <div className="min-w-0">
+                      <p className="text-sm font-medium">Дата народження</p>
+                      <p className="truncate text-sm text-muted-foreground">
+                        {currentBirthDateLabel ?? "Не вказано"}
+                      </p>
+                    </div>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() => setIsBirthDateConfirmOpen(true)}
+                    className="shrink-0 cursor-pointer text-sm font-semibold text-primary hover:underline"
+                  >
+                    {currentBirthDateLabel ? "Редагувати" : "Додати"}
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         </div>
       </div>
+
+      <ConfirmModal
+        open={isBirthDateConfirmOpen}
+        title="Редагувати дату народження?"
+        description="Дату народження можна змінити лише кілька разів. Переконайтеся, що ви вказуєте вік людини, яка користується цим акаунтом."
+        confirmText="Редагувати"
+        cancelText="Скасувати"
+        confirmVariant="primary"
+        onCancel={() => setIsBirthDateConfirmOpen(false)}
+        onConfirm={() => {
+          setIsBirthDateConfirmOpen(false);
+          setIsBirthDateEditing(true);
+        }}
+      />
 
       <ConfirmModal
         open={isConfirmOpen}

@@ -1,5 +1,12 @@
 import type { Location } from "@/types/location";
 
+export type BirthDateVisibility =
+  | "public"
+  | "followers"
+  | "following"
+  | "mutual"
+  | "only_me";
+
 export interface User {
   id: string;
   username: string;
@@ -8,6 +15,9 @@ export interface User {
 
   bio?: string | null;
   location?: Location | null;
+  birthDate?: string | null;
+  birthDateVisibility?: BirthDateVisibility | null;
+  birthYearVisibility?: BirthDateVisibility | null;
 
   avatarUrl?: string | null;
   bannerUrl?: string | null;

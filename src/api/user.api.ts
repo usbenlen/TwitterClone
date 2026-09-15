@@ -10,7 +10,7 @@ import {
 import { MOCK_ENABLED } from "@/mock/config";
 import { mockUserApi } from "@/mock/handlers";
 
-import type { Location, User } from "@/types";
+import type { BirthDateVisibility, Location, User } from "@/types";
 
 export interface UpdateProfileRequest {
   displayName?: string | null;
@@ -18,6 +18,11 @@ export interface UpdateProfileRequest {
 
   location?: Location | null;
   removeLocation?: boolean;
+
+  birthDate?: string | null;
+  birthDateVisibility?: BirthDateVisibility;
+  birthYearVisibility?: BirthDateVisibility;
+  removeBirthDate?: boolean;
 
   avatar?: File | null;
   removeAvatar?: boolean;
@@ -89,13 +94,45 @@ const realUserApi = {
       );
     }
 
+    formData.append("RemoveBirthDate", String(data.removeBirthDate ?? false));
+
+    if (data.birthDate !== undefined && !data.removeBirthDate)
+      formData.append("BirthDate", data.birthDate ?? "");
+
+    if (data.birthDateVisibility !== undefined)
+      formData.append("BirthDateVisibility", data.birthDateVisibility);
+
+    if (data.birthYearVisibility !== undefined)
+      formData.append("BirthYearVisibility", data.birthYearVisibility);
+
     formData.append("RemoveAvatar", String(data.removeAvatar ?? false));
     formData.append("RemoveBanner", String(data.removeBanner ?? false));
 
     if (data.avatar) formData.append("Avatar", data.avatar);
     if (data.banner) formData.append("Banner", data.banner);
 
-    return apiClient.put<User>(ENDPOINTS.users.updateProfile, formData);
+    const updatedUser = await apiClient.put<User>(
+      ENDPOINTS.users.updateProfile,
+      formData,
+    );
+
+    const birthDateChanged =
+      data.birthDate !== undefined || Boolean(data.removeBirthDate);
+
+    return {
+      ...updatedUser,
+      ...(birthDateChanged && !("birthDate" in updatedUser)
+        ? { birthDate: data.removeBirthDate ? null : data.birthDate }
+        : {}),
+      ...(data.birthDateVisibility !== undefined &&
+      !("birthDateVisibility" in updatedUser)
+        ? { birthDateVisibility: data.birthDateVisibility }
+        : {}),
+      ...(data.birthYearVisibility !== undefined &&
+      !("birthYearVisibility" in updatedUser)
+        ? { birthYearVisibility: data.birthYearVisibility }
+        : {}),
+    };
   },
 
   deleteMe: () => apiClient.delete(ENDPOINTS.users.deleteMe),

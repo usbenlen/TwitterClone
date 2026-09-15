@@ -20,6 +20,28 @@ export function formatJoinDate(iso: string): string {
   return date.toLocaleDateString("uk-UA", { month: "long", year: "numeric" });
 }
 
+function parseDateOnly(iso: string): Date | null {
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso);
+  if (!match) return null;
+
+  const [, year, month, day] = match;
+  return new Date(Number(year), Number(month) - 1, Number(day));
+}
+
+export function formatBirthMonthDay(iso: string): string | null {
+  const date = parseDateOnly(iso);
+  if (!date) return null;
+
+  return date.toLocaleDateString("uk-UA", {
+    day: "numeric",
+    month: "long",
+  });
+}
+
+export function getBirthYear(iso: string): string | null {
+  return /^(\d{4})-\d{2}-\d{2}$/.exec(iso)?.[1] ?? null;
+}
+
 // Скорочення чисел: 1200 -> "1,2 тис"
 export function formatCount(n: number): string {
   if (n < 1000) return String(n);

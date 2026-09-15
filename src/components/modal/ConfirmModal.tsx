@@ -4,6 +4,7 @@ interface ConfirmModalProps {
   description?: string;
   confirmText?: string;
   cancelText?: string;
+  confirmVariant?: "primary" | "destructive";
   onCancel: () => void;
   onConfirm: () => void;
 }
@@ -14,6 +15,7 @@ export function ConfirmModal({
   description,
   confirmText = "Підтвердити",
   cancelText = "Скасувати",
+  confirmVariant = "destructive",
   onCancel,
   onConfirm,
 }: ConfirmModalProps) {
@@ -50,7 +52,11 @@ export function ConfirmModal({
           <button
             type="button"
             onClick={onConfirm}
-            className="cursor-pointer rounded-lg bg-red-500 px-4 py-2 font-semibold text-white transition-colors hover:bg-red-600"
+            className={`cursor-pointer rounded-lg px-4 py-2 font-semibold text-white transition-colors ${
+              confirmVariant === "primary"
+                ? "bg-primary hover:bg-primary-hover"
+                : "bg-red-500 hover:bg-red-600"
+            }`}
           >
             {confirmText}
           </button>
