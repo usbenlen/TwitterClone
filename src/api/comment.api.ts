@@ -13,20 +13,68 @@ import type {
   ThreadResponse,
 } from "@/types/tweet";
 
+function normalizeComment(comment: Tweet): Tweet {
+  return {
+    ...comment,
+    isComment: true,
+  };
+}
+
+function normalizeThread(thread: ThreadResponse): ThreadResponse {
+  return {
+    ...thread,
+    ancestors: thread.ancestors.map((ancestor) =>
+      ancestor.postId ? normalizeComment(ancestor) : ancestor,
+    ),
+    target: thread.target.isComment || thread.target.postId
+      ? normalizeComment(thread.target)
+      : thread.target,
+    replies: thread.replies.map(normalizeComment),
+  };
+}
+
 const realCommentApi = {
-  getByPostId: (postId: string) =>
-    apiClient.get<Tweet[]>(ENDPOINTS.comments.byPost(postId)),
+  getByPostId: async (postId: string) => {
+    const comments = await apiClient.get<Tweet[]>(
+      ENDPOINTS.comments.byPost(postId),
+    );
 
-  getThread: (id: string) =>
-    apiClient.get<ThreadResponse>(ENDPOINTS.comments.thread(id)),
+    return comments.map(normalizeComment);
+  },
 
-  getBookmarked: () => apiClient.get<Tweet[]>(ENDPOINTS.comments.bookmarked),
+  getThread: async (id: string) => {
+    const thread = await apiClient.get<ThreadResponse>(
+      ENDPOINTS.comments.thread(id),
+    );
 
-  create: (data: CreateCommentRequest) =>
-    apiClient.post<Tweet>(ENDPOINTS.comments.create, data),
+    return normalizeThread(thread);
+  },
 
-  update: (id: string, data: UpdateCommentRequest) =>
-    apiClient.put<Tweet>(ENDPOINTS.comments.update(id), data),
+  getBookmarked: async () => {
+    const comments = await apiClient.get<Tweet[]>(
+      ENDPOINTS.comments.bookmarked,
+    );
+
+    return comments.map(normalizeComment);
+  },
+
+  create: async (data: CreateCommentRequest) => {
+    const comment = await apiClient.post<Tweet>(
+      ENDPOINTS.comments.create,
+      data,
+    );
+
+    return normalizeComment(comment);
+  },
+
+  update: async (id: string, data: UpdateCommentRequest) => {
+    const comment = await apiClient.put<Tweet>(
+      ENDPOINTS.comments.update(id),
+      data,
+    );
+
+    return normalizeComment(comment);
+  },
 
   delete: (id: string) => apiClient.delete<void>(ENDPOINTS.comments.delete(id)),
 

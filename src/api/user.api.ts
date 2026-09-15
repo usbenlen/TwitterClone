@@ -1,6 +1,11 @@
 import { apiClient } from "@/api/client";
 import { ENDPOINTS } from "@/api/config";
-import { mapPostToTweet, type BackendPost } from "@/api/mappers/post.mapper";
+import {
+  mapPostToTweet,
+  mapRepostToTweet,
+  type BackendPost,
+  type BackendRepostItem,
+} from "@/api/mappers/post.mapper";
 
 import { MOCK_ENABLED } from "@/mock/config";
 import { mockUserApi } from "@/mock/handlers";
@@ -46,11 +51,11 @@ const realUserApi = {
   },
 
   getReposts: async (username: string) => {
-    const posts = await apiClient.get<BackendPost[]>(
+    const items = await apiClient.get<BackendRepostItem[]>(
       ENDPOINTS.users.reposts(username),
     );
 
-    return posts.map(mapPostToTweet);
+    return items.map(mapRepostToTweet);
   },
 
   getReplies: async (username: string) => {

@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { useNavigate } from "react-router";
+import { Link, useNavigate } from "react-router";
+import { Repeat2 } from "lucide-react";
 
 import { tweetApi } from "@/api/tweet.api";
 
@@ -32,7 +33,7 @@ import {
 
 import { cn } from "@/utils/cn";
 
-import type { Tweet, ComposerSubmitData } from "@/types";
+import type { Tweet, ComposerSubmitData, User } from "@/types";
 
 interface TweetCardProps {
   tweet: Tweet;
@@ -40,6 +41,7 @@ interface TweetCardProps {
   commentsInitiallyOpen?: boolean;
   className?: string;
   variant?: "feed" | "post";
+  repostedBy?: Pick<User, "username" | "displayName">;
 }
 
 export default function TweetCard({
@@ -48,6 +50,7 @@ export default function TweetCard({
   commentsInitiallyOpen = false,
   className,
   variant = "feed",
+  repostedBy,
 }: TweetCardProps) {
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -131,6 +134,23 @@ export default function TweetCard({
           className,
         )}
       >
+        {repostedBy && (
+          <>
+            <div className="flex justify-end pb-1 text-muted-foreground">
+              <Repeat2 size={16} aria-hidden="true" />
+            </div>
+
+            <div className="min-w-0 pb-1 text-xs font-semibold text-muted-foreground">
+              <Link
+                to={APP_ROUTES.profile(repostedBy.username)}
+                className="hover:underline"
+              >
+                {repostedBy.displayName || `@${repostedBy.username}`} reposted
+              </Link>
+            </div>
+          </>
+        )}
+
         <div className="flex justify-center">
           <Avatar
             name={tweet.author.displayName}

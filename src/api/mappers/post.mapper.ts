@@ -66,6 +66,8 @@ export interface BackendPost {
   replyToUsername?: string | null;
 }
 
+export type BackendRepostItem = BackendPost | Tweet;
+
 function normalizeMediaType(
   type: string,
   mimeType?: string,
@@ -154,9 +156,22 @@ export const mapPostToTweet = (post: BackendPost): Tweet => {
     createdAt: post.createdAt,
     updatedAt: post.updatedAt ?? null,
 
-    isComment: post.isComment,
+    isComment: post.isComment ?? Boolean(post.postId),
     postId: post.postId,
     parentCommentId: post.parentCommentId ?? null,
     replyToUsername: post.replyToUsername ?? null,
   };
 };
+
+function isMappedTweet(item: BackendRepostItem): item is Tweet {
+  return "repliesCount" in item && "retweetsCount" in item;
+}
+
+export function mapRepostToTweet(item: BackendRepostItem): Tweet {
+  if (!isMappedTweet(item)) return mapPostToTweet(item);
+
+  return {
+    ...item,
+    isComment: item.isComment ?? Boolean(item.postId),
+  };
+}

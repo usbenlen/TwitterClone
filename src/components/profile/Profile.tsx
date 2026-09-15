@@ -61,6 +61,7 @@ export default function Profile({
         <FeedList
           tweets={tweets}
           variant={activeTab === "replies" ? "replies" : "feed"}
+          repostedBy={activeTab === "reposts" ? user : undefined}
           isLoading={isTabLoading}
           error={tabError}
           emptyMessage={emptyMessage}

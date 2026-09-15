@@ -2,6 +2,7 @@ import { TweetCard } from "@/components/tweet";
 import { Spinner } from "@/ui/Spinner";
 
 import type { Tweet } from "@/types/tweet";
+import type { User } from "@/types/user";
 
 import { withAncestorContext } from "@/utils/ancestors.ts";
 
@@ -11,6 +12,7 @@ interface FeedListProps {
   error?: string | null;
   emptyMessage?: string;
   variant?: "feed" | "replies" | "bookmarks";
+  repostedBy?: Pick<User, "username" | "displayName">;
 }
 
 function ReplyTweetItem({ tweet }: { tweet: Tweet }) {
@@ -50,6 +52,7 @@ export default function FeedList({
   error,
   emptyMessage = "Поки що тут порожньо.",
   variant = "feed",
+  repostedBy,
 }: FeedListProps) {
   if (isLoading) {
     return (
@@ -100,7 +103,12 @@ export default function FeedList({
   return (
     <>
       {tweets.map((tweet) => (
-        <TweetCard key={tweet.id} tweet={tweet} variant="feed" />
+        <TweetCard
+          key={tweet.id}
+          tweet={tweet}
+          variant="feed"
+          repostedBy={repostedBy}
+        />
       ))}
     </>
   );

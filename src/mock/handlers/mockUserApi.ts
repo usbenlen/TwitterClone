@@ -23,6 +23,11 @@ const repostedTweetsByUsername: Record<string, string[]> = {
   [sampleAuthors[2].username]: ["t2"],
 };
 
+const repostedCommentsByUsername: Record<string, string[]> = {
+  [sampleAuthors[1].username]: ["c2"],
+  [sampleAuthors[2].username]: ["c1"],
+};
+
 export const mockUserApi = {
   async getAll(): Promise<User[]> {
     await delay();
@@ -68,12 +73,24 @@ export const mockUserApi = {
   async getReposts(username: string): Promise<Tweet[]> {
     await delay();
 
-    if (username === currentUser.username)
-      return tweets.filter((tweet) => tweet.repostedByMe);
+    const comments = Object.values(commentsByPostId).flat();
+
+    if (username === currentUser.username) {
+      return [
+        ...tweets.filter((tweet) => tweet.repostedByMe),
+        ...comments.filter((comment) => comment.repostedByMe),
+      ];
+    }
 
     const repostedIds = repostedTweetsByUsername[username] ?? [];
+    const repostedCommentIds = repostedCommentsByUsername[username] ?? [];
 
-    return tweets.filter((tweet) => repostedIds.includes(tweet.id));
+    return [
+      ...tweets.filter((tweet) => repostedIds.includes(tweet.id)),
+      ...comments
+        .filter((comment) => repostedCommentIds.includes(comment.id))
+        .map((comment) => ({ ...comment, isComment: true })),
+    ];
   },
 
   async getReplies(username: string): Promise<Tweet[]> {
