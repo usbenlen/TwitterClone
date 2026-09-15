@@ -128,6 +128,8 @@ export default function TweetComments({
   parentCommentId,
   threadAuthorId,
   onSubmit,
+  onDelete,
+  onUpdate,
   onOpenReplyModal,
 }: TweetCommentsProps) {
   const [expandedParentIds, setExpandedParentIds] = useState<Set<string>>(
@@ -245,6 +247,8 @@ export default function TweetComments({
                       variant="feed"
                       navigateToPost
                       onOpenReplyModal={onOpenReplyModal}
+                      onDelete={onDelete}
+                      onUpdate={onUpdate}
                       className={connectsToNext ? "relative border-b-0" : undefined}
                     />
                   </div>

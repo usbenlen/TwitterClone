@@ -4,6 +4,7 @@ import TweetLocation from "@/components/tweet/location/TweetLocation";
 import TweetEmbed from "@/components/tweet/embed/TweetEmbed";
 import TweetPoll from "@/components/tweet/poll/TweetPoll";
 import TweetMedia from "@/components/tweet/TweetMedia";
+import { QuotedTweetCard } from "@/components/tweet/quote";
 
 import type { Tweet } from "@/types/tweet";
 
@@ -22,12 +23,14 @@ export default function TweetContent({ tweet }: TweetContentProps) {
       )}
 
       {tweet.attachments.length > 0 && (
-        <TweetMedia attachments={tweet.attachments} />
+        <TweetMedia attachments={tweet.attachments} autoPlayVideos />
       )}
 
       {tweet.poll && <TweetPoll tweetId={tweet.id} poll={tweet.poll} />}
 
       {tweet.embed && <TweetEmbed embed={tweet.embed} />}
+
+      {tweet.quote && <QuotedTweetCard quote={tweet.quote} />}
 
       {tweet.location && <TweetLocation location={tweet.location} />}
     </div>

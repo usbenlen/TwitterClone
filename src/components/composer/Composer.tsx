@@ -19,6 +19,9 @@ import {
 } from "@/components/tweet/TweetComposer";
 
 import { cn } from "@/utils/cn";
+import { QuotedTweetCard } from "@/components/tweet/quote";
+
+import type { TweetQuote } from "@/types";
 
 interface ComposerProps {
   composer: ReturnType<typeof useTweetComposer>;
@@ -29,6 +32,7 @@ interface ComposerProps {
   onSuccess?: () => void;
   variant?: "default" | "comment";
   replyingToUsername?: string;
+  quotedTweet?: TweetQuote | null;
 }
 
 export default function Composer({
@@ -40,6 +44,7 @@ export default function Composer({
   onSuccess,
   variant = "default",
   replyingToUsername,
+  quotedTweet,
 }: ComposerProps) {
   const { user } = useAuth();
   const [isExpanded, setIsExpanded] = useState(false);
@@ -124,6 +129,8 @@ export default function Composer({
               onRemove={composer.embedPreview.onRemove}
             />
           )}
+
+          {quotedTweet && <QuotedTweetCard quote={quotedTweet} />}
 
           <TweetComposerErrors errors={composer.errors} />
 
@@ -243,6 +250,8 @@ export default function Composer({
                 onRemove={composer.embedPreview.onRemove}
               />
             )}
+
+            {quotedTweet && <QuotedTweetCard quote={quotedTweet} />}
 
             <TweetComposerErrors errors={composer.errors} />
 

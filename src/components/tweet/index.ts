@@ -1,5 +1,7 @@
 export * from "@/components/tweet/TweetComposer";
 export * from "@/components/tweet/media";
+export * from "@/components/tweet/quote";
+export * from "@/components/tweet/repost";
 
 export { default as TweetCard } from "@/components/tweet/TweetCard";
 export { default as TweetActions } from "@/components/tweet/TweetActions";

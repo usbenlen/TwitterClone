@@ -1,10 +1,17 @@
-import { tweets, setTweets, nextTweetId, currentUser } from "@/mock/data";
+import {
+  commentsByPostId,
+  tweets,
+  setTweets,
+  nextTweetId,
+  currentUser,
+} from "@/mock/data";
 
 import type {
   Tweet,
   CreateTweetRequest,
   UpdateTweetRequest,
   TweetPoll,
+  TweetQuote,
 } from "@/types";
 
 import { delay } from "@/mock/utils/delay";
@@ -17,6 +24,51 @@ import {
   toggleBookmarkInList,
   incrementViewsInList,
 } from "@/mock/utils/mockTweetActions";
+import {
+  markQuotedTargetUnavailable,
+  syncQuotedTarget,
+} from "@/mock/utils/mockQuotes";
+import {
+  getQuoteReplyingToUsernames,
+  withAncestors,
+} from "@/utils/ancestors";
+
+function resolveQuote(payload: CreateTweetRequest): TweetQuote | null {
+  if (payload.quotedPostId && payload.quotedCommentId)
+    throw new Error("Quote може посилатися лише на один матеріал.");
+
+  const targetType = payload.quotedCommentId ? "comment" : "post";
+  const targetId = payload.quotedCommentId ?? payload.quotedPostId;
+  if (!targetId) return null;
+
+  let target: Tweet | undefined;
+
+  if (targetType === "comment") {
+    for (const [postId, comments] of Object.entries(commentsByPostId)) {
+      const comment = comments.find((item) => item.id === targetId);
+      if (!comment) continue;
+
+      const rootPost = tweets.find((item) => item.id === postId);
+      target = withAncestors(comment, rootPost, comments);
+      break;
+    }
+  } else {
+    target = tweets.find((item) => item.id === targetId);
+  }
+
+  if (!target) throw new Error("Матеріал для Quote не знайдено.");
+
+  return {
+    targetType,
+    targetId,
+    replyingToUsernames:
+      targetType === "comment" ? getQuoteReplyingToUsernames(target) : [],
+    target: {
+      ...target,
+      quote: target.quote ? { ...target.quote, target: null } : null,
+    },
+  };
+}
 
 export const mockTweetApi = {
   async getFeed(): Promise<Tweet[]> {
@@ -51,6 +103,7 @@ export const mockTweetApi = {
     await delay(300);
 
     const attachments = mediaStore.getMany(payload.mediaIds);
+    const quote = resolveQuote(payload);
 
     const poll: TweetPoll | undefined = payload.poll
       ? {
@@ -74,6 +127,7 @@ export const mockTweetApi = {
 
       attachments,
       poll,
+      quote,
 
       author: currentUser,
 
@@ -144,8 +198,9 @@ export const mockTweetApi = {
       updatedAt: new Date().toISOString(),
     };
 
-    const nextTweets = [...tweets];
+    let nextTweets = [...tweets];
     nextTweets[tweetIndex] = updated;
+    nextTweets = syncQuotedTarget(nextTweets, "post", updated);
 
     setTweets(nextTweets);
 
@@ -162,7 +217,13 @@ export const mockTweetApi = {
     if (tweet.author.id !== currentUser.id)
       throw new Error("Ви не можете видалити цей пост.");
 
-    setTweets(tweets.filter((item) => item.id !== id));
+    setTweets(
+      markQuotedTargetUnavailable(
+        tweets.filter((item) => item.id !== id),
+        "post",
+        id,
+      ),
+    );
   },
 
   async toggleLike(id: string, likedByMe: boolean) {

@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router";
 import { Repeat2 } from "lucide-react";
 
-import { tweetApi } from "@/api/tweet.api";
+import { commentApi, tweetApi } from "@/api";
 
 import {
   useAuth,
@@ -13,7 +13,7 @@ import {
   useClickOrDrag,
 } from "@/hooks";
 
-import { EditModal } from "@/components/modal";
+import { EditModal, QuoteModal } from "@/components/modal";
 
 import { Avatar } from "@/ui";
 
@@ -43,6 +43,11 @@ interface TweetCardProps {
   variant?: "feed" | "post";
   repostedBy?: Pick<User, "username" | "displayName">;
   onOpenReplyModal?: (comment: Tweet) => void;
+  onDelete?: (tweetId: string) => Promise<void>;
+  onUpdate?: (
+    tweetId: string,
+    data: ComposerSubmitData,
+  ) => Promise<boolean | Tweet>;
 }
 
 export default function TweetCard({
@@ -53,6 +58,8 @@ export default function TweetCard({
   variant = "feed",
   repostedBy,
   onOpenReplyModal,
+  onDelete,
+  onUpdate,
 }: TweetCardProps) {
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -61,18 +68,27 @@ export default function TweetCard({
     null,
   );
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isQuoteModalOpen, setIsQuoteModalOpen] = useState(false);
 
   const isOwnTweet = user?.id === tweet.author.id;
 
   const handleDelete = async () => {
     try {
-      await tweetApi.delete(tweet.id);
+      if (onDelete) await onDelete(tweet.id);
+      else if (tweet.isComment) await commentApi.delete(tweet.id);
+      else await tweetApi.delete(tweet.id);
 
-      window.dispatchEvent(
-        new CustomEvent("tweet-deleted", {
-          detail: { tweetId: tweet.id },
-        }),
-      );
+      if (!onDelete) {
+        window.dispatchEvent(
+          tweet.isComment
+            ? new CustomEvent("comment-deleted", {
+                detail: { commentId: tweet.id },
+              })
+            : new CustomEvent("tweet-deleted", {
+                detail: { tweetId: tweet.id },
+              }),
+        );
+      }
 
       if (variant === "post") navigate(APP_ROUTES.HOME);
     } catch (error) {
@@ -82,13 +98,27 @@ export default function TweetCard({
 
   const handleUpdate = async (data: ComposerSubmitData) => {
     try {
-      const updatedTweet = await tweetApi.update(tweet.id, data);
+      const result = onUpdate
+        ? await onUpdate(tweet.id, data)
+        : tweet.isComment
+          ? await commentApi.update(tweet.id, data)
+          : await tweetApi.update(tweet.id, data);
 
-      window.dispatchEvent(
-        new CustomEvent("tweet-updated", {
-          detail: { tweet: updatedTweet },
-        }),
-      );
+      if (result === false) throw new Error("Не вдалося оновити матеріал.");
+
+      const updatedTweet = result === true ? { ...tweet, ...data } : result;
+
+      if (!onUpdate) {
+        window.dispatchEvent(
+          tweet.isComment
+            ? new CustomEvent("comment-updated", {
+                detail: { comment: updatedTweet },
+              })
+            : new CustomEvent("tweet-updated", {
+                detail: { tweet: updatedTweet },
+              }),
+        );
+      }
 
       return updatedTweet;
     } catch (error) {
@@ -130,7 +160,7 @@ export default function TweetCard({
   };
 
   const clickOrDragHandlers = useClickOrDrag(() => {
-    if (!navigateToPost || isCommentModalOpen) return;
+    if (!navigateToPost || isCommentModalOpen || isQuoteModalOpen) return;
 
     navigate(APP_ROUTES.post(tweet.id));
   });
@@ -193,6 +223,8 @@ export default function TweetCard({
             bookmarkedByMe={bookmark.bookmarkedByMe}
             onComment={handleOpenReplyModal}
             onRepost={repost.toggleRepost}
+            onQuote={() => setIsQuoteModalOpen(true)}
+            repostPending={repost.pending}
             onLike={like.toggleLike}
             onBookmark={bookmark.toggleBookmark}
           />
@@ -225,6 +257,7 @@ export default function TweetCard({
         initialPoll={mapPollToComposerPoll(tweet.poll)}
         initialLocation={tweet.location}
         initialEmbed={tweet.embed}
+        initialQuote={tweet.quote}
         onClose={() => setIsEditModalOpen(false)}
         onSave={handleUpdate}
       />
@@ -236,6 +269,14 @@ export default function TweetCard({
         onClose={closeCommentModal}
         onSubmit={comments.createComment}
         isSubmitting={comments.isSubmitting}
+      />
+
+      <QuoteModal
+        open={isQuoteModalOpen}
+        tweet={tweet}
+        repostedByMe={repost.repostedByMe}
+        onEnsureRepost={repost.ensureReposted}
+        onClose={() => setIsQuoteModalOpen(false)}
       />
     </>
   );

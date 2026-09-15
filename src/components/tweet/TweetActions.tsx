@@ -1,9 +1,11 @@
+import { useState } from "react";
 import { Bookmark, Eye, MessageCircle, Repeat2 } from "lucide-react";
 
 import { HeartIcon } from "@/shared/icons";
 
 import { cn } from "@/utils/cn";
 import { formatCount } from "@/utils/format";
+import { RepostMenu } from "@/components/tweet/repost";
 
 interface TweetActionsProps {
   likedByMe: boolean;
@@ -18,6 +20,8 @@ interface TweetActionsProps {
 
   onComment: () => void;
   onRepost: () => void;
+  onQuote: () => void;
+  repostPending?: boolean;
   onLike: () => void;
   onBookmark: () => void;
 }
@@ -32,9 +36,14 @@ export default function TweetActions({
   bookmarkedByMe,
   onComment,
   onRepost,
+  onQuote,
+  repostPending = false,
   onLike,
   onBookmark,
 }: TweetActionsProps) {
+  const [repostButton, setRepostButton] = useState<HTMLButtonElement | null>(null);
+  const [isRepostMenuOpen, setIsRepostMenuOpen] = useState(false);
+
   return (
     <div className="mt-2 flex w-full items-center gap-5 text-muted-foreground">
       <button
@@ -50,9 +59,13 @@ export default function TweetActions({
       </button>
 
       <button
+        ref={setRepostButton}
         type="button"
-        onClick={onRepost}
+        onClick={() => setIsRepostMenuOpen((value) => !value)}
+        disabled={repostPending}
         aria-pressed={repostedByMe}
+        aria-expanded={isRepostMenuOpen}
+        aria-haspopup="menu"
         className={cn(
           "flex min-w-0 items-center justify-center gap-2 rounded-full p-0.5 transition-colors hover:text-emerald-500",
           repostedByMe && "text-emerald-500",
@@ -64,6 +77,16 @@ export default function TweetActions({
           <span className="text-sm">{formatCount(retweetsCount)}</span>
         )}
       </button>
+
+      <RepostMenu
+        open={isRepostMenuOpen}
+        reference={repostButton}
+        repostedByMe={repostedByMe}
+        pending={repostPending}
+        onOpenChange={setIsRepostMenuOpen}
+        onRepost={onRepost}
+        onQuote={onQuote}
+      />
 
       <button
         type="button"

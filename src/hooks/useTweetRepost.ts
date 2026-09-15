@@ -10,7 +10,7 @@ export function useTweetRepost(tweet: Tweet) {
   const [pending, setPending] = useState(false);
 
   const toggleRepost = async () => {
-    if (pending) return;
+    if (pending) return false;
 
     const previous = { repostedByMe, repostsCount };
 
@@ -29,12 +29,21 @@ export function useTweetRepost(tweet: Tweet) {
         setRepostedByMe(result.repostedByMe);
         setRepostsCount(result.repostsCount);
       }
+
+      return true;
     } catch {
       setRepostedByMe(previous.repostedByMe);
       setRepostsCount(previous.repostsCount);
+      return false;
     } finally {
       setPending(false);
     }
+  };
+
+  const ensureReposted = async () => {
+    if (repostedByMe) return true;
+    if (pending) return false;
+    return toggleRepost();
   };
 
   return {
@@ -42,5 +51,6 @@ export function useTweetRepost(tweet: Tweet) {
     repostsCount,
     pending,
     toggleRepost,
+    ensureReposted,
   };
 }

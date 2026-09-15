@@ -74,7 +74,7 @@ export function useComposerSubmit({
         });
       }
 
-      onCreated(result as Tweet);
+      if (result && typeof result === "object") onCreated(result as Tweet);
 
       if (result !== false) {
         clearMedia();

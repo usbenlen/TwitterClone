@@ -41,6 +41,7 @@ export function getReplyingToUsernames(
   tweet: Tweet,
   replyTo?: Tweet | null,
 ): string[] {
+  const replyTarget = replyTo ?? tweet;
   const seen = new Set<string>();
   const usernames: string[] = [];
 
@@ -51,11 +52,36 @@ export function getReplyingToUsernames(
     usernames.push(username);
   };
 
+  const ancestors =
+    replyTarget.ancestors && replyTarget.ancestors.length > 0
+      ? replyTarget.ancestors
+      : tweet.ancestors ?? [];
+
+  for (const ancestor of ancestors) addUsername(ancestor.author.username);
+
+  addUsername(replyTarget.replyToUsername);
+  addUsername(replyTarget.author.username);
+
+  return usernames;
+}
+
+export function getQuoteReplyingToUsernames(tweet: Tweet): string[] {
+  const seen = new Set<string>();
+  const usernames: string[] = [];
+
+  const addUsername = (username?: string | null) => {
+    if (!username || username === tweet.author.username || seen.has(username))
+      return;
+
+    seen.add(username);
+    usernames.push(username);
+  };
+
   for (const ancestor of tweet.ancestors ?? []) {
     addUsername(ancestor.author.username);
   }
 
-  addUsername(replyTo?.author.username);
+  addUsername(tweet.replyToUsername);
 
   return usernames;
 }

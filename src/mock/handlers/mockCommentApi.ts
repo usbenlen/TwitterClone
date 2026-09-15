@@ -19,6 +19,10 @@ import {
   toggleBookmarkInList,
   incrementViewsInList,
 } from "@/mock/utils/mockTweetActions";
+import {
+  markQuotedTargetUnavailable,
+  syncQuotedTarget,
+} from "@/mock/utils/mockQuotes";
 
 function currentUserAuthor() {
   return {
@@ -281,6 +285,7 @@ export const mockCommentApi = {
     };
 
     found.comments[found.index] = updated;
+    setTweets(syncQuotedTarget(tweets, "comment", updated));
 
     const rootPost = tweets.find((tweet) => tweet.id === updated.postId);
 
@@ -298,6 +303,8 @@ export const mockCommentApi = {
       throw new Error("Ви не можете видалити цей коментар.");
 
     found.comments.splice(found.index, 1);
+
+    setTweets(markQuotedTargetUnavailable(tweets, "comment", id));
 
     updateCommentCount(found.postId, -1);
   },

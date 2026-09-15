@@ -1,4 +1,9 @@
-import type { Tweet, TweetPoll, MediaAttachment } from "@/types";
+import type {
+  QuoteTargetType,
+  Tweet,
+  TweetPoll,
+  MediaAttachment,
+} from "@/types";
 
 export interface BackendPostMedia {
   id: string;
@@ -46,6 +51,12 @@ export interface BackendPost {
   poll?: BackendPollResponse | null;
   location?: Tweet["location"];
   embed?: Tweet["embed"];
+  quote?: {
+    targetType: QuoteTargetType;
+    targetId: string;
+    replyingToUsernames?: string[];
+    target?: BackendPost | null;
+  } | null;
 
   likesCount: number;
   commentsCount: number;
@@ -130,7 +141,22 @@ export function mapBackendPollToTweetPoll(
   };
 }
 
-export const mapPostToTweet = (post: BackendPost): Tweet => {
+function mapPostToTweetInternal(
+  post: BackendPost,
+  includeNestedQuote: boolean,
+): Tweet {
+  const quoteTarget =
+    includeNestedQuote && post.quote?.target
+      ? mapPostToTweetInternal(post.quote.target, false)
+      : null;
+
+  const replyingToUsernames = Array.from(
+    new Set(
+      post.quote?.replyingToUsernames ??
+        (quoteTarget?.replyToUsername ? [quoteTarget.replyToUsername] : []),
+    ),
+  ).filter((username) => username && username !== quoteTarget?.author.username);
+
   return {
     id: post.id,
     content: post.content,
@@ -142,6 +168,15 @@ export const mapPostToTweet = (post: BackendPost): Tweet => {
     poll: mapBackendPollToTweetPoll(post.poll),
     location: post.location ?? null,
     embed: post.embed ?? null,
+    quote:
+      includeNestedQuote && post.quote
+        ? {
+            targetType: post.quote.targetType,
+            targetId: post.quote.targetId,
+            replyingToUsernames,
+            target: quoteTarget,
+          }
+        : null,
 
     likesCount: post.likesCount,
     repliesCount: post.commentsCount,
@@ -161,7 +196,9 @@ export const mapPostToTweet = (post: BackendPost): Tweet => {
     parentCommentId: post.parentCommentId ?? null,
     replyToUsername: post.replyToUsername ?? null,
   };
-};
+}
+
+export const mapPostToTweet = (post: BackendPost): Tweet => mapPostToTweetInternal(post, true);
 
 function isMappedTweet(item: BackendRepostItem): item is Tweet {
   return "repliesCount" in item && "retweetsCount" in item;

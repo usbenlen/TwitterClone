@@ -13,6 +13,7 @@ import type {
   ComposerMedia,
   ComposerSubmitData,
   ComposerPoll,
+  TweetQuote,
 } from "@/types";
 
 interface EditModalProps {
@@ -23,6 +24,7 @@ interface EditModalProps {
   initialPoll?: ComposerPoll | null;
   initialLocation?: Location | null;
   initialEmbed?: Embed | null;
+  initialQuote?: TweetQuote | null;
   onClose: () => void;
   onSave: (data: ComposerSubmitData) => Promise<unknown>;
 }
@@ -48,6 +50,7 @@ function EditModalInner({
   initialPoll,
   initialLocation,
   initialEmbed,
+  initialQuote,
   onClose,
   onSave,
 }: EditModalProps) {
@@ -106,6 +109,7 @@ function EditModalInner({
           <div className="overflow-y-auto overscroll-contain px-4 pb-4">
             <Composer
               composer={composer}
+              quotedTweet={initialQuote}
               submitLabel="Зберегти"
               onSuccess={onClose}
               showAvatar

@@ -146,6 +146,12 @@ export function useTweetComments({
     try {
       await commentApi.delete(commentId);
 
+      window.dispatchEvent(
+        new CustomEvent("comment-deleted", {
+          detail: { commentId },
+        }),
+      );
+
       setComments((current) =>
         current
           .filter((comment) => !idsToDelete.has(comment.id))
@@ -188,6 +194,12 @@ export function useTweetComments({
       const payload = typeof data === "string" ? { content: data } : data;
 
       const updated = await commentApi.update(commentId, payload);
+
+      window.dispatchEvent(
+        new CustomEvent("comment-updated", {
+          detail: { comment: updated },
+        }),
+      );
 
       setComments((current) =>
         current.map((comment) =>

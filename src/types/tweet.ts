@@ -1,6 +1,15 @@
 import type { User, TweetPoll, Location, Embed } from "@/types";
 import type { MediaAttachment } from "@/types/media";
 
+export type QuoteTargetType = "post" | "comment";
+
+export interface TweetQuote {
+  targetType: QuoteTargetType;
+  targetId: string;
+  replyingToUsernames: string[];
+  target: TweetBase | null;
+}
+
 export interface TweetBase {
   id: string;
   content: string;
@@ -15,6 +24,7 @@ export interface TweetBase {
   poll?: TweetPoll;
   location?: Location | null;
   embed?: Embed | null;
+  quote?: TweetQuote | null;
 
   likesCount: number;
   repliesCount: number;
@@ -67,6 +77,8 @@ export interface CreateTweetRequest {
     duration: number;
   };
   location?: Location | null;
+  quotedPostId?: string | null;
+  quotedCommentId?: string | null;
 }
 
 export interface UpdateTweetRequest {

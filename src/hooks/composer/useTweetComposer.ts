@@ -25,6 +25,7 @@ interface UseTweetComposerProps {
   initialPoll?: ComposerPoll | null;
   initialLocation?: Location | null;
   initialEmbed?: Embed | null;
+  allowEmptySubmit?: boolean;
   onCreated?: (tweet: Tweet) => void;
   onSubmit?: (data: ComposerSubmitData) => Promise<unknown>;
 }
@@ -35,6 +36,7 @@ export function useTweetComposer({
   initialPoll = null,
   initialLocation = null,
   initialEmbed = null,
+  allowEmptySubmit = false,
   onCreated,
   onSubmit,
 }: UseTweetComposerProps = {}) {
@@ -96,13 +98,14 @@ export function useTweetComposer({
     selectedEmbed !== null;
 
   const canSubmit =
-    Boolean(
-      content.trim().length > 0 ||
-      mediaManager.media.length > 0 ||
-      poll.hasPoll ||
-      selectedLocation ||
-      selectedEmbed,
-    ) &&
+    (allowEmptySubmit ||
+      Boolean(
+        content.trim().length > 0 ||
+          mediaManager.media.length > 0 ||
+          poll.hasPoll ||
+          selectedLocation ||
+          selectedEmbed,
+      )) &&
     remaining >= 0 &&
     !isPosting &&
     !hasBlockedMedia;

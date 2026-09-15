@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { userApi } from "@/api";
 
 import type { User, Tweet } from "@/types";
+import { updateQuotedTargetInTweets } from "@/utils/quotes";
 
 export type ProfileTab = "posts" | "replies" | "likes" | "reposts";
 
@@ -144,6 +145,91 @@ export function useProfile(
   }, [user, activeTab, loadedTabs]);
 
   useEffect(() => {
+    const updateEveryTab = (
+      targetType: "post" | "comment",
+      targetId: string,
+      target: Tweet | null,
+    ) => {
+      setTabTweets((current) => {
+        const next = { ...current };
+        (Object.keys(next) as ProfileTab[]).forEach((tab) => {
+          next[tab] = updateQuotedTargetInTweets(
+            next[tab],
+            targetType,
+            targetId,
+            target,
+          );
+        });
+        return next;
+      });
+    };
+
+    const handleCommentUpdated = (e: Event) => {
+      const customEvent = e as CustomEvent<{ comment: Tweet }>;
+      updateEveryTab(
+        "comment",
+        customEvent.detail.comment.id,
+        customEvent.detail.comment,
+      );
+    };
+
+    const handleCommentDeleted = (e: Event) => {
+      const customEvent = e as CustomEvent<{ commentId: string }>;
+      updateEveryTab("comment", customEvent.detail.commentId, null);
+    };
+
+    const handleTweetDeleted = (e: Event) => {
+      const customEvent = e as CustomEvent<{ tweetId: string }>;
+      setTabTweets((current) => {
+        const next = { ...current };
+        (Object.keys(next) as ProfileTab[]).forEach((tab) => {
+          next[tab] = updateQuotedTargetInTweets(
+            next[tab].filter(
+              (tweet) => tweet.id !== customEvent.detail.tweetId,
+            ),
+            "post",
+            customEvent.detail.tweetId,
+            null,
+          );
+        });
+        return next;
+      });
+    };
+
+    window.addEventListener("comment-updated", handleCommentUpdated);
+    window.addEventListener("comment-deleted", handleCommentDeleted);
+    window.addEventListener("tweet-deleted", handleTweetDeleted);
+    return () => {
+      window.removeEventListener("comment-updated", handleCommentUpdated);
+      window.removeEventListener("comment-deleted", handleCommentDeleted);
+      window.removeEventListener("tweet-deleted", handleTweetDeleted);
+    };
+  }, []);
+
+  useEffect(() => {
+    const handleTweetCreated = (e: Event) => {
+      const customEvent = e as CustomEvent<{ tweet: Tweet }>;
+      const createdTweet = customEvent.detail.tweet;
+
+      setTabTweets((current) => {
+        if (createdTweet.author.id !== user?.id) return current;
+        if (current.posts.some((item) => item.id === createdTweet.id))
+          return current;
+
+        return {
+          ...current,
+          posts: [createdTweet, ...current.posts],
+        };
+      });
+    };
+
+    window.addEventListener("tweet-created", handleTweetCreated);
+    return () => {
+      window.removeEventListener("tweet-created", handleTweetCreated);
+    };
+  }, [user?.id]);
+
+  useEffect(() => {
     const handleTweetUpdated = (e: Event) => {
       const customEvent = e as CustomEvent<{ tweet: Tweet }>;
       const updatedTweet = customEvent.detail.tweet;
@@ -151,8 +237,13 @@ export function useProfile(
       setTabTweets((current) => {
         const next = { ...current };
         (Object.keys(next) as ProfileTab[]).forEach((tab) => {
-          next[tab] = next[tab].map((t) =>
-            t.id === updatedTweet.id ? updatedTweet : t,
+          next[tab] = updateQuotedTargetInTweets(
+            next[tab].map((tweet) =>
+              tweet.id === updatedTweet.id ? updatedTweet : tweet,
+            ),
+            "post",
+            updatedTweet.id,
+            updatedTweet,
           );
         });
         return next;
