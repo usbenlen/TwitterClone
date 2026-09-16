@@ -17,6 +17,7 @@ import type {
 import { delay } from "@/mock/utils/delay";
 
 import { mediaStore } from "@/mock/stores/mediaStore";
+import { editHistoryStore } from "@/mock/stores/editHistoryStore";
 
 import {
   toggleLikeInList,
@@ -26,12 +27,9 @@ import {
 } from "@/mock/utils/mockTweetActions";
 import {
   markQuotedTargetUnavailable,
-  syncQuotedTarget,
+  markQuotedTargetEdited,
 } from "@/mock/utils/mockQuotes";
-import {
-  getQuoteReplyingToUsernames,
-  withAncestors,
-} from "@/utils/ancestors";
+import { getQuoteReplyingToUsernames, withAncestors } from "@/utils/ancestors";
 
 function resolveQuote(payload: CreateTweetRequest): TweetQuote | null {
   if (payload.quotedPostId && payload.quotedCommentId)
@@ -58,14 +56,24 @@ function resolveQuote(payload: CreateTweetRequest): TweetQuote | null {
 
   if (!target) throw new Error("Матеріал для Quote не знайдено.");
 
+  const snapshot = editHistoryStore.getVersion(
+    targetType,
+    target,
+    payload.quotedTargetVersionId,
+  );
+
+  if (!snapshot) throw new Error("Версію матеріалу для Quote не знайдено.");
+
   return {
     targetType,
     targetId,
+    targetVersionId: snapshot.versionId,
+    hasNewVersion: snapshot.versionId !== target.versionId,
     replyingToUsernames:
       targetType === "comment" ? getQuoteReplyingToUsernames(target) : [],
     target: {
-      ...target,
-      quote: target.quote ? { ...target.quote, target: null } : null,
+      ...snapshot,
+      quote: snapshot.quote ? { ...snapshot.quote, target: null } : null,
     },
   };
 }
@@ -123,6 +131,7 @@ export const mockTweetApi = {
 
     const tweet: Tweet = {
       id: nextTweetId(),
+      versionId: crypto.randomUUID(),
       content: payload.content,
 
       attachments,
@@ -148,6 +157,7 @@ export const mockTweetApi = {
     };
 
     setTweets([tweet, ...tweets]);
+    editHistoryStore.recordCreation("post", tweet);
 
     return tweet;
   },
@@ -190,6 +200,7 @@ export const mockTweetApi = {
 
     const updated: Tweet = {
       ...existing,
+      versionId: crypto.randomUUID(),
       content: data.content !== undefined ? data.content : existing.content,
       attachments,
       poll,
@@ -200,9 +211,10 @@ export const mockTweetApi = {
 
     let nextTweets = [...tweets];
     nextTweets[tweetIndex] = updated;
-    nextTweets = syncQuotedTarget(nextTweets, "post", updated);
+    nextTweets = markQuotedTargetEdited(nextTweets, "post", updated.id);
 
     setTweets(nextTweets);
+    editHistoryStore.recordEdit("post", existing, updated);
 
     return updated;
   },
@@ -224,6 +236,16 @@ export const mockTweetApi = {
         id,
       ),
     );
+    editHistoryStore.remove("post", id);
+  },
+
+  async getEditHistory(id: string) {
+    await delay(160);
+
+    const tweet = tweets.find((item) => item.id === id);
+    if (!tweet) throw new Error("Пост не знайдено.");
+
+    return editHistoryStore.getHistory("post", tweet);
   },
 
   async toggleLike(id: string, likedByMe: boolean) {

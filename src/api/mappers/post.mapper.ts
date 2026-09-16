@@ -1,9 +1,16 @@
 import type {
+  EditHistoryResponse,
   QuoteTargetType,
   Tweet,
   TweetPoll,
   MediaAttachment,
 } from "@/types";
+
+export interface BackendEditHistoryResponse {
+  targetType: QuoteTargetType;
+  targetId: string;
+  versions: BackendPost[];
+}
 
 export interface BackendPostMedia {
   id: string;
@@ -41,6 +48,7 @@ export interface BackendPollResponse {
 
 export interface BackendPost {
   id: string;
+  versionId: string;
   content: string;
 
   author: Tweet["author"];
@@ -54,6 +62,8 @@ export interface BackendPost {
   quote?: {
     targetType: QuoteTargetType;
     targetId: string;
+    targetVersionId: string;
+    hasNewVersion: boolean;
     replyingToUsernames?: string[];
     target?: BackendPost | null;
   } | null;
@@ -159,6 +169,7 @@ function mapPostToTweetInternal(
 
   return {
     id: post.id,
+    versionId: post.versionId ?? post.updatedAt ?? post.createdAt,
     content: post.content,
 
     author: post.author,
@@ -173,6 +184,8 @@ function mapPostToTweetInternal(
         ? {
             targetType: post.quote.targetType,
             targetId: post.quote.targetId,
+            targetVersionId: post.quote.targetVersionId ?? quoteTarget?.versionId ?? "",
+            hasNewVersion: post.quote.hasNewVersion ?? false,
             replyingToUsernames,
             target: quoteTarget,
           }
@@ -199,6 +212,18 @@ function mapPostToTweetInternal(
 }
 
 export const mapPostToTweet = (post: BackendPost): Tweet => mapPostToTweetInternal(post, true);
+
+export function mapEditHistoryResponse(
+  response: BackendEditHistoryResponse,
+): EditHistoryResponse {
+  return {
+    targetType: response.targetType,
+    targetId: response.targetId,
+    versions: response.versions.map((version) =>
+      mapPostToTweetInternal(version, true),
+    ),
+  };
+}
 
 function isMappedTweet(item: BackendRepostItem): item is Tweet {
   return "repliesCount" in item && "retweetsCount" in item;

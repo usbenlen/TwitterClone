@@ -3,6 +3,10 @@ import { useCallback, useEffect, useState } from "react";
 import { tweetApi, commentApi } from "@/api";
 
 import type { Tweet } from "@/types/tweet";
+import {
+  markQuotedTargetEditedInTweets,
+  markQuotedTargetUnavailableInTweets,
+} from "@/utils/quotes";
 
 export function useBookmarks() {
   const [tweets, setTweets] = useState<Tweet[]>([]);
@@ -54,7 +58,11 @@ export function useBookmarks() {
     const handleTweetDeleted = (e: Event) => {
       const customEvent = e as CustomEvent<{ tweetId: string }>;
       setTweets((prev) =>
-        prev.filter((t) => t.id !== customEvent.detail.tweetId),
+        markQuotedTargetUnavailableInTweets(
+          prev.filter((t) => t.id !== customEvent.detail.tweetId),
+          "post",
+          customEvent.detail.tweetId,
+        ),
       );
     };
 
@@ -63,13 +71,45 @@ export function useBookmarks() {
     const handleTweetUpdated = (e: Event) => {
       const customEvent = e as CustomEvent<{ tweet: Tweet }>;
       setTweets((prev) =>
-        prev.map((t) =>
-          t.id === customEvent.detail.tweet.id ? customEvent.detail.tweet : t,
+        markQuotedTargetEditedInTweets(
+          prev.map((t) =>
+            t.id === customEvent.detail.tweet.id ? customEvent.detail.tweet : t,
+          ),
+          "post",
+          customEvent.detail.tweet.id,
+        ),
+      );
+    };
+
+    const handleCommentUpdated = (e: Event) => {
+      const customEvent = e as CustomEvent<{ comment: Tweet }>;
+      setTweets((prev) =>
+        markQuotedTargetEditedInTweets(
+          prev.map((item) =>
+            item.id === customEvent.detail.comment.id
+              ? customEvent.detail.comment
+              : item,
+          ),
+          "comment",
+          customEvent.detail.comment.id,
+        ),
+      );
+    };
+
+    const handleCommentDeleted = (e: Event) => {
+      const customEvent = e as CustomEvent<{ commentId: string }>;
+      setTweets((prev) =>
+        markQuotedTargetUnavailableInTweets(
+          prev.filter((item) => item.id !== customEvent.detail.commentId),
+          "comment",
+          customEvent.detail.commentId,
         ),
       );
     };
 
     window.addEventListener("tweet-updated", handleTweetUpdated);
+    window.addEventListener("comment-updated", handleCommentUpdated);
+    window.addEventListener("comment-deleted", handleCommentDeleted);
 
     return () => {
       window.removeEventListener(
@@ -78,6 +118,8 @@ export function useBookmarks() {
       );
       window.removeEventListener("tweet-deleted", handleTweetDeleted);
       window.removeEventListener("tweet-updated", handleTweetUpdated);
+      window.removeEventListener("comment-updated", handleCommentUpdated);
+      window.removeEventListener("comment-deleted", handleCommentDeleted);
     };
   }, []);
 

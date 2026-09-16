@@ -4,6 +4,7 @@ import { currentUser, sampleAuthors } from "./users";
 export let tweets: Tweet[] = [
   {
     id: "t1",
+    versionId: "t1-v1",
     content: "Щойно задеплоїв першу версію свого клону Twitter. Летимо!",
     attachments: [],
     author: currentUser,
@@ -18,6 +19,7 @@ export let tweets: Tweet[] = [
   },
   {
     id: "t2",
+    versionId: "t2-v1",
     content: "Математика — це мова, якою написаний Всесвіт.",
     attachments: [],
     author: sampleAuthors[1],
@@ -32,6 +34,7 @@ export let tweets: Tweet[] = [
   },
   {
     id: "t3",
+    versionId: "t3-v1",
     content: "Talk is cheap. Show me the code.",
     attachments: [],
     author: sampleAuthors[2],

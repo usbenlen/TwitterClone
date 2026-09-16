@@ -1,6 +1,11 @@
 import { apiClient } from "@/api/client";
 import { ENDPOINTS } from "@/api/config";
-import { mapPostToTweet, type BackendPost } from "@/api/mappers/post.mapper";
+import {
+  mapEditHistoryResponse,
+  mapPostToTweet,
+  type BackendEditHistoryResponse,
+  type BackendPost,
+} from "@/api/mappers/post.mapper";
 
 import { MOCK_ENABLED } from "@/mock/config";
 import { mockTweetApi } from "@/mock/handlers";
@@ -58,6 +63,14 @@ const realTweetApi = {
     const post = await apiClient.get<BackendPost>(ENDPOINTS.posts.byId(id));
 
     return mapPostToTweet(post);
+  },
+
+  getEditHistory: async (id: string) => {
+    const history = await apiClient.get<BackendEditHistoryResponse>(
+      ENDPOINTS.posts.editHistory(id),
+    );
+
+    return mapEditHistoryResponse(history);
   },
 
   create: async (data: CreateTweetRequest) => {

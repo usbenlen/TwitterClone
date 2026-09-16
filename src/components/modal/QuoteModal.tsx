@@ -47,6 +47,8 @@ function QuoteModalInner({
   const quote: TweetQuote = {
     targetType: tweet.isComment ? "comment" : "post",
     targetId: tweet.id,
+    targetVersionId: tweet.versionId,
+    hasNewVersion: false,
     replyingToUsernames: tweet.isComment
       ? getQuoteReplyingToUsernames(tweet)
       : [],
@@ -66,6 +68,7 @@ function QuoteModalInner({
         poll: data.poll ?? undefined,
         quotedPostId: tweet.isComment ? undefined : tweet.id,
         quotedCommentId: tweet.isComment ? tweet.id : undefined,
+        quotedTargetVersionId: tweet.versionId,
       });
 
       window.dispatchEvent(

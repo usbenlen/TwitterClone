@@ -1,10 +1,9 @@
-import type { QuoteTargetType, Tweet, TweetBase } from "@/types";
+import type { QuoteTargetType, Tweet } from "@/types";
 
-export function updateQuotedTargetInTweets(
+export function markQuotedTargetEditedInTweets(
   tweets: Tweet[],
   targetType: QuoteTargetType,
   targetId: string,
-  target: TweetBase | null,
 ): Tweet[] {
   return tweets.map((tweet) =>
     tweet.quote?.targetType === targetType && tweet.quote.targetId === targetId
@@ -12,16 +11,21 @@ export function updateQuotedTargetInTweets(
           ...tweet,
           quote: {
             ...tweet.quote,
-            target: target
-              ? {
-                  ...target,
-                  quote: target.quote
-                    ? { ...target.quote, target: null }
-                    : null,
-                }
-              : null,
+            hasNewVersion: true,
           },
         }
+      : tweet,
+  );
+}
+
+export function markQuotedTargetUnavailableInTweets(
+  tweets: Tweet[],
+  targetType: QuoteTargetType,
+  targetId: string,
+): Tweet[] {
+  return tweets.map((tweet) =>
+    tweet.quote?.targetType === targetType && tweet.quote.targetId === targetId
+      ? { ...tweet, quote: { ...tweet.quote, target: null } }
       : tweet,
   );
 }

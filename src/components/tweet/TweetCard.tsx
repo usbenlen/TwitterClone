@@ -13,7 +13,11 @@ import {
   useClickOrDrag,
 } from "@/hooks";
 
-import { EditModal, QuoteModal } from "@/components/modal";
+import {
+  EditHistoryModal,
+  EditModal,
+  QuoteModal,
+} from "@/components/modal";
 
 import { Avatar } from "@/ui";
 
@@ -69,6 +73,7 @@ export default function TweetCard({
   );
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isQuoteModalOpen, setIsQuoteModalOpen] = useState(false);
+  const [isEditHistoryOpen, setIsEditHistoryOpen] = useState(false);
 
   const isOwnTweet = user?.id === tweet.author.id;
 
@@ -209,6 +214,11 @@ export default function TweetCard({
             // replyToUsername={tweet.replyToUsername} якщо десь знадобиться "У відповідь @dev_user"
             onDelete={isOwnTweet ? handleDelete : undefined}
             onEdit={isOwnTweet ? () => setIsEditModalOpen(true) : undefined}
+            onOpenEditHistory={
+              variant === "post" && !navigateToPost && tweet.updatedAt
+                ? () => setIsEditHistoryOpen(true)
+                : undefined
+            }
           />
 
           <TweetContent tweet={tweet} />
@@ -277,6 +287,12 @@ export default function TweetCard({
         repostedByMe={repost.repostedByMe}
         onEnsureRepost={repost.ensureReposted}
         onClose={() => setIsQuoteModalOpen(false)}
+      />
+
+      <EditHistoryModal
+        open={isEditHistoryOpen}
+        tweet={tweet}
+        onClose={() => setIsEditHistoryOpen(false)}
       />
     </>
   );

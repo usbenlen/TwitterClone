@@ -14,6 +14,7 @@ export const commentsByPostId: Record<string, Tweet[]> = {
   t1: [
     {
       id: "c1",
+      versionId: "c1-v1",
       postId: "t1",
       parentCommentId: null,
       isComment: true,
@@ -38,6 +39,7 @@ export const commentsByPostId: Record<string, Tweet[]> = {
 
     {
       id: "c2",
+      versionId: "c2-v1",
       postId: "t1",
       parentCommentId: null,
       isComment: true,
@@ -62,6 +64,7 @@ export const commentsByPostId: Record<string, Tweet[]> = {
 
     {
       id: "c3",
+      versionId: "c3-v1",
       postId: "t1",
       parentCommentId: "c1",
       isComment: true,
@@ -86,6 +89,7 @@ export const commentsByPostId: Record<string, Tweet[]> = {
 
     {
       id: "c4",
+      versionId: "c4-v1",
       postId: "t1",
       parentCommentId: "c1",
       isComment: true,
@@ -110,6 +114,7 @@ export const commentsByPostId: Record<string, Tweet[]> = {
 
     {
       id: "c5",
+      versionId: "c5-v1",
       postId: "t1",
       parentCommentId: "c3",
       isComment: true,
@@ -134,6 +139,7 @@ export const commentsByPostId: Record<string, Tweet[]> = {
 
     {
       id: "c6",
+      versionId: "c6-v1",
       postId: "t1",
       parentCommentId: null,
       isComment: true,

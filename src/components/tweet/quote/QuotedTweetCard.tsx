@@ -1,4 +1,4 @@
-import { BadgeCheck } from "lucide-react";
+import { BadgeCheck, PenLine } from "lucide-react";
 import { Link, useNavigate } from "react-router";
 
 import { Avatar, TwemojiText } from "@/ui";
@@ -34,7 +34,9 @@ export default function QuotedTweetCard({ quote }: QuotedTweetCardProps) {
   if (!target) {
     return (
       <div className="mt-3 rounded-2xl border border-border px-4 py-6 text-sm text-muted-foreground">
-        Цей пост недоступний
+        {quote.targetType === "comment"
+          ? "Цей коментар недоступний"
+          : "Цей пост недоступний"}
       </div>
     );
   }
@@ -135,6 +137,13 @@ export default function QuotedTweetCard({ quote }: QuotedTweetCardProps) {
             autoPlayVideos
             variant="quote"
           />
+        </div>
+      )}
+
+      {quote.hasNewVersion && (
+        <div className="flex items-center gap-1.5 border-t border-border px-3 py-2 text-sm text-muted-foreground">
+          <PenLine className="size-3.5 shrink-0" aria-hidden="true" />
+          <span>Відредаговано</span>
         </div>
       )}
     </article>

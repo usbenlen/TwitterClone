@@ -12,6 +12,7 @@ import { getCommentAncestors, withAncestors } from "@/utils/ancestors";
 import { delay } from "@/mock/utils/delay";
 
 import { mediaStore } from "@/mock/stores/mediaStore";
+import { editHistoryStore } from "@/mock/stores/editHistoryStore";
 
 import {
   toggleLikeInList,
@@ -21,7 +22,7 @@ import {
 } from "@/mock/utils/mockTweetActions";
 import {
   markQuotedTargetUnavailable,
-  syncQuotedTarget,
+  markQuotedTargetEdited,
 } from "@/mock/utils/mockQuotes";
 
 function currentUserAuthor() {
@@ -185,6 +186,7 @@ export const mockCommentApi = {
 
     const comment: Tweet = {
       id: nextCommentId(),
+      versionId: crypto.randomUUID(),
       content: data.content.trim(),
 
       author: currentUserAuthor(),
@@ -217,6 +219,7 @@ export const mockCommentApi = {
       ...(commentsByPostId[data.postId] ?? []),
       comment,
     ];
+    editHistoryStore.recordCreation("comment", comment);
 
     updateCommentCount(data.postId, 1);
 
@@ -270,6 +273,7 @@ export const mockCommentApi = {
 
     const updated: Tweet = {
       ...existing,
+      versionId: crypto.randomUUID(),
 
       content:
         data.content !== undefined ? data.content.trim() : existing.content,
@@ -285,7 +289,8 @@ export const mockCommentApi = {
     };
 
     found.comments[found.index] = updated;
-    setTweets(syncQuotedTarget(tweets, "comment", updated));
+    setTweets(markQuotedTargetEdited(tweets, "comment", updated.id));
+    editHistoryStore.recordEdit("comment", existing, updated);
 
     const rootPost = tweets.find((tweet) => tweet.id === updated.postId);
 
@@ -305,8 +310,18 @@ export const mockCommentApi = {
     found.comments.splice(found.index, 1);
 
     setTweets(markQuotedTargetUnavailable(tweets, "comment", id));
+    editHistoryStore.remove("comment", id);
 
     updateCommentCount(found.postId, -1);
+  },
+
+  async getEditHistory(id: string) {
+    await delay(160);
+
+    const found = findComment(id);
+    if (!found) throw new Error("Коментар не знайдено");
+
+    return editHistoryStore.getHistory("comment", found.comment);
   },
 
   async toggleLike(id: string, likedByMe: boolean) {

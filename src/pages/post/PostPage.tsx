@@ -8,6 +8,10 @@ import { Spinner } from "@/ui";
 import { TweetCard } from "@/components/tweet";
 
 import { withAncestorContext } from "@/utils/ancestors";
+import {
+  markQuotedTargetEditedInTweets,
+  markQuotedTargetUnavailableInTweets,
+} from "@/utils/quotes";
 
 import type { Tweet } from "@/types/tweet";
 
@@ -101,6 +105,92 @@ export default function PostPage() {
   }, [postId]);
 
   useEffect(() => {
+    const applyUpdate = (targetType: "post" | "comment", updated: Tweet) => {
+      setThread((current) => {
+        if (!current) return current;
+
+        const updateItems = (items: Tweet[]) =>
+          markQuotedTargetEditedInTweets(
+            items.map((item) =>
+              item.id === updated.id
+                ? { ...updated, ancestors: item.ancestors }
+                : item,
+            ),
+            targetType,
+            updated.id,
+          );
+
+        const ancestors = updateItems(current.target.ancestors ?? []);
+        const target = updateItems([{ ...current.target, ancestors }])[0];
+
+        return {
+          target,
+          replies: updateItems(current.replies),
+        };
+      });
+    };
+
+    const applyDeletion = (
+      targetType: "post" | "comment",
+      targetId: string,
+    ) => {
+      setThread((current) => {
+        if (!current) return current;
+
+        const ancestors = markQuotedTargetUnavailableInTweets(
+          (current.target.ancestors ?? []).filter(
+            (item) => item.id !== targetId,
+          ),
+          targetType,
+          targetId,
+        );
+
+        return {
+          target: markQuotedTargetUnavailableInTweets(
+            [{ ...current.target, ancestors }],
+            targetType,
+            targetId,
+          )[0],
+          replies: markQuotedTargetUnavailableInTweets(
+            current.replies.filter((item) => item.id !== targetId),
+            targetType,
+            targetId,
+          ),
+        };
+      });
+    };
+
+    const handleTweetUpdated = (event: Event) => {
+      const { tweet } = (event as CustomEvent<{ tweet: Tweet }>).detail;
+      applyUpdate("post", tweet);
+    };
+    const handleCommentUpdated = (event: Event) => {
+      const { comment } = (event as CustomEvent<{ comment: Tweet }>).detail;
+      applyUpdate("comment", comment);
+    };
+    const handleTweetDeleted = (event: Event) => {
+      const { tweetId } = (event as CustomEvent<{ tweetId: string }>).detail;
+      applyDeletion("post", tweetId);
+    };
+    const handleCommentDeleted = (event: Event) => {
+      const { commentId } = (event as CustomEvent<{ commentId: string }>)
+        .detail;
+      applyDeletion("comment", commentId);
+    };
+
+    window.addEventListener("tweet-updated", handleTweetUpdated);
+    window.addEventListener("comment-updated", handleCommentUpdated);
+    window.addEventListener("tweet-deleted", handleTweetDeleted);
+    window.addEventListener("comment-deleted", handleCommentDeleted);
+    return () => {
+      window.removeEventListener("tweet-updated", handleTweetUpdated);
+      window.removeEventListener("comment-updated", handleCommentUpdated);
+      window.removeEventListener("tweet-deleted", handleTweetDeleted);
+      window.removeEventListener("comment-deleted", handleCommentDeleted);
+    };
+  }, []);
+
+  useEffect(() => {
     if (!thread || !targetRef.current) return;
 
     const frame = requestAnimationFrame(() => {
@@ -164,7 +254,10 @@ export default function PostPage() {
           {/* Ancestors thread */}
           <div className="relative">
             {thread.target.ancestors?.map((ancestor) => {
-              const tweet = withAncestorContext(ancestor, thread.target.ancestors ?? []);
+              const tweet = withAncestorContext(
+                ancestor,
+                thread.target.ancestors ?? [],
+              );
 
               return (
                 <div key={ancestor.id} className="relative">

@@ -3,7 +3,10 @@ import { useCallback, useEffect, useState } from "react";
 import { tweetApi } from "@/api/tweet.api";
 
 import type { Tweet } from "@/types/tweet";
-import { updateQuotedTargetInTweets } from "@/utils/quotes";
+import {
+  markQuotedTargetEditedInTweets,
+  markQuotedTargetUnavailableInTweets,
+} from "@/utils/quotes";
 
 // Завантаження та локальне керування стрічкою твітів
 export function useFeed() {
@@ -33,11 +36,10 @@ export function useFeed() {
     const handleCommentUpdated = (e: Event) => {
       const customEvent = e as CustomEvent<{ comment: Tweet }>;
       setTweets((previous) =>
-        updateQuotedTargetInTweets(
+        markQuotedTargetEditedInTweets(
           previous,
           "comment",
           customEvent.detail.comment.id,
-          customEvent.detail.comment,
         ),
       );
     };
@@ -45,11 +47,10 @@ export function useFeed() {
     const handleCommentDeleted = (e: Event) => {
       const customEvent = e as CustomEvent<{ commentId: string }>;
       setTweets((previous) =>
-        updateQuotedTargetInTweets(
+        markQuotedTargetUnavailableInTweets(
           previous,
           "comment",
           customEvent.detail.commentId,
-          null,
         ),
       );
     };
@@ -83,11 +84,10 @@ export function useFeed() {
     const handleTweetDeleted = (e: Event) => {
       const customEvent = e as CustomEvent<{ tweetId: string }>;
       setTweets((previous) =>
-        updateQuotedTargetInTweets(
+        markQuotedTargetUnavailableInTweets(
           previous.filter((tweet) => tweet.id !== customEvent.detail.tweetId),
           "post",
           customEvent.detail.tweetId,
-          null,
         ),
       );
     };
@@ -102,7 +102,7 @@ export function useFeed() {
     const handleTweetUpdated = (e: Event) => {
       const customEvent = e as CustomEvent<{ tweet: Tweet }>;
       setTweets((previous) =>
-        updateQuotedTargetInTweets(
+        markQuotedTargetEditedInTweets(
           previous.map((tweet) =>
             tweet.id === customEvent.detail.tweet.id
               ? customEvent.detail.tweet
@@ -110,7 +110,6 @@ export function useFeed() {
           ),
           "post",
           customEvent.detail.tweet.id,
-          customEvent.detail.tweet,
         ),
       );
     };

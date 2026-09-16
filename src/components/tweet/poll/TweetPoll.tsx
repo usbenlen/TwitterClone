@@ -9,15 +9,17 @@ import type { TweetPoll as TweetPollType } from "@/types/poll";
 interface TweetPollProps {
   tweetId: string;
   poll: TweetPollType;
+  readOnly?: boolean;
 }
 
-export default function TweetPoll({ poll, tweetId }: TweetPollProps) {
+export default function TweetPoll({ poll, tweetId, readOnly = false }: TweetPollProps) {
   const { poll: currentPoll, loading, vote } = usePollVote(tweetId, poll);
   const countdown = usePollCountdown(currentPoll.expiresAt);
 
   const expired = currentPoll.isClosed || countdown.expired;
 
   const hasVoted = !!currentPoll.votedOptionId;
+  const showResults = readOnly || hasVoted || expired;
 
   const percentages = useMemo<Record<string, number>>(() => {
     if (currentPoll.totalVotes === 0) return {};
@@ -40,16 +42,18 @@ export default function TweetPoll({ poll, tweetId }: TweetPollProps) {
           <button
             key={option.id}
             type="button"
-            disabled={expired || hasVoted || loading}
-            onClick={() => vote(option.id)}
-            aria-disabled={expired || hasVoted || loading}
+            disabled={readOnly || expired || hasVoted || loading}
+            onClick={() => {
+              if (!readOnly) void vote(option.id);
+            }}
+            aria-disabled={readOnly || expired || hasVoted || loading}
             aria-label={`Голосувати за ${option.text}`}
             className={cn(
               `relative overflow-hidden rounded-xl border px-4 py-3 text-left transition disabled:cursor-default disabled:hover:bg-transparent`,
               selected ? "border-border" : "border-border hover:bg-muted",
             )}
           >
-            {(hasVoted || expired) && (
+            {showResults && (
               <div
                 className="absolute inset-y-1 left-1 rounded-sm bg-primary/35 transition-all duration-300"
                 style={{
@@ -67,7 +71,7 @@ export default function TweetPoll({ poll, tweetId }: TweetPollProps) {
                 {option.text}
               </span>
 
-              {(hasVoted || expired) && (
+              {showResults && (
                 <span className="text-sm font-semibold tabular-nums">
                   {percent}%
                 </span>

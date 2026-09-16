@@ -53,6 +53,7 @@ export const ENDPOINTS = {
     reposted: "me/reposts",
     byUser: (username: string) => `users/${username}/posts`,
     byId: (id: string) => `posts/${id}`,
+    editHistory: (id: string) => `posts/${id}/edit-history`,
     create: "posts",
     update: (id: string) => `posts/${id}`,
     delete: (id: string) => `posts/${id}`,
@@ -68,6 +69,7 @@ export const ENDPOINTS = {
   comments: {
     byPost: (postId: string) => `comments/post/${postId}`,
     thread: (id: string) => `comments/${id}/thread`,
+    editHistory: (id: string) => `comments/${id}/edit-history`,
     bookmarked: "comments/bookmarked",
     create: "comments",
     update: (id: string) => `comments/${id}`,

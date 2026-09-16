@@ -1,5 +1,9 @@
 import { apiClient } from "@/api/client";
 import { ENDPOINTS } from "@/api/config";
+import {
+  mapEditHistoryResponse,
+  type BackendEditHistoryResponse,
+} from "@/api/mappers/post.mapper";
 import { MOCK_ENABLED } from "@/mock/config";
 import { mockCommentApi } from "@/mock/handlers";
 
@@ -16,6 +20,7 @@ import type {
 function normalizeComment(comment: Tweet): Tweet {
   return {
     ...comment,
+    versionId: comment.versionId ?? comment.updatedAt ?? comment.createdAt,
     isComment: true,
   };
 }
@@ -48,6 +53,14 @@ const realCommentApi = {
     );
 
     return normalizeThread(thread);
+  },
+
+  getEditHistory: async (id: string) => {
+    const history = await apiClient.get<BackendEditHistoryResponse>(
+      ENDPOINTS.comments.editHistory(id),
+    );
+
+    return mapEditHistoryResponse(history);
   },
 
   getBookmarked: async () => {

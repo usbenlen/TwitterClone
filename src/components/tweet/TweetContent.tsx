@@ -10,9 +10,10 @@ import type { Tweet } from "@/types/tweet";
 
 interface TweetContentProps {
   tweet: Tweet;
+  readOnly?: boolean;
 }
 
-export default function TweetContent({ tweet }: TweetContentProps) {
+export default function TweetContent({ tweet, readOnly = false }: TweetContentProps) {
   return (
     <div className="min-w-0">
       {tweet.content && (
@@ -26,7 +27,9 @@ export default function TweetContent({ tweet }: TweetContentProps) {
         <TweetMedia attachments={tweet.attachments} autoPlayVideos />
       )}
 
-      {tweet.poll && <TweetPoll tweetId={tweet.id} poll={tweet.poll} />}
+      {tweet.poll && (
+        <TweetPoll tweetId={tweet.id} poll={tweet.poll} readOnly={readOnly} />
+      )}
 
       {tweet.embed && <TweetEmbed embed={tweet.embed} />}
 

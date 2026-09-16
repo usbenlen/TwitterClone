@@ -1,20 +1,17 @@
 import type { QuoteTargetType, Tweet } from "@/types";
 
-export function syncQuotedTarget(
+export function markQuotedTargetEdited(
   items: Tweet[],
   targetType: QuoteTargetType,
-  target: Tweet,
+  targetId: string,
 ): Tweet[] {
   return items.map((item) =>
-    item.quote?.targetType === targetType && item.quote.targetId === target.id
+    item.quote?.targetType === targetType && item.quote.targetId === targetId
       ? {
           ...item,
           quote: {
             ...item.quote,
-            target: {
-              ...target,
-              quote: target.quote ? { ...target.quote, target: null } : null,
-            },
+            hasNewVersion: true,
           },
         }
       : item,

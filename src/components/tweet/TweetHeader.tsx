@@ -16,6 +16,7 @@ interface TweetHeaderProps {
   replyToUsername?: string | null;
   onDelete?: () => void;
   onEdit?: () => void;
+  onOpenEditHistory?: () => void;
 }
 
 export default function TweetHeader({
@@ -25,6 +26,7 @@ export default function TweetHeader({
   replyToUsername,
   onDelete,
   onEdit,
+  onOpenEditHistory,
 }: TweetHeaderProps) {
   return (
     <div className="relative flex flex-col gap-0.5 min-w-0">
@@ -58,9 +60,23 @@ export default function TweetHeader({
           {updatedAt && (
             <>
               <span className="text-muted-foreground">·</span>
-              <span className="shrink-0 text-muted-foreground italic">
-                Відредаговано
-              </span>
+              {onOpenEditHistory ? (
+                <button
+                  type="button"
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    onOpenEditHistory();
+                  }}
+                  className="shrink-0 cursor-pointer text-muted-foreground italic underline-offset-2 hover:text-foreground hover:underline focus-visible:rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                  aria-label="Відкрити історію редагувань"
+                >
+                  Відредаговано
+                </button>
+              ) : (
+                <span className="shrink-0 text-muted-foreground italic">
+                  Відредаговано
+                </span>
+              )}
             </>
           )}
         </div>

@@ -3,7 +3,10 @@ import { useEffect, useState } from "react";
 import { userApi } from "@/api";
 
 import type { User, Tweet } from "@/types";
-import { updateQuotedTargetInTweets } from "@/utils/quotes";
+import {
+  markQuotedTargetEditedInTweets,
+  markQuotedTargetUnavailableInTweets,
+} from "@/utils/quotes";
 
 export type ProfileTab = "posts" | "replies" | "likes" | "reposts";
 
@@ -40,10 +43,8 @@ export function useProfile(
   activeTab: ProfileTab,
 ) {
   const [user, setUser] = useState<User | null>(null);
-  const [tabTweets, setTabTweets] =
-    useState<Record<ProfileTab, Tweet[]>>(EMPTY_TABS);
-  const [loadedTabs, setLoadedTabs] =
-    useState<Record<ProfileTab, boolean>>(EMPTY_LOADED_TABS);
+  const [tabTweets, setTabTweets] = useState<Record<ProfileTab, Tweet[]>>(EMPTY_TABS);
+  const [loadedTabs, setLoadedTabs] = useState<Record<ProfileTab, boolean>>(EMPTY_LOADED_TABS);
   const [isLoading, setIsLoading] = useState(true);
   const [isTabLoading, setIsTabLoading] = useState(false);
   const [notFound, setNotFound] = useState(false);
@@ -148,17 +149,18 @@ export function useProfile(
     const updateEveryTab = (
       targetType: "post" | "comment",
       targetId: string,
-      target: Tweet | null,
+      unavailable = false,
     ) => {
       setTabTweets((current) => {
         const next = { ...current };
         (Object.keys(next) as ProfileTab[]).forEach((tab) => {
-          next[tab] = updateQuotedTargetInTweets(
-            next[tab],
-            targetType,
-            targetId,
-            target,
-          );
+          next[tab] = unavailable
+            ? markQuotedTargetUnavailableInTweets(
+                next[tab],
+                targetType,
+                targetId,
+              )
+            : markQuotedTargetEditedInTweets(next[tab], targetType, targetId);
         });
         return next;
       });
@@ -166,16 +168,12 @@ export function useProfile(
 
     const handleCommentUpdated = (e: Event) => {
       const customEvent = e as CustomEvent<{ comment: Tweet }>;
-      updateEveryTab(
-        "comment",
-        customEvent.detail.comment.id,
-        customEvent.detail.comment,
-      );
+      updateEveryTab("comment", customEvent.detail.comment.id);
     };
 
     const handleCommentDeleted = (e: Event) => {
       const customEvent = e as CustomEvent<{ commentId: string }>;
-      updateEveryTab("comment", customEvent.detail.commentId, null);
+      updateEveryTab("comment", customEvent.detail.commentId, true);
     };
 
     const handleTweetDeleted = (e: Event) => {
@@ -183,13 +181,12 @@ export function useProfile(
       setTabTweets((current) => {
         const next = { ...current };
         (Object.keys(next) as ProfileTab[]).forEach((tab) => {
-          next[tab] = updateQuotedTargetInTweets(
+          next[tab] = markQuotedTargetUnavailableInTweets(
             next[tab].filter(
               (tweet) => tweet.id !== customEvent.detail.tweetId,
             ),
             "post",
             customEvent.detail.tweetId,
-            null,
           );
         });
         return next;
@@ -237,13 +234,12 @@ export function useProfile(
       setTabTweets((current) => {
         const next = { ...current };
         (Object.keys(next) as ProfileTab[]).forEach((tab) => {
-          next[tab] = updateQuotedTargetInTweets(
+          next[tab] = markQuotedTargetEditedInTweets(
             next[tab].map((tweet) =>
               tweet.id === updatedTweet.id ? updatedTweet : tweet,
             ),
             "post",
             updatedTweet.id,
-            updatedTweet,
           );
         });
         return next;

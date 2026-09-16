@@ -6,12 +6,15 @@ export type QuoteTargetType = "post" | "comment";
 export interface TweetQuote {
   targetType: QuoteTargetType;
   targetId: string;
+  targetVersionId: string;
+  hasNewVersion: boolean;
   replyingToUsernames: string[];
   target: TweetBase | null;
 }
 
 export interface TweetBase {
   id: string;
+  versionId: string;
   content: string;
 
   author: Pick<
@@ -56,6 +59,12 @@ export interface ThreadResponse {
   replies: Tweet[];
 }
 
+export interface EditHistoryResponse {
+  targetType: QuoteTargetType;
+  targetId: string;
+  versions: TweetBase[];
+}
+
 export interface CommentThreadItem {
   id: string;
   target: Tweet;
@@ -79,6 +88,7 @@ export interface CreateTweetRequest {
   location?: Location | null;
   quotedPostId?: string | null;
   quotedCommentId?: string | null;
+  quotedTargetVersionId?: string | null;
 }
 
 export interface UpdateTweetRequest {
