@@ -1,4 +1,4 @@
-import type { User, TweetPoll, Location, Embed } from "@/types";
+import type { User, TweetPoll, Location, LinkPreview } from "@/types";
 import type { MediaAttachment } from "@/types/media";
 
 export type QuoteTargetType = "post" | "comment";
@@ -26,7 +26,7 @@ export interface TweetBase {
 
   poll?: TweetPoll;
   location?: Location | null;
-  embed?: Embed | null;
+  linkPreview?: LinkPreview | null;
   quote?: TweetQuote | null;
 
   likesCount: number;
@@ -80,7 +80,7 @@ export interface CreateTweetMedia {
 export interface CreateTweetRequest {
   content: string;
   mediaIds: string[];
-  embed?: Embed | null;
+  linkPreview?: LinkPreview | null;
   poll?: {
     options: string[];
     duration: number;
@@ -94,7 +94,7 @@ export interface CreateTweetRequest {
 export interface UpdateTweetRequest {
   content?: string;
   mediaIds?: string[];
-  embed?: Embed | null;
+  linkPreview?: LinkPreview | null;
   poll?: {
     options: string[];
     duration: number;
@@ -115,7 +115,7 @@ export interface CreateCommentRequest {
   };
 
   location?: Location | null;
-  embed?: Embed | null;
+  linkPreview?: LinkPreview | null;
 }
 
 export interface UpdateCommentRequest {
@@ -128,7 +128,7 @@ export interface UpdateCommentRequest {
   } | null;
 
   location?: Location | null;
-  embed?: Embed | null;
+  linkPreview?: LinkPreview | null;
 }
 
 export interface ToggleLikeResponse {

@@ -9,4 +9,4 @@ export { useComposerPopup } from "@/hooks/composer/useComposerPopup";
 export { useComposerGif } from "@/hooks/composer/gif/useComposerGif";
 export { useComposerPoll } from "@/hooks/composer/poll/useComposerPoll";
 export { useComposerLocation } from "@/hooks/composer/location/useComposerLocation";
-export { useComposerEmbed } from "@/hooks/composer/embed/useComposerEmbed";
+export { useComposerLinkPreview } from "@/hooks/composer/linkPreview/useComposerLinkPreview";

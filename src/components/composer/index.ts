@@ -1,4 +1,3 @@
-export { default as EmbedPicker } from "@/components/composer/embed/EmbedPicker";
 export { default as EmojiPicker } from "@/components/composer/emoji/EmojiPicker";
 export * from "@/components/composer/gif";
 export { default as LocationPicker } from "@/components/composer/location/LocationPicker";

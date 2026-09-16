@@ -8,4 +8,4 @@ export * from "@/api/follow.api";
 export * from "@/api/search.api";
 export * from "@/api/comment.api";
 export * from "@/api/poll.api";
-export * from "@/api/embed.api"
+export * from "@/api/linkPreview.api"

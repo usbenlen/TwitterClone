@@ -84,7 +84,7 @@ export function useTweetComments({
         mediaIds: data.mediaIds,
         poll: data.poll ?? undefined,
         location: data.location,
-        embed: data.embed,
+        linkPreview: data.linkPreview,
       });
 
       setComments((current) => [

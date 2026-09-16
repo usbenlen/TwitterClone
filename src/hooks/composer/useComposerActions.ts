@@ -5,7 +5,6 @@ import {
   useComposerGif,
   useComposerPoll,
   useComposerLocation,
-  useComposerEmbed,
 } from "@/hooks/composer";
 
 import type { ComposerAction, ComposerPoll } from "@/types";
@@ -21,7 +20,6 @@ export function useComposerActions(initialPoll?: ComposerPoll | null) {
     gif: useRef<HTMLButtonElement>(null),
     poll: useRef<HTMLButtonElement>(null),
     location: useRef<HTMLButtonElement>(null),
-    embed: useRef<HTMLButtonElement>(null),
   };
 
   const closeAllPopups = () => {
@@ -29,14 +27,12 @@ export function useComposerActions(initialPoll?: ComposerPoll | null) {
     gif.close();
     poll.close();
     location.close();
-    embed.close();
   };
 
   const emoji = useComposerPopup();
   const gif = useComposerGif();
   const poll = useComposerPoll(initialPoll);
   const location = useComposerLocation();
-  const embed = useComposerEmbed();
 
   const handleAction = (action: ComposerAction) => {
     switch (action) {
@@ -64,9 +60,6 @@ export function useComposerActions(initialPoll?: ComposerPoll | null) {
         location.toggle();
         break;
 
-      case "embed":
-        embed.toggle();
-        break;
     }
   };
 
@@ -83,6 +76,5 @@ export function useComposerActions(initialPoll?: ComposerPoll | null) {
     gif,
     poll,
     location,
-    embed,
   };
 }

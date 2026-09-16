@@ -194,7 +194,7 @@ export const mockCommentApi = {
       attachments,
       poll,
       location: data.location ?? null,
-      embed: data.embed ?? null,
+      linkPreview: data.linkPreview ?? null,
 
       likesCount: 0,
       repliesCount: 0,
@@ -283,7 +283,10 @@ export const mockCommentApi = {
 
       location: data.location !== undefined ? data.location : existing.location,
 
-      embed: data.embed !== undefined ? data.embed : existing.embed,
+      linkPreview:
+        data.linkPreview !== undefined
+          ? data.linkPreview
+          : existing.linkPreview,
 
       updatedAt: new Date().toISOString(),
     };

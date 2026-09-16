@@ -1,6 +1,6 @@
 import { MEDIA_STATUS } from "@/constants/app";
 import type { Location } from "@/types/location";
-import type { Embed } from "@/types/embed";
+import type { LinkPreview } from "@/types/linkPreview";
 
 export type ComposerAction =
   | "image"
@@ -9,7 +9,6 @@ export type ComposerAction =
   | "emoji"
   | "poll"
   | "location"
-  | "embed"
   | "schedule";
 
 export type ComposerMediaStatus =
@@ -43,5 +42,5 @@ export interface ComposerSubmitData {
     duration: number;
   } | null;
   location?: Location | null;
-  embed?: Embed | null;
+  linkPreview?: LinkPreview | null;
 }

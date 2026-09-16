@@ -153,7 +153,7 @@ export const mockTweetApi = {
       updatedAt: null,
 
       location: payload.location ?? null,
-      embed: payload.embed ?? null,
+      linkPreview: payload.linkPreview ?? null,
     };
 
     setTweets([tweet, ...tweets]);
@@ -205,7 +205,10 @@ export const mockTweetApi = {
       attachments,
       poll,
       location: data.location !== undefined ? data.location : existing.location,
-      embed: data.embed !== undefined ? data.embed : existing.embed,
+      linkPreview:
+        data.linkPreview !== undefined
+          ? data.linkPreview
+          : existing.linkPreview,
       updatedAt: new Date().toISOString(),
     };
 

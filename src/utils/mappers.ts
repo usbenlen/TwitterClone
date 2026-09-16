@@ -15,7 +15,7 @@ export function mapMediaToComposerMedia(
     attachmentId: attachment.id,
     url: attachment.url,
     previewUrl: attachment.url,
-    type: attachment.type === "embed" ? "image" : attachment.type,
+    type: attachment.type,
     name: attachment.url.split("/").pop() || "attachment",
     size: attachment.sizeInBytes || 0,
     width: attachment.width,

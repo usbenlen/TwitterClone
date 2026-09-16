@@ -33,7 +33,7 @@ function hasOwnContent(data: ComposerSubmitData) {
     data.mediaIds.length ||
     data.poll ||
     data.location ||
-    data.embed,
+    data.linkPreview,
   );
 }
 

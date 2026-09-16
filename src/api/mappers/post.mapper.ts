@@ -58,7 +58,7 @@ export interface BackendPost {
 
   poll?: BackendPollResponse | null;
   location?: Tweet["location"];
-  embed?: Tweet["embed"];
+  linkPreview?: Tweet["linkPreview"];
   quote?: {
     targetType: QuoteTargetType;
     targetId: string;
@@ -97,8 +97,6 @@ function normalizeMediaType(
 
   if (normalizedType === "video" || mimeType?.startsWith("video/")) return "video";
   if (normalizedType === "gif" || mimeType === "image/gif") return "gif";
-  if (normalizedType === "embed") return "embed";
-
   return "image";
 }
 
@@ -178,7 +176,7 @@ function mapPostToTweetInternal(
 
     poll: mapBackendPollToTweetPoll(post.poll),
     location: post.location ?? null,
-    embed: post.embed ?? null,
+    linkPreview: post.linkPreview ?? null,
     quote:
       includeNestedQuote && post.quote
         ? {

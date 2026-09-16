@@ -266,7 +266,7 @@ export default function TweetCard({
         initialMedia={mapMediaToComposerMedia(tweet.attachments)}
         initialPoll={mapPollToComposerPoll(tweet.poll)}
         initialLocation={tweet.location}
-        initialEmbed={tweet.embed}
+        initialLinkPreview={tweet.linkPreview}
         initialQuote={tweet.quote}
         onClose={() => setIsEditModalOpen(false)}
         onSave={handleUpdate}

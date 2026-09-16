@@ -1,6 +1,6 @@
 export interface MediaAttachment {
   id: string;
-  type: "image" | "video" | "gif" | "embed";
+  type: "image" | "video" | "gif";
   url: string;
   thumbnailUrl?: string;
   width?: number;

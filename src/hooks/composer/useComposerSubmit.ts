@@ -7,7 +7,7 @@ import type {
   ComposerMedia,
   ComposerPoll,
   Location,
-  Embed,
+  LinkPreview,
   ComposerSubmitData,
 } from "@/types";
 
@@ -16,7 +16,7 @@ interface UseComposerSubmitProps {
   media: ComposerMedia[];
   poll?: ComposerPoll | null;
   location?: Location | null;
-  embed?: Embed | null;
+  linkPreview?: LinkPreview | null;
 
   clearMedia: () => void;
   clearErrors: () => void;
@@ -30,7 +30,7 @@ export function useComposerSubmit({
   media,
   poll,
   location,
-  embed,
+  linkPreview,
   clearMedia,
   clearErrors,
   onCreated,
@@ -59,7 +59,7 @@ export function useComposerSubmit({
           .map((item) => item.attachmentId!),
         poll: pollData,
         location,
-        embed,
+        linkPreview,
       };
 
       let result;
@@ -70,7 +70,7 @@ export function useComposerSubmit({
           mediaIds: payload.mediaIds,
           poll: pollData || undefined,
           location: payload.location,
-          embed: payload.embed,
+          linkPreview: payload.linkPreview,
         });
       }
 

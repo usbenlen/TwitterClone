@@ -104,4 +104,7 @@ export const ENDPOINTS = {
     upload: "media/upload",
     byId: (id: string) => `media/${id}`,
   },
+  linkPreviews: {
+    resolve: "link-previews/resolve",
+  },
 } as const;

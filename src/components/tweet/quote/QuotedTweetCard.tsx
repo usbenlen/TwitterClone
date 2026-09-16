@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router";
 
 import { Avatar, TwemojiText } from "@/ui";
 
-import TweetEmbed from "@/components/tweet/embed/TweetEmbed";
+import { LinkPreviewCard } from "@/components/tweet/linkPreview";
 import TweetLocation from "@/components/tweet/location/TweetLocation";
 import TweetMedia from "@/components/tweet/TweetMedia";
 import TweetPoll from "@/components/tweet/poll/TweetPoll";
@@ -12,6 +12,7 @@ import { useClickOrDrag } from "@/hooks";
 
 import { APP_ROUTES } from "@/constants/routes";
 import { formatRelativeTime } from "@/utils/format";
+import { removePreviewUrl } from "@/utils/linkPreview";
 
 import type { TweetQuote } from "@/types";
 
@@ -42,6 +43,10 @@ export default function QuotedTweetCard({ quote }: QuotedTweetCardProps) {
   }
 
   const authorName = target.author.displayName || target.author.username;
+  const displayContent = removePreviewUrl(
+    target.content,
+    target.linkPreview?.url,
+  );
   const savedReplyingToUsernames = quote.replyingToUsernames ?? [];
   const replyingToUsernames =
     savedReplyingToUsernames.length > 0
@@ -113,9 +118,9 @@ export default function QuotedTweetCard({ quote }: QuotedTweetCardProps) {
           </p>
         )}
 
-        {target.content && (
+        {displayContent && (
           <TwemojiText
-            text={target.content}
+            text={displayContent}
             className="mt-1 wrap-break-word whitespace-pre-wrap text-[15px]"
           />
         )}
@@ -126,7 +131,9 @@ export default function QuotedTweetCard({ quote }: QuotedTweetCardProps) {
           </div>
         )}
 
-        {target.embed && <TweetEmbed embed={target.embed} />}
+        {target.linkPreview && (
+          <LinkPreviewCard preview={target.linkPreview} compact />
+        )}
         {target.location && <TweetLocation location={target.location} />}
       </div>
 

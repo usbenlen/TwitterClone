@@ -5,6 +5,7 @@ import {
   useComposerSubmit,
   useComposerEditor,
   useTweetComposerMedia,
+  useComposerLinkPreview,
 } from "@/hooks/composer";
 
 import { MAX_TWEET_LENGTH, MEDIA_STATUS } from "@/constants/app";
@@ -12,7 +13,7 @@ import { MAX_TWEET_LENGTH, MEDIA_STATUS } from "@/constants/app";
 import type {
   Gif,
   Location,
-  Embed,
+  LinkPreview,
   ComposerMedia,
   ComposerPoll,
   Tweet,
@@ -24,7 +25,7 @@ interface UseTweetComposerProps {
   initialMedia?: ComposerMedia[];
   initialPoll?: ComposerPoll | null;
   initialLocation?: Location | null;
-  initialEmbed?: Embed | null;
+  initialLinkPreview?: LinkPreview | null;
   allowEmptySubmit?: boolean;
   onCreated?: (tweet: Tweet) => void;
   onSubmit?: (data: ComposerSubmitData) => Promise<unknown>;
@@ -35,7 +36,7 @@ export function useTweetComposer({
   initialMedia = [],
   initialPoll = null,
   initialLocation = null,
-  initialEmbed = null,
+  initialLinkPreview = null,
   allowEmptySubmit = false,
   onCreated,
   onSubmit,
@@ -44,11 +45,8 @@ export function useTweetComposer({
   const [selectedLocation, setSelectedLocation] = useState<Location | null>(
     initialLocation,
   );
-  const [selectedEmbed, setSelectedEmbed] = useState<Embed | null>(
-    initialEmbed,
-  );
-
   const cursor = useComposerEditor();
+  const linkPreview = useComposerLinkPreview(content, initialLinkPreview);
 
   const remaining = useMemo(() => MAX_TWEET_LENGTH - content.length, [content]);
 
@@ -73,7 +71,6 @@ export function useTweetComposer({
     gif,
     poll,
     location,
-    embed,
   } = useComposerActions(initialPoll);
 
   const { submit: submitComposer, isPosting } = useComposerSubmit({
@@ -81,7 +78,7 @@ export function useTweetComposer({
     media: mediaManager.media,
     poll: poll.hasPoll ? poll.poll : null,
     location: selectedLocation,
-    embed: selectedEmbed,
+    linkPreview: linkPreview.preview,
 
     clearMedia: mediaManager.clearMedia,
     clearErrors: mediaManager.clearErrors,
@@ -95,7 +92,7 @@ export function useTweetComposer({
     mediaManager.media.length > 0 ||
     poll.hasPoll ||
     selectedLocation !== null ||
-    selectedEmbed !== null;
+    linkPreview.preview !== initialLinkPreview;
 
   const canSubmit =
     (allowEmptySubmit ||
@@ -104,7 +101,7 @@ export function useTweetComposer({
           mediaManager.media.length > 0 ||
           poll.hasPoll ||
           selectedLocation ||
-          selectedEmbed,
+          linkPreview.preview,
       )) &&
     remaining >= 0 &&
     !isPosting &&
@@ -121,7 +118,7 @@ export function useTweetComposer({
     if (created) {
       setContent("");
       removeLocation();
-      setSelectedEmbed(null);
+      linkPreview.clear();
       closeAllPopups();
       poll.reset();
     }
@@ -155,14 +152,6 @@ export function useTweetComposer({
 
   const insertLocation = (location: Location) => {
     setSelectedLocation(location);
-
-    closeAllPopups();
-
-    cursor.editorRef.current?.focus();
-  };
-
-  const insertEmbed = (embedItem: Embed) => {
-    setSelectedEmbed(embedItem);
 
     closeAllPopups();
 
@@ -213,18 +202,6 @@ export function useTweetComposer({
       onSelect: insertLocation,
     },
 
-    embed: {
-      open: embed.isOpen,
-      reference: buttonRefs.embed?.current ?? null,
-      onOpenChange: (open: boolean) => (open ? embed.open() : embed.close()),
-      url: embed.url,
-      embed: embed.embed,
-      loading: embed.loading,
-      error: embed.error,
-      onUrlChange: embed.setUrl,
-      onResolve: embed.resolve,
-      onSelect: insertEmbed,
-    },
   };
 
   return {
@@ -269,10 +246,11 @@ export function useTweetComposer({
       location: selectedLocation,
       onRemove: removeLocation,
     },
-    embedPreview: {
-      visible: !!selectedEmbed,
-      embed: selectedEmbed,
-      onRemove: () => setSelectedEmbed(null),
+    linkPreview: {
+      visible: linkPreview.loading || !!linkPreview.preview,
+      preview: linkPreview.preview,
+      loading: linkPreview.loading,
+      onRemove: linkPreview.remove,
     },
   };
 }

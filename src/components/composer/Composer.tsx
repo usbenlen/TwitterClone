@@ -15,7 +15,7 @@ import {
   TweetComposerFileInputs,
   TweetComposerPollPreview,
   TweetComposerLocationPreview,
-  TweetComposerEmbedPreview,
+  TweetComposerLinkPreview,
 } from "@/components/tweet/TweetComposer";
 
 import { cn } from "@/utils/cn";
@@ -123,10 +123,11 @@ export default function Composer({
               />
             )}
 
-          {composer.embedPreview.visible && composer.embedPreview.embed && (
-            <TweetComposerEmbedPreview
-              embed={composer.embedPreview.embed}
-              onRemove={composer.embedPreview.onRemove}
+          {composer.linkPreview.visible && (
+            <TweetComposerLinkPreview
+              preview={composer.linkPreview.preview}
+              loading={composer.linkPreview.loading}
+              onRemove={composer.linkPreview.onRemove}
             />
           )}
 
@@ -154,7 +155,6 @@ export default function Composer({
             gif={composer.popovers.gif}
             poll={composer.popovers.poll}
             location={composer.popovers.location}
-            embed={composer.popovers.embed}
           />
 
           <TweetComposerFileInputs
@@ -244,10 +244,11 @@ export default function Composer({
                 />
               )}
 
-            {composer.embedPreview.visible && composer.embedPreview.embed && (
-              <TweetComposerEmbedPreview
-                embed={composer.embedPreview.embed}
-                onRemove={composer.embedPreview.onRemove}
+            {composer.linkPreview.visible && (
+              <TweetComposerLinkPreview
+                preview={composer.linkPreview.preview}
+                loading={composer.linkPreview.loading}
+                onRemove={composer.linkPreview.onRemove}
               />
             )}
 
@@ -277,7 +278,6 @@ export default function Composer({
               gif={composer.popovers.gif}
               poll={composer.popovers.poll}
               location={composer.popovers.location}
-              embed={composer.popovers.embed}
             />
 
             <TweetComposerFileInputs

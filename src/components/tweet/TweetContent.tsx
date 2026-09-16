@@ -1,12 +1,13 @@
 import { TwemojiText } from "@/ui";
 
 import TweetLocation from "@/components/tweet/location/TweetLocation";
-import TweetEmbed from "@/components/tweet/embed/TweetEmbed";
+import { LinkPreviewCard } from "@/components/tweet/linkPreview";
 import TweetPoll from "@/components/tweet/poll/TweetPoll";
 import TweetMedia from "@/components/tweet/TweetMedia";
 import { QuotedTweetCard } from "@/components/tweet/quote";
 
 import type { Tweet } from "@/types/tweet";
+import { removePreviewUrl } from "@/utils/linkPreview";
 
 interface TweetContentProps {
   tweet: Tweet;
@@ -14,11 +15,16 @@ interface TweetContentProps {
 }
 
 export default function TweetContent({ tweet, readOnly = false }: TweetContentProps) {
+  const displayContent = removePreviewUrl(
+    tweet.content,
+    tweet.linkPreview?.url,
+  );
+
   return (
     <div className="min-w-0">
-      {tweet.content && (
+      {displayContent && (
         <TwemojiText
-          text={tweet.content}
+          text={displayContent}
           className="mt-1 wrap-break-word whitespace-pre-wrap"
         />
       )}
@@ -31,7 +37,7 @@ export default function TweetContent({ tweet, readOnly = false }: TweetContentPr
         <TweetPoll tweetId={tweet.id} poll={tweet.poll} readOnly={readOnly} />
       )}
 
-      {tweet.embed && <TweetEmbed embed={tweet.embed} />}
+      {tweet.linkPreview && <LinkPreviewCard preview={tweet.linkPreview} />}
 
       {tweet.quote && <QuotedTweetCard quote={tweet.quote} />}
 

@@ -4,7 +4,6 @@ import {
   MapPin,
   Smile,
   Video,
-  Link2,
   Calendar,
 } from "lucide-react";
 
@@ -14,7 +13,6 @@ import {
   ENABLE_LOCATION,
   ENABLE_POLLS,
   ENABLE_VIDEO_UPLOAD,
-  ENABLE_EMBED,
 } from "@/constants/app";
 
 import type { ComposerAction } from "@/types/composer";
@@ -84,12 +82,6 @@ export default function ComposerToolbar({
       enabled: ENABLE_LOCATION,
       label: "Місце",
       icon: <MapPin size={20} />,
-    },
-    {
-      id: "embed" as const,
-      enabled: ENABLE_EMBED,
-      label: "Вставити",
-      icon: <Link2 size={20} />,
     },
   ];
 

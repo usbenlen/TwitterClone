@@ -9,7 +9,7 @@
   - [✅] GIF
   - [✅] Зображення
   - [✅] Відео
-  - [ ] Embedded (Покращити ui/ux)
+  - [✅] Автоматичні картки посилань
 - [✅] Доробити дописи
   - [✅] Коментарі
   - [✅] Репости
@@ -25,3 +25,20 @@
 - [ ] Доробити алгоритми:
   - [ ] Популярне
   - [ ] Кого читати
+
+## Link preview API
+
+У live-режимі клієнт викликає `POST /api/link-previews/resolve` з тілом
+`{ "url": "https://example.com/article" }`. Endpoint має повернути:
+
+```json
+{
+  "id": "preview-id",
+  "url": "https://example.com/article",
+  "domain": "example.com",
+  "title": "Article title",
+  "imageUrl": "https://example.com/article-cover.jpg"
+}
+```
+
+Якщо сторінка не має придатного зображення, `imageUrl` може бути `null`.

@@ -9,7 +9,7 @@ import { ConfirmModal } from "@/components/modal/ConfirmModal";
 
 import type {
   Location,
-  Embed,
+  LinkPreview,
   ComposerMedia,
   ComposerSubmitData,
   ComposerPoll,
@@ -23,7 +23,7 @@ interface EditModalProps {
   initialMedia?: ComposerMedia[];
   initialPoll?: ComposerPoll | null;
   initialLocation?: Location | null;
-  initialEmbed?: Embed | null;
+  initialLinkPreview?: LinkPreview | null;
   initialQuote?: TweetQuote | null;
   onClose: () => void;
   onSave: (data: ComposerSubmitData) => Promise<unknown>;
@@ -49,7 +49,7 @@ function EditModalInner({
   initialMedia,
   initialPoll,
   initialLocation,
-  initialEmbed,
+  initialLinkPreview,
   initialQuote,
   onClose,
   onSave,
@@ -59,7 +59,7 @@ function EditModalInner({
     initialMedia,
     initialPoll,
     initialLocation,
-    initialEmbed,
+    initialLinkPreview,
     onSubmit: onSave,
   });
 
