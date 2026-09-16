@@ -126,6 +126,10 @@
     z-index: 200;
   }
 
+  .z-nested-modal {
+    z-index: 202;
+  }
+
   .z-popover {
     z-index: 205;
   }

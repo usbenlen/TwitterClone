@@ -65,6 +65,8 @@ export const ENDPOINTS = {
     unrepost: (id: string) => `posts/${id}/repost`,
     bookmark: (id: string) => `posts/${id}/bookmark`,
     unbookmark: (id: string) => `posts/${id}/bookmark`,
+    scheduled: "posts/scheduled",
+    scheduledById: (id: string) => `posts/scheduled/${id}`,
   },
   comments: {
     byPost: (postId: string) => `comments/post/${postId}`,

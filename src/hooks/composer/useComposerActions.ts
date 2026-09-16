@@ -20,6 +20,7 @@ export function useComposerActions(initialPoll?: ComposerPoll | null) {
     gif: useRef<HTMLButtonElement>(null),
     poll: useRef<HTMLButtonElement>(null),
     location: useRef<HTMLButtonElement>(null),
+    schedule: useRef<HTMLButtonElement>(null),
   };
 
   const closeAllPopups = () => {
@@ -27,12 +28,14 @@ export function useComposerActions(initialPoll?: ComposerPoll | null) {
     gif.close();
     poll.close();
     location.close();
+    schedule.close();
   };
 
   const emoji = useComposerPopup();
   const gif = useComposerGif();
   const poll = useComposerPoll(initialPoll);
   const location = useComposerLocation();
+  const schedule = useComposerPopup();
 
   const handleAction = (action: ComposerAction) => {
     switch (action) {
@@ -60,6 +63,10 @@ export function useComposerActions(initialPoll?: ComposerPoll | null) {
         location.toggle();
         break;
 
+      case "schedule":
+        schedule.toggle();
+        break;
+
     }
   };
 
@@ -76,5 +83,6 @@ export function useComposerActions(initialPoll?: ComposerPoll | null) {
     gif,
     poll,
     location,
+    schedule,
   };
 }

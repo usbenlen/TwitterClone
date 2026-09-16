@@ -3,14 +3,21 @@ import "@/index.css";
 import { routes } from "@/routes";
 import { RouterProvider } from "react-router";
 
-import { AuthProvider, ThemeProvider, FollowProvider } from "@/providers";
+import {
+  AuthProvider,
+  ThemeProvider,
+  FollowProvider,
+  ScheduledPostsProvider,
+} from "@/providers";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <ThemeProvider>
     <AuthProvider>
-      <FollowProvider>
-        <RouterProvider router={routes} />
-      </FollowProvider>
+      <ScheduledPostsProvider>
+        <FollowProvider>
+          <RouterProvider router={routes} />
+        </FollowProvider>
+      </ScheduledPostsProvider>
     </AuthProvider>
   </ThemeProvider>,
 );

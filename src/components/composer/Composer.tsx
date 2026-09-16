@@ -1,10 +1,16 @@
 import { useState } from "react";
+import { CalendarClock, X } from "lucide-react";
 
 import { useAuth, useTweetComposer, useDragAndDrop } from "@/hooks";
 
 import { Avatar, Button } from "@/ui";
 
-import { ComposerToolbar, ComposerPopovers } from "@/components/composer";
+import {
+  ComposerToolbar,
+  ComposerPopovers,
+  ScheduleModal,
+  ScheduledPostsModal,
+} from "@/components/composer";
 
 import {
   TweetComposerEditor,
@@ -69,7 +75,7 @@ export default function Composer({
     }
   };
 
-// DEFAULT VARIANT
+  // DEFAULT VARIANT
   if (!isComment) {
     return (
       <div
@@ -133,12 +139,36 @@ export default function Composer({
 
           {quotedTweet && <QuotedTweetCard quote={quotedTweet} />}
 
+          {composer.scheduling.scheduledAt && (
+            <div className="mt-3 flex items-center justify-between rounded-xl border border-border px-3 py-2 text-sm">
+              <span className="flex items-center gap-2 text-muted-foreground">
+                <CalendarClock size={17} />
+                {new Intl.DateTimeFormat("uk-UA", {
+                  dateStyle: "medium",
+                  timeStyle: "short",
+                }).format(new Date(composer.scheduling.scheduledAt))}
+              </span>
+              {composer.scheduling.canClear && (
+                <button
+                  type="button"
+                  onClick={composer.scheduling.clear}
+                  className="flex size-7 items-center justify-center rounded-full hover:bg-muted"
+                  aria-label="Прибрати запланований час"
+                >
+                  <X size={16} />
+                </button>
+              )}
+            </div>
+          )}
+
           <TweetComposerErrors errors={composer.errors} />
 
           <div className="flex shrink-0 items-center justify-between pt-3">
             <ComposerToolbar
               onAction={composer.handleAction}
               buttonRefs={composer.buttonRefs}
+              disabledActions={composer.disabledActions}
+              hiddenActions={composer.scheduling.enabled ? [] : ["schedule"]}
             />
 
             <TweetComposerFooter
@@ -146,7 +176,11 @@ export default function Composer({
               canSubmit={composer.canSubmit}
               isPosting={composer.isPosting}
               onSubmit={handleSubmit}
-              submitLabel={submitLabel}
+              submitLabel={
+                composer.scheduling.scheduledAt
+                  ? composer.scheduling.submitLabel
+                  : submitLabel
+              }
             />
           </div>
 
@@ -162,12 +196,38 @@ export default function Composer({
             videoRef={composer.videoInputRef}
             onFilesSelected={composer.onFilesSelected}
           />
+
+          {composer.scheduling.open && (
+            <ScheduleModal
+              key={composer.scheduling.modalInitialAt ?? "new-schedule"}
+              open
+              initialAt={composer.scheduling.modalInitialAt}
+              onClose={() => composer.scheduling.onOpenChange(false)}
+              onApply={composer.scheduling.apply}
+              onClear={
+                composer.scheduling.canClear && composer.scheduling.scheduledAt
+                  ? composer.scheduling.clear
+                  : undefined
+              }
+              onOpenScheduledPosts={
+                composer.scheduling.showScheduledPostsLink
+                  ? composer.scheduling.openList
+                  : undefined
+              }
+            />
+          )}
+
+          <ScheduledPostsModal
+            open={composer.scheduling.listOpen}
+            onBack={composer.scheduling.backToSchedule}
+            onClose={composer.scheduling.closeList}
+          />
         </div>
       </div>
     );
   }
 
-//COMMENT VARIANT
+  //COMMENT VARIANT
   return (
     <div
       onDragEnter={drag.onDragEnter}
@@ -261,6 +321,8 @@ export default function Composer({
               <ComposerToolbar
                 onAction={composer.handleAction}
                 buttonRefs={composer.buttonRefs}
+                disabledActions={composer.disabledActions}
+                hiddenActions={["schedule"]}
               />
 
               <TweetComposerFooter

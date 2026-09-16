@@ -1,11 +1,4 @@
-import {
-  BarChart3,
-  Image,
-  MapPin,
-  Smile,
-  Video,
-  Calendar,
-} from "lucide-react";
+import { BarChart3, Image, MapPin, Smile, Video, Calendar } from "lucide-react";
 
 import {
   ENABLE_GIFS,
@@ -20,6 +13,8 @@ import type { ComposerAction } from "@/types/composer";
 interface ComposerToolbarProps {
   onAction: (action: ComposerAction) => void;
   allowedActions?: ComposerAction[];
+  disabledActions?: ComposerAction[];
+  hiddenActions?: ComposerAction[];
   buttonRefs?: Partial<
     Record<
       ComposerAction,
@@ -35,6 +30,8 @@ interface ComposerToolbarProps {
 export default function ComposerToolbar({
   onAction,
   allowedActions,
+  disabledActions = [],
+  hiddenActions = [],
   buttonRefs = {},
   disabled = false,
   showEmojiPicker = false,
@@ -87,6 +84,7 @@ export default function ComposerToolbar({
 
   const filteredActions = actions.filter((action) => {
     if (!action.enabled) return false;
+    if (hiddenActions.includes(action.id)) return false;
     if (allowedActions && !allowedActions.includes(action.id)) return false;
     return true;
   });
@@ -100,7 +98,7 @@ export default function ComposerToolbar({
           type="button"
           aria-label={action.label}
           aria-expanded={action.id === "emoji" ? showEmojiPicker : undefined}
-          disabled={disabled}
+          disabled={disabled || disabledActions.includes(action.id)}
           onClick={() => onAction(action.id)}
           className="flex size-9 items-center justify-center rounded-full text-primary transition-colors hover:bg-primary/10 disabled:pointer-events-none disabled:opacity-50"
         >

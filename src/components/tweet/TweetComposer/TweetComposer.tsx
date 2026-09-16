@@ -11,6 +11,7 @@ interface TweetComposerProps {
 export default function TweetComposer({ onCreated }: TweetComposerProps) {
   const composer = useTweetComposer({
     onCreated,
+    allowScheduling: true,
   });
 
   return (
