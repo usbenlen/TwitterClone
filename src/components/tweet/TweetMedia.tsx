@@ -35,6 +35,7 @@ export default function TweetMedia({
         <MediaGrid
           items={safeAttachments}
           flush={isQuote}
+          bordered={!isQuote}
           renderItem={(safeAttachment, index) => (
             <MediaItem
               attachment={safeAttachment}
@@ -50,7 +51,6 @@ export default function TweetMedia({
               autoPlayInline={
                 autoPlayVideos && safeAttachment.type === "video"
               }
-              flush={isQuote}
             />
           )}
         />

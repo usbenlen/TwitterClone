@@ -2,14 +2,18 @@ interface MediaGridProps<T extends { id: string }> {
   items: T[];
   renderItem: (item: T, index: number) => React.ReactNode;
   flush?: boolean;
+  bordered?: boolean;
 }
 
 export default function MediaGrid<T extends { id: string }>({
   items,
   renderItem,
   flush = false,
+  bordered = false,
 }: MediaGridProps<T>) {
-  const frameClassName = flush ? "" : "mt-3 rounded-2xl";
+  const frameClassName = flush
+    ? ""
+    : `mt-3 rounded-2xl ${bordered ? "border border-border" : ""}`;
 
   switch (items.length) {
     case 0:

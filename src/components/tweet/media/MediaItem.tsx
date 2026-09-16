@@ -1,14 +1,12 @@
 import { useEffect, useRef, useState } from "react";
 
 import type { MediaAttachment } from "@/types/media";
-import { cn } from "@/utils/cn";
 
 interface MediaItemProps {
   attachment: MediaAttachment;
   onOpen: () => void;
   openOnClick?: boolean;
   autoPlayInline?: boolean;
-  flush?: boolean;
 }
 
 const formatTime = (seconds: number) => {
@@ -26,7 +24,6 @@ export default function MediaItem({
   onOpen,
   openOnClick = true,
   autoPlayInline = false,
-  flush = false,
 }: MediaItemProps) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const videoRef = useRef<HTMLVideoElement | null>(null);
@@ -111,11 +108,9 @@ export default function MediaItem({
           alt=""
           draggable={false}
           onClick={openOnClick ? onOpen : undefined}
-          className={cn(
-            "size-full select-none object-cover",
-            !flush && "rounded-xl border border-border",
-            openOnClick && "cursor-pointer",
-          )}
+          className={`size-full select-none object-cover ${
+            openOnClick ? "cursor-pointer" : ""
+          }`}
         />
       );
 
@@ -123,10 +118,7 @@ export default function MediaItem({
       return (
         <div
           ref={containerRef}
-          className={cn(
-            "relative size-full overflow-hidden",
-            !flush && "rounded-xl border border-border",
-          )}
+          className="relative size-full overflow-hidden"
           onPointerMove={(event) => {
             if (isAutoPlaying && event.pointerType === "mouse")
               setShowControls(true);
