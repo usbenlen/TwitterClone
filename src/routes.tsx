@@ -2,6 +2,7 @@ import { createBrowserRouter } from "react-router";
 
 import MainLayout from "@/layouts/MainLayout";
 import { ProtectedRoute, GuestRoute } from "@/components/routeGuards";
+import AdminRoute from "@/admin/components/routeGuards/AdminRoute";
 
 import {
   HomePage,
@@ -20,7 +21,18 @@ import {
   BookmarksPage,
 } from "@/pages";
 
+import {
+  AdminPage,
+  ModerationPage,
+  AdminUsersPage,
+  AdminSettingsPage,
+  AdminUserPage,
+  AdminPostPage,
+  AdminCommentPage,
+} from "@/admin/pages";
+
 import { APP_ROUTES } from "@/constants/routes";
+import AdminLayout from "@/admin/layouts/AdminLayout";
 
 export const routes = createBrowserRouter([
   {
@@ -104,4 +116,44 @@ export const routes = createBrowserRouter([
       },
     ],
   },
+
+  {
+    element: <AdminRoute />,
+    children: [
+      {
+        path: APP_ROUTES.ADMIN,
+        element: <AdminLayout/>,
+        children: [
+          {
+            index: true,
+            element: <AdminPage />,
+          },
+          {
+            path: APP_ROUTES.MODERATION,
+            element: <ModerationPage />,
+          },
+          {
+            path: APP_ROUTES.USERS,
+            element: <AdminUsersPage />,
+          },
+          {
+            path: APP_ROUTES.ADMIN_SETTINGS,
+            element: <AdminSettingsPage />,
+          },
+          {
+            path: APP_ROUTES.ADMIN_USER,
+            element: <AdminUserPage />,
+          },
+          {
+            path: APP_ROUTES.ADMIN_POST,
+            element: <AdminPostPage />,
+          },
+          {
+            path: APP_ROUTES.ADMIN_COMMENT,
+            element: <AdminCommentPage />,
+          },
+        ]
+      },
+    ]
+  }
 ]);

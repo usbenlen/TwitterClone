@@ -21,6 +21,8 @@ export interface Comment {
 
   createdAt: string;
   updatedAt?: string | null;
+
+  isDeleted?: boolean;
 }
 
 export interface CreateCommentRequest {

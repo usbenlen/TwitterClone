@@ -1,0 +1,19 @@
+import { Navigate, Outlet } from "react-router";
+
+import { useAuth } from "@/hooks/useAuth";
+import { Spinner } from "@/ui";
+import { APP_ROUTES } from "@/constants/routes";
+
+export default function AdminRoute() {
+  const { user, isAuthenticated, isLoading } = useAuth();
+
+  if (isLoading) return <Spinner className="size-8 text-primary" />;
+
+  if (!isAuthenticated) return <Navigate to={APP_ROUTES.LOGIN} replace />;
+
+  if (user?.role !== "ADMIN") {
+    return <Navigate to={APP_ROUTES.HOME} replace />;
+  }
+
+  return <Outlet />;
+}

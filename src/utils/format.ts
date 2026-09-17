@@ -26,3 +26,32 @@ export function formatCount(n: number): string {
   if (n < 1_000_000) return `${(n / 1000).toFixed(1).replace(".0", "")} тис`;
   return `${(n / 1_000_000).toFixed(1).replace(".0", "")} млн`;
 }
+
+export function formatFullDate(iso: string): string {
+  const date = new Date(iso);
+
+  const datePart = date.toLocaleDateString("uk-UA", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
+
+  const timePart = date.toLocaleTimeString("uk-UA", {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+
+  return `${datePart}, ${timePart}`;
+}
+
+export const formatNumber = (value: number | string): string => {
+  const number = typeof value === "number"
+      ? value
+      : Number(value.replace(/\s/g, "").replace(",", "."));
+
+  if (Number.isNaN(number)) {
+    return "0";
+  }
+
+  return new Intl.NumberFormat("uk-UA").format(number);
+};

@@ -97,4 +97,45 @@ export const ENDPOINTS = {
     upload: "media/upload",
     byId: (id: string) => `media/${id}`,
   },
+  admin: {
+    dashboard: {
+      metrics: "admin/dashboard/metrics",
+      charts: (period: string) => `admin/dashboard/charts?period=${period}`, // 7d, 30d
+      tables: (limit = 20) => `admin/dashboard/tables?limit=${limit}`,
+    },
+
+    moderation: {
+      all: "admin/moderation",
+
+      post: {
+        byId: (id: string) => `admin/moderation/post/${id}`,
+        updateStatus: (id: string) => `admin/moderation/post/${id}/status`,
+        delete: (id: string) => `admin/moderation/post/${id}/delete`,
+      },
+
+      comment: {
+        byId: (id: string) => `admin/moderation/comment/${id}`,
+        updateStatus: (id: string) => `admin/moderation/comment/${id}/status`,
+        delete: (id: string) => `admin/moderation/comment/${id}/delete`,
+      },
+
+      user: {
+        byId: (id: string) => `admin/moderation/user/${id}`,
+        updateStatus: (id: string) => `admin/moderation/user/${id}/status`,
+        block: (id: string) => `admin/moderation/user/${id}/block`,
+        unblock: (id: string) => `admin/moderation/user/${id}/unblock`,
+        // delete: (id: string) => `admin/moderation/user/${id}/delete`,
+      },
+    },
+
+    users: {
+      all: "admin/users",
+
+      byUsername: (id: string) => `admin/users/${id}`,
+      updateStatus: (id: string) => `admin/users/user/${id}/status`,
+      block: (id: string) =>`admin/users/${id}/block`,
+      unblock: (id: string) => `admin/users/${id}/unblock`,
+      // delete: (id: string) => `admin/users/${id}/delete`,
+    }
+  },
 } as const;

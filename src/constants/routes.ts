@@ -21,14 +21,24 @@ export const APP_ROUTES = {
   SETTINGS_CHANGE_PASSWORD: "/settings/change-password",
   SETTINGS_CHANGE_PASSWORD_RESET: "/settings/change-password/reset",
 
+  ADMIN: "/admin",
+  MODERATION: "/admin/moderation",
+  USERS: "/admin/users",
+  ADMIN_SETTINGS: "/admin/settings",
+
+  ADMIN_USER: "/admin/user/:username",
+  ADMIN_POST: "/admin/post/:postId",
+  ADMIN_COMMENT: "/admin/comment/:commentId",
+
+  post: (postId: string) => `/post/${postId}`,
+
   NOT_FOUND: "*",
 
   profile: (username: string) => `/${username}`,
+  admin_user: (username: string) => `/admin/user/${username}`,
 
   following: (username: string) => `/${username}/following`,
   followers: (username: string) => `/${username}/followers`,
-
-  post: (postId: string) => `/post/${postId}`,
 
   search: (query = "", type: "posts" | "users" = "posts") => {
     const params = new URLSearchParams();

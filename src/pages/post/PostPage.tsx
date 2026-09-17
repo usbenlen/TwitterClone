@@ -3,9 +3,7 @@ import { useNavigate, useParams } from "react-router";
 import { ArrowLeft } from "lucide-react";
 
 import { tweetApi } from "@/api/tweet.api";
-
 import { Spinner } from "@/ui";
-
 import { TweetCard } from "@/components/tweet";
 
 import type { Tweet } from "@/types/tweet";
@@ -21,16 +19,33 @@ export default function PostPage() {
   const [notFound, setNotFound] = useState(false);
 
   useEffect(() => {
-    if (!postId) return;
+    if (!postId) {
+      setTweet(null);
+      setNotFound(true);
+      setIsLoading(false);
+      return;
+    }
 
     let active = true;
     const currentPostId = postId;
 
     async function loadPost() {
       try {
+        setIsLoading(true);
+        setNotFound(false);
+        setTweet(null);
+
         const result = await tweetApi.getById(currentPostId);
 
         if (!active) return;
+
+        // ВАЖНО:
+        // Заблокированный/удалённый пост считаем ненайденным
+        if (result.isDeleted) {
+          setTweet(null);
+          setNotFound(true);
+          return;
+        }
 
         setTweet(result);
 
@@ -43,9 +58,12 @@ export default function PostPage() {
             if (!active) return;
 
             setTweet((current) =>
-              current && current.id === currentPostId
-                ? { ...current, viewsCount: current.viewsCount + 1 }
-                : current,
+                current && current.id === currentPostId
+                    ? {
+                      ...current,
+                      viewsCount: current.viewsCount + 1,
+                    }
+                    : current,
             );
           } catch {
             viewedPostIds.delete(currentPostId);
@@ -54,20 +72,16 @@ export default function PostPage() {
       } catch {
         if (!active) return;
 
-        setNotFound(true);
         setTweet(null);
+        setNotFound(true);
       } finally {
-        if (active) setIsLoading(false);
+        if (active) {
+          setIsLoading(false);
+        }
       }
     }
 
-    queueMicrotask(() => {
-      if (!active) return;
-
-      setIsLoading(true);
-      setNotFound(false);
-      void loadPost();
-    });
+    void loadPost();
 
     return () => {
       active = false;
@@ -75,42 +89,44 @@ export default function PostPage() {
   }, [postId]);
 
   return (
-    <section className="w-full max-w-3xl border-r border-border bg-background">
-      <header className="sticky top-0 z-10 flex items-center gap-3 border-b border-border bg-background/80 px-4 py-4 backdrop-blur">
-        <button
-          type="button"
-          onClick={() => navigate(-1)}
-          className="cursor-pointer rounded-full p-2 text-foreground transition-colors hover:bg-muted"
-          aria-label="Назад"
-        >
-          <ArrowLeft className="size-5" />
-        </button>
+      <section className="w-full max-w-3xl border-r border-border bg-background">
+        <header className="sticky top-0 z-10 flex items-center gap-3 border-b border-border bg-background/80 px-4 py-4 backdrop-blur">
+          <button
+              type="button"
+              onClick={() => navigate(-1)}
+              className="cursor-pointer rounded-full p-2 text-foreground transition-colors hover:bg-muted"
+              aria-label="Назад"
+          >
+            <ArrowLeft className="size-5" />
+          </button>
 
-        <h1 className="text-xl font-bold text-foreground">Пост</h1>
-      </header>
+          <h1 className="text-xl font-bold text-foreground">
+            Пост
+          </h1>
+        </header>
 
-      {isLoading ? (
-        <div className="flex justify-center py-16">
-          <Spinner />
-        </div>
-      ) : notFound || !tweet ? (
-        <div className="px-4 py-16 text-center">
-          <h2 className="text-xl font-bold text-foreground">
-            Пост не знайдено
-          </h2>
+        {isLoading ? (
+            <div className="flex justify-center py-16">
+              <Spinner />
+            </div>
+        ) : notFound || !tweet ? (
+            <div className="px-4 py-16 text-center">
+              <h2 className="text-xl font-bold text-foreground">
+                Пост не найден
+              </h2>
 
-          <p className="mt-2 text-sm text-muted-foreground">
-            Можливо, його було видалено або посилання некоректне.
-          </p>
-        </div>
-      ) : (
-        <TweetCard
-          tweet={tweet}
-          navigateToPost={false}
-          variant="post"
-          commentsInitiallyOpen={true}
-        />
-      )}
-    </section>
+              <p className="mt-2 text-sm text-muted-foreground">
+                Возможно, он был удалён или больше недоступен.
+              </p>
+            </div>
+        ) : (
+            <TweetCard
+                tweet={tweet}
+                navigateToPost={false}
+                variant="post"
+                commentsInitiallyOpen={true}
+            />
+        )}
+      </section>
   );
 }

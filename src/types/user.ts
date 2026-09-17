@@ -6,6 +6,8 @@ export interface User {
   displayName?: string | null;
   email?: string | null;
 
+  role?: "USER" | "ADMIN";
+
   bio?: string | null;
   location?: Location | null;
 
@@ -20,6 +22,7 @@ export interface User {
   isVerified: boolean;
 
   createdAt: string;
+  isBlocked?: boolean;
 }
 
 export interface UserShort {

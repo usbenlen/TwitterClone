@@ -7,6 +7,7 @@ export const currentUser: User = {
   username: "dev_user",
   displayName: "Розробник",
   email: "dev@example.com",
+  role: "ADMIN",
   bio: "Пишу клон Twitter на React + ASP.NET.",
   location: locations[0],
   avatarUrl: undefined,

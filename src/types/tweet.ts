@@ -27,6 +27,9 @@ export interface Tweet {
 
   createdAt: string;
   updatedAt?: string | null;
+
+  isDeleted?: boolean;
+  reportsCount?: boolean;
 }
 
 export interface CreateTweetMedia {

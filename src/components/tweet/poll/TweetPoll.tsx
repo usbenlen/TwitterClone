@@ -68,7 +68,7 @@ export default function TweetPoll({ poll, tweetId }: TweetPollProps) {
               </span>
 
               {(hasVoted || expired) && (
-                <span className="text-sm font-semibold tabular-nums">
+                <span className="text-sm font-semibold">
                   {percent}%
                 </span>
               )}

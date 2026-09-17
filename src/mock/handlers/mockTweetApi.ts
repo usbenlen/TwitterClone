@@ -1,4 +1,4 @@
-import { currentUser } from "@/mock/data/users";
+import { currentUser, sampleAuthors } from "@/mock/data/users";
 import { tweets, setTweets, nextTweetId } from "@/mock/data/tweets";
 
 import type { Tweet, CreateTweetRequest } from "@/types/tweet";
@@ -7,31 +7,78 @@ import type { TweetPoll } from "@/types/poll";
 import { delay } from "@/mock/utils/delay";
 import { mediaStore } from "@/mock/stores/mediaStore";
 
+
 export const mockTweetApi = {
-  async getFeed(): Promise<Tweet[]> {
-    await delay();
-    return [...tweets];
-  },
+    async getFeed() {
+        await delay();
+
+        return tweets.filter((tweet) => {
+            const author = sampleAuthors.find(
+                (user) => user.username === tweet.author.username,
+            );
+
+            return author && !author.isBlocked && !tweet.isDeleted;
+        });
+    },
 
   async getBookmarked(): Promise<Tweet[]> {
     await delay();
     return tweets.filter((t) => t.bookmarkedByMe);
   },
 
-  async getById(id: string): Promise<Tweet> {
-    await delay();
+    async getAll() {
+        await delay();
 
-    const tweet = tweets.find((item) => item.id === id);
+        return tweets.filter((tweet) => {
+            const author = sampleAuthors.find(
+                (user) => user.username === tweet.author.username,
+            );
 
-    if (!tweet) throw new Error("Пост не знайдено.");
+            return author && !author.isBlocked && !tweet.isDeleted;
+        });
+    },
 
-    return tweet;
-  },
+    async getById(id: string) {
+        await delay();
 
-  async getByUsername(username: string): Promise<Tweet[]> {
-    await delay();
-    return tweets.filter((t) => t.author.username === username);
-  },
+        const tweet = tweets.find((item) => item.id === id);
+
+        if (!tweet) {
+            throw new Error("Пост не знайдений");
+        }
+
+        const author = sampleAuthors.find(
+            (user) => user.id === tweet.author.id,
+        );
+
+        if (!author || author.isBlocked) {
+            throw new Error("Пост не знайдений");
+        }
+
+        if (tweet.isDeleted) {
+            throw new Error("Пост не знайдений");
+        }
+
+        return tweet;
+    },
+
+    async getByUsername(username: string): Promise<Tweet[]> {
+        await delay();
+
+        const author = sampleAuthors.find(
+            (user) => user.username === username,
+        );
+
+        if (!author || author.isBlocked) {
+            return [];
+        }
+
+        return tweets.filter(
+            (tweet) =>
+                tweet.author.username === username &&
+                !tweet.isDeleted,
+        );
+    },
 
   async create(payload: CreateTweetRequest): Promise<Tweet> {
     await delay(300);

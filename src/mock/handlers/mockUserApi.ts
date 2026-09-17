@@ -16,28 +16,89 @@ const repostedTweetsByUsername: Record<string, string[]> = {
 };
 
 export const mockUserApi = {
+  getUserByUsername: async (username: string) => {
+    const user = sampleAuthors.find(
+        (u) => u.username === username
+    );
+
+    if (!user || user.isBlocked) {
+      return null;
+    }
+
+    return user;
+  },
+
+  toggleBlock: async (userId: string, blocked: boolean) => {
+    await delay();
+
+    const user = sampleAuthors.find((user) => user.id === userId);
+
+    if (!user) {
+      throw new Error("Пользователь не найден");
+    }
+
+    user.isBlocked = blocked;
+
+    return { ...user };
+  },
+
+  async toggleDelete(tweetId: string, isDeleted: boolean): Promise<Tweet> {
+    await delay();
+
+    const tweet = tweets.find((item) => item.id === tweetId);
+
+    if (!tweet) {
+      throw new Error("Публикация не найдена");
+    }
+
+    tweet.isDeleted = isDeleted;
+
+    return { ...tweet };
+  },
+
   async getAll(): Promise<User[]> {
     await delay();
 
     return [...sampleAuthors];
   },
 
-  async getById(id: string): Promise<User> {
+  async getById(id: string): Promise<Tweet> {
     await delay();
 
-    const found = sampleAuthors.find((user) => user.id === id);
-    if (!found) throw new Error("Користувача не знайдено");
+    const tweet = tweets.find((item) => item.id === id);
 
-    return { ...found };
+    if (!tweet) {
+      throw new Error("Пост не найден");
+    }
+
+    const author = sampleAuthors.find(
+        (user) => user.id === tweet.author.id,
+    );
+
+    if (tweet.isDeleted || author?.isBlocked) {
+      throw new Error("Пост не найден");
+    }
+
+    return {
+      ...tweet,
+      author: author
+          ? { ...author }
+          : tweet.author,
+    };
   },
 
-  async getByUsername(username: string): Promise<User> {
+  async getByUsername(username: string): Promise<User | null> {
     await delay();
 
-    const found = sampleAuthors.find((user) => user.username === username);
-    if (!found) throw new Error("Користувача не знайдено");
+    const user = sampleAuthors.find(
+        (u) => u.username === username,
+    );
 
-    return { ...found };
+    if (!user || user.isBlocked) {
+      return null;
+    }
+
+    return { ...user };
   },
 
   async getPosts(id: string): Promise<Tweet[]> {

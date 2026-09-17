@@ -45,7 +45,7 @@ const realTweetApi = {
 
   getByUsername: async (username: string) => {
     const posts = await apiClient.get<BackendPost[]>(
-      ENDPOINTS.posts.byUser(username),
+        ENDPOINTS.posts.byUser(username),
     );
 
     return posts.map(mapPostToTweet);
@@ -59,8 +59,8 @@ const realTweetApi = {
 
   create: async (data: CreateTweetRequest) => {
     const post = await apiClient.post<BackendPost>(
-      ENDPOINTS.posts.create,
-      data,
+        ENDPOINTS.posts.create,
+        data,
     );
 
     return mapPostToTweet(post);
@@ -68,8 +68,8 @@ const realTweetApi = {
 
   update: async (id: string, data: Partial<CreateTweetRequest>) => {
     const post = await apiClient.put<BackendPost>(
-      ENDPOINTS.posts.update(id),
-      data,
+        ENDPOINTS.posts.update(id),
+        data,
     );
 
     return mapPostToTweet(post);
@@ -80,21 +80,21 @@ const realTweetApi = {
   view: (id: string) => apiClient.post(ENDPOINTS.posts.view(id)),
 
   like: (id: string) =>
-    apiClient.post<TogglePostLikeResponse>(ENDPOINTS.posts.like(id)),
+      apiClient.post<TogglePostLikeResponse>(ENDPOINTS.posts.like(id)),
   unlike: (id: string) =>
-    apiClient.delete<TogglePostLikeResponse>(ENDPOINTS.posts.unlike(id)),
+      apiClient.delete<TogglePostLikeResponse>(ENDPOINTS.posts.unlike(id)),
   repost: (id: string) =>
-    apiClient.post<TogglePostRepostResponse>(ENDPOINTS.posts.repost(id)),
+      apiClient.post<TogglePostRepostResponse>(ENDPOINTS.posts.repost(id)),
   unrepost: (id: string) =>
-    apiClient.delete<TogglePostRepostResponse>(ENDPOINTS.posts.unrepost(id)),
+      apiClient.delete<TogglePostRepostResponse>(ENDPOINTS.posts.unrepost(id)),
   bookmark: (id: string) =>
-    apiClient.post<TogglePostBookmarkResponse | undefined>(
-      ENDPOINTS.posts.bookmark(id),
-    ),
+      apiClient.post<TogglePostBookmarkResponse | undefined>(
+          ENDPOINTS.posts.bookmark(id),
+      ),
   unbookmark: (id: string) =>
-    apiClient.delete<TogglePostBookmarkResponse | undefined>(
-      ENDPOINTS.posts.unbookmark(id),
-    ),
+      apiClient.delete<TogglePostBookmarkResponse | undefined>(
+          ENDPOINTS.posts.unbookmark(id),
+      ),
 
   toggleLike: (id: string, likedByMe: boolean): Promise<TogglePostLikeResponse> => {
     if (likedByMe) return realTweetApi.unlike(id);
