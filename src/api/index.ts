@@ -10,3 +10,4 @@ export * from "@/api/comment.api";
 export * from "@/api/poll.api";
 export * from "@/api/linkPreview.api"
 export * from "@/api/scheduledPost.api";
+export * from "@/api/recommendations.api";

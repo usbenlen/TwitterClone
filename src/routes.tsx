@@ -18,6 +18,7 @@ import {
   SettingsPage,
   SearchPage,
   BookmarksPage,
+  FollowRecommendationsPage,
 } from "@/pages";
 
 import { APP_ROUTES } from "@/constants/routes";
@@ -45,6 +46,10 @@ export const routes = createBrowserRouter([
           {
             path: APP_ROUTES.BOOKMARKS,
             element: <BookmarksPage />,
+          },
+          {
+            path: APP_ROUTES.FOLLOW_RECOMMENDATIONS,
+            element: <FollowRecommendationsPage />,
           },
           {
             path: APP_ROUTES.PROFILE,

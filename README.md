@@ -42,3 +42,49 @@
 ```
 
 Якщо сторінка не має придатного зображення, `imageUrl` може бути `null`.
+
+## Recommendations API
+
+Праві картки та сторінка `/follow` використовують два авторизовані endpoint-и.
+
+`GET /api/recommendations/trends?limit=4` повертає:
+
+```json
+{
+  "items": [
+    {
+      "id": "trend-id",
+      "title": "React 19",
+      "context": "Технології · Популярне",
+      "query": "React 19",
+      "postsCount": 12700
+    }
+  ]
+}
+```
+
+`postsCount` необов'язковий. `query` використовується для переходу до пошуку.
+
+`GET /api/recommendations/users?category=people&limit=4&cursor=opaque-value`
+повертає:
+
+```json
+{
+  "items": [
+    {
+      "id": "user-id",
+      "username": "username",
+      "displayName": "Display name",
+      "bio": "Profile biography",
+      "avatarUrl": null,
+      "location": null,
+      "isVerified": false
+    }
+  ],
+  "nextCursor": "next-opaque-value"
+}
+```
+
+`category` приймає `people` або `creators`. Остання сторінка повертає
+`nextCursor: null`. Cursor вважається непрозорим для клієнта; персоналізацію,
+порядок і виключення поточного користувача визначає backend.

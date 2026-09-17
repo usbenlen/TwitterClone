@@ -9,6 +9,7 @@ export { default as HomePage } from "@/pages/home/HomePage";
 export { default as PostPage } from "@/pages/post/PostPage";
 export { default as SearchPage } from "@/pages/search/SearchPage";
 export { default as BookmarksPage } from "@/pages/bookmarks/BookmarksPage";
+export { default as FollowRecommendationsPage } from "@/pages/follow/FollowRecommendationsPage";
 
 export { default as SettingsPage } from "@/pages/settings/SettingsPage";
 

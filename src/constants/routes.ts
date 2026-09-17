@@ -12,6 +12,7 @@ export const APP_ROUTES = {
   VERIFY_EMAIL: "/verify-email",
   SEARCH: "/search",
   BOOKMARKS: "/bookmarks",
+  FOLLOW_RECOMMENDATIONS: "/follow",
 
   POST: "/post/:postId",
 
@@ -30,6 +31,8 @@ export const APP_ROUTES = {
 
   following: (username: string) => `/${username}/following`,
   followers: (username: string) => `/${username}/followers`,
+
+  followRecommendations: (tab: "people" | "creators" = "people") => `/follow?tab=${tab}`,
 
   post: (postId: string) => `/post/${postId}`,
 

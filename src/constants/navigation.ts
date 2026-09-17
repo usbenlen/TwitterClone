@@ -1,5 +1,11 @@
 import type { ComponentType } from "react";
-import { Settings, UserRound, House, Bookmark } from "lucide-react";
+import {
+  Settings,
+  UserRound,
+  UserRoundPlus,
+  House,
+  Bookmark,
+} from "lucide-react";
 
 import { APP_ROUTES } from "@/constants/routes";
 
@@ -33,6 +39,13 @@ export const MAIN_NAVIGATION: NavigationItem[] = [
     label: "Закладки",
     icon: Bookmark,
     getPath: () => APP_ROUTES.BOOKMARKS,
+    requiresAuth: true,
+    mobilePlacement: ["more"],
+  },
+  {
+    label: "Рекомендації",
+    icon: UserRoundPlus,
+    getPath: () => APP_ROUTES.FOLLOW_RECOMMENDATIONS,
     requiresAuth: true,
     mobilePlacement: ["more"],
   },
