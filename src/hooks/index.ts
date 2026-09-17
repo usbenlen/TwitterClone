@@ -14,8 +14,9 @@ export { useImageCache } from "@/hooks/useImageCache";
 export { useTweetBookmark } from "@/hooks/useTweetBookmark";
 export { useClickOrDrag } from "@/hooks/useClickOrDrag";
 export { useUnsavedChangesGuard } from "@/hooks/useUnsavedChangesGuard";
+export { useBackNavigation } from "@/hooks/useBackNavigation";
 export { useRecommendedUsers, useTrends } from "@/hooks/useRecommendations";
 
-export { useLocationSearch } from "@/hooks/location/useLocationSearch"
+export { useLocationSearch } from "@/hooks/location/useLocationSearch";
 
 export * from "@/hooks/composer";

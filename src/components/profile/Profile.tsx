@@ -1,6 +1,6 @@
 import { FeedList } from "@/components/feed";
-
 import {
+  ProfileHeader,
   ProfileHero,
   ProfileInfo,
   ProfileStats,
@@ -46,6 +46,8 @@ export default function Profile({
   return (
     <FollowProvider>
       <section className="max-w-3xl border-r border-border bg-background">
+        <ProfileHeader user={user} />
+
         <ProfileHero
           user={user}
           isOwnProfile={isOwnProfile}

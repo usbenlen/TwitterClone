@@ -1,12 +1,13 @@
 import { useMemo, useState } from "react";
-import { ArrowLeft, SlidersHorizontal } from "lucide-react";
-import { useNavigate, useSearchParams } from "react-router";
+import { SlidersHorizontal } from "lucide-react";
+import { useLocation, useNavigate, useSearchParams } from "react-router";
 
 import { useSearch } from "@/hooks/useSearch";
 
 import { Spinner, Tab } from "@/ui";
 
 import { AdvancedSearchModal, SearchPageSearchBox } from "@/components/search";
+import { PageHeader } from "@/components/layout/pageHeader";
 import { TweetCard } from "@/components/tweet";
 import { UserListItem } from "@/components/user";
 
@@ -28,6 +29,7 @@ const SEARCH_TYPES: Array<{ value: SearchType; label: string }> = [
 
 export default function SearchPage() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [searchParams] = useSearchParams();
   const { user } = useAuth();
   const [filtersOpen, setFiltersOpen] = useState(false);
@@ -45,7 +47,9 @@ export default function SearchPage() {
   const activeResultsCount = activeType === "posts" ? posts.length : users.length;
 
   const switchType = (type: SearchType) => {
-    navigate(APP_ROUTES.search(criteriaForType(criteria, type)));
+    navigate(APP_ROUTES.search(criteriaForType(criteria, type)), {
+      replace: true,
+    });
   };
 
   const emptyMessage = !hasCriteria
@@ -56,19 +60,12 @@ export default function SearchPage() {
 
   return (
     <section className="w-full max-w-3xl border-r border-border bg-background">
-      <header className="sticky top-0 z-header border-b border-border bg-background/80 pt-4 backdrop-blur">
-        <div className="flex items-center gap-2 px-4">
-          <button
-            type="button"
-            onClick={() => navigate(-1)}
-            aria-label="Назад"
-            className="flex size-10 shrink-0 cursor-pointer items-center justify-center rounded-full transition-colors hover:bg-muted"
-          >
-            <ArrowLeft className="size-5" />
-          </button>
-
+      <PageHeader
+        backTo={APP_ROUTES.HOME}
+        content={
           <SearchPageSearchBox key={query} query={query} criteria={criteria} />
-
+        }
+        actions={
           <button
             type="button"
             onClick={() => setFiltersOpen(true)}
@@ -80,21 +77,22 @@ export default function SearchPage() {
               <span className="absolute right-1 top-1 size-2 rounded-full bg-primary" />
             )}
           </button>
-        </div>
-
-        <nav className="mt-4 flex" aria-label="Тип пошуку">
-          {SEARCH_TYPES.map((type) => (
-            <button
-              key={type.value}
-              type="button"
-              onClick={() => switchType(type.value)}
-              className="flex flex-1 cursor-pointer justify-center rounded-t-sm px-4 pt-3 transition-colors hover:bg-muted"
-            >
-              <Tab active={activeType === type.value}>{type.label}</Tab>
-            </button>
-          ))}
-        </nav>
-      </header>
+        }
+        footer={
+          <nav className="flex" aria-label="Тип пошуку">
+            {SEARCH_TYPES.map((type) => (
+              <button
+                key={type.value}
+                type="button"
+                onClick={() => switchType(type.value)}
+                className="flex flex-1 cursor-pointer justify-center rounded-t-sm px-4 pt-3 transition-colors hover:bg-muted"
+              >
+                <Tab active={activeType === type.value}>{type.label}</Tab>
+              </button>
+            ))}
+          </nav>
+        }
+      />
 
       {isLoading ? (
         <div className="flex justify-center py-12">
@@ -127,7 +125,12 @@ export default function SearchPage() {
           criteria={criteria}
           viewerHasLocation={Boolean(user?.location)}
           onApply={(next: SearchCriteria) => {
-            navigate(APP_ROUTES.search(next));
+            const nextPath = APP_ROUTES.search(next);
+
+            if (nextPath !== `${location.pathname}${location.search}`) {
+              navigate(nextPath);
+            }
+
             setFiltersOpen(false);
           }}
           onClose={() => setFiltersOpen(false)}

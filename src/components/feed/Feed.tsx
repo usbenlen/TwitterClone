@@ -1,6 +1,7 @@
 import { useFeed } from "@/hooks/useFeed";
 
-import { FeedHeader, FeedList } from "@/components/feed";
+import { FeedList } from "@/components/feed";
+import { PageHeader } from "@/components/layout/pageHeader";
 import { TweetComposer } from "@/components/tweet";
 
 export default function Feed() {
@@ -8,7 +9,7 @@ export default function Feed() {
 
   return (
     <section className="w-full max-w-3xl border-r border-border bg-background">
-      <FeedHeader title="Головна" />
+      <PageHeader title="Головна" showMobileLogo />
 
       <TweetComposer onCreated={prepend} />
 

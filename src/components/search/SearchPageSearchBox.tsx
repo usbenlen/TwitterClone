@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router";
+import { useLocation, useNavigate } from "react-router";
 
 import { SearchBox } from "@/ui";
 
@@ -17,17 +17,20 @@ export default function SearchPageSearchBox({
   criteria,
 }: SearchPageSearchBoxProps) {
   const navigate = useNavigate();
+  const location = useLocation();
   const [searchQuery, setSearchQuery] = useState(query);
 
   const submitSearch = () => {
     const trimmedQuery = searchQuery.trim();
 
-    if (!trimmedQuery) {
-      navigate(APP_ROUTES.search({ ...criteria, query: "" }));
-      return;
-    }
+    const nextPath = APP_ROUTES.search({
+      ...criteria,
+      query: trimmedQuery,
+    });
 
-    navigate(APP_ROUTES.search({ ...criteria, query: trimmedQuery }));
+    if (nextPath === `${location.pathname}${location.search}`) return;
+
+    navigate(nextPath);
   };
 
   return (

@@ -8,6 +8,8 @@ import type { ProfileTab } from "@/hooks/useProfile";
 import { Spinner } from "@/ui";
 
 import { Profile } from "@/components/profile";
+import { PageHeader } from "@/components/layout/pageHeader";
+import { APP_ROUTES } from "@/constants/routes";
 
 export default function ProfilePage() {
   const { username } = useParams<{ username: string }>();
@@ -39,23 +41,29 @@ export default function ProfilePage() {
 
   if (isLoading) {
     return (
-      <div className="max-w-3xl flex justify-center border-r border-border py-16">
-        <Spinner />
-      </div>
+      <section className="max-w-3xl border-r border-border">
+        <PageHeader title={`@${username ?? ""}`} backTo={APP_ROUTES.HOME} />
+        <div className="flex justify-center py-16">
+          <Spinner />
+        </div>
+      </section>
     );
   }
 
   if (notFound || !user) {
     return (
-      <div className="max-w-3xl border-r border-border px-4 py-16 text-center">
-        <h1 className="text-xl font-bold text-foreground">
-          Профіль не знайдено
-        </h1>
+      <section className="max-w-3xl border-r border-border">
+        <PageHeader title="Профіль" backTo={APP_ROUTES.HOME} />
+        <div className="px-4 py-16 text-center">
+          <h2 className="text-xl font-bold text-foreground">
+            Профіль не знайдено
+          </h2>
 
-        <p className="mt-2 text-sm text-muted-foreground">
-          Користувача @{username} не існує.
-        </p>
-      </div>
+          <p className="mt-2 text-sm text-muted-foreground">
+            Користувача @{username} не існує.
+          </p>
+        </div>
+      </section>
     );
   }
 

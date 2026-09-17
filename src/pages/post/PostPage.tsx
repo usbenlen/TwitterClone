@@ -1,11 +1,13 @@
 import { useEffect, useRef, useState } from "react";
-import { useNavigate, useParams } from "react-router";
-import { ArrowLeft } from "lucide-react";
+import { useParams } from "react-router";
 
 import { tweetApi, commentApi } from "@/api";
 
 import { Spinner } from "@/ui";
+import { PageHeader } from "@/components/layout/pageHeader";
 import { TweetCard } from "@/components/tweet";
+
+import { APP_ROUTES } from "@/constants/routes";
 
 import { withAncestorContext } from "@/utils/ancestors";
 import {
@@ -19,8 +21,6 @@ const viewedPostIds = new Set<string>();
 
 export default function PostPage() {
   const { postId } = useParams<{ postId: string }>();
-  const navigate = useNavigate();
-
   const [thread, setThread] = useState<{
     target: Tweet;
     replies: Tweet[];
@@ -198,21 +198,7 @@ export default function PostPage() {
 
       if (!target) return;
 
-      const header = document.querySelector("header");
-      const headerHeight = header?.getBoundingClientRect().height ?? 0;
-
-      const TARGET_TOP_OFFSET = 70;
-
-      const top =
-        target.getBoundingClientRect().top +
-        window.scrollY -
-        headerHeight -
-        TARGET_TOP_OFFSET;
-
-      window.scrollTo({
-        top,
-        behavior: "smooth",
-      });
+      target.scrollIntoView({ behavior: "smooth", block: "start" });
     });
 
     return () => cancelAnimationFrame(frame);
@@ -220,20 +206,10 @@ export default function PostPage() {
 
   return (
     <section className="w-full max-w-3xl border-r border-border bg-background min-h-screen">
-      <header className="sticky top-0 z-header flex items-center gap-3 border-b border-border bg-background/80 px-4 py-4 backdrop-blur">
-        <button
-          type="button"
-          onClick={() => navigate(-1)}
-          className="cursor-pointer rounded-full p-2 text-foreground transition-colors hover:bg-muted"
-          aria-label="Назад"
-        >
-          <ArrowLeft className="size-5" />
-        </button>
-
-        <h1 className="text-xl font-bold text-foreground">
-          {thread?.target.isComment ? "Відповідь" : "Пост"}
-        </h1>
-      </header>
+      <PageHeader
+        title={thread?.target.isComment ? "Відповідь" : "Пост"}
+        backTo={APP_ROUTES.HOME}
+      />
 
       {isLoading ? (
         <div className="flex justify-center py-16">
@@ -275,7 +251,7 @@ export default function PostPage() {
           </div>
 
           {/* Target Tweet / Comment */}
-          <div ref={targetRef} className="relative">
+          <div ref={targetRef} className="relative scroll-mt-14">
             <TweetCard
               tweet={thread.target}
               navigateToPost={false}

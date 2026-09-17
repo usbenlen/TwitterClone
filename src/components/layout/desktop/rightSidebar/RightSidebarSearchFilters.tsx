@@ -70,7 +70,7 @@ export default function RightSidebarSearchFilters() {
   const criteria = parseSearchCriteria(searchParams);
 
   const updateCriteria = (next: SearchCriteria) => {
-    navigate(APP_ROUTES.search(next));
+    navigate(APP_ROUTES.search(next), { replace: true });
   };
 
   return (

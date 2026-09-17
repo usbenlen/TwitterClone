@@ -1,11 +1,13 @@
-import { ArrowLeft, Loader2 } from "lucide-react";
-import { useNavigate, useSearchParams } from "react-router";
+import { Loader2 } from "lucide-react";
+import { useSearchParams } from "react-router";
 
+import { PageHeader } from "@/components/layout/pageHeader";
 import { RecommendationUserItem } from "@/components/user";
 import { useRecommendedUsers } from "@/hooks";
 import { Button, Tab } from "@/ui";
 
 import type { RecommendationCategory } from "@/types";
+import { APP_ROUTES } from "@/constants/routes";
 
 const tabs: Array<{ value: RecommendationCategory; label: string }> = [
   { value: "people", label: "Кого читати" },
@@ -17,7 +19,6 @@ function parseCategory(value: string | null): RecommendationCategory {
 }
 
 export default function FollowRecommendationsPage() {
-  const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const category = parseCategory(searchParams.get("tab"));
   const {
@@ -31,43 +32,35 @@ export default function FollowRecommendationsPage() {
   } = useRecommendedUsers(category, 4);
 
   const selectCategory = (nextCategory: RecommendationCategory) => {
-    setSearchParams({ tab: nextCategory });
+    setSearchParams({ tab: nextCategory }, { replace: true });
   };
 
   return (
     <section className="w-full max-w-3xl border-r border-border bg-background">
-      <header className="sticky top-0 z-header border-b border-border bg-background/80 backdrop-blur">
-        <div className="flex h-14 items-center gap-4 px-4">
-          <button
-            type="button"
-            onClick={() => navigate(-1)}
-            aria-label="Назад"
-            className="flex size-9 cursor-pointer items-center justify-center rounded-full transition-colors hover:bg-muted"
+      <PageHeader
+        title="Рекомендації"
+        backTo={APP_ROUTES.HOME}
+        footer={
+          <nav
+            className="flex"
+            aria-label="Категорії рекомендацій"
+            role="tablist"
           >
-            <ArrowLeft className="size-5" />
-          </button>
-          <h1 className="text-xl font-bold text-foreground">Рекомендації</h1>
-        </div>
-
-        <nav
-          className="flex"
-          aria-label="Категорії рекомендацій"
-          role="tablist"
-        >
-          {tabs.map((tab) => (
-            <button
-              key={tab.value}
-              type="button"
-              role="tab"
-              aria-selected={category === tab.value}
-              onClick={() => selectCategory(tab.value)}
-              className="flex flex-1 cursor-pointer justify-center rounded-t-sm px-4 pt-3 transition-colors hover:bg-muted"
-            >
-              <Tab active={category === tab.value}>{tab.label}</Tab>
-            </button>
-          ))}
-        </nav>
-      </header>
+            {tabs.map((tab) => (
+              <button
+                key={tab.value}
+                type="button"
+                role="tab"
+                aria-selected={category === tab.value}
+                onClick={() => selectCategory(tab.value)}
+                className="flex flex-1 cursor-pointer justify-center rounded-t-sm px-4 pt-3 transition-colors hover:bg-muted"
+              >
+                <Tab active={category === tab.value}>{tab.label}</Tab>
+              </button>
+            ))}
+          </nav>
+        }
+      />
 
       <div className="py-3">
         <h2 className="px-4 pb-2 text-xl font-bold text-foreground">

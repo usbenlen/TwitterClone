@@ -48,3 +48,18 @@ export function formatCount(n: number): string {
   if (n < 1_000_000) return `${(n / 1000).toFixed(1).replace(".0", "")} тис`;
   return `${(n / 1_000_000).toFixed(1).replace(".0", "")} млн`;
 }
+
+const postCountPluralRules = new Intl.PluralRules("uk-UA");
+
+export function formatPostCount(count: number): string {
+  const label = {
+    one: "допис",
+    few: "дописи",
+    many: "дописів",
+    other: "допису",
+    zero: "дописів",
+    two: "дописи",
+  }[postCountPluralRules.select(count)];
+
+  return `${formatCount(count)} ${label}`;
+}

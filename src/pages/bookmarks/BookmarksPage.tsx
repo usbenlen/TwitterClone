@@ -1,13 +1,14 @@
 import { useBookmarks } from "@/hooks/useBookmarks";
 
-import { FeedHeader, FeedList } from "@/components/feed";
+import { FeedList } from "@/components/feed";
+import { PageHeader } from "@/components/layout/pageHeader";
 
 export default function BookmarksPage() {
   const { tweets, isLoading, error } = useBookmarks();
 
   return (
     <section className="w-full max-w-3xl border-r border-border bg-background">
-      <FeedHeader title="Закладки" />
+      <PageHeader title="Закладки" />
 
       <FeedList
         tweets={tweets}
