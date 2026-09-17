@@ -3,19 +3,22 @@ import { useEffect, useState } from "react";
 import { searchApi } from "@/api";
 
 import { SEARCH_DEBOUNCE_MS } from "@/constants/app";
+import { useAuth } from "@/hooks/useAuth";
+import { useFollow } from "@/hooks/useFollow";
+import { hasActiveSearchCriteria } from "@/utils/search";
 
-import type { Tweet, UserShort } from "@/types";
+import type { SearchCriteria, Tweet, UserShort } from "@/types";
 
-export function useSearch(query: string) {
+export function useSearch(criteria: SearchCriteria) {
+  const { user } = useAuth();
+  const { following } = useFollow();
   const [users, setUsers] = useState<UserShort[]>([]);
   const [posts, setPosts] = useState<Tweet[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const value = query.trim();
-
-    if (!value) {
+    if (!hasActiveSearchCriteria(criteria)) {
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setUsers([]);
       setPosts([]);
@@ -31,9 +34,14 @@ export function useSearch(query: string) {
         setIsLoading(true);
         setError(null);
 
+        const viewer = {
+          followingIds: following.map((followedUser) => followedUser.id),
+          location: user?.location,
+        };
+
         const [userResults, postResults] = await Promise.all([
-          searchApi.users(value),
-          searchApi.posts(value),
+          searchApi.users(criteria, viewer),
+          searchApi.posts(criteria, viewer),
         ]);
 
         if (!active) return;
@@ -58,7 +66,7 @@ export function useSearch(query: string) {
       active = false;
       window.clearTimeout(timer);
     };
-  }, [query]);
+  }, [criteria, following, user?.location]);
 
   useEffect(() => {
     const handleTweetDeleted = (e: Event) => {

@@ -17,7 +17,7 @@ export default function RightSidebarSearchBox() {
       return;
     }
 
-    navigate(APP_ROUTES.search(query, "posts"));
+    navigate(APP_ROUTES.search({ query, type: "posts" }));
   };
 
   return (

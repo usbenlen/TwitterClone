@@ -1,3 +1,6 @@
+import type { SearchCriteria } from "@/types";
+import { DEFAULT_SEARCH_CRITERIA, serializeSearchCriteria } from "@/utils/search";
+
 export const APP_ROUTES = {
   HOME: "/",
 
@@ -30,14 +33,7 @@ export const APP_ROUTES = {
 
   post: (postId: string) => `/post/${postId}`,
 
-  search: (query = "", type: "posts" | "users" = "posts") => {
-    const params = new URLSearchParams();
-
-    if (query.trim()) params.set("q", query.trim());
-    params.set("type", type);
-
-    return `/search?${params.toString()}`;
-  },
+  search: (criteria: Partial<SearchCriteria> = {}) => `/search?${serializeSearchCriteria({ ...DEFAULT_SEARCH_CRITERIA, ...criteria })}`,
 
   forgotPassword: () => "/forgot-password",
   verifyResetCode: () => "/verify-reset-code",

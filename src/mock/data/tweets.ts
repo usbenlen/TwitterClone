@@ -23,6 +23,7 @@ export let tweets: Tweet[] = [
     content: "Математика — це мова, якою написаний Всесвіт.",
     attachments: [],
     author: sampleAuthors[1],
+    location: sampleAuthors[1].location,
     likesCount: 340,
     repliesCount: 21,
     retweetsCount: 58,

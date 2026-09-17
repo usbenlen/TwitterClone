@@ -11,3 +11,4 @@ export * from "@/types/location";
 export * from "@/types/linkPreview";
 export * from "@/types/follow";
 export * from "@/types/scheduledPost";
+export * from "@/types/search";

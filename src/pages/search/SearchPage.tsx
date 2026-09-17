@@ -1,45 +1,54 @@
-import { ArrowLeft } from "lucide-react";
+import { useMemo, useState } from "react";
+import { ArrowLeft, SlidersHorizontal } from "lucide-react";
 import { useNavigate, useSearchParams } from "react-router";
 
 import { useSearch } from "@/hooks/useSearch";
 
 import { Spinner, Tab } from "@/ui";
 
-import { SearchPageSearchBox } from "@/components/search";
+import { AdvancedSearchModal, SearchPageSearchBox } from "@/components/search";
 import { TweetCard } from "@/components/tweet";
 import { UserListItem } from "@/components/user";
 
 import { APP_ROUTES } from "@/constants/routes";
+import { useAuth } from "@/hooks";
+import {
+  criteriaForType,
+  hasActiveSearchCriteria,
+  hasNonDefaultFilters,
+  parseSearchCriteria,
+} from "@/utils/search";
 
-type SearchType = "posts" | "users";
+import type { SearchCriteria, SearchType } from "@/types";
 
 const SEARCH_TYPES: Array<{ value: SearchType; label: string }> = [
   { value: "posts", label: "Пости" },
   { value: "users", label: "Користувачі" },
 ];
 
-function normalizeSearchType(value: string | null): SearchType {
-  return value === "users" ? "users" : "posts";
-}
-
 export default function SearchPage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  const { user } = useAuth();
+  const [filtersOpen, setFiltersOpen] = useState(false);
 
-  const query = searchParams.get("q") ?? "";
-  const activeType = normalizeSearchType(searchParams.get("type"));
+  const criteria = useMemo(
+    () => parseSearchCriteria(searchParams),
+    [searchParams],
+  );
+  const query = criteria.query;
+  const activeType = criteria.type;
 
-  const { users, posts, isLoading, error } = useSearch(query);
+  const { users, posts, isLoading, error } = useSearch(criteria);
 
-  const hasQuery = query.trim().length > 0;
-  const activeResultsCount =
-    activeType === "posts" ? posts.length : users.length;
+  const hasCriteria = hasActiveSearchCriteria(criteria);
+  const activeResultsCount = activeType === "posts" ? posts.length : users.length;
 
   const switchType = (type: SearchType) => {
-    navigate(APP_ROUTES.search(query, type));
+    navigate(APP_ROUTES.search(criteriaForType(criteria, type)));
   };
 
-  const emptyMessage = !hasQuery
+  const emptyMessage = !hasCriteria
     ? "Введіть запит, щоб знайти пости або користувачів."
     : activeType === "posts"
       ? "Пости за цим запитом не знайдені."
@@ -58,11 +67,19 @@ export default function SearchPage() {
             <ArrowLeft className="size-5" />
           </button>
 
-          <SearchPageSearchBox
-            key={query}
-            query={query}
-            activeType={activeType}
-          />
+          <SearchPageSearchBox key={query} query={query} criteria={criteria} />
+
+          <button
+            type="button"
+            onClick={() => setFiltersOpen(true)}
+            aria-label="Search filters"
+            className="relative flex size-10 shrink-0 cursor-pointer items-center justify-center rounded-full transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring lg:hidden"
+          >
+            <SlidersHorizontal className="size-5" />
+            {hasNonDefaultFilters(criteria) && (
+              <span className="absolute right-1 top-1 size-2 rounded-full bg-primary" />
+            )}
+          </button>
         </div>
 
         <nav className="mt-4 flex" aria-label="Тип пошуку">
@@ -103,6 +120,18 @@ export default function SearchPage() {
             <UserListItem key={user.id} user={user} />
           ))}
         </div>
+      )}
+
+      {filtersOpen && (
+        <AdvancedSearchModal
+          criteria={criteria}
+          viewerHasLocation={Boolean(user?.location)}
+          onApply={(next: SearchCriteria) => {
+            navigate(APP_ROUTES.search(next));
+            setFiltersOpen(false);
+          }}
+          onClose={() => setFiltersOpen(false)}
+        />
       )}
     </section>
   );

@@ -33,6 +33,7 @@ export const sampleAuthors: User[] = [
     username: "ada",
     displayName: "Ada Lovelace",
     email: "ada@example.com",
+    location: locations[3],
     birthDate: "1815-12-10",
     birthDateVisibility: "public",
     birthYearVisibility: "public",
@@ -52,6 +53,7 @@ export const sampleAuthors: User[] = [
     username: "linus",
     displayName: "Linus",
     email: "linus@example.com",
+    location: locations[0],
     birthDate: "1969-12-28",
     birthDateVisibility: "followers",
     birthYearVisibility: "only_me",
@@ -71,6 +73,7 @@ export const sampleAuthors: User[] = [
     username: "margaret",
     displayName: "Margaret Hamilton",
     email: "margaret@example.com",
+    location: locations[2],
 
     followersCount: 3100,
     followingCount: 18,
@@ -87,6 +90,7 @@ export const sampleAuthors: User[] = [
     username: "josino",
     displayName: "Jonny Sino",
     email: "jonny@example.com",
+    location: locations[1],
 
     followersCount: 5600,
     followingCount: 27,

@@ -5,16 +5,16 @@ import { SearchBox } from "@/ui";
 
 import { APP_ROUTES } from "@/constants/routes.ts";
 
-type SearchType = "posts" | "users";
+import type { SearchCriteria } from "@/types";
 
 interface SearchPageSearchBoxProps {
   query: string;
-  activeType: SearchType;
+  criteria: SearchCriteria;
 }
 
 export default function SearchPageSearchBox({
   query,
-  activeType,
+  criteria,
 }: SearchPageSearchBoxProps) {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState(query);
@@ -23,11 +23,11 @@ export default function SearchPageSearchBox({
     const trimmedQuery = searchQuery.trim();
 
     if (!trimmedQuery) {
-      navigate(APP_ROUTES.SEARCH);
+      navigate(APP_ROUTES.search({ ...criteria, query: "" }));
       return;
     }
 
-    navigate(APP_ROUTES.search(trimmedQuery, activeType));
+    navigate(APP_ROUTES.search({ ...criteria, query: trimmedQuery }));
   };
 
   return (
