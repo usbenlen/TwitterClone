@@ -31,7 +31,6 @@ type UsersProps = {
     onPageChange: (page: number) => void;
 };
 
-
 export default function Users({
     items,
     filters,

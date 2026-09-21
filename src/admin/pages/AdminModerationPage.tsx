@@ -7,7 +7,7 @@ import { useModerationPagination } from "@/admin/hooks/moderation/useModerationP
 import { useModerationSelection } from "@/admin/hooks/moderation/useModerationSelection.ts";
 import { Spinner } from "@/ui";
 
-import type { ModerationItem } from "@/admin/components/moderation/types";
+import type { ModerationItem } from "@/admin/types/moderation";
 
 export default function AdminModerationPage() {
     const navigate = useNavigate();
@@ -93,23 +93,14 @@ export default function AdminModerationPage() {
         resetPage();
     };
 
-    const handleOpen = (
-        type: ModerationItem["type"],
-        itemId: string,
-    ) => {
-        switch (type) {
-            case "posts":
-                navigate(`/admin/post/${itemId}`);
-                break;
+    const handleOpen = (item: ModerationItem) => {
+        const reportId = item.signals[0]?.id;
 
-            case "comments":
-                navigate(`/admin/comment/${itemId}`);
-                break;
-
-            case "users":
-                navigate(`/admin/user/${itemId}`);
-                break;
+        if (!reportId) {
+            return;
         }
+
+        navigate(`/admin/moderation/${reportId}`);
     };
 
     const handleKeep = async (
@@ -167,9 +158,7 @@ export default function AdminModerationPage() {
             totalPages={totalPages}
             totalCount={filteredItems.length}
             selectedIds={selectedIds}
-            allCurrentPageSelected={
-                allCurrentPageSelected
-            }
+            allCurrentPageSelected={allCurrentPageSelected}
             busyAction={busyAction}
             error={error}
             onTypeChange={handleTypeChange}
@@ -178,13 +167,9 @@ export default function AdminModerationPage() {
             onSortChange={handleSortChange}
             onSourceChange={handleSourceChange}
             onToggleSelected={toggleSelected}
-            onToggleSelectAll={
-                toggleSelectAll
-            }
+            onToggleSelectAll={toggleSelectAll}
             onClearSelection={clearSelection}
-            onBlockSelected={
-                handleBlockSelected
-            }
+            onBlockSelected={handleBlockSelected}
             onOpen={handleOpen}
             onKeep={handleKeep}
             onDelete={handleDelete}

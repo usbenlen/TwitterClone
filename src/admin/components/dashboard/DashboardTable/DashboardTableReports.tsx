@@ -51,12 +51,10 @@ export default function DashboardTableReports({
                         <tbody className="divide-y divide-border text-sm">
                         {latestReports.map((report) => (
                             <tr
-                                key={report.targetId}
+                                key={report.latestSignal.id}
                                 className="cursor-pointer transition-colors hover:bg-muted-foreground/10"
                                 onClick={() =>
-                                    navigate(
-                                        `/admin/post/${report.targetId}`,
-                                    )
+                                    navigate(`/admin/moderation/${report.latestSignal.id}`)
                                 }
                             >
                                 <td className="py-3 font-medium">
@@ -65,9 +63,7 @@ export default function DashboardTableReports({
 
                                 <td className="py-3 font-semibold">
                                     {report.count}{" "}
-                                    {getReportLabel(
-                                        report.count,
-                                    )}
+                                    {getReportLabel(report.count)}
                                 </td>
 
                                 <td className="py-3 text-right text-muted-foreground">

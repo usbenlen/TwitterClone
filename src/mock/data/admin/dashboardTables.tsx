@@ -1,5 +1,5 @@
 import type { AdminUser } from "@/admin/types/users";
-import type { ModerationSignal } from "@/admin/components/moderation/types";
+import type { ModerationSignal } from "@/admin/types/moderation";
 import type { Tweet } from "@/types";
 
 import { sampleAuthors } from "@/mock/data/users";
@@ -7,6 +7,7 @@ import { tweets } from "@/mock/data/tweets";
 import { moderationSignals } from "@/mock/data/admin/moderationSignals";
 
 export type DashboardReportRow = {
+    reportId: string;
     targetId: string;
     count: number;
     latestSignal: ModerationSignal;
@@ -24,13 +25,12 @@ const latestUsers = [...sampleAuthors]
             new Date(b.createdAt).getTime() -
             new Date(a.createdAt).getTime(),
     )
-    .slice(0, 5);
+    .slice(0, 10);
 
 const latestReports = Object.values(
     moderationSignals.reduce<
         Record<string, DashboardReportRow>
     >((groups, signal) => {
-        // Берём только жалобы на публикации
         if (
             signal.targetType !== "posts" ||
             signal.source !== "user"
@@ -50,6 +50,7 @@ const latestReports = Object.values(
 
         if (!existing) {
             groups[signal.targetId] = {
+                reportId: signal.id,
                 targetId: signal.targetId,
                 count: 1,
                 latestSignal: signal,
@@ -62,12 +63,11 @@ const latestReports = Object.values(
         existing.count += 1;
 
         if (
-            new Date(signal.createdAt).getTime() >
-            new Date(
-                existing.latestSignal.createdAt,
-            ).getTime()
+            new Date(signal.createdAt) >
+            new Date(existing.latestSignal.createdAt)
         ) {
             existing.latestSignal = signal;
+            existing.reportId = signal.id;
         }
 
         return groups;
@@ -82,9 +82,6 @@ const latestReports = Object.values(
                 a.latestSignal.createdAt,
             ).getTime(),
     )
-    .slice(0, 5);
+    .slice(0, 10);
 
-export const mockDashboardTablesData: DashboardTablesMockData = {
-    latestReports,
-    latestUsers,
-};
+export const mockDashboardTablesData: DashboardTablesMockData = {latestReports, latestUsers};

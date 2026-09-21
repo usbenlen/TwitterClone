@@ -26,9 +26,8 @@ export const APP_ROUTES = {
   USERS: "/admin/users",
   ADMIN_SETTINGS: "/admin/settings",
 
-  ADMIN_USER: "/admin/user/:username",
-  ADMIN_POST: "/admin/post/:postId",
-  ADMIN_COMMENT: "/admin/comment/:commentId",
+  INFO_REPORT: "/admin/moderation/:reportId",
+  INFO_USER: "/admin/users/:userId",
 
   post: (postId: string) => `/post/${postId}`,
 

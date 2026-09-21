@@ -4,7 +4,7 @@ import {
     Users,
 } from "lucide-react";
 
-import type { ModerationTab } from "./types";
+import type { ModerationTab } from "@/admin/types/moderation";
 
 type ModerationTabsProps = {
     activeTab: ModerationTab;

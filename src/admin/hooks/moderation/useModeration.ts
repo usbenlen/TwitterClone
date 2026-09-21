@@ -2,11 +2,14 @@ import { useEffect, useState } from "react";
 
 import { moderationApi } from "@/admin/api/moderationApi.ts";
 
+import { MOCK_ENABLED } from "@/mock/config";
+import { moderationSignals } from "@/mock/data/admin/moderationSignals";
+
 import type {
     ModerationItem,
     ModerationStatus,
     ModerationType,
-} from "@/admin/components/moderation/types.ts";
+} from "@/admin/types/moderation";
 
 export function useModeration() {
     const [items, setItems] = useState<
@@ -22,6 +25,25 @@ export function useModeration() {
 
     const [busyAction, setBusyAction] =
         useState<string | null>(null);
+
+    const updateSignalStatus = (
+        type: Exclude<ModerationType, "all">,
+        itemId: string,
+        status: ModerationStatus,
+    ) => {
+        if (!MOCK_ENABLED) {
+            return;
+        }
+
+        moderationSignals.forEach((signal) => {
+            if (
+                signal.targetType === type &&
+                signal.targetId === itemId
+            ) {
+                signal.status = status;
+            }
+        });
+    };
 
     useEffect(() => {
         let cancelled = false;
@@ -75,10 +97,18 @@ export function useModeration() {
         }
 
         try {
-            setBusyAction(`item:${type}:${itemId}`);
+            setBusyAction(
+                `item:${type}:${itemId}`,
+            );
             setError(null);
 
             await moderationApi.updateStatus(
+                type,
+                itemId,
+                status,
+            );
+
+            updateSignalStatus(
                 type,
                 itemId,
                 status,
@@ -104,7 +134,6 @@ export function useModeration() {
         }
     };
 
-
     const approveItem = async (
         type: Exclude<
             ModerationType,
@@ -119,12 +148,22 @@ export function useModeration() {
         );
     };
 
-    const deleteItem = async (item: ModerationItem) => {
+    const deleteItem = async (
+        item: ModerationItem,
+    ) => {
         try {
-            setBusyAction(`item:${item.type}:${item.id}`);
+            setBusyAction(
+                `item:${item.type}:${item.id}`,
+            );
             setError(null);
 
             await moderationApi.updateStatus(
+                item.type,
+                item.id,
+                "deleted",
+            );
+
+            updateSignalStatus(
                 item.type,
                 item.id,
                 "deleted",
@@ -146,27 +185,45 @@ export function useModeration() {
                 }),
             );
         } catch {
-            setError("Не вдалося видалити елемент.");
+            setError(
+                "Не вдалося видалити елемент.",
+            );
         } finally {
             setBusyAction(null);
         }
     };
 
-    const removeFromQueue = (type: ModerationType, itemId: string) => {
+    const removeFromQueue = (
+        type: ModerationType,
+        itemId: string,
+    ) => {
         setItems((prev) =>
             prev.filter(
                 (item) =>
-                    !(item.type === type && item.id === itemId),
+                    !(
+                        item.type === type &&
+                        item.id === itemId
+                    ),
             ),
         );
     };
 
-    const keepItem = async (item: ModerationItem) => {
+    const keepItem = async (
+        item: ModerationItem,
+    ) => {
         try {
-            setBusyAction(`item:${item.type}:${item.id}`);
+            setBusyAction(
+                `item:${item.type}:${item.id}`,
+            );
             setError(null);
 
             await moderationApi.updateStatus(
+                item.type,
+                item.id,
+                "approved",
+            );
+
+            updateSignalStatus(
                 item.type,
                 item.id,
                 "approved",
@@ -188,36 +245,62 @@ export function useModeration() {
                 }),
             );
         } catch {
-            setError("Не вдалося видалити елемент.");
+            setError(
+                "Не вдалося залишити елемент.",
+            );
         } finally {
             setBusyAction(null);
         }
     };
 
     const rejectItem = async (
-        type: Exclude<ModerationType, "all">,
+        type: Exclude<
+            ModerationType,
+            "all"
+        >,
         itemId: string,
     ) => {
         try {
-            setBusyAction(`item:${type}:${itemId}`);
+            setBusyAction(
+                `item:${type}:${itemId}`,
+            );
             setError(null);
 
-            await updateStatus(type, itemId, "deleted");
+            await updateStatus(
+                type,
+                itemId,
+                "deleted",
+            );
 
-            removeFromQueue(type, itemId);
+            removeFromQueue(
+                type,
+                itemId,
+            );
         } catch {
-            setError("Не вдалося видалити елемент.");
+            setError(
+                "Не вдалося видалити елемент.",
+            );
         } finally {
             setBusyAction(null);
         }
     };
 
-    const blockItem = async (item: ModerationItem) => {
+    const blockItem = async (
+        item: ModerationItem,
+    ) => {
         try {
-            setBusyAction(`item:${item.type}:${item.id}`);
+            setBusyAction(
+                `item:${item.type}:${item.id}`,
+            );
             setError(null);
 
             await moderationApi.updateStatus(
+                item.type,
+                item.id,
+                "blocked",
+            );
+
+            updateSignalStatus(
                 item.type,
                 item.id,
                 "blocked",
@@ -239,18 +322,30 @@ export function useModeration() {
                 }),
             );
         } catch {
-            setError("Не вдалося видалити елемент.");
+            setError(
+                "Не вдалося заблокувати елемент.",
+            );
         } finally {
             setBusyAction(null);
         }
     };
 
-    const unblockItem = async (item: ModerationItem) => {
+    const unblockItem = async (
+        item: ModerationItem,
+    ) => {
         try {
-            setBusyAction(`item:${item.type}:${item.id}`);
+            setBusyAction(
+                `item:${item.type}:${item.id}`,
+            );
             setError(null);
 
             await moderationApi.updateStatus(
+                item.type,
+                item.id,
+                "approved",
+            );
+
+            updateSignalStatus(
                 item.type,
                 item.id,
                 "approved",
@@ -272,7 +367,9 @@ export function useModeration() {
                 }),
             );
         } catch {
-            setError("Не вдалося видалити елемент.");
+            setError(
+                "Не вдалося розблокувати елемент.",
+            );
         } finally {
             setBusyAction(null);
         }

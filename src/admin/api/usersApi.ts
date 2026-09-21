@@ -14,22 +14,22 @@ const realAdminUsersApi = {
     },
 
     block: async (userId: string): Promise<void> => {
-        await apiClient.patch(
+        await apiClient.put(
             ENDPOINTS.admin.users.block(userId),
         );
     },
 
     unblock: async (userId: string): Promise<void> => {
-        await apiClient.patch(
+        await apiClient.put(
             ENDPOINTS.admin.users.unblock(userId),
         );
     },
 
-    // delete: async (userId: string): Promise<void> => {
-    //     await apiClient.delete(
-    //         ENDPOINTS.admin.users.delete(userId),
-    //     );
-    // },
+    delete: async (userId: string): Promise<void> => {
+        await apiClient.delete(
+            ENDPOINTS.admin.users.delete(userId),
+        );
+    },
 };
 
 export const usersApi = MOCK_ENABLED ? mockAdminUsersApi : realAdminUsersApi;

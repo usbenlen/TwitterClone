@@ -90,8 +90,7 @@ export const ENDPOINTS = {
     unfollow: (userId: string) => `follows/${userId}`,
     followers: (userId: string) => `follows/${userId}/followers`,
     following: (userId: string) => `follows/${userId}/following`,
-    removeFollower: (userId: string, followId: string) =>
-      `follows/${userId}/followers/${followId}`,
+    removeFollower: (userId: string, followId: string) => `follows/${userId}/followers/${followId}`,
   },
   media: {
     upload: "media/upload",
@@ -100,42 +99,37 @@ export const ENDPOINTS = {
   admin: {
     dashboard: {
       metrics: "admin/dashboard/metrics",
-      charts: (period: string) => `admin/dashboard/charts?period=${period}`, // 7d, 30d
-      tables: (limit = 20) => `admin/dashboard/tables?limit=${limit}`,
+      charts: (period: string) => `admin/dashboard/charts?period=${period}`,
+      tables: (limit = 10) => `admin/dashboard/tables?limit=${limit}`,
     },
 
     moderation: {
       all: "admin/moderation",
+      byId: (reportId: string) => `admin/moderation/${reportId}`,
+      updateStatus: (reportId: string) => `admin/moderation/${reportId}/status`,
 
       post: {
-        byId: (id: string) => `admin/moderation/post/${id}`,
-        updateStatus: (id: string) => `admin/moderation/post/${id}/status`,
-        delete: (id: string) => `admin/moderation/post/${id}/delete`,
+        delete: (postId: string) => `admin/moderation/post/${postId}`
       },
 
       comment: {
-        byId: (id: string) => `admin/moderation/comment/${id}`,
-        updateStatus: (id: string) => `admin/moderation/comment/${id}/status`,
-        delete: (id: string) => `admin/moderation/comment/${id}/delete`,
+        delete: (commentId: string) => `admin/moderation/comment/${commentId}`
       },
 
       user: {
-        byId: (id: string) => `admin/moderation/user/${id}`,
-        updateStatus: (id: string) => `admin/moderation/user/${id}/status`,
-        block: (id: string) => `admin/moderation/user/${id}/block`,
-        unblock: (id: string) => `admin/moderation/user/${id}/unblock`,
-        // delete: (id: string) => `admin/moderation/user/${id}/delete`,
+        delete: (userId: string) => `admin/moderation/user/${userId}`,
+        block: (userId: string) => `admin/moderation/user/${userId}/block`,
+        unblock: (userId: string) => `admin/moderation/user/${userId}/unblock`,
       },
     },
 
     users: {
       all: "admin/users",
-
-      byUsername: (id: string) => `admin/users/${id}`,
-      updateStatus: (id: string) => `admin/users/user/${id}/status`,
-      block: (id: string) =>`admin/users/${id}/block`,
-      unblock: (id: string) => `admin/users/${id}/unblock`,
-      // delete: (id: string) => `admin/users/${id}/delete`,
-    }
+      byId: (userId: string) => `admin/users/${userId}`,
+      updateStatus: (userId: string) => `admin/users/${userId}/status`,
+      block: (userId: string) => `admin/users/${userId}/block`,
+      unblock: (userId: string) => `admin/users/${userId}/unblock`,
+      delete: (userId: string) => `admin/users/${userId}/delete`,
+    },
   },
 } as const;

@@ -2,7 +2,7 @@ import ModerationCommentCard from "./cards/ModerationCommentCard";
 import ModerationPostCard from "./cards/ModerationPostCard";
 import ModerationUserCard from "./cards/ModerationUserCard";
 
-import type {ModerationItem} from "@/admin/components/moderation/types.ts";
+import type {ModerationItem} from "@/admin/types/moderation";
 
 import { Button } from "@/ui";
 
@@ -18,10 +18,7 @@ type ModerationListProps = {
     onClearSelection: () => void;
     onBlockSelected: () => void;
 
-    onOpen: (
-        type: ModerationItem["type"],
-        itemId: string,
-    ) => void;
+    onOpen: (item: ModerationItem) => void;
 
     onKeep: (item: ModerationItem) => void;
     onDelete: (item: ModerationItem) => void;
@@ -115,7 +112,7 @@ export default function ModerationList({
                                     selected={selected}
                                     busy={busy}
                                     onToggleSelected={() => onToggleSelected(item)}
-                                    onOpen={() => onOpen(item.type, item.id)}
+                                    onOpen={() => onOpen(item)}
                                     onKeep={() => onKeep(item)}
                                     onDelete={() => onDelete(item)}
                                 />
@@ -129,7 +126,7 @@ export default function ModerationList({
                                     selected={selected}
                                     busy={busy}
                                     onToggleSelected={() => onToggleSelected(item)}
-                                    onOpen={() => onOpen(item.type, item.id)}
+                                    onOpen={() => onOpen(item)}
                                     onKeep={() => onKeep(item)}
                                     onDelete={() => onDelete(item)}
                                 />
@@ -143,7 +140,7 @@ export default function ModerationList({
                                     selected={selected}
                                     busy={busy}
                                     onToggleSelected={() => onToggleSelected(item)}
-                                    onOpen={() => onOpen(item.type, item.id)}
+                                    onOpen={() => onOpen(item)}
                                     onKeep={() => onKeep(item)}
                                     onBlock={() => onBlock(item)}
                                     onUnblock={() => onUnblock(item)}

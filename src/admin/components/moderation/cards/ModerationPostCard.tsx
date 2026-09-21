@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Trash2 } from "lucide-react";
 
 import { Button } from "@/ui";
-import { type ModerationItem, statusLabels } from "@/admin/components/moderation/types";
+import { type ModerationItem, statusLabels } from "@/admin/types/moderation";
 import { ConfirmModal } from "@/components/modal";
 
 import ModerationCard from "./ModerationCard";

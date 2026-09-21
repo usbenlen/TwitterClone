@@ -6,39 +6,57 @@ import { mockAdminModerationApi } from "@/mock/handlers/admin/mockAdminModeratio
 
 import type {
     ModerationItem,
-    ModerationSignal,
     ModerationStatus,
-} from "@/admin/components/moderation/types";
-
-type ModerationTargetType =
-    | "posts"
-    | "users"
-    | "comments";
+} from "@/admin/types/moderation";
 
 const realModerationApi = {
-    getItems: async (): Promise<ModerationItem[] > => {
+    getItems: async (): Promise<ModerationItem[]> => {
         return apiClient.get<ModerationItem[]>(
             ENDPOINTS.admin.moderation.all,
         );
     },
 
-    getSignals: async (
-        targetType: ModerationTargetType,
-        targetId: string,
-    ): Promise<ModerationSignal[]> => {
-        return apiClient.get<ModerationSignal[]>(
-            `/admin/moderation/${targetType}/${targetId}/signals`,
-        );
-    },
-
     updateStatus: async (
-        targetType: ModerationTargetType,
-        targetId: string,
+        type: Exclude<ModerationItem["type"], "all">,
+        itemId: string,
         status: ModerationStatus,
     ): Promise<void> => {
         await apiClient.patch(
-            `/admin/moderation/${targetType}/${targetId}/status`,
-            {status},
+            ENDPOINTS.admin.moderation.updateStatus(itemId),
+            {
+                type,
+                status,
+            },
+        );
+    },
+
+    deletePost: async (postId: string): Promise<void> => {
+        await apiClient.delete(
+            ENDPOINTS.admin.moderation.post.delete(postId),
+        );
+    },
+
+    deleteComment: async (commentId: string): Promise<void> => {
+        await apiClient.delete(
+            ENDPOINTS.admin.moderation.comment.delete(commentId),
+        );
+    },
+
+    blockUser: async (userId: string): Promise<void> => {
+        await apiClient.put(
+            ENDPOINTS.admin.moderation.user.block(userId),
+        );
+    },
+
+    unblockUser: async (userId: string): Promise<void> => {
+        await apiClient.put(
+            ENDPOINTS.admin.moderation.user.unblock(userId),
+        );
+    },
+
+    deleteUser: async (userId: string): Promise<void> => {
+        await apiClient.delete(
+            ENDPOINTS.admin.moderation.user.delete(userId),
         );
     },
 };

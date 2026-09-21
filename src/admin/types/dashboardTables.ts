@@ -1,5 +1,5 @@
 import type { AdminUser } from "@/admin/types/users";
-import type { ModerationSignal } from "@/admin/components/moderation/types";
+import type { ModerationSignal } from "@/admin/types/moderation";
 import type {Tweet} from "@/types";
 
 export type DashboardReportRow = {

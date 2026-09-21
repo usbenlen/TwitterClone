@@ -6,7 +6,7 @@ import ModerationPagination from "./ModerationPagination";
 import type {
     ModerationFiltersState,
     ModerationItem,
-} from "./types";
+} from "@/admin/types/moderation";
 
 type ModerationProps = {
     items: ModerationItem[];
@@ -44,10 +44,7 @@ type ModerationProps = {
     onToggleSelectAll: () => void;
     onClearSelection: () => void;
 
-    onOpen: (
-        type: ModerationItem["type"],
-        itemId: string,
-    ) => void;
+    onOpen: (item: ModerationItem) => void;
 
     onKeep: (item: ModerationItem) => void;
     onDelete: (item: ModerationItem) => void;

@@ -36,7 +36,7 @@ export default function AdminUsersPage() {
     } = useUsersPagination(filteredUsers);
 
     const handleOpen = (userId: string) => {
-        navigate(`/admin/user/${userId}`);
+        navigate(`/admin/users/${userId}`);
     };
 
     const handleSearchChange = (value: string) => {

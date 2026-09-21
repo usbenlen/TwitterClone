@@ -39,8 +39,6 @@ export default function PostPage() {
 
         if (!active) return;
 
-        // ВАЖНО:
-        // Заблокированный/удалённый пост считаем ненайденным
         if (result.isDeleted) {
           setTweet(null);
           setNotFound(true);
@@ -116,7 +114,7 @@ export default function PostPage() {
               </h2>
 
               <p className="mt-2 text-sm text-muted-foreground">
-                Возможно, он был удалён или больше недоступен.
+                Можливо, він був видалений або недоступний.
               </p>
             </div>
         ) : (

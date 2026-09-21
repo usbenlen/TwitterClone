@@ -1,5 +1,6 @@
 import type { Tweet } from "@/types/tweet";
 import { currentUser, sampleAuthors } from "./users";
+import umbertoImage from "@/mock/media/images/umberto-jXd2FSvcRr8-unsplash.jpg";
 
 export let tweets: Tweet[] = [
   {
@@ -19,7 +20,7 @@ export let tweets: Tweet[] = [
   {
     id: "t2",
     content: "Математика — це мова, якою написаний Всесвіт.",
-    attachments: [],
+    attachments: [{ id: "media-t2-1", type: "image", url: umbertoImage }, { id: "media-t2-1", type: "image", url: umbertoImage }],
     author: sampleAuthors[1],
     likesCount: 340,
     repliesCount: 21,

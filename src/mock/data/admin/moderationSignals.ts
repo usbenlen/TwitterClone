@@ -1,4 +1,4 @@
-import type { ModerationSignal } from "@/admin/components/moderation/types";
+import type { ModerationSignal } from "@/admin/types/moderation";
 
 export const moderationSignals: ModerationSignal[] = [
     {
@@ -279,6 +279,24 @@ export const moderationSignals: ModerationSignal[] = [
         reporter: {
             id: "u2",
             username: "ada",
+        },
+    },
+
+    {
+        id: "user-signal-1",
+        targetType: "users",
+        targetId: "u3",
+
+        source: "user",
+        reason: "harassment",
+        reasonLabel: "Образливий контент",
+        createdAt: new Date(
+            Date.now() - 1000 * 60 * 20,
+        ).toISOString(),
+
+        reporter: {
+            id: "u1",
+            username: "dev_user",
         },
     },
 

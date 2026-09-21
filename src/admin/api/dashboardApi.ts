@@ -28,7 +28,7 @@ const realDashboardApi = {
     },
 
     getTables: async (
-        limit = 20,
+        limit = 10,
     ): Promise<DashboardTablesResponse> => {
         return apiClient.get<DashboardTablesResponse>(
             ENDPOINTS.admin.dashboard.tables(limit),

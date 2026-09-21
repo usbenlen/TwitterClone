@@ -44,6 +44,13 @@ export function formatFullDate(iso: string): string {
   return `${datePart}, ${timePart}`;
 }
 
+export const formatDate = (date: string | Date) =>
+    new Date(date).toLocaleDateString("uk-UA", {
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    });
+
 export const formatNumber = (value: number | string): string => {
   const number = typeof value === "number"
       ? value

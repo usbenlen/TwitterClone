@@ -95,27 +95,27 @@ export function useUsers() {
         }
     };
 
-    // const deleteUser = async (user: User) => {
-    //     try {
-    //         setBusyAction(`user:${user.id}`);
-    //         setError(null);
-    //
-    //         await usersApi.delete(user.id);
-    //
-    //         setUsers((previousUsers) =>
-    //             previousUsers.filter(
-    //                 (currentUser) =>
-    //                     currentUser.id !== user.id,
-    //             ),
-    //         );
-    //     } catch {
-    //         setError(
-    //             "Не вдалося видалити користувача.",
-    //         );
-    //     } finally {
-    //         setBusyAction(null);
-    //     }
-    // };
+    const deleteUser = async (user: User) => {
+        try {
+            setBusyAction(`user:${user.id}`);
+            setError(null);
+
+            await usersApi.delete(user.id);
+
+            setUsers((previousUsers) =>
+                previousUsers.filter(
+                    (currentUser) =>
+                        currentUser.id !== user.id,
+                ),
+            );
+        } catch {
+            setError(
+                "Не вдалося видалити користувача.",
+            );
+        } finally {
+            setBusyAction(null);
+        }
+    };
 
     return {
         users,
@@ -124,6 +124,6 @@ export function useUsers() {
         busyAction,
         blockUser,
         unblockUser,
-        // deleteUser,
+        deleteUser,
     };
 }

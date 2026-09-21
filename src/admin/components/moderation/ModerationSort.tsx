@@ -2,7 +2,7 @@ import { Search } from "lucide-react";
 
 import Select from "@/admin/components/ui/selects/Select.tsx";
 
-import type { ModerationSort } from "./types";
+import type { ModerationSort } from "@/admin/types/moderation";
 
 type ModerationSortProps = {
     query: string;
@@ -30,7 +30,7 @@ export default function ModerationSort({
                             event.target.value,
                         )
                     }
-                    placeholder="Поиск по тексту, имени или username..."
+                    placeholder="Пошук за текстом, ім'ям або username..."
                     className="h-10 rounded-full border border-border bg-background pl-10 pr-4 text-sm outline-none transition placeholder:text-muted-foreground focus:border-primary focus:ring-2 focus:ring-primary/10"
                 />
             </div>

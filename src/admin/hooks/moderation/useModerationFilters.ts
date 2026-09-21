@@ -7,7 +7,7 @@ import type {
     ModerationStatusFilter,
     ModerationType,
     ModerationFiltersState,
-} from "@/admin/components/moderation/types.ts";
+} from "@/admin/types/moderation";
 
 const getLatestSignalTime = (
     item: ModerationItem,

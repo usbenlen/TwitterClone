@@ -1,4 +1,4 @@
-import type { ModerationFiltersState } from "./types";
+import type { ModerationFiltersState } from "@/admin/types/moderation";
 import Input from "@/admin/components/ui/Input.tsx";
 import Select from "@/admin/components/ui/selects/Select.tsx";
 

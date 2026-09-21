@@ -1,4 +1,4 @@
-import type { ModerationStatus } from "@/admin/components/moderation/types";
+import type { ModerationStatus } from "@/admin/types/moderation";
 
 export const moderationStatuses: Record<
     string,

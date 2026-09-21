@@ -26,9 +26,8 @@ import {
   ModerationPage,
   AdminUsersPage,
   AdminSettingsPage,
+  AdminReportPage,
   AdminUserPage,
-  AdminPostPage,
-  AdminCommentPage,
 } from "@/admin/pages";
 
 import { APP_ROUTES } from "@/constants/routes";
@@ -141,16 +140,12 @@ export const routes = createBrowserRouter([
             element: <AdminSettingsPage />,
           },
           {
-            path: APP_ROUTES.ADMIN_USER,
+            path: APP_ROUTES.INFO_REPORT,
+            element: <AdminReportPage />,
+          },
+          {
+            path: APP_ROUTES.INFO_USER,
             element: <AdminUserPage />,
-          },
-          {
-            path: APP_ROUTES.ADMIN_POST,
-            element: <AdminPostPage />,
-          },
-          {
-            path: APP_ROUTES.ADMIN_COMMENT,
-            element: <AdminCommentPage />,
           },
         ]
       },

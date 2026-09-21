@@ -49,9 +49,7 @@ export default function DashboardTableUsers({
                             <tr
                                 key={user.id}
                                 onClick={() =>
-                                    navigate(
-                                        `/admin/user/${user.username}`,
-                                    )
+                                    navigate(`/admin/users/${user.id}`)
                                 }
                                 className="cursor-pointer transition-colors hover:bg-muted-foreground/10"
                             >

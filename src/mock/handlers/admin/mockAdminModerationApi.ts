@@ -3,7 +3,7 @@ import type {
     ModerationItem,
     ModerationSignal,
     ModerationStatus,
-} from "@/admin/components/moderation/types";
+} from "@/admin/types/moderation";
 
 import { moderationSignals } from "@/mock/data/admin/moderationSignals";
 import { moderationStatuses } from "@/mock/data/admin/moderationStatuses";
