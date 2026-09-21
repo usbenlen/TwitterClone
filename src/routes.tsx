@@ -19,6 +19,7 @@ import {
   SearchPage,
   BookmarksPage,
   FollowRecommendationsPage,
+  LandingPage,
 } from "@/pages";
 
 import { APP_ROUTES } from "@/constants/routes";
@@ -28,11 +29,10 @@ export const routes = createBrowserRouter([
     element: <ProtectedRoute />,
     children: [
       {
-        path: APP_ROUTES.HOME,
         element: <MainLayout />,
         children: [
           {
-            index: true,
+            path: APP_ROUTES.HOME,
             element: <HomePage />,
           },
           {
@@ -83,6 +83,10 @@ export const routes = createBrowserRouter([
   {
     element: <GuestRoute />,
     children: [
+      {
+        path: APP_ROUTES.LANDING,
+        element: <LandingPage />,
+      },
       {
         path: APP_ROUTES.LOGIN,
         element: <LoginPage />,

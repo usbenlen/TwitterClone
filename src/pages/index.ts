@@ -5,6 +5,8 @@ export { default as VerifyResetCodePage } from "@/pages/auth/VerifyResetCodePage
 export { default as ResetPasswordPage } from "@/pages/auth/ResetPasswordPage";
 export { default as VerifyEmailPage } from "@/pages/auth/VerifyEmailPage";
 
+export { default as LandingPage } from "@/pages/landing/LandingPage";
+
 export { default as HomePage } from "@/pages/home/HomePage";
 export { default as PostPage } from "@/pages/post/PostPage";
 export { default as SearchPage } from "@/pages/search/SearchPage";

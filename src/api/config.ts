@@ -19,6 +19,7 @@ export const API_BASE_URL = buildApiBaseUrl();
 // Ендпоінти API. Тут зібрано всі шляхи, щоб не дублювати рядки
 export const ENDPOINTS = {
   auth: {
+    google: "auth/google",
     login: "auth/login",
     register: "auth/register",
     refresh: "auth/refresh",

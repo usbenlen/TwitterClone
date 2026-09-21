@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 
 import { AppLogo } from "@/ui";
+import { APP_ROUTES } from "@/constants/routes";
 
 interface AuthShellProps {
   title: string;
@@ -18,7 +19,7 @@ export function AuthShell({
   return (
     <div className="flex min-h-screen flex-col bg-background">
       <div className="flex items-center justify-between px-4 py-4">
-        <AppLogo />
+        <AppLogo to={APP_ROUTES.LANDING} />
       </div>
 
       <div className="flex flex-1 items-center justify-center px-4 pb-16">

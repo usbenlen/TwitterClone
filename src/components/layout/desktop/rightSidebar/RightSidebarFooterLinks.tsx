@@ -1,11 +1,23 @@
-export default function RightSidebarFooterLinks() {
+import { cn } from "@/utils/cn";
+
+interface RightSidebarFooterLinksProps {
+  className?: string;
+}
+
+export default function RightSidebarFooterLinks({
+  className,
+}: RightSidebarFooterLinksProps) {
   const links = ["Про нас", "Конфіденційність", "Умови", "Допомога"];
 
   return (
-    <div className="px-2 text-xs text-muted-foreground">
+    <div className={cn("px-2 text-xs text-muted-foreground", className)}>
       <div className="flex flex-wrap gap-x-3 gap-y-1">
         {links.map((link) => (
-          <button key={link} className="cursor-pointer hover:underline">
+          <button
+            key={link}
+            type="button"
+            className="cursor-pointer hover:underline"
+          >
             {link}
           </button>
         ))}
