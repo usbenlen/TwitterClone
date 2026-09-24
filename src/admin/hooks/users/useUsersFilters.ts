@@ -1,10 +1,10 @@
 import { useMemo, useState } from "react";
 
 import type { User } from "@/types";
-import type { UsersFiltersState } from "@/admin/components/users/types";
-import type { UserStatusFilter } from "@/admin/constants/users.ts";
+import type { UsersFiltersState } from "@/admin/types/users";
+import type { UserStatusFilter } from "@/admin/constants/users";
 
-export function useUsersFilters(users: User[]) {
+export default function useUsersFilters(users: User[]) {
     const [filters, setFilters] =
         useState<UsersFiltersState>({
             search: "",

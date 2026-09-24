@@ -6,7 +6,7 @@ import {
 
 const easeOutCubic = (value: number) => 1 - Math.pow(1 - value, 3);
 
-export function useAnimatedNumber(
+export default function useAnimatedNumber(
     target: number,
     duration: number,
     isReady: boolean,

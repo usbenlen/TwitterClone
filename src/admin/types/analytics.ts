@@ -7,7 +7,7 @@ export type AnalyticsContentType =
     | "posts"
     | "comments";
 
-export type DashboardAnalyticsResponse = {
+export type DashboardAnalytics = {
     audience: Record<
         AnalyticsPeriod,
         number[]

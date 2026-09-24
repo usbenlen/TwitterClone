@@ -1,52 +1,37 @@
 import { useMemo, useState } from "react";
 
 import type {
-    ModerationItem,
-    ModerationSource,
-    ModerationSort,
-    ModerationStatusFilter,
-    ModerationType,
-    ModerationFiltersState,
+    ReportDecision,
+    ReportSignal,
+    ReportSignalSource,
+    ReportStatus,
+    ReportTargetType,
 } from "@/admin/types/moderation";
 
-const getLatestSignalTime = (
-    item: ModerationItem,
-): number => {
-    if (item.signals.length === 0) {
-        return 0;
-    }
+export type ReportSort =
+    | "newest"
+    | "oldest";
 
-    return Math.max(
-        ...item.signals.map((signal) =>
-            new Date(signal.createdAt).getTime(),
-        ),
-    );
+export type ReportFiltersState = {
+    type: ReportTargetType | "all";
+    search: string;
+    source: ReportSignalSource | "all";
+    status: ReportStatus | "all";
+    decision: ReportDecision | "all";
+    sort: ReportSort;
 };
 
-const getActivity = (
-    item: ModerationItem,
-): number => {
-    if (item.type !== "posts") {
-        return 0;
-    }
-
-    return (
-        item.subject.likesCount +
-        item.subject.repliesCount +
-        item.subject.retweetsCount
-    );
-};
-
-export function useModerationFilters(
-    items: ModerationItem[],
+export default function useModerationFilters(
+    items: ReportSignal[],
 ) {
     const [filters, setFilters] =
-        useState<ModerationFiltersState>({
+        useState<ReportFiltersState>({
             type: "all",
             search: "",
-            status: "all",
-            sort: "newest",
             source: "all",
+            status: "all",
+            decision: "all",
+            sort: "newest",
         });
 
     const filteredItems = useMemo(() => {
@@ -57,127 +42,70 @@ export function useModerationFilters(
             .filter((item) => {
                 if (
                     filters.type !== "all" &&
-                    item.type !== filters.type
+                    item.targetType !== filters.type
                 ) {
                     return false;
                 }
 
-                const matchesStatus = (
-                    item: ModerationItem,
-                    status: ModerationStatusFilter,
-                ): boolean => {
-                    switch (status) {
-                        case "all":
-                            return true;
-
-                        case "pending":
-                            return item.status === "pending";
-
-                        case "blocked":
-                            return item.status === "blocked";
-
-                        case "deleted":
-                            return item.status === "deleted";
-
-                        case "approved":
-                            return item.status === "approved";
-
-                        default:
-                            return false;
-                    }
-                };
-
-                if (!matchesStatus(item, filters.status)) {
+                if (
+                    filters.source !== "all" &&
+                    item.source !== filters.source
+                ) {
                     return false;
                 }
 
-                if (filters.source !== "all") {
-                    const hasSource =
-                        item.signals.some(
-                            (signal) =>
-                                signal.source ===
-                                filters.source,
-                        );
+                if (
+                    filters.status !== "all" &&
+                    item.status !== filters.status
+                ) {
+                    return false;
+                }
 
-                    if (!hasSource) {
-                        return false;
-                    }
+                if (
+                    filters.decision !== "all" &&
+                    item.decision !== filters.decision
+                ) {
+                    return false;
                 }
 
                 if (!normalizedSearch) {
                     return true;
                 }
 
-                if (item.type === "posts") {
-                    const content =
-                        item.subject.content.toLowerCase();
+                const reason = item.reasonLabel.toLowerCase();
 
-                    const username =
-                        item.subject.author.username.toLowerCase();
+                const username = item.reporter?.username.toLowerCase() ?? "";
 
-                    const displayName = (
-                        item.subject.author.displayName ?? "").toLowerCase();
+                const system = item.system?.label.toLowerCase() ?? "";
 
-                    return (
-                        content.includes(
-                            normalizedSearch,
-                        ) ||
-                        username.includes(
-                            normalizedSearch,
-                        ) ||
-                        displayName.includes(
-                            normalizedSearch,
-                        )
-                    );
-                }
-
-                if (item.type === "users") {
-                    const username =
-                        item.subject.username.toLowerCase();
-
-                    const displayName = (
-                        item.subject.displayName ?? "").toLowerCase();
-
-                    return (
-                        username.includes(
-                            normalizedSearch,
-                        ) ||
-                        displayName.includes(
-                            normalizedSearch,
-                        )
-                    );
-                }
-
-                if (item.type === "comments") {
-                    return item.subject.content
+                return (
+                    reason.includes(
+                        normalizedSearch,
+                    ) ||
+                    username.includes(
+                        normalizedSearch,
+                    ) ||
+                    system.includes(
+                        normalizedSearch,
+                    ) ||
+                    item.targetId
                         .toLowerCase()
                         .includes(
                             normalizedSearch,
-                        );
-                }
-
-                return false;
+                    )
+                );
             })
             .sort((a, b) => {
+                const dateA = new Date(a.createdAt).getTime();
+                const dateB = new Date(b.createdAt).getTime();
+
                 switch (filters.sort) {
                     case "oldest":
-                        return (
-                            getLatestSignalTime(a) -
-                            getLatestSignalTime(b)
-                        );
-
-                    case "activity":
-                        return (
-                            getActivity(b) -
-                            getActivity(a)
-                        );
+                        return dateA - dateB;
 
                     case "newest":
                     default:
-                        return (
-                            getLatestSignalTime(b) -
-                            getLatestSignalTime(a)
-                        );
+                        return dateB - dateA;
                 }
             });
     }, [items, filters]);
@@ -190,7 +118,7 @@ export function useModerationFilters(
     };
 
     const setType = (
-        type: ModerationType,
+        type: ReportTargetType | "all",
     ) => {
         setFilters((previous) => ({
             ...previous,
@@ -198,8 +126,17 @@ export function useModerationFilters(
         }));
     };
 
+    const setSource = (
+        source: ReportSignalSource | "all",
+    ) => {
+        setFilters((previous) => ({
+            ...previous,
+            source,
+        }));
+    };
+
     const setStatus = (
-        status: ModerationStatusFilter,
+        status: ReportStatus | "all",
     ) => {
         setFilters((previous) => ({
             ...previous,
@@ -207,21 +144,21 @@ export function useModerationFilters(
         }));
     };
 
+    const setDecision = (
+        decision: ReportDecision | "all",
+    ) => {
+        setFilters((previous) => ({
+            ...previous,
+            decision,
+        }));
+    };
+
     const setSort = (
-        sort: ModerationSort,
+        sort: ReportSort,
     ) => {
         setFilters((previous) => ({
             ...previous,
             sort,
-        }));
-    };
-
-    const setSource = (
-        source: ModerationSource,
-    ) => {
-        setFilters((previous) => ({
-            ...previous,
-            source,
         }));
     };
 
@@ -230,8 +167,9 @@ export function useModerationFilters(
         filteredItems,
         setSearch,
         setType,
-        setStatus,
-        setSort,
         setSource,
+        setStatus,
+        setDecision,
+        setSort,
     };
 }

@@ -1,12 +1,13 @@
 import type { User } from "@/types/user";
-import UserCard from "@/admin/components/users/cards/UserCard.tsx";
+import UsersCard from "@/admin/components/users/cards/UsersCard.tsx";
 
 type UsersListProps = {
     items: User[];
 
     onOpen: (userId: string) => void;
-    onBlock: (user: User) => void;
-    onUnblock: (user: User) => void;
+    onBlock: (user: User) => Promise<void>;
+    onUnblock: (user: User) => Promise<void>;
+    onDelete: (user: User) => Promise<void>;
 };
 
 export default function UsersList({
@@ -14,6 +15,7 @@ export default function UsersList({
     onOpen,
     onBlock,
     onUnblock,
+    onDelete,
 }: UsersListProps) {
     return (
         <div className="w-full">
@@ -30,15 +32,16 @@ export default function UsersList({
             </div>
 
             <div className="relative w-full">
-                <div className="pointer-events-none absolute inset-y-0 z-10"/>
+                <div className="pointer-events-none absolute inset-y-0 z-10" />
 
                 {items.map((user) => (
-                    <UserCard
+                    <UsersCard
                         key={user.id}
                         user={user}
-                        onOpen={onOpen}
-                        onBlock={onBlock}
-                        onUnblock={onUnblock}
+                        onOpen={() => onOpen(user.id)}
+                        onBlock={() => onBlock(user)}
+                        onUnblock={() => onUnblock(user)}
+                        onDelete={() => onDelete(user)}
                     />
                 ))}
 

@@ -2,7 +2,7 @@ type ModerationHeroProps = {
     count: number;
 };
 
-export default function ModerationHero({
+export default function ModerationHeader({
     count,
 }: ModerationHeroProps) {
     return (

@@ -1,7 +1,7 @@
-import type { ModerationSignal } from "@/admin/types/moderation";
+import type { ReportSignal } from "@/admin/types/moderation";
 
 type ReportStatsProps = {
-    signals: ModerationSignal[];
+    signals: ReportSignal[];
 };
 
 const MAX_VISIBLE_REPORTERS = 5;
@@ -62,7 +62,7 @@ export default function ReportStats({
                 </h2>
 
                 <p className="mt-1 text-sm text-muted-foreground">
-                    {totalReports} скарг · {uniqueReporters} користувачів
+                    {totalReports} скарг, {uniqueReporters} користувачів
                 </p>
             </div>
 
@@ -80,11 +80,7 @@ export default function ReportStats({
                             <div key={reason}>
                                 <div className="flex items-center gap-2">
                                     <span className="text-sm font-medium text-foreground">
-                                        {reason}
-                                    </span>
-
-                                    <span className="text-sm text-muted-foreground">
-                                        ·
+                                        {reason}:
                                     </span>
 
                                     <span className="text-sm font-semibold text-foreground">

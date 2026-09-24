@@ -1,6 +1,6 @@
-import type { ModerationSignal } from "@/admin/types/moderation";
+import type { ReportSignal } from "@/admin/types/moderation";
 
-export const moderationSignals: ModerationSignal[] = [
+export const moderationSignals: ReportSignal[] = [
     {
         id: "post-signal-1",
         targetType: "posts",
@@ -9,6 +9,7 @@ export const moderationSignals: ModerationSignal[] = [
         source: "user",
         reason: "spam",
         reasonLabel: "Спам",
+        status: "pending",
         createdAt: new Date(
             Date.now() - 1000 * 60 * 15,
         ).toISOString(),
@@ -27,6 +28,7 @@ export const moderationSignals: ModerationSignal[] = [
         source: "user",
         reason: "harassment",
         reasonLabel: "Образливий контент",
+        status: "pending",
         createdAt: new Date(
             Date.now() - 1000 * 60 * 12,
         ).toISOString(),
@@ -45,6 +47,7 @@ export const moderationSignals: ModerationSignal[] = [
         source: "user",
         reason: "spam",
         reasonLabel: "Спам",
+        status: "pending",
         createdAt: new Date(
             Date.now() - 1000 * 60 * 8,
         ).toISOString(),
@@ -59,9 +62,11 @@ export const moderationSignals: ModerationSignal[] = [
         id: "post-signal-4",
         targetType: "posts",
         targetId: "t2",
+
         source: "system",
         reason: "spam",
         reasonLabel: "Спам",
+        status: "pending",
         createdAt: new Date(
             Date.now() - 1000 * 60 * 5,
         ).toISOString(),
@@ -76,10 +81,11 @@ export const moderationSignals: ModerationSignal[] = [
         id: "post-signal-5",
         targetType: "posts",
         targetId: "t3",
-        status: "approved",
+
         source: "user",
         reason: "harassment",
         reasonLabel: "Образливий контент",
+        status: "pending",
         createdAt: new Date(
             Date.now() - 1000 * 60 * 10,
         ).toISOString(),
@@ -98,6 +104,7 @@ export const moderationSignals: ModerationSignal[] = [
         source: "user",
         reason: "spam",
         reasonLabel: "Спам",
+        status: "pending",
         createdAt: new Date(
             Date.now() - 1000 * 60 * 16,
         ).toISOString(),
@@ -116,6 +123,7 @@ export const moderationSignals: ModerationSignal[] = [
         source: "user",
         reason: "misinformation",
         reasonLabel: "Дезінформація",
+        status: "pending",
         createdAt: new Date(
             Date.now() - 1000 * 60 * 14,
         ).toISOString(),
@@ -134,23 +142,7 @@ export const moderationSignals: ModerationSignal[] = [
         source: "user",
         reason: "misinformation",
         reasonLabel: "Дезінформація",
-        createdAt: new Date(
-            Date.now() - 1000 * 60 * 14,
-        ).toISOString(),
-
-        reporter: {
-            id: "u3",
-            username: "ada",
-        },
-    },
-
-    {
-        id: "post-signal-8",
-        targetType: "posts",
-        targetId: "t5",
-        source: "user",
-        reason: "misinformation",
-        reasonLabel: "Дезінформація",
+        status: "pending",
         createdAt: new Date(
             Date.now() - 1000 * 60 * 14,
         ).toISOString(),
@@ -165,9 +157,11 @@ export const moderationSignals: ModerationSignal[] = [
         id: "post-signal-9",
         targetType: "posts",
         targetId: "t5",
+
         source: "user",
         reason: "spam",
         reasonLabel: "Спам",
+        status: "pending",
         createdAt: new Date(
             Date.now() - 1000 * 60 * 25,
         ).toISOString(),
@@ -182,9 +176,11 @@ export const moderationSignals: ModerationSignal[] = [
         id: "post-signal-10",
         targetType: "posts",
         targetId: "t7",
+
         source: "user",
         reason: "harassment",
         reasonLabel: "Переслідування",
+        status: "pending",
         createdAt: new Date(
             Date.now() - 1000 * 60 * 40,
         ).toISOString(),
@@ -199,9 +195,11 @@ export const moderationSignals: ModerationSignal[] = [
         id: "post-signal-11",
         targetType: "posts",
         targetId: "t7",
+
         source: "user",
         reason: "hate_speech",
         reasonLabel: "Мова ворожнечі",
+        status: "pending",
         createdAt: new Date(
             Date.now() - 1000 * 60 * 55,
         ).toISOString(),
@@ -216,9 +214,11 @@ export const moderationSignals: ModerationSignal[] = [
         id: "post-signal-12",
         targetType: "posts",
         targetId: "t8",
+
         source: "user",
         reason: "violence",
         reasonLabel: "Насильство",
+        status: "pending",
         createdAt: new Date(
             Date.now() - 1000 * 60 * 70,
         ).toISOString(),
@@ -233,9 +233,11 @@ export const moderationSignals: ModerationSignal[] = [
         id: "post-signal-13",
         targetType: "posts",
         targetId: "t9",
+
         source: "user",
         reason: "misinformation",
         reasonLabel: "Дезінформація",
+        status: "pending",
         createdAt: new Date(
             Date.now() - 1000 * 60 * 90,
         ).toISOString(),
@@ -250,9 +252,11 @@ export const moderationSignals: ModerationSignal[] = [
         id: "post-signal-14",
         targetType: "posts",
         targetId: "t9",
+
         source: "user",
         reason: "spam",
         reasonLabel: "Спам",
+        status: "pending",
         createdAt: new Date(
             Date.now() - 1000 * 60 * 110,
         ).toISOString(),
@@ -263,7 +267,6 @@ export const moderationSignals: ModerationSignal[] = [
         },
     },
 
-
     {
         id: "user-signal-1",
         targetType: "users",
@@ -272,6 +275,7 @@ export const moderationSignals: ModerationSignal[] = [
         source: "user",
         reason: "spam",
         reasonLabel: "Спам",
+        status: "pending",
         createdAt: new Date(
             Date.now() - 1000 * 60 * 20,
         ).toISOString(),
@@ -283,13 +287,14 @@ export const moderationSignals: ModerationSignal[] = [
     },
 
     {
-        id: "user-signal-1",
+        id: "user-signal-2",
         targetType: "users",
         targetId: "u3",
 
         source: "user",
         reason: "harassment",
         reasonLabel: "Образливий контент",
+        status: "pending",
         createdAt: new Date(
             Date.now() - 1000 * 60 * 20,
         ).toISOString(),
@@ -301,13 +306,14 @@ export const moderationSignals: ModerationSignal[] = [
     },
 
     {
-        id: "user-signal-2",
+        id: "user-signal-3",
         targetType: "users",
         targetId: "u4",
 
         source: "user",
         reason: "spam",
         reasonLabel: "Спам",
+        status: "pending",
         createdAt: new Date(
             Date.now() - 1000 * 60 * 25,
         ).toISOString(),
@@ -319,13 +325,14 @@ export const moderationSignals: ModerationSignal[] = [
     },
 
     {
-        id: "user-signal-3",
+        id: "user-signal-4",
         targetType: "users",
         targetId: "u5",
 
         source: "user",
         reason: "harassment",
         reasonLabel: "Образливий контент",
+        status: "pending",
         createdAt: new Date(
             Date.now() - 1000 * 60 * 30,
         ).toISOString(),
@@ -337,13 +344,14 @@ export const moderationSignals: ModerationSignal[] = [
     },
 
     {
-        id: "user-signal-4",
+        id: "user-signal-5",
         targetType: "users",
         targetId: "u6",
 
         source: "system",
         reason: "spam",
         reasonLabel: "Спам",
+        status: "pending",
         createdAt: new Date(
             Date.now() - 1000 * 60 * 18,
         ).toISOString(),
@@ -354,17 +362,19 @@ export const moderationSignals: ModerationSignal[] = [
         },
     },
 
-
     {
         id: "comment-signal-1",
         targetType: "comments",
         targetId: "c1",
+
         source: "user",
         reason: "harassment",
         reasonLabel: "Образливий контент",
+        status: "pending",
         createdAt: new Date(
             Date.now() - 1000 * 60 * 11,
         ).toISOString(),
+
         reporter: {
             id: "u3",
             username: "linus",
@@ -375,12 +385,15 @@ export const moderationSignals: ModerationSignal[] = [
         id: "comment-signal-2",
         targetType: "comments",
         targetId: "c1",
+
         source: "user",
         reason: "spam",
         reasonLabel: "Спам",
+        status: "pending",
         createdAt: new Date(
             Date.now() - 1000 * 60 * 9,
         ).toISOString(),
+
         reporter: {
             id: "u2",
             username: "ada",
@@ -391,12 +404,15 @@ export const moderationSignals: ModerationSignal[] = [
         id: "comment-signal-3",
         targetType: "comments",
         targetId: "c3",
+
         source: "system",
         reason: "spam",
         reasonLabel: "Спам",
+        status: "pending",
         createdAt: new Date(
             Date.now() - 1000 * 60 * 6,
         ).toISOString(),
+
         system: {
             code: "COMMENT_SPAM_DETECTOR",
             label: "Автоматичне виявлення спаму",
@@ -407,12 +423,15 @@ export const moderationSignals: ModerationSignal[] = [
         id: "comment-signal-4",
         targetType: "comments",
         targetId: "c6",
+
         source: "user",
         reason: "misinformation",
         reasonLabel: "Дезінформація",
+        status: "pending",
         createdAt: new Date(
             Date.now() - 1000 * 60 * 4,
         ).toISOString(),
+
         reporter: {
             id: "u2",
             username: "ada",

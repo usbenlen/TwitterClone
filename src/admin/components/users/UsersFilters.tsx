@@ -1,7 +1,7 @@
-import type { UsersFiltersState } from "@/admin/components/users/types";
-
 import Input from "@/admin/components/ui/Input.tsx";
 import Select from "@/admin/components/ui/selects/Select.tsx";
+
+import type {UsersFiltersState} from "@/admin/types/users.ts";
 
 type UsersFiltersProps = {
     search: string;
@@ -46,7 +46,7 @@ export default function UsersFilters({
                 options={[
                     {
                         value: "all",
-                        label: "Усі статуси",
+                        label: "Статуси",
                     },
                     {
                         value: "active",

@@ -1,6 +1,5 @@
-
 import MetricCard from "@/admin/components/dashboard/ui/cards/MetricCard.tsx";
-import { useDashboardMetrics } from "@/admin/hooks/dasboard/useDashboardMetrics.ts";
+import { useDashboardMetrics } from "@/admin/hooks/dasboard";
 import { useAuth } from "@/hooks";
 import { formatNumber } from "@/utils/format.ts";
 
@@ -41,8 +40,7 @@ export default function DashboardMetric() {
                 </h1>
 
                 <p className="mt-1 text-sm text-muted-foreground">
-                    Переглядайте ключові показники та
-                    активність платформи.
+                    Переглядайте ключові показники та активність платформи.
                 </p>
             </div>
 
@@ -57,17 +55,12 @@ export default function DashboardMetric() {
                                     Number(metric.value),
                                 )} грн`
                                 : formatNumber(
-                                      Number(metric.value),
-                                  )
+                                    Number(metric.value),
+                                )
                         }
-                        trend={metric.trend}
-                        trendType={metric.trendType}
-                        trendText={metric.trendText}
-                        icon={metric.icon}
                     />
                 ))}
             </div>
         </section>
     );
 }
-

@@ -1,13 +1,17 @@
 import { useNavigate } from "react-router";
 
 import Moderation from "@/admin/components/moderation/Moderation";
-import { useModeration } from "@/admin/hooks/moderation/useModeration.ts";
-import { useModerationFilters } from "@/admin/hooks/moderation/useModerationFilters.ts";
-import { useModerationPagination } from "@/admin/hooks/moderation/useModerationPagination.ts";
-import { useModerationSelection } from "@/admin/hooks/moderation/useModerationSelection.ts";
+
+import {
+    useModeration,
+    useModerationFilters,
+    useModerationPagination,
+    useModerationSelection
+} from "@/admin/hooks/moderation";
+
 import { Spinner } from "@/ui";
 
-import type { ModerationItem } from "@/admin/types/moderation";
+import type { ReportSignal } from "@/admin/types/moderation";
 
 export default function AdminModerationPage() {
     const navigate = useNavigate();
@@ -18,7 +22,6 @@ export default function AdminModerationPage() {
         error,
         busyAction,
         blockItem,
-        unblockItem,
         keepItem,
         deleteItem,
     } = useModeration();
@@ -29,6 +32,7 @@ export default function AdminModerationPage() {
         setSearch,
         setType,
         setStatus,
+        setDecision,
         setSort,
         setSource,
     } = useModerationFilters(items);
@@ -44,8 +48,8 @@ export default function AdminModerationPage() {
     );
 
     const getModerationKey = (
-        item: ModerationItem,
-    ) => `${item.type}:${item.id}`;
+        item: ReportSignal,
+    ) => item.id;
 
     const {
         selectedIds,
@@ -79,6 +83,13 @@ export default function AdminModerationPage() {
         resetPage();
     };
 
+    const handleDecisionChange = (
+        value: typeof filters.decision,
+    ) => {
+        setDecision(value);
+        resetPage();
+    };
+
     const handleSortChange = (
         value: typeof filters.sort,
     ) => {
@@ -93,36 +104,28 @@ export default function AdminModerationPage() {
         resetPage();
     };
 
-    const handleOpen = (item: ModerationItem) => {
-        const reportId = item.signals[0]?.id;
-
-        if (!reportId) {
-            return;
-        }
-
-        navigate(`/admin/moderation/${reportId}`);
+    const handleOpen = (
+        item: ReportSignal,
+    ) => {
+        navigate(
+            `/admin/moderation/${item.id}`,
+        );
     };
 
     const handleKeep = async (
-        item: ModerationItem,
+        item: ReportSignal,
     ) => {
         await keepItem(item);
     };
 
     const handleBlock = async (
-        item: ModerationItem,
+        item: ReportSignal,
     ) => {
         await blockItem(item);
     };
 
-    const handleUnblock = async (
-        item: ModerationItem,
-    ) => {
-        await unblockItem(item);
-    };
-
     const handleDelete = async (
-        item: ModerationItem,
+        item: ReportSignal,
     ) => {
         await deleteItem(item);
     };
@@ -144,9 +147,7 @@ export default function AdminModerationPage() {
 
     if (isLoading) {
         return (
-            <div className="mx-auto flex w-full max-w-[1366px] justify-center py-16">
-                <Spinner />
-            </div>
+            <Spinner/>
         );
     }
 
@@ -164,6 +165,7 @@ export default function AdminModerationPage() {
             onTypeChange={handleTypeChange}
             onSearchChange={handleSearchChange}
             onStatusChange={handleStatusChange}
+            onDecisionChange={handleDecisionChange}
             onSortChange={handleSortChange}
             onSourceChange={handleSourceChange}
             onToggleSelected={toggleSelected}
@@ -174,9 +176,7 @@ export default function AdminModerationPage() {
             onKeep={handleKeep}
             onDelete={handleDelete}
             onBlock={handleBlock}
-            onUnblock={handleUnblock}
             onPageChange={goToPage}
         />
     );
 }
-

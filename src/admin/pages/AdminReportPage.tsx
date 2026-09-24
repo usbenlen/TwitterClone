@@ -1,21 +1,22 @@
 import { useState } from "react";
+import { ArrowLeft } from "lucide-react";
+import { useNavigate, useParams } from "react-router";
+
+import { Button, Spinner } from "@/ui";
+
 import {
-    ArrowLeft,
-} from "lucide-react";
+    ReportActions,
+    ReportTarget,
+} from "@/admin/components/moderation/report";
+
 import {
-    useNavigate,
-    useParams,
-} from "react-router";
+    useModeration,
+    useModerationReport,
+} from "@/admin/hooks/moderation";
 
-import { Button } from "@/ui";
-import { moderationSignals } from "@/mock/data/admin/moderationSignals";
+import ReportConfirmModal from "@/admin/components/moderation/report/modal/ReportConfirmModal";
 
-import { ConfirmModal } from "@/components/modal/ConfirmModal";
-import { ReportActions } from "@/admin/components/moderation/report/ReportActions";
-import { ReportTarget } from "@/admin/components/moderation/report/ReportTarget";
-import { useModeration } from "@/admin/hooks/moderation/useModeration";
-
-type ConfirmAction =
+export type ConfirmAction =
     | "keep"
     | "delete"
     | "block"
@@ -24,26 +25,38 @@ type ConfirmAction =
 export default function AdminReportPage() {
     const navigate = useNavigate();
 
+    const { reportId } = useParams<{
+        reportId: string;
+    }>();
+
     const {
-        items,
-        isLoading,
-        error,
+        isLoading: moderationLoading,
+        error: moderationError,
         busyAction,
         blockItem,
         keepItem,
         deleteItem,
     } = useModeration();
 
-    const { reportId } = useParams<{
-        reportId: string;
-    }>();
+    const {
+        data: report,
+        isLoading: reportLoading,
+        error: reportError,
+        updateReport,
+    } = useModerationReport(reportId);
 
     const [confirmAction, setConfirmAction] =
         useState<ConfirmAction>(null);
 
-    const report = moderationSignals.find(
-        (signal) => signal.id === reportId,
-    );
+    const isLoading =
+        moderationLoading || reportLoading;
+
+    const error =
+        moderationError ?? reportError;
+
+    if (isLoading) {
+        return <Spinner />;
+    }
 
     if (!report) {
         return (
@@ -55,84 +68,51 @@ export default function AdminReportPage() {
         );
     }
 
-    const item = items.find(
-        (currentItem) =>
-            currentItem.type === report.targetType &&
-            currentItem.id === report.targetId,
-    );
-
-    const status =
-        item?.status ??
-        report.status ??
-        "pending";
+    const status = report.status;
 
     const busy =
-        isLoading ||
-        busyAction !== null;
+        isLoading || busyAction !== null;
 
     const handleConfirm = async () => {
-        if (!item || !confirmAction) {
+        if (!confirmAction) {
             return;
         }
 
         try {
             if (confirmAction === "keep") {
-                await keepItem(item);
+                await keepItem(report);
+
+                updateReport(
+                    "resolved",
+                    "kept",
+                );
             }
 
             if (confirmAction === "delete") {
-                await deleteItem(item);
+                await deleteItem(report);
+
+                updateReport(
+                    "resolved",
+                    "deleted",
+                );
             }
 
             if (confirmAction === "block") {
-                await blockItem(item);
+                await blockItem(report);
+
+                updateReport(
+                    "resolved",
+                    "blocked",
+                );
             }
         } finally {
             setConfirmAction(null);
         }
     };
 
-    const getModalContent = () => {
-        switch (confirmAction) {
-            case "keep":
-                return {
-                    title: "Залишити об'єкт?",
-                    description:
-                        "Скарга буде опрацьована, а об'єкт залишиться без змін.",
-                    confirmText: "Залишити",
-                };
-
-            case "delete":
-                return {
-                    title: "Видалити об'єкт?",
-                    description:
-                        "Об'єкт буде позначений як віддалений. Ця дія змінить його статус.",
-                    confirmText: "Видалити",
-                };
-
-            case "block":
-                return {
-                    title: "Заблокувати користувача?",
-                    description:
-                        "Користувач буде заблокований.",
-                    confirmText: "Заблокувати",
-                };
-
-            default:
-                return {
-                    title: "",
-                    description: "",
-                    confirmText: "",
-                };
-        }
-    };
-
-    const modalContent =
-        getModalContent();
-
     return (
         <div className="mx-auto w-full max-w-6xl">
-            <header>
+            <div>
                 <Button
                     type="button"
                     variant="ghost"
@@ -149,21 +129,22 @@ export default function AdminReportPage() {
                         Деталі модерації: {report.id}
                     </h1>
 
-                    <p className="mt-1 text-sm text-muted-foreground">
+                    <p className="mt-1 text-sm text-muted-foreground font-semibold">
                         {report.targetType === "posts" &&
                             "Пост"}
 
-                        {report.targetType === "comments" &&
+                        {report.targetType ===
+                            "comments" &&
                             "Коментар"}
 
                         {report.targetType === "users" &&
                             "Користувач"}
 
-                        {" · "}
+                        {": "}
                         {report.targetId}
                     </p>
                 </div>
-            </header>
+            </div>
 
             {error && (
                 <div className="mt-4 rounded-lg border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm text-destructive">
@@ -171,7 +152,7 @@ export default function AdminReportPage() {
                 </div>
             )}
 
-            <div className="mt-6 grid gap-6 lg:grid-cols-[minmax(0,1fr)_280px]">
+            <div className="mt-6 grid gap-5 lg:grid-cols-[minmax(0,1fr)_280px]">
                 <main className="min-w-0 space-y-6">
                     <ReportTarget
                         target={{
@@ -184,7 +165,8 @@ export default function AdminReportPage() {
 
                 <ReportActions
                     status={status}
-                    busy={busy || !item}
+                    decision={report.decision}
+                    busy={busy}
                     onKeep={() => {
                         setConfirmAction("keep");
                     }}
@@ -194,19 +176,18 @@ export default function AdminReportPage() {
                     onBlock={
                         report.targetType === "users"
                             ? () => {
-                                setConfirmAction("block");
+                                setConfirmAction(
+                                    "block",
+                                );
                             }
-                        : undefined
+                            : undefined
                     }
                 />
             </div>
 
-            <ConfirmModal
-                open={confirmAction !== null}
-                title={modalContent.title}
-                description={modalContent.description}
-                confirmText={modalContent.confirmText}
-                cancelText="Скасування"
+            <ReportConfirmModal
+                action={confirmAction}
+                targetType={report.targetType}
                 onCancel={() => {
                     if (!busy) {
                         setConfirmAction(null);

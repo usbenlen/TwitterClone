@@ -1,19 +1,31 @@
 import { useEffect, useState } from "react";
 
-import type { ModerationReport } from "@/admin/types/moderation.ts";
-import { moderationSignals } from "@/mock/data/admin/moderationSignals";
+import { moderationApi } from "@/admin/api/moderation.api.ts";
 
-export function useModerationReport(
+import type {
+    ReportDecision,
+    ReportSignal,
+    ReportStatus,
+} from "@/admin/types/moderation.ts";
+
+export default function useModerationReport(
     reportId: string | undefined,
 ) {
-    const [data, setData] = useState<ModerationReport | null>(null);
-    const [isLoading, setIsLoading] = useState(Boolean(reportId));
-    const [error, setError] = useState<string | null>(null);
+    const [data, setData] =
+        useState<ReportSignal | null>(null);
+
+    const [isLoading, setIsLoading] =
+        useState(Boolean(reportId));
+
+    const [error, setError] =
+        useState<string | null>(null);
 
     useEffect(() => {
         if (!reportId) {
             return;
         }
+
+        const id = reportId;
 
         let cancelled = false;
 
@@ -22,42 +34,15 @@ export function useModerationReport(
                 setIsLoading(true);
                 setError(null);
 
-                const signal = moderationSignals.find(
-                    (signal) => signal.id === reportId,
-                );
-
-                if (!signal) {
-                    if (!cancelled) {
-                        setData(null);
-                        setError("Скаргу не знайдено.");
-                    }
-
-                    return;
-                }
-
-                const report: ModerationReport = {
-                    id: signal.id,
-
-                    type:
-                        signal.targetType === "posts"
-                            ? "post"
-                            : signal.targetType === "comments"
-                                ? "comment"
-                                : "user",
-
-                    reason: signal.reasonLabel,
-                    status: signal.status ?? "pending",
-                    source: signal.source,
-                    reporter: signal.reporter,
-                    targetId: signal.targetId,
-                    createdAt: signal.createdAt,
-                };
+                const signal =
+                    await moderationApi.getById(id);
 
                 if (!cancelled) {
-                    setData(report);
+                    setData(signal);
                 }
             } catch {
                 if (!cancelled) {
+                    setData(null);
                     setError(
                         "Не вдалося завантажити скаргу.",
                     );
@@ -69,16 +54,34 @@ export function useModerationReport(
             }
         }
 
-        loadReport();
+        void loadReport();
 
         return () => {
             cancelled = true;
         };
     }, [reportId]);
 
+    const updateReport = (
+        reportStatus: ReportStatus,
+        decision?: ReportDecision,
+    ) => {
+        setData((current) =>
+            current
+                ? {
+                    ...current,
+                    reportStatus,
+                    decision,
+                }
+                : current,
+        );
+    };
+
     return {
         data,
-        isLoading: reportId ? isLoading : false,
+        updateReport,
+        isLoading: reportId
+            ? isLoading
+            : false,
         error: reportId
             ? error
             : "ID скарги відсутній.",

@@ -1,42 +1,37 @@
-import type { ModerationFiltersState } from "@/admin/types/moderation";
+import type { ReportFiltersState } from "@/admin/types/moderation";
 import Input from "@/admin/components/ui/Input.tsx";
 import Select from "@/admin/components/ui/selects/Select.tsx";
 
 type ModerationFiltersProps = {
-    type: ModerationFiltersState["type"];
+    type: ReportFiltersState["type"];
     search: string;
-    moderationStatus: ModerationFiltersState["status"];
-    sort: ModerationFiltersState["sort"];
-    source: ModerationFiltersState["source"];
+    moderationStatus: ReportFiltersState["status"];
+    decision: ReportFiltersState["decision"];
+    sort: ReportFiltersState["sort"];
+    source: ReportFiltersState["source"];
 
     onTypeChange: (
-        value: ModerationFiltersState["type"],
+        value: ReportFiltersState["type"],
     ) => void;
 
     onSearchChange: (value: string) => void;
-
-    onStatusChange: (
-        value: ModerationFiltersState["status"],
-    ) => void;
-
-    onSortChange: (
-        value: ModerationFiltersState["sort"],
-    ) => void;
-
-    onSourceChange: (
-        value: ModerationFiltersState["source"],
-    ) => void;
+    onStatusChange: (value: ReportFiltersState["status"]) => void;
+    onDecisionChange: (value: ReportFiltersState["decision"]) => void;
+    onSortChange: (value: ReportFiltersState["sort"]) => void;
+    onSourceChange: (value: ReportFiltersState["source"]) => void;
 };
 
 export default function ModerationFilters({
   type,
   search,
   moderationStatus,
+  // decision,
   sort,
   source,
   onTypeChange,
   onSearchChange,
   onStatusChange,
+  // onDecisionChange,
   onSortChange,
   onSourceChange,
 }: ModerationFiltersProps) {
@@ -46,13 +41,13 @@ export default function ModerationFilters({
                 value={type}
                 onChange={(value) =>
                     onTypeChange(
-                        value as ModerationFiltersState["type"],
+                        value as ReportFiltersState["type"],
                     )
                 }
                 options={[
                     {
                         value: "all",
-                        label: "Усі типи",
+                        label: "Типи",
                     },
                     {
                         value: "posts",
@@ -80,13 +75,13 @@ export default function ModerationFilters({
                 value={source}
                 onChange={(value) =>
                     onSourceChange(
-                        value as ModerationFiltersState["source"],
+                        value as ReportFiltersState["source"],
                     )
                 }
                 options={[
                     {
                         value: "all",
-                        label: "Усі джерела",
+                        label: "Джерела",
                     },
                     {
                         value: "user",
@@ -103,38 +98,57 @@ export default function ModerationFilters({
                 value={moderationStatus}
                 onChange={(value) =>
                     onStatusChange(
-                        value as ModerationFiltersState["status"],
+                        value as ReportFiltersState["status"],
                     )
                 }
                 options={[
                     {
                         value: "all",
-                        label: "Усі статуси",
+                        label: "Статуси",
                     },
                     {
                         value: "pending",
                         label: "На перевірці",
                     },
                     {
-                        value: "approved",
-                        label: "Схвалено",
-                    },
-                    {
-                        value: "blocked",
-                        label: "Заблоковано",
-                    },
-                    {
-                        value: "deleted",
-                        label: "Видалено",
+                        value: "resolved",
+                        label: "Завершено",
                     },
                 ]}
             />
+
+            {/*<Select*/}
+            {/*    value={decision}*/}
+            {/*    onChange={(value) =>*/}
+            {/*        onDecisionChange(*/}
+            {/*            value as ReportFiltersState["decision"],*/}
+            {/*        )*/}
+            {/*    }*/}
+            {/*    options={[*/}
+            {/*        {*/}
+            {/*            value: "all",*/}
+            {/*            label: "Рішення",*/}
+            {/*        },*/}
+            {/*        {*/}
+            {/*            value: "keep",*/}
+            {/*            label: "Залишено",*/}
+            {/*        },*/}
+            {/*        {*/}
+            {/*            value: "delete",*/}
+            {/*            label: "Видалено",*/}
+            {/*        },*/}
+            {/*        {*/}
+            {/*            value: "block",*/}
+            {/*            label: "Заблоковано",*/}
+            {/*        },*/}
+            {/*    ]}*/}
+            {/*/>*/}
 
             <Select
                 value={sort}
                 onChange={(value) =>
                     onSortChange(
-                        value as ModerationFiltersState["sort"],
+                        value as ReportFiltersState["sort"],
                     )
                 }
                 options={[
@@ -146,17 +160,8 @@ export default function ModerationFilters({
                         value: "oldest",
                         label: "Спочатку старі",
                     },
-                    {
-                        value: "signals",
-                        label: "За кількістю сигналів",
-                    },
-                    {
-                        value: "activity",
-                        label: "За активністю",
-                    },
                 ]}
             />
         </div>
     );
 }
-

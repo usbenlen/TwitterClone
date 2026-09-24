@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 
-import { useDashboardAnalytics } from "@/admin/hooks/dasboard/useDashboardAnalytics";
+import { useDashboardAnalytics } from "@/admin/hooks/dasboard";
 
 import type {
     AnalyticsContentType,
@@ -105,7 +105,7 @@ function useAnimatedNumber(
     return value;
 }
 
-export function useDashboardChart(
+export default function useDashboardChart(
     period: AnalyticsPeriod,
 ) {
     const [contentType, setContentType] =
@@ -126,20 +126,21 @@ export function useDashboardChart(
     const activityData =
         contentType === "all"
             ? (
-                  activityPeriodData?.posts ??
-                  []
-              ).map(
-                  (postValue, index) =>
-                      postValue +
-                      (
-                          activityPeriodData
-                              ?.comments[index] ??
-                          0
-                      ),
-              )
+                activityPeriodData?.posts ?? []
+            ).map(
+                (
+                    postValue: number,
+                    index: number,
+                ) =>
+                    postValue +
+                    (
+                        activityPeriodData
+                            ?.comments[index] ?? 0
+                    ),
+            )
             : activityPeriodData?.[
-                  contentType
-              ] ?? [];
+                contentType
+            ] ?? [];
 
     const isAudienceReady =
         data !== null &&
@@ -413,12 +414,13 @@ export function useDashboardChart(
             ) * 10,
         );
 
-    const activityTotal =
-        activityData.reduce(
-            (sum, value) =>
-                sum + value,
-            0,
-        );
+    const activityTotal = activityData.reduce(
+        (
+            sum: number,
+            value: number,
+        ) => sum + value,
+        0,
+    );
 
     const activityAverage =
         activityData.length > 0

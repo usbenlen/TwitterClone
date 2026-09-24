@@ -1,101 +1,68 @@
-import type { Comment, Tweet, User } from "@/types";
+import type {ReportSort} from "@/admin/hooks/moderation/useModerationFilters.ts";
 
-export type ModerationTab =
-    | "all"
-    | "system"
+export type ReportSignalSource =
+    | "user"
+    | "system";
+
+import type {
+    Comment,
+    Tweet,
+    User,
+} from "@/types";
+
+export type ReportTarget =
+    | {
+    type: "posts";
+    id: string;
+    data: Tweet;
+}
+    | {
+    type: "comments";
+    id: string;
+    data: Comment;
+}
+    | {
+    type: "users";
+    id: string;
+    data: User;
+};
+
+export type ReportTargetType =
+    | "posts"
     | "users"
-    | "critical";
-
-export type SignalType =
-    | "system"
-    | "users"
-    | "synergy";
-
-export type Priority =
-    | "critical"
-    | "high"
-    | "medium"
-    | "low";
+    | "comments";
 
 export type ModerationType =
     | "all"
-    | "users"
-    | "posts"
-    | "comments";
+    | ReportTargetType;
 
-export type ModerationStatus =
-    | "approved"
-    | "pending"
-    | "deleted"
-    | "blocked";
-
-export const statusLabels: Record<
-    ModerationStatus,
-    string
-> = {
-    approved: "Схвалено",
-    pending: "На перевірці",
-    deleted: "Видалено",
-    blocked: "Заблоковано",
-};
-
-export type ModerationStatusFilter =
-    | "all"
-    | "approved"
-    | "pending"
-    | "blocked"
-    | "deleted";
-
-export type ModerationSort =
-    | "newest"
-    | "oldest"
-    | "reports"
-    | "activity";
-
-export type ModerationSource =
-    | "all"
-    | "system"
-    | "reports";
-
-export type ModerationMeta = {
-    signalType: SignalType;
-    signalLabel: string;
-    signalDescription: string;
-    priority: Priority;
-    priorityLabel: string;
-};
-
-export type ModerationReportReason =
+export type ReportReason =
     | "spam"
     | "harassment"
-    | "hate"
     | "hate_speech"
     | "violence"
     | "sexual"
     | "misinformation"
     | "other";
 
-export type ModerationSignalSource =
-    | "user"
-    | "system";
+export type ReportStatus =
+    | "pending"
+    | "resolved";
 
-export type ModerationSignal = {
+export type ReportDecision =
+    | "kept"
+    | "deleted"
+    | "blocked";
+
+export type ReportSignal = {
     id: string;
-
-    source: ModerationSignalSource;
-
+    source: ReportSignalSource;
+    targetType: ReportTargetType;
     targetId: string;
-
-    targetType:
-        | "posts"
-        | "users"
-        | "comments";
-
-    status?: ModerationStatus;
-
-    reason: ModerationReportReason;
+    status: ReportStatus;
+    decision?: ReportDecision;
+    reason: ReportReason;
     reasonLabel: string;
-
     createdAt: string;
 
     reporter?: {
@@ -109,111 +76,28 @@ export type ModerationSignal = {
     };
 };
 
-type ModerationItemBase<
-    TType extends "posts" | "users" | "comments",
-    TSubject,
+export const reportStatusLabels: Record<
+    ReportStatus,
+    string
 > = {
-    type: TType;
-    id: string;
-
-    subject: TSubject;
-
-    signals: ModerationSignal[];
-
-    status: ModerationStatus;
-
-    meta: ModerationMeta;
+    pending: "На перевірці",
+    resolved: "Завершено",
 };
 
-export type ModerationItem =
-    | ModerationItemBase<"posts", Tweet>
-    | ModerationItemBase<"users", User>
-    | ModerationItemBase<"comments", Comment>;
+export const decisionLabels: Record<
+    ReportDecision,
+    string
+> = {
+    kept: "Залишено",
+    deleted: "Видалено",
+    blocked: "Заблоковано",
+};
 
-export type ModerationFiltersState = {
-    type: ModerationType;
+export type ReportFiltersState = {
+    type: ReportTargetType | "all";
     search: string;
-    status: ModerationStatusFilter;
-    sort: ModerationSort;
-    source: ModerationSource;
-};
-
-export interface ModerationCardProps<
-    T extends ModerationItem = ModerationItem,
-> {
-    item: T;
-    selected: boolean;
-    busy: boolean;
-
-    onToggleSelected: () => void;
-    onOpen: () => void;
-
-    onApprove: () => void;
-    onReject: () => void;
-    onBlock: () => void;
-
-    onToggleDelete?: () => void;
-}
-
-export type ModerationAction =
-    | "delete"
-    | "block";
-
-export const getModerationAction = (
-    type: "posts" | "comments" | "users",
-): ModerationAction => {
-    return type === "users"
-        ? "block"
-        : "delete";
-};
-
-export type ModerationReportType =
-    | "post"
-    | "comment"
-    | "user";
-
-export type ModerationReportStatus =
-    | "pending"
-    | "approved"
-    | "blocked"
-    | "deleted";
-
-export type ModerationReportSource =
-    | "user"
-    | "system";
-
-export type ModerationReport = {
-    id: string;
-
-    type: ModerationReportType;
-
-    reason: string;
-    description?: string;
-
-    status: ModerationReportStatus;
-
-    source: ModerationReportSource;
-
-    reporter?: {
-        id: string;
-        username: string;
-        displayName?: string;
-        avatarUrl?: string;
-    };
-
-    targetId: string;
-
-    target?: {
-        id: string;
-        content?: string;
-
-        author?: {
-            id: string;
-            username: string;
-            displayName?: string;
-            avatarUrl?: string;
-        };
-    };
-
-    createdAt: string;
+    source: ReportSignalSource | "all";
+    status: ReportStatus | "all";
+    decision: ReportDecision | "all";
+    sort: ReportSort;
 };

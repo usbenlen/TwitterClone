@@ -1,11 +1,12 @@
-import type {ModerationFiltersState} from "@/admin/types/moderation";
+import type { ReportFiltersState } from "@/admin/types/moderation";
 
 export const MODERATION_ITEMS_PER_PAGE = 10;
 
-export const initialModerationFilters: ModerationFiltersState = {
+export const initialModerationFilters: ReportFiltersState = {
     type: "all",
     search: "",
-    status: "all",
-    sort: "newest",
     source: "all",
+    status: "all",
+    decision: "all",
+    sort: "newest",
 } as const;

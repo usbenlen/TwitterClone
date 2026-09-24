@@ -1,6 +1,11 @@
-import type { ReactNode } from "react";
+import type { AdminUser } from "@/admin/types/users";
+import type { ReportSignal } from "@/admin/types/moderation";
+import type { Tweet } from "@/types";
 
-export type DashboardPeriod = "7d" | "30d" | "all";
+export type DashboardPeriod =
+    | "7d"
+    | "30d"
+    | "all";
 
 export type DashboardContentType =
     | "all"
@@ -15,16 +20,20 @@ export type DashboardChartData = {
     >;
 };
 
-export type MetricTrendType =
-    | "positive"
-    | "negative";
-
 export type DashboardMetric = {
     id: string;
     title: string;
-    value: string;
-    trend?: string;
-    trendType?: MetricTrendType;
-    trendText?: string;
-    icon?: ReactNode;
+    value: number;
+};
+
+export type DashboardReportRow = {
+    targetId: string;
+    count: number;
+    latestSignal: ReportSignal;
+    tweet: Tweet;
+};
+
+export type DashboardTables = {
+    latestReports: DashboardReportRow[];
+    latestUsers: AdminUser[];
 };

@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 
-import { dashboardApi } from "@/admin/api/dashboardApi.ts";
+import { dashboardApi } from "@/admin/api/dashboard.api.ts";
 
-import type { DashboardReportRow, DashboardTablesResponse } from "@/admin/types/dashboardTables.ts";
+import type { DashboardReportRow, DashboardTables } from "@/admin/types/dashboard";
 
 import type { AdminUser } from "@/admin/types/users.ts";
 
-export function useDashboardTables() {
+export default function useDashboardTables() {
     const [latestUsers, setLatestUsers] = useState<AdminUser[]>([]);
     const [latestReports, setLatestReports] = useState<
         DashboardReportRow[]
@@ -22,7 +22,7 @@ export function useDashboardTables() {
                 setIsLoading(true);
                 setError(null);
 
-                const response: DashboardTablesResponse =
+                const response: DashboardTables =
                     await dashboardApi.getTables();
 
                 if (!isMounted) {

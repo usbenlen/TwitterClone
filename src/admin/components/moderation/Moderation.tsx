@@ -1,16 +1,16 @@
-import ModerationHero from "./ModerationHero";
+import ModerationHeader from "./ModerationHeader.tsx";
 import ModerationFilters from "./ModerationFilters";
 import ModerationList from "./ModerationList";
 import ModerationPagination from "./ModerationPagination";
 
 import type {
-    ModerationFiltersState,
-    ModerationItem,
+    ReportSignal,
+    ReportFiltersState,
 } from "@/admin/types/moderation";
 
 type ModerationProps = {
-    items: ModerationItem[];
-    filters: ModerationFiltersState;
+    items: ReportSignal[];
+    filters: ReportFiltersState;
 
     currentPage: number;
     totalPages: number;
@@ -22,39 +22,26 @@ type ModerationProps = {
     busyAction: string | null;
     error: string | null;
 
-    onTypeChange: (
-        value: ModerationFiltersState["type"],
-    ) => void;
+    onTypeChange: (value: ReportFiltersState["type"]) => void;
 
     onSearchChange: (value: string) => void;
+    onStatusChange: (value: ReportFiltersState["status"]) => void;
+    onDecisionChange: (value: ReportFiltersState["decision"]) => void;
+    onSortChange: (value: ReportFiltersState["sort"]) => void;
+    onSourceChange: (value: ReportFiltersState["source"]) => void;
 
-    onStatusChange: (
-        value: ModerationFiltersState["status"],
-    ) => void;
-
-    onSortChange: (
-        value: ModerationFiltersState["sort"],
-    ) => void;
-
-    onSourceChange: (
-        value: ModerationFiltersState["source"],
-    ) => void;
-
-    onToggleSelected: (item: ModerationItem) => void;
+    onToggleSelected: (item: ReportSignal) => void;
     onToggleSelectAll: () => void;
     onClearSelection: () => void;
 
-    onOpen: (item: ModerationItem) => void;
-
-    onKeep: (item: ModerationItem) => void;
-    onDelete: (item: ModerationItem) => void;
+    onOpen: (item: ReportSignal) => void;
+    onKeep: (item: ReportSignal) => void;
+    onDelete: (item: ReportSignal) => void;
 
     onPageChange: (page: number) => void;
 
     onBlockSelected: () => void;
-
-    onBlock: (item: ModerationItem) => void;
-    onUnblock: (item: ModerationItem) => void;
+    onBlock: (item: ReportSignal) => void;
 };
 
 export default function Moderation({
@@ -69,6 +56,7 @@ export default function Moderation({
    onTypeChange,
    onSearchChange,
    onStatusChange,
+   onDecisionChange,
    onSortChange,
    onSourceChange,
    onToggleSelected,
@@ -78,27 +66,28 @@ export default function Moderation({
    onKeep,
    onDelete,
    onBlock,
-   onUnblock,
    onPageChange,
    onClearSelection,
 }: ModerationProps) {
     return (
-        <div className="w-full bg-card rounded-xl border border-border">
+        <div className="w-full rounded-xl border border-border bg-card">
             <div className="p-4">
-            <ModerationHero count={totalCount} />
+                <ModerationHeader count={totalCount}/>
 
-            <ModerationFilters
-                type={filters.type}
-                search={filters.search}
-                moderationStatus={filters.status}
-                sort={filters.sort}
-                source={filters.source}
-                onTypeChange={onTypeChange}
-                onSearchChange={onSearchChange}
-                onStatusChange={onStatusChange}
-                onSortChange={onSortChange}
-                onSourceChange={onSourceChange}
-            />
+                <ModerationFilters
+                    type={filters.type}
+                    search={filters.search}
+                    moderationStatus={filters.status}
+                    decision={filters.decision}
+                    sort={filters.sort}
+                    source={filters.source}
+                    onTypeChange={onTypeChange}
+                    onSearchChange={onSearchChange}
+                    onStatusChange={onStatusChange}
+                    onDecisionChange={onDecisionChange}
+                    onSortChange={onSortChange}
+                    onSourceChange={onSourceChange}
+                />
             </div>
 
             <ModerationList
@@ -114,7 +103,6 @@ export default function Moderation({
                 onKeep={onKeep}
                 onDelete={onDelete}
                 onBlock={onBlock}
-                onUnblock={onUnblock}
             />
 
             <ModerationPagination

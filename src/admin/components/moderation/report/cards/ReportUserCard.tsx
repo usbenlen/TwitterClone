@@ -3,19 +3,19 @@ import { Avatar } from "@/ui";
 import { sampleAuthors } from "@/mock/data/users";
 import { moderationSignals } from "@/mock/data/admin/moderationSignals";
 
-import type { ModerationStatus } from "@/admin/types/moderation";
+import type { ReportStatus } from "@/admin/types/moderation";
 
 import ReportCard from "./ReportCard";
 import { formatDate } from "@/utils/format.ts";
 
 type ReportUserProps = {
     id: string;
-    status?: ModerationStatus;
+    status?: ReportStatus;
 };
 
 const MAX_VISIBLE_REPORTERS = 5;
 
-export function ReportUserCard({
+export default function ReportUserCard({
    id,
 }: ReportUserProps) {
     const user = sampleAuthors.find(
@@ -91,7 +91,7 @@ export function ReportUserCard({
     );
 
     return (
-        <div className="space-y-6">
+        <div className="grid gap-6">
             <ReportCard
                 title="Користувач"
                 openLabel="Відкрити профіль"
@@ -181,7 +181,7 @@ export function ReportUserCard({
                             {uniqueReporters} користувачів
                         </p>
 
-                        <div className="mt-5 space-y-5">
+                        <div className="mt-5 grid gap-5">
                             {groupedReports.map(
                                 ({
                                      reason,

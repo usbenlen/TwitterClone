@@ -2,19 +2,19 @@ import { commentsByPostId } from "@/mock/data/comments.ts";
 import { tweets } from "@/mock/data/tweets.ts";
 import { moderationSignals } from "@/mock/data/admin/moderationSignals.ts";
 
-import type { ModerationStatus } from "@/admin/types/moderation";
+import type { ReportStatus } from "@/admin/types/moderation";
 
 import ModerationCardHeader from "@/admin/components/moderation/cards/ModerationCardHeader.tsx";
-import ReportStats from "@/admin/components/moderation/report/ReportStats.tsx";
+import ReportStats from "@/admin/components/moderation/report/cards/ui/ReportStats.tsx";
 
 import ReportCard from "./ReportCard.tsx";
 
 type ReportCommentProps = {
     id: string;
-    status?: ModerationStatus;
+    status?: ReportStatus;
 };
 
-export function ReportCommentCard({
+export default function ReportCommentCard({
     id,
 }: ReportCommentProps) {
     const comment = Object.values(commentsByPostId)
@@ -29,7 +29,7 @@ export function ReportCommentCard({
 
     if (!comment) {
         return (
-            <div className="space-y-6">
+            <div className="grid gap-6">
                 <ReportCard
                     title="Оригінальний коментар"
                     openLabel="Відкрити коментар"
@@ -50,7 +50,7 @@ export function ReportCommentCard({
     );
 
     return (
-        <div className="space-y-6">
+        <div className="grid gap-6">
             <ReportCard
                 title="Оригінальний коментар"
                 openLabel="Відкрити коментар"

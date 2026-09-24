@@ -1,5 +1,5 @@
-import { ExternalLink } from "lucide-react";
 import type { ReactNode } from "react";
+import { OriginLink } from "@/admin/components/moderation/report/cards/ui";
 
 type ReportCardProps = {
     title: string;
@@ -22,16 +22,10 @@ export default function ReportCard({
                 </h2>
 
                 {openLabel && openHref && (
-                    <a
+                    <OriginLink
+                        label={openLabel}
                         href={openHref}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
-                    >
-                        {openLabel}
-
-                        <ExternalLink className="size-4" />
-                    </a>
+                    />
                 )}
             </div>
 

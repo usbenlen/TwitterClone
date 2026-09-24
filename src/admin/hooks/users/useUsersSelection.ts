@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 
-export function useUsersSelection<T>(
+export default function useUsersSelection<T>(
     items: T[],
     getKey: (item: T) => string,
 ) {

@@ -1,18 +1,20 @@
-import type { ModerationStatus } from "@/admin/types/moderation";
+import type { ReportStatus } from "@/admin/types/moderation.ts";
 
-import { ReportPostCard } from "./cards/ReportPostCard.tsx";
-import { ReportCommentCard } from "./cards/ReportCommentCard.tsx";
-import { ReportUserCard } from "./cards/ReportUserCard.tsx";
+import {
+    ReportPostCard,
+    ReportCommentCard,
+    ReportUserCard,
+} from "@/admin/components/moderation/report/cards";
 
 type Props = {
     target: {
         type: "posts" | "comments" | "users";
         id: string;
     };
-    status?: ModerationStatus;
+    status?: ReportStatus;
 };
 
-export function ReportTarget({
+export default function ReportTarget({
     target,
     status,
 }: Props) {

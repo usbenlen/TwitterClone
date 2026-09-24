@@ -1,15 +1,15 @@
 import { Search } from "lucide-react";
 
-import Select from "@/admin/components/ui/selects/Select.tsx";
+import Select from "@/admin/components/ui/selects/Select";
 
-import type { ModerationSort } from "@/admin/types/moderation";
+import type {ReportSort} from "@/admin/hooks/moderation/useModerationFilters";
 
 type ModerationSortProps = {
     query: string;
-    sort: ModerationSort;
+    sort: ReportSort;
 
     onQueryChange: (value: string) => void;
-    onSortChange: (value: ModerationSort) => void;
+    onSortChange: (value: ReportSort) => void;
 };
 
 export default function ModerationSort({
@@ -39,7 +39,7 @@ export default function ModerationSort({
                 value={sort}
                 onChange={(value) =>
                     onSortChange(
-                        value as ModerationSort,
+                        value as ReportSort,
                     )
                 }
                 options={[

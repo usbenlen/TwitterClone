@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 
-export function useModerationSelection<T>(
+export default function useModerationSelection<T>(
     items: T[],
     getKey: (item: T) => string,
 ) {

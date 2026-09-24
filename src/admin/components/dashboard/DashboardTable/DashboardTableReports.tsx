@@ -3,11 +3,10 @@ import { Link, useNavigate } from "react-router";
 import TableCard from "@/admin/components/dashboard/ui/cards/TableCard.tsx";
 import Scroll from "@/admin/components/ui/Scroll.tsx";
 
-import type { DashboardReportRow } from "@/admin/types/dashboardTables.ts";
+import type { DashboardReportRow } from "@/admin/types/dashboard";
 
 type DashboardTableReportsProps = {
     latestReports: DashboardReportRow[];
-    openReportsCount: number;
     getReportLabel: (count: number) => string;
 };
 

@@ -1,8 +1,10 @@
 import { useNavigate } from "react-router";
 
-import { useUsers } from "@/admin/hooks/users/useUsers.ts";
-import { useUsersFilters } from "@/admin/hooks/users/useUsersFilters.ts";
-import { useUsersPagination } from "@/admin/hooks/users/useUsersPagination.ts";
+import {
+    useUsers,
+    useUsersFilters,
+    useUsersPagination
+} from "@/admin/hooks/users";
 
 import Users from "@/admin/components/users/Users";
 import { Spinner } from "@/ui";
@@ -16,7 +18,7 @@ export default function AdminUsersPage() {
         isLoading,
         blockUser,
         unblockUser,
-        // deleteUser,
+        deleteUser,
     } = useUsers();
 
     const {
@@ -66,12 +68,14 @@ export default function AdminUsersPage() {
         await unblockUser(user);
     };
 
-    // const handleDelete = async (user: User) => {
-    //     await deleteUser(user);
-    // };
+    const handleDelete = async (user: User) => {
+        await deleteUser(user);
+    };
 
     if (isLoading) {
-        return <Spinner />;
+        return (
+            <Spinner/>
+        );
     }
 
     return (
@@ -88,7 +92,7 @@ export default function AdminUsersPage() {
                 onOpen={handleOpen}
                 onBlock={handleBlock}
                 onUnblock={handleUnblock}
-                // onDelete={handleDelete}
+                onDelete={handleDelete}
                 onPageChange={goToPage}
             />
         </div>

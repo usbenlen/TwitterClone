@@ -1,18 +1,18 @@
 import { useState } from "react";
-import { ArrowLeft, Ban, Trash2 } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { useNavigate, useParams } from "react-router";
 
 import { Avatar, Button } from "@/ui";
 
-import { sampleAuthors } from "@/mock/data/users";
-
 import { ConfirmModal } from "@/components/modal/ConfirmModal";
-import { useModeration } from "@/admin/hooks/moderation/useModeration";
-import {formatDate} from "@/utils/format.ts";
-import ReportCard from "@/admin/components/moderation/report/cards/ReportCard.tsx";
+import { useUsers } from "@/admin/hooks/users";
+import { formatDate } from "@/utils/format";
+import ReportCard from "@/admin/components/moderation/report/cards/ReportCard";
+import UsersActions from "@/admin/components/users/UsersActions.tsx";
 
 type ConfirmAction =
     | "block"
+    | "unblock"
     | "delete"
     | null;
 
@@ -24,18 +24,19 @@ export default function AdminUserPage() {
     }>();
 
     const {
-        items,
+        users,
         isLoading,
         error,
         busyAction,
-        blockItem,
-        deleteItem,
-    } = useModeration();
+        blockUser,
+        unblockUser,
+        deleteUser,
+    } = useUsers();
 
     const [confirmAction, setConfirmAction] =
         useState<ConfirmAction>(null);
 
-    const user = sampleAuthors.find(
+    const user = users.find(
         (item) => item.id === userId,
     );
 
@@ -49,7 +50,7 @@ export default function AdminUserPage() {
                     onClick={() => navigate(-1)}
                     className="-ml-2"
                 >
-                <ArrowLeft className="size-4" />
+                    <ArrowLeft className="size-4" />
                     Назад до користувачів
                 </Button>
 
@@ -63,35 +64,32 @@ export default function AdminUserPage() {
                         <span className="font-medium">
                             {userId}
                         </span>{" "}
-                        не існує..
+                        не існує.
                     </p>
                 </div>
             </div>
         );
     }
 
-    const moderationItem = items.find(
-        (item) =>
-            item.type === "users" &&
-            item.id === user.id,
-    );
-
-    const busy =
-        isLoading ||
-        busyAction !== null;
+    const busy = isLoading || busyAction !== null;
 
     const handleConfirm = async () => {
-        if (!moderationItem || !confirmAction) {
+        if (!confirmAction) {
             return;
         }
 
         try {
             if (confirmAction === "block") {
-                await blockItem(moderationItem);
+                await blockUser(user);
+            }
+
+            if (confirmAction === "unblock") {
+                await unblockUser(user);
             }
 
             if (confirmAction === "delete") {
-                await deleteItem(moderationItem);
+                await deleteUser(user);
+                // navigate("/admin/users");
             }
         } finally {
             setConfirmAction(null);
@@ -103,14 +101,21 @@ export default function AdminUserPage() {
             case "block":
                 return {
                     title: "Заблокувати користувача?",
-                    description: "Користувач буде заблоковано.",
+                    description: "Користувач буде заблокований.",
                     confirmText: "Заблокувати",
+                };
+
+            case "unblock":
+                return {
+                    title: "Розблокувати користувача?",
+                    description: "Користувач буде розблокований.",
+                    confirmText: "Розблокувати",
                 };
 
             case "delete":
                 return {
                     title: "Видалити користувача?",
-                    description: "Користувач буде позначений як віддалений.",
+                    description: "Користувач буде позначений як видалений.",
                     confirmText: "Видалити",
                 };
 
@@ -141,10 +146,10 @@ export default function AdminUserPage() {
 
                 <div className="mt-5">
                     <h1 className="text-2xl font-semibold">
-                        Користувач
+                        Перегляд користувача
                     </h1>
 
-                    <p className="mt-1 text-sm text-muted-foreground">
+                    <p className="mt-1 text-sm text-muted-foreground font-semibold">
                         ID: {user.id}
                     </p>
                 </div>
@@ -193,7 +198,9 @@ export default function AdminUserPage() {
                                 </p>
 
                                 <p className="mt-1 text-sm font-medium">
-                                    {formatDate(user.createdAt)}
+                                    {formatDate(
+                                        user.createdAt,
+                                    )}
                                 </p>
                             </div>
                         </div>
@@ -229,60 +236,13 @@ export default function AdminUserPage() {
                     </ReportCard>
                 </main>
 
-                <aside className="lg:sticky lg:top-6 lg:self-start">
-                    <section className="rounded-2xl border border-border bg-card p-5">
-                        <h2 className="text-lg font-semibold">
-                            Дії
-                        </h2>
-
-                        <p className="mt-1 text-sm text-muted-foreground">
-                            Керування обліковим записом користувача.
-                        </p>
-
-                        <div className="mt-5 space-y-2">
-                            <Button
-                                type="button"
-                                variant="outline"
-                                className="w-full justify-start"
-                                // disabled={busy || !moderationItem}
-                                onClick={() =>
-                                    setConfirmAction("block")
-                                }
-                            >
-                                <Ban className="size-4" />
-                                Заблокувати
-                            </Button>
-
-                            <Button
-                                type="button"
-                                variant="destructive"
-                                className="w-full justify-start"
-                                // disabled={busy || !moderationItem}
-                                onClick={() =>
-                                    setConfirmAction("delete")
-                                }
-                            >
-                                <Trash2 className="size-4" />
-                                Видалити
-                            </Button>
-                        </div>
-
-                        <div className="mt-5 border-t border-border pt-4">
-                            <p className="mb-1 text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                                Статус
-                            </p>
-
-                            <p className={
-                                   user.isBlocked
-                                       ? "text-sm font-semibold text-destructive"
-                                       : "text-sm font-semibold text-foreground"
-                               }
-                            >
-                                {user.isBlocked ? "Заблокований" : "Активний"}
-                            </p>
-                        </div>
-                    </section>
-                </aside>
+                <UsersActions
+                    isBlocked={user.isBlocked ?? false}
+                    busy={busy}
+                    onBlock={() => setConfirmAction("block")}
+                    onUnblock={() => setConfirmAction("unblock")}
+                    onDelete={() => setConfirmAction("delete")}
+                />
             </div>
 
             <ConfirmModal

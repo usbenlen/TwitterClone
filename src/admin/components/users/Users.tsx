@@ -1,10 +1,12 @@
-import UsersHero from "@/admin/components/users/UsersHero";
-import UsersFilters from "@/admin/components/users/UsersFilters";
-import UsersList from "@/admin/components/users/UsersList";
+import {
+    UsersHero,
+    UsersFilters,
+    UsersList,
+    UsersPagination
+} from "@/admin/components/users";
 
-import type { UsersFiltersState } from "@/admin/components/users/types";
+import type { UsersFiltersState } from "@/admin/types/users";
 import type { User } from "@/types/user";
-import UsersPagination from "@/admin/components/users/UsersPagination.tsx";
 
 type UsersProps = {
     items: User[];
@@ -25,9 +27,11 @@ type UsersProps = {
     ) => void;
 
     onOpen: (userId: string) => void;
-    onBlock: (user: User) => void;
-    onUnblock: (user: User) => void;
-    // onDelete: (user: User) => void;
+
+    onBlock: (user: User) => Promise<void>;
+    onUnblock: (user: User) => Promise<void>;
+    onDelete: (user: User) => Promise<void>;
+
     onPageChange: (page: number) => void;
 };
 
@@ -43,10 +47,11 @@ export default function Users({
     onOpen,
     onBlock,
     onUnblock,
+    onDelete,
     onPageChange,
 }: UsersProps) {
     return (
-        <div className="w-full rounded-xl bg-card border border-border">
+        <div className="w-full rounded-xl border border-border bg-card">
             <div className="p-4">
                 <UsersHero count={totalCount} />
 
@@ -65,6 +70,7 @@ export default function Users({
                 onOpen={onOpen}
                 onBlock={onBlock}
                 onUnblock={onUnblock}
+                onDelete={onDelete}
             />
 
             <UsersPagination
@@ -75,4 +81,3 @@ export default function Users({
         </div>
     );
 }
-

@@ -2,28 +2,31 @@ import ModerationCommentCard from "./cards/ModerationCommentCard";
 import ModerationPostCard from "./cards/ModerationPostCard";
 import ModerationUserCard from "./cards/ModerationUserCard";
 
-import type {ModerationItem} from "@/admin/types/moderation";
+import type { ReportSignal } from "@/admin/types/moderation";
 
 import { Button } from "@/ui";
 
+import { tweets } from "@/mock/data/tweets";
+import { commentsByPostId } from "@/mock/data/comments";
+import { sampleAuthors } from "@/mock/data/users";
+
 type ModerationListProps = {
-    items: ModerationItem[];
+    items: ReportSignal[];
     selectedIds: string[];
     busyAction: string | null;
 
     allCurrentPageSelected: boolean;
 
-    onToggleSelected: (item: ModerationItem) => void;
+    onToggleSelected: (item: ReportSignal) => void;
     onToggleSelectAll: () => void;
     onClearSelection: () => void;
     onBlockSelected: () => void;
 
-    onOpen: (item: ModerationItem) => void;
+    onOpen: (item: ReportSignal) => void;
 
-    onKeep: (item: ModerationItem) => void;
-    onDelete: (item: ModerationItem) => void;
-    onBlock: (item: ModerationItem) => void;
-    onUnblock: (item: ModerationItem) => void;
+    onKeep: (item: ReportSignal) => void;
+    onDelete: (item: ReportSignal) => void;
+    onBlock: (item: ReportSignal) => void;
 };
 
 export default function ModerationList({
@@ -39,7 +42,6 @@ export default function ModerationList({
    onKeep,
    onDelete,
    onBlock,
-   onUnblock,
 }: ModerationListProps) {
     return (
         <div>
@@ -95,20 +97,31 @@ export default function ModerationList({
 
             <div className="w-full">
                 {items.map((item) => {
-                    const itemKey = `${item.type}:${item.id}`;
+                    const itemKey = item.id;
 
                     const busy =
-                        busyAction === `item:${itemKey}`;
+                        busyAction === `item:${item.targetType}:${item.targetId}`;
 
                     const selected =
                         selectedIds.includes(itemKey);
 
-                    switch (item.type) {
-                        case "posts":
+                    switch (item.targetType) {
+                        case "posts": {
+                            const post = tweets.find(
+                                (currentPost) =>
+                                    currentPost.id ===
+                                    item.targetId,
+                            );
+
+                            if (!post) {
+                                return null;
+                            }
+
                             return (
                                 <ModerationPostCard
                                     key={itemKey}
                                     item={item}
+                                    post={post}
                                     selected={selected}
                                     busy={busy}
                                     onToggleSelected={() => onToggleSelected(item)}
@@ -117,12 +130,27 @@ export default function ModerationList({
                                     onDelete={() => onDelete(item)}
                                 />
                             );
+                        }
 
-                        case "comments":
+                        case "comments": {
+                            const comment = Object.values(
+                                commentsByPostId,
+                            )
+                                .flat()
+                                .find(
+                                    (currentComment) =>
+                                        currentComment.id === item.targetId,
+                                    );
+
+                            if (!comment) {
+                                return null;
+                            }
+
                             return (
                                 <ModerationCommentCard
                                     key={itemKey}
                                     item={item}
+                                    comment={comment}
                                     selected={selected}
                                     busy={busy}
                                     onToggleSelected={() => onToggleSelected(item)}
@@ -131,21 +159,33 @@ export default function ModerationList({
                                     onDelete={() => onDelete(item)}
                                 />
                             );
+                        }
 
-                        case "users":
+                        case "users": {
+                            const user =
+                                sampleAuthors.find(
+                                    (currentUser) =>
+                                        currentUser.id === item.targetId,
+                                );
+
+                            if (!user) {
+                                return null;
+                            }
+
                             return (
                                 <ModerationUserCard
                                     key={itemKey}
                                     item={item}
+                                    user={user}
                                     selected={selected}
                                     busy={busy}
                                     onToggleSelected={() => onToggleSelected(item)}
                                     onOpen={() => onOpen(item)}
                                     onKeep={() => onKeep(item)}
                                     onBlock={() => onBlock(item)}
-                                    onUnblock={() => onUnblock(item)}
                                 />
                             );
+                        }
 
                         default:
                             return null;

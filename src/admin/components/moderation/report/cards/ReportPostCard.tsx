@@ -1,18 +1,18 @@
 import { tweets } from "@/mock/data/tweets.ts";
 import { moderationSignals } from "@/mock/data/admin/moderationSignals.ts";
-import type { ModerationStatus } from "@/admin/types/moderation";
+import type { ReportStatus } from "@/admin/types/moderation";
 import ModerationCardHeader from "@/admin/components/moderation/cards/ModerationCardHeader.tsx";
 
 import ReportCard from "./ReportCard.tsx";
-import ReportStats from "@/admin/components/moderation/report/ReportStats.tsx";
+import ReportStats from "@/admin/components/moderation/report/cards/ui/ReportStats.tsx";
 import { TweetMedia } from "@/components/tweet";
 
 type ReportPostProps = {
     id: string;
-    status?: ModerationStatus;
+    status?: ReportStatus;
 };
 
-export function ReportPostCard({
+export default function ReportPostCard({
    id,
 }: ReportPostProps) {
     const post = tweets.find(
@@ -27,7 +27,7 @@ export function ReportPostCard({
 
     if (!post) {
         return (
-            <div className="space-y-6">
+            <div className="grid gap-6">
                 <ReportCard
                     title="Оригінальний пост"
                     openLabel="Відкрити пост"
@@ -44,7 +44,7 @@ export function ReportPostCard({
     }
 
     return (
-        <div className="space-y-6">
+        <div className="grid gap-6">
             <ReportCard
                 title="Оригінальний пост"
                 openLabel="Відкрити пост"

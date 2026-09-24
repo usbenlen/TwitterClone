@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 
-import { dashboardApi } from "@/admin/api/dashboardApi.ts";
+import { dashboardApi } from "@/admin/api/dashboard.api.ts";
 
-import type { Metric } from "@/admin/types/dashboardMetrics.ts";
+import type { DashboardMetric } from "@/admin/types/dashboard";
 
-export function useDashboardMetrics() {
-    const [metrics, setMetrics] = useState<Metric[]>([]);
+export default function useDashboardMetrics() {
+    const [metrics, setMetrics] = useState<DashboardMetric[]>([]);
     const [isLoading, setIsLoading] =
         useState(true);
     const [error, setError] =

@@ -2,7 +2,7 @@ import { useMemo, useState } from "react";
 
 import { MODERATION_ITEMS_PER_PAGE } from "@/admin/constants/moderation.ts";
 
-export function useModerationPagination<T>(
+export default function useModerationPagination<T>(
     items: T[],
 ) {
     const [currentPage, setCurrentPage] = useState(1);

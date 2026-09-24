@@ -1,5 +1,5 @@
 import type { AdminUser } from "@/admin/types/users";
-import type { ModerationSignal } from "@/admin/types/moderation";
+import type { ReportSignal } from "@/admin/types/moderation";
 import type { Tweet } from "@/types";
 
 import { sampleAuthors } from "@/mock/data/users";
@@ -10,7 +10,7 @@ export type DashboardReportRow = {
     reportId: string;
     targetId: string;
     count: number;
-    latestSignal: ModerationSignal;
+    latestSignal: ReportSignal;
     tweet: Tweet;
 };
 

@@ -2,7 +2,7 @@ import { tweets } from "@/mock/data/tweets";
 import type { Tweet } from "@/types/tweet";
 import { delay } from "@/mock/utils/delay";
 
-export const mockAdminTweetApi = {
+export const mockTweetApi = {
   async getAll(): Promise<Tweet[]> {
     await delay();
 

@@ -1,6 +1,6 @@
 import { sampleAuthors } from "@/mock/data/users";
 
-export const mockAdminUsersApi = {
+export const mockUsersApi = {
     async getAll() {
         return [...sampleAuthors];
     },

@@ -1,6 +1,6 @@
-import type { DashboardAnalyticsResponse } from "@/admin/types/analytics";
+import type { DashboardAnalytics } from "@/admin/types/analytics";
 
-export const dashboardAnalyticsMock: DashboardAnalyticsResponse = {
+export const dashboardAnalyticsMock: DashboardAnalytics = {
     audience: {
         "7d": [
             42,

@@ -2,7 +2,7 @@ import { useMemo, useState } from "react";
 
 import { USERS_ITEMS_PER_PAGE } from "@/admin/constants/users.ts";
 
-export function useUsersPagination<T>(items: T[]) {
+export default function useUsersPagination<T>(items: T[]) {
     const [currentPage, setCurrentPage] = useState(1);
 
     const totalPages = Math.max(

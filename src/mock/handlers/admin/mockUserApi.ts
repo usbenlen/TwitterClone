@@ -2,7 +2,7 @@ import { sampleAuthors } from "@/mock/data";
 import type { User } from "@/types";
 import { delay } from "@/mock/utils/delay";
 
-export const mockAdminUserApi = {
+export const mockUserApi = {
   async getAll(): Promise<User[]> {
     await delay(200);
     return [...sampleAuthors];

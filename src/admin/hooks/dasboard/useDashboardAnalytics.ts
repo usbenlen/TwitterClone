@@ -3,15 +3,15 @@ import {
     useState,
 } from "react";
 
-import { dashboardApi } from "@/admin/api/dashboardApi.ts";
+import { dashboardApi } from "@/admin/api/dashboard.api.ts";
 
-import type { AnalyticsPeriod, DashboardAnalyticsResponse } from "@/admin/types/analytics";
+import type { AnalyticsPeriod, DashboardAnalytics } from "@/admin/types/analytics";
 
-export function useDashboardAnalytics(
+export default function useDashboardAnalytics(
     period: AnalyticsPeriod,
 ) {
     const [data, setData] =
-        useState<DashboardAnalyticsResponse | null>(
+        useState<DashboardAnalytics | null>(
             null,
         );
 

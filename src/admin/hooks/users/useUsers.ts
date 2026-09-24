@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 
 import type { User } from "@/types";
-import { usersApi } from "@/admin/api/usersApi.ts";
+import { usersApi } from "@/admin/api/users.api.ts";
 
-export function useUsers() {
+export default function useUsers() {
     const [users, setUsers] = useState<User[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -18,7 +18,8 @@ export function useUsers() {
                 setIsLoading(true);
                 setError(null);
 
-                const response = await usersApi.getAll();
+                const response =
+                    await usersApi.getAll();
 
                 if (isMounted) {
                     setUsers(response);

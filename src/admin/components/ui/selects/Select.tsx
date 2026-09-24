@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ChevronDown } from "lucide-react";
 
 type SelectOption = {
@@ -13,36 +13,12 @@ type SelectProps = {
 };
 
 export default function Select({
-   value,
-   onChange,
-   options,
-}: SelectProps) {
+                                   value,
+                                   onChange,
+                                   options,
+                               }: SelectProps) {
     const [isOpen, setIsOpen] = useState(false);
-
-    useEffect(() => {
-        const handleClose = () => {
-            setIsOpen(false);
-        };
-
-        window.addEventListener("close-all-selects", handleClose);
-
-        return () => {
-            window.removeEventListener(
-                "close-all-selects",
-                handleClose,
-            );
-        };
-    }, []);
-
-    const handleToggle = () => {
-        if (!isOpen) {
-            window.dispatchEvent(
-                new Event("close-all-selects"),
-            );
-        }
-
-        setIsOpen((current) => !current);
-    };
+    const selectRef = useRef<HTMLDivElement>(null);
 
     const selectedOption = options.find(
         (option) => option.value === value,
@@ -51,8 +27,82 @@ export default function Select({
     const selectedLabel =
         selectedOption?.label ?? "Оберіть статус";
 
+    useEffect(() => {
+        const handleOtherSelectOpen = (
+            event: Event,
+        ) => {
+            const customEvent =
+                event as CustomEvent<HTMLDivElement | null>;
+
+            if (
+                customEvent.detail !==
+                selectRef.current
+            ) {
+                setIsOpen(false);
+            }
+        };
+
+        window.addEventListener(
+            "select:open",
+            handleOtherSelectOpen,
+        );
+
+        return () => {
+            window.removeEventListener(
+                "select:open",
+                handleOtherSelectOpen,
+            );
+        };
+    }, []);
+
+    useEffect(() => {
+        const handleMouseDown = (
+            event: MouseEvent,
+        ) => {
+            if (
+                selectRef.current &&
+                !selectRef.current.contains(
+                    event.target as Node,
+                )
+            ) {
+                setIsOpen(false);
+            }
+        };
+
+        document.addEventListener(
+            "mousedown",
+            handleMouseDown,
+        );
+
+        return () => {
+            document.removeEventListener(
+                "mousedown",
+                handleMouseDown,
+            );
+        };
+    }, []);
+
+    const handleToggle = () => {
+        setIsOpen((current) => {
+            const next = !current;
+
+            if (next) {
+                window.dispatchEvent(
+                    new CustomEvent("select:open", {
+                        detail: selectRef.current,
+                    }),
+                );
+            }
+
+            return next;
+        });
+    };
+
     return (
-        <div className="relative z-50 w-full lg:w-auto">
+        <div
+            ref={selectRef}
+            className="relative z-50 w-full lg:w-auto"
+        >
             <button
                 type="button"
                 onClick={handleToggle}
@@ -97,8 +147,8 @@ export default function Select({
             </button>
 
             {isOpen && (
-                <div className="absolute left-0 top-full z-50 mt-2 min-w-full rounded-2xl border border-border bg-card p-2 shadow-xl">
-                    <div className="flex flex-col gap-1">
+                <div className="absolute left-0 top-full z-[60] mt-2 min-w-full rounded-2xl border border-border bg-card p-2 shadow-xl">
+                    <div className="flex w-full flex-col gap-1">
                         {options.map((option) => {
                             const isActive =
                                 option.value === value;
@@ -108,10 +158,12 @@ export default function Select({
                                     key={option.value}
                                     type="button"
                                     onClick={() => {
-                                        onChange(option.value);
+                                        onChange(
+                                            option.value,
+                                        );
                                         setIsOpen(false);
                                     }}
-                                    className={`flex w-full items-center rounded-lg px-3 py-2 text-left text-sm transition-colors ${
+                                    className={`block w-full cursor-pointer rounded-lg px-3 py-2 text-left text-sm transition-colors ${
                                         isActive
                                             ? "bg-primary/10 font-medium text-primary"
                                             : "text-foreground hover:bg-muted"

@@ -9,5 +9,3 @@ export * from "@/mock/handlers/mockLocationApi";
 export * from "@/mock/handlers/mockFollowApi";
 export * from "@/mock/handlers/mockSearchApi";
 export * from "@/mock/handlers/mockCommentApi";
-export * from "@/mock/handlers/admin/mockAdminTweetApi";
-export * from "@/mock/handlers/admin/mockAdminUserApi";

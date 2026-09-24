@@ -1,15 +1,8 @@
 import type { ReactNode } from "react";
 
-export type MetricTrendType =
-    | "positive"
-    | "negative";
-
 type MetricCardProps = {
     title: string;
     value: string;
-    trend?: string;
-    trendType?: MetricTrendType;
-    trendText?: string;
     icon?: ReactNode;
 };
 

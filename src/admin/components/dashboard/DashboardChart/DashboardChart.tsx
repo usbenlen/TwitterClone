@@ -6,9 +6,10 @@ import {
     ChartPeriodSelect,
 } from "@/admin/components/dashboard/ui/charts";
 
-import { useDashboardChart } from "@/admin/hooks/dasboard/useDashboardChart.ts";
+import { useDashboardChart } from "@/admin/hooks/dasboard";
 
 import type { AnalyticsPeriod } from "@/admin/types/analytics";
+import {Spinner} from "@/ui";
 
 export default function DashboardChart() {
     const [period, setPeriod] =
@@ -42,9 +43,7 @@ export default function DashboardChart() {
                 id="analytics"
                 className="mx-auto w-full max-w-6xl"
             >
-                <div className="rounded-2xl border border-border bg-card p-8 text-center text-sm text-muted-foreground">
-                    Завантаження аналітики...
-                </div>
+                <Spinner/>
             </section>
         );
     }
@@ -74,8 +73,7 @@ export default function DashboardChart() {
                     </h2>
 
                     <p className="mt-1 text-sm text-muted-foreground">
-                        Основні показники активності та
-                        зростання аудиторії
+                        Основні показники активності та зростання аудиторії
                     </p>
                 </div>
 

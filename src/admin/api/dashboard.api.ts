@@ -6,35 +6,36 @@ import { mockDashboardApi } from "@/mock/handlers/admin";
 
 import type {
     AnalyticsPeriod,
-    DashboardAnalyticsResponse
+    DashboardAnalytics,
 } from "@/admin/types/analytics";
 
-import type { Metric } from "@/admin/types/dashboardMetrics";
-import type { DashboardTablesResponse } from "@/admin/types/dashboardTables";
+import type {
+    DashboardMetric,
+    DashboardTables,
+} from "@/admin/types/dashboard";
 
 const realDashboardApi = {
-    getMetrics: async (): Promise<Metric[]> => {
-        return apiClient.get<Metric[]>(
+    getMetrics: async (): Promise<DashboardMetric[]> => {
+        return apiClient.get<DashboardMetric[]>(
             ENDPOINTS.admin.dashboard.metrics,
         );
     },
 
     getAnalytics: async (
         period: AnalyticsPeriod,
-    ): Promise<DashboardAnalyticsResponse> => {
-        return apiClient.get<DashboardAnalyticsResponse>(
+    ): Promise<DashboardAnalytics> => {
+        return apiClient.get<DashboardAnalytics>(
             ENDPOINTS.admin.dashboard.charts(period),
         );
     },
 
     getTables: async (
         limit = 10,
-    ): Promise<DashboardTablesResponse> => {
-        return apiClient.get<DashboardTablesResponse>(
+    ): Promise<DashboardTables> => {
+        return apiClient.get<DashboardTables>(
             ENDPOINTS.admin.dashboard.tables(limit),
         );
     },
 };
-
 
 export const dashboardApi = MOCK_ENABLED ? mockDashboardApi : realDashboardApi;

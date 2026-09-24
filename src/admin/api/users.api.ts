@@ -2,7 +2,7 @@ import { apiClient } from "@/api/client";
 import { ENDPOINTS } from "@/api/config";
 
 import { MOCK_ENABLED } from "@/mock/config";
-import { mockAdminUsersApi } from "@/mock/handlers/admin/mockAdminUsersApi";
+import { mockUsersApi } from "@/mock/handlers/admin/mockUsersApi.ts";
 
 import type { User } from "@/types";
 
@@ -32,4 +32,4 @@ const realAdminUsersApi = {
     },
 };
 
-export const usersApi = MOCK_ENABLED ? mockAdminUsersApi : realAdminUsersApi;
+export const usersApi = MOCK_ENABLED ? mockUsersApi : realAdminUsersApi;

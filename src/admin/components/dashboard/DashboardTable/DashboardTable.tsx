@@ -1,4 +1,4 @@
-import { useDashboardTables } from "@/admin/hooks/dasboard/useDashboardTables.ts";
+import { useDashboardTables } from "@/admin/hooks/dasboard";
 
 import DashboardTableReports from "./DashboardTableReports.tsx";
 import DashboardTableUsers from "./DashboardTableUsers.tsx";
@@ -7,7 +7,6 @@ export default function DashboardTable() {
     const {
         latestUsers,
         latestReports,
-        openReportsCount,
         getReportLabel,
     } = useDashboardTables();
 
@@ -15,7 +14,6 @@ export default function DashboardTable() {
         <div className="grid items-stretch gap-4 lg:grid-cols-2">
             <DashboardTableReports
                 latestReports={latestReports}
-                openReportsCount={openReportsCount}
                 getReportLabel={getReportLabel}
             />
 

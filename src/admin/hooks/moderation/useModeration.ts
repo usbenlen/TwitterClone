@@ -1,20 +1,17 @@
 import { useEffect, useState } from "react";
 
-import { moderationApi } from "@/admin/api/moderationApi.ts";
-
-import { MOCK_ENABLED } from "@/mock/config";
-import { moderationSignals } from "@/mock/data/admin/moderationSignals";
+import { moderationApi } from "@/admin/api/moderation.api.ts";
 
 import type {
-    ModerationItem,
-    ModerationStatus,
-    ModerationType,
+    ReportDecision,
+    ReportSignal,
+    ReportTargetType,
 } from "@/admin/types/moderation";
 
-export function useModeration() {
-    const [items, setItems] = useState<
-        ModerationItem[]
-    >([]);
+export default function useModeration() {
+    const [items, setItems] = useState<ReportSignal[]>(
+        [],
+    );
 
     const [isLoading, setIsLoading] =
         useState(true);
@@ -23,27 +20,9 @@ export function useModeration() {
         string | null
     >(null);
 
-    const [busyAction, setBusyAction] =
-        useState<string | null>(null);
-
-    const updateSignalStatus = (
-        type: Exclude<ModerationType, "all">,
-        itemId: string,
-        status: ModerationStatus,
-    ) => {
-        if (!MOCK_ENABLED) {
-            return;
-        }
-
-        moderationSignals.forEach((signal) => {
-            if (
-                signal.targetType === type &&
-                signal.targetId === itemId
-            ) {
-                signal.status = status;
-            }
-        });
-    };
+    const [busyAction, setBusyAction] = useState<
+        string | null
+    >(null);
 
     useEffect(() => {
         let cancelled = false;
@@ -81,53 +60,40 @@ export function useModeration() {
         };
     }, []);
 
-    const updateStatus = async (
-        type: Exclude<ModerationType, "all">,
-        itemId: string,
-        status: ModerationStatus,
+    const updateReport = async (
+        item: ReportSignal,
+        decision: ReportDecision,
     ) => {
-        const item = items.find(
-            (currentItem) =>
-                currentItem.type === type &&
-                currentItem.id === itemId,
-        );
-
-        if (!item) {
-            return;
-        }
-
         try {
             setBusyAction(
-                `item:${type}:${itemId}`,
+                `item:${item.targetType}:${item.targetId}`,
             );
+
             setError(null);
 
             await moderationApi.updateStatus(
-                type,
-                itemId,
-                status,
-            );
-
-            updateSignalStatus(
-                type,
-                itemId,
-                status,
+                item.targetType,
+                item.targetId,
+                "resolved",
+                decision,
             );
 
             setItems((previousItems) =>
-                previousItems.map((currentItem) =>
-                    currentItem.type === type &&
-                    currentItem.id === itemId
-                        ? {
-                            ...currentItem,
-                            status,
-                        }
-                        : currentItem,
+                previousItems.map(
+                    (currentItem) =>
+                        currentItem.id === item.id
+                            ? {
+                                ...currentItem,
+                                reportStatus:
+                                    "resolved",
+                                decision,
+                            }
+                            : currentItem,
                 ),
             );
         } catch {
             setError(
-                "Не вдалося змінити статус модерації.",
+                "Не вдалося змінити статус скарги.",
             );
         } finally {
             setBusyAction(null);
@@ -135,244 +101,55 @@ export function useModeration() {
     };
 
     const approveItem = async (
-        type: Exclude<
-            ModerationType,
-            "all"
-        >,
+        type: ReportTargetType,
         itemId: string,
     ) => {
-        await updateStatus(
-            type,
-            itemId,
-            "approved",
+        const item = items.find(
+            (currentItem) =>
+                currentItem.targetType === type &&
+                currentItem.targetId === itemId,
         );
-    };
 
-    const deleteItem = async (
-        item: ModerationItem,
-    ) => {
-        try {
-            setBusyAction(
-                `item:${item.type}:${item.id}`,
-            );
-            setError(null);
-
-            await moderationApi.updateStatus(
-                item.type,
-                item.id,
-                "deleted",
-            );
-
-            updateSignalStatus(
-                item.type,
-                item.id,
-                "deleted",
-            );
-
-            setItems((prev) =>
-                prev.map((currentItem) => {
-                    if (
-                        currentItem.type !== item.type ||
-                        currentItem.id !== item.id
-                    ) {
-                        return currentItem;
-                    }
-
-                    return {
-                        ...currentItem,
-                        status: "deleted",
-                    };
-                }),
-            );
-        } catch {
-            setError(
-                "Не вдалося видалити елемент.",
-            );
-        } finally {
-            setBusyAction(null);
+        if (!item) {
+            return;
         }
-    };
 
-    const removeFromQueue = (
-        type: ModerationType,
-        itemId: string,
-    ) => {
-        setItems((prev) =>
-            prev.filter(
-                (item) =>
-                    !(
-                        item.type === type &&
-                        item.id === itemId
-                    ),
-            ),
-        );
+        await updateReport(item, "kept");
     };
 
     const keepItem = async (
-        item: ModerationItem,
+        item: ReportSignal,
     ) => {
-        try {
-            setBusyAction(
-                `item:${item.type}:${item.id}`,
-            );
-            setError(null);
+        await updateReport(item, "kept");
+    };
 
-            await moderationApi.updateStatus(
-                item.type,
-                item.id,
-                "approved",
-            );
-
-            updateSignalStatus(
-                item.type,
-                item.id,
-                "approved",
-            );
-
-            setItems((prev) =>
-                prev.map((currentItem) => {
-                    if (
-                        currentItem.type !== item.type ||
-                        currentItem.id !== item.id
-                    ) {
-                        return currentItem;
-                    }
-
-                    return {
-                        ...currentItem,
-                        status: "approved",
-                    };
-                }),
-            );
-        } catch {
-            setError(
-                "Не вдалося залишити елемент.",
-            );
-        } finally {
-            setBusyAction(null);
-        }
+    const deleteItem = async (
+        item: ReportSignal,
+    ) => {
+        await updateReport(item, "deleted");
     };
 
     const rejectItem = async (
-        type: Exclude<
-            ModerationType,
-            "all"
-        >,
+        type: ReportTargetType,
         itemId: string,
     ) => {
-        try {
-            setBusyAction(
-                `item:${type}:${itemId}`,
-            );
-            setError(null);
+        const item = items.find(
+            (currentItem) =>
+                currentItem.targetType === type &&
+                currentItem.targetId === itemId,
+        );
 
-            await updateStatus(
-                type,
-                itemId,
-                "deleted",
-            );
-
-            removeFromQueue(
-                type,
-                itemId,
-            );
-        } catch {
-            setError(
-                "Не вдалося видалити елемент.",
-            );
-        } finally {
-            setBusyAction(null);
+        if (!item) {
+            return;
         }
+
+        await updateReport(item, "deleted");
     };
 
     const blockItem = async (
-        item: ModerationItem,
+        item: ReportSignal,
     ) => {
-        try {
-            setBusyAction(
-                `item:${item.type}:${item.id}`,
-            );
-            setError(null);
-
-            await moderationApi.updateStatus(
-                item.type,
-                item.id,
-                "blocked",
-            );
-
-            updateSignalStatus(
-                item.type,
-                item.id,
-                "blocked",
-            );
-
-            setItems((prev) =>
-                prev.map((currentItem) => {
-                    if (
-                        currentItem.type !== item.type ||
-                        currentItem.id !== item.id
-                    ) {
-                        return currentItem;
-                    }
-
-                    return {
-                        ...currentItem,
-                        status: "blocked",
-                    };
-                }),
-            );
-        } catch {
-            setError(
-                "Не вдалося заблокувати елемент.",
-            );
-        } finally {
-            setBusyAction(null);
-        }
-    };
-
-    const unblockItem = async (
-        item: ModerationItem,
-    ) => {
-        try {
-            setBusyAction(
-                `item:${item.type}:${item.id}`,
-            );
-            setError(null);
-
-            await moderationApi.updateStatus(
-                item.type,
-                item.id,
-                "approved",
-            );
-
-            updateSignalStatus(
-                item.type,
-                item.id,
-                "approved",
-            );
-
-            setItems((prev) =>
-                prev.map((currentItem) => {
-                    if (
-                        currentItem.type !== item.type ||
-                        currentItem.id !== item.id
-                    ) {
-                        return currentItem;
-                    }
-
-                    return {
-                        ...currentItem,
-                        status: "approved",
-                    };
-                }),
-            );
-        } catch {
-            setError(
-                "Не вдалося розблокувати елемент.",
-            );
-        } finally {
-            setBusyAction(null);
-        }
+        await updateReport(item, "blocked");
     };
 
     return {
@@ -385,6 +162,5 @@ export function useModeration() {
         blockItem,
         keepItem,
         deleteItem,
-        unblockItem,
     };
 }
