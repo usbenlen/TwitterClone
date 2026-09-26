@@ -84,6 +84,8 @@ const realUserApi = {
   },
 
   deleteMe: () => apiClient.delete(ENDPOINTS.users.deleteMe),
+
+  report: (id: string) => apiClient.post(ENDPOINTS.users.report(id))
 };
 
 export const userApi = MOCK_ENABLED ? mockUserApi : realUserApi;

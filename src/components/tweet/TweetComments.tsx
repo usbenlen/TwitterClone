@@ -296,7 +296,7 @@ export default function TweetComments({
                           refs.setFloating(node);
                         }}
                         style={floatingStyles}
-                        className="z-[9999] overflow-hidden rounded-2xl border border-border bg-background shadow-2xl"
+                        className="z-200 overflow-hidden rounded-2xl border border-border bg-background shadow-2xl"
                     >
                       <EmojiPicker onSelect={handleEmojiSelect} />
                     </div>

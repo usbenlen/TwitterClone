@@ -14,7 +14,7 @@ type ReportReason =
 type ReportModalProps = {
     open: boolean;
     onClose: () => void;
-    onSubmit: (reason: ReportReason) => void;
+    onSubmit: () => void;
 };
 
 const REPORT_REASONS: {
@@ -76,17 +76,13 @@ export default function ReportModal({
     };
 
     const handleSubmit = () => {
-        if (!selectedReason) {
-            return;
-        }
-
-        onSubmit(selectedReason);
+        onSubmit();
         setIsSubmitted(true);
     };
 
     return (
         <div
-            className="fixed inset-0 z-[1000] flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm"
+            className="fixed inset-0 z-200 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm"
             onMouseDown={(event) => {
                 if (event.target === event.currentTarget) {
                     handleClose();

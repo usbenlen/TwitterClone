@@ -8,17 +8,17 @@ export const mockDashboardMetricsData: DashboardMetric[] = [
     },
     {
         id: "posts",
-        title: "Нові пости сьогодні",
+        title: "Пости сьогодні",
+        value: 980,
+    },
+    {
+        id: "activity",
+        title: "Активності сьогодні",
         value: 980,
     },
     {
         id: "reports",
         title: "Відкриті скарги",
         value: 28,
-    },
-    {
-        id: "revenue",
-        title: "Дохід за 30 днів",
-        value: 1600,
     },
 ];

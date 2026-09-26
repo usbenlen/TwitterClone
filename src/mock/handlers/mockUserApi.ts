@@ -163,4 +163,8 @@ export const mockUserApi = {
 
     // sampleAuthors.splice(index, 1);
   },
+
+  async report(id: string): Promise<void> {
+    void id;
+  },
 };
