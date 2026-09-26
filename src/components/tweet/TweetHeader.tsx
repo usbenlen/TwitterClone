@@ -14,19 +14,21 @@ import type { Tweet } from "@/types/tweet";
 import { useEffect, useRef, useState } from "react";
 
 import ReportModal from "@/components/modal/ReportModal";
+import {reportApi} from "@/api/report.api.ts";
 
 interface TweetHeaderProps {
-  author: Tweet["author"];
-  createdAt: string;
-  isOwn: boolean;
-  onReport: () => void;
+    author: Tweet["author"];
+    createdAt: string;
+    isOwn: boolean;
+    onReport: () => void;
+    tweetId: string;
 }
 
 export default function TweetHeader({
-  author,
-  createdAt,
-  isOwn,
-  onReport,
+    author,
+    createdAt,
+    isOwn,
+    tweetId,
 }: TweetHeaderProps) {
   const [open, setOpen] = useState(false);
   const [isReportModalOpen, setIsReportModalOpen] =
@@ -149,8 +151,12 @@ export default function TweetHeader({
             onClose={() => {
               setIsReportModalOpen(false);
             }}
-            onSubmit={() => {
-                onReport();
+            onSubmit={async (reason) => {
+                await reportApi.report(
+                    "posts",
+                    tweetId,
+                    reason,
+                );
             }}
         />
       </>

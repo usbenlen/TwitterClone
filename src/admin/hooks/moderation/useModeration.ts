@@ -72,8 +72,7 @@ export default function useModeration() {
             setError(null);
 
             await moderationApi.updateStatus(
-                item.targetType,
-                item.targetId,
+                item.id,
                 "resolved",
                 decision,
             );

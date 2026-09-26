@@ -14,7 +14,7 @@ type ReportReason =
 type ReportModalProps = {
     open: boolean;
     onClose: () => void;
-    onSubmit: () => void;
+    onSubmit: (reason: ReportReason) => void;
 };
 
 const REPORT_REASONS: {
@@ -55,10 +55,10 @@ const REPORT_REASONS: {
 ];
 
 export default function ReportModal({
-                                        open,
-                                        onClose,
-                                        onSubmit,
-                                    }: ReportModalProps) {
+    open,
+    onClose,
+    onSubmit,
+}: ReportModalProps) {
     const [selectedReason, setSelectedReason] =
         useState<ReportReason | null>(null);
 
@@ -76,7 +76,11 @@ export default function ReportModal({
     };
 
     const handleSubmit = () => {
-        onSubmit();
+        if (!selectedReason) {
+            return;
+        }
+
+        onSubmit(selectedReason);
         setIsSubmitted(true);
     };
 

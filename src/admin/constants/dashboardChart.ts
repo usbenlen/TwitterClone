@@ -1,7 +1,5 @@
 import type { AnalyticsPeriod } from "@/admin/types/analytics";
 
-export const AUDIENCE_SCALE = 200;
-
 export const periodLabels: Record<
     AnalyticsPeriod,
     string

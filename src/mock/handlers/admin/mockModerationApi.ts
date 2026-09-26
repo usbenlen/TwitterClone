@@ -2,7 +2,6 @@ import type {
     ReportDecision,
     ReportSignal,
     ReportStatus,
-    ReportTargetType,
 } from "@/admin/types/moderation";
 
 import { moderationSignals } from "@/mock/data/admin/moderationSignals";
@@ -203,8 +202,7 @@ export const mockModerationApi = {
     },
 
     async updateStatus(
-        targetType: ReportTargetType,
-        targetId: string,
+        reportId: string,
         reportStatus: ReportStatus,
         decision?: ReportDecision,
     ): Promise<void> {
@@ -212,21 +210,19 @@ export const mockModerationApi = {
             setTimeout(resolve, 300),
         );
 
-        moderationSignals.forEach(
-            (signal) => {
-                if (
-                    signal.targetType ===
-                    targetType &&
-                    signal.targetId === targetId
-                ) {
-                    signal.status =
-                        reportStatus;
-
-                    signal.decision =
-                        decision;
-                }
-            },
+        const signal = moderationSignals.find(
+            (currentSignal) =>
+                currentSignal.id === reportId,
         );
+
+        if (!signal) {
+            throw new Error(
+                "Скаргу не знайдено",
+            );
+        }
+
+        signal.status = reportStatus;
+        signal.decision = decision;
     },
 
     async deletePost(

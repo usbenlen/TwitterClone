@@ -12,8 +12,7 @@ import type { AnalyticsPeriod } from "@/admin/types/analytics";
 import {Spinner} from "@/ui";
 
 export default function DashboardChart() {
-    const [period, setPeriod] =
-        useState<AnalyticsPeriod>("30d");
+    const [period, setPeriod] = useState<AnalyticsPeriod>("30d");
 
     const {
         contentType,

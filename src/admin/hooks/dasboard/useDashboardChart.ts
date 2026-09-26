@@ -7,8 +7,6 @@ import type {
     AnalyticsPeriod,
 } from "@/admin/types/analytics";
 
-import { AUDIENCE_SCALE } from "@/admin/constants/dashboardChart";
-
 export type AudiencePoint = {
     x: number;
     y: number;
@@ -398,8 +396,7 @@ export default function useDashboardChart(
         animatedAudienceCurrent;
 
     const audienceTotal =
-        audienceCurrent *
-        AUDIENCE_SCALE;
+        audienceCurrent;
 
     const activityMax = Math.max(
         ...activityData,

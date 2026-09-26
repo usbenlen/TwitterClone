@@ -13,7 +13,7 @@ export const mockDashboardMetricsData: DashboardMetric[] = [
     },
     {
         id: "activity",
-        title: "Активності сьогодні",
+        title: "Активні сьогодні",
         value: 980,
     },
     {

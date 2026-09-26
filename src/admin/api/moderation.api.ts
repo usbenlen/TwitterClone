@@ -8,7 +8,6 @@ import type {
     ReportDecision,
     ReportSignal,
     ReportStatus,
-    ReportTargetType,
 } from "@/admin/types/moderation";
 
 const realModerationApi = {
@@ -27,15 +26,13 @@ const realModerationApi = {
     },
 
     updateStatus: async (
-        type: ReportTargetType,
-        itemId: string,
+        reportId: string,
         status: ReportStatus,
         decision?: ReportDecision,
     ): Promise<void> => {
         await apiClient.put(
-            ENDPOINTS.admin.moderation.updateStatus(itemId),
+            ENDPOINTS.admin.moderation.updateStatus(reportId),
             {
-                type,
                 status,
                 decision,
             },

@@ -197,7 +197,7 @@ export const moderationSignals: ReportSignal[] = [
         targetId: "t7",
 
         source: "user",
-        reason: "hate_speech",
+        reason: "hate",
         reasonLabel: "Мова ворожнечі",
         status: "pending",
         createdAt: new Date(

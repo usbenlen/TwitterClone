@@ -6,10 +6,8 @@ import type { DashboardMetric } from "@/admin/types/dashboard";
 
 export default function useDashboardMetrics() {
     const [metrics, setMetrics] = useState<DashboardMetric[]>([]);
-    const [isLoading, setIsLoading] =
-        useState(true);
-    const [error, setError] =
-        useState<string | null>(null);
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
         let isMounted = true;

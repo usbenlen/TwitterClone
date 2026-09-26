@@ -1,5 +1,4 @@
 import ChartCard from "@/admin/components/dashboard/ui/cards/ChartCard.tsx";
-import { AUDIENCE_SCALE } from "@/admin/constants/dashboardChart.ts";
 import { formatNumber } from "@/utils/format.ts";
 
 import type { AudiencePoint } from "@/admin/hooks/dasboard/useDashboardChart.ts";
@@ -27,7 +26,7 @@ export default function AudienceChart({
                 <div className="mb-6 flex items-start justify-between gap-4">
                     <div>
                         <p className="text-sm font-medium text-muted-foreground">
-                            Зростання аудиторії
+                            Активна аудиторія
                         </p>
 
                         <div className="mt-2 flex items-end gap-3">
@@ -49,13 +48,14 @@ export default function AudienceChart({
                             (percent) => {
                                 const value =
                                     Math.round(
-                                        (maxAudience *
-                                            AUDIENCE_SCALE *
-                                            percent) /
-                                            100,
+                                        (maxAudience * percent) / 100,
                                     );
 
-                                return (<span key={percent}> {formatNumber(value)}</span>);
+                                return (
+                                    <span key={percent}>
+                                        {formatNumber(value)}
+                                    </span>
+                                );
                             },
                         )}
                     </div>
@@ -142,8 +142,7 @@ export default function AudienceChart({
                                             <div className="mt-0.5 font-semibold">
                                                 {formatNumber(
                                                     Math.round(
-                                                        point.value *
-                                                            AUDIENCE_SCALE,
+                                                        point.value
                                                     ),
                                                 )}
                                             </div>

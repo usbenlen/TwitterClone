@@ -18,6 +18,7 @@ import EmojiPicker from "@/components/composer/emoji/EmojiPicker";
 
 import type { Comment } from "@/types/comment";
 import ReportModal from "@/components/modal/ReportModal.tsx";
+import {reportApi} from "@/api/report.api.ts";
 
 interface TweetCommentsProps {
   comments: Comment[];
@@ -74,7 +75,6 @@ export default function TweetComments({
   replyingToUsername,
   onSubmit,
   onDelete,
-  onReport,
   onOpenReplyModal,
 }: TweetCommentsProps) {
   const { user } = useAuth();
@@ -339,12 +339,16 @@ export default function TweetComments({
             onClose={() => {
               setReportComment(null);
             }}
-            onSubmit={() => {
+            onSubmit={async (reason) => {
               if (!reportComment) {
                 return;
               }
 
-              onReport(reportComment);
+              await reportApi.report(
+                  "comments",
+                  reportComment.id,
+                  reason,
+              );
             }}
         />
       </section>

@@ -5,9 +5,7 @@ import { formatNumber } from "@/utils/format.ts";
 
 export default function DashboardMetric() {
     const { user } = useAuth();
-
-    const { metrics, isLoading } =
-        useDashboardMetrics();
+    const { metrics, isLoading } = useDashboardMetrics();
 
     if (isLoading) {
         return (

@@ -39,11 +39,19 @@ export type ModerationType =
 export type ReportReason =
     | "spam"
     | "harassment"
-    | "hate_speech"
-    | "violence"
-    | "sexual"
     | "misinformation"
+    | "violence"
+    | "hate"
     | "other";
+
+export const reportReasonLabels: Record<ReportReason, string> = {
+    spam: "Спам",
+    harassment: "Переслідування",
+    misinformation: "Дезінформація",
+    violence: "Насильство",
+    hate: "Мова ворожнечі",
+    other: "Інше",
+};
 
 export type ReportStatus =
     | "pending"

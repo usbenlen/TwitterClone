@@ -8,8 +8,9 @@ import { useImageCache, useFollow } from "@/hooks";
 import { EditProfileModal } from "@/components/modal";
 import ReportModal from "@/components/modal/ReportModal";
 
-import {type UpdateProfileRequest, userApi} from "@/api/user.api";
+import { type UpdateProfileRequest } from "@/api/user.api";
 import type { User } from "@/types/user";
+import { reportApi } from "@/api/report.api.ts";
 
 interface ProfileHeroProps {
     user: User;
@@ -167,8 +168,12 @@ export default function ProfileHero({
                 onClose={() => {
                     setIsReportModalOpen(false);
                 }}
-                onSubmit={async () => {
-                    await userApi.report(user.id);
+                onSubmit={async (reason) => {
+                    await reportApi.report(
+                        "users",
+                        user.id,
+                        reason,
+                    );
                 }}
             />
         </>

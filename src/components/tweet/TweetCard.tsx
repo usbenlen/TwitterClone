@@ -105,6 +105,7 @@ export default function TweetCard({
               createdAt={tweet.createdAt}
               isOwn={user?.id === tweet.author.id}
               onReport={() => onReport(tweet)}
+              tweetId={tweet.id}
           />
 
           <TweetContent tweet={tweet} />
