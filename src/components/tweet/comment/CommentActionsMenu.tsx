@@ -105,7 +105,7 @@ export default function CommentActionsMenu({
                         className={
                           action.variant === "danger"
                               ? "flex w-full items-center gap-3 px-4 py-2.5 text-sm font-medium text-destructive transition-colors hover:bg-destructive/10"
-                              : "flex w-full items-center gap-3 px-4 py-2.5 text-sm font-medium text-primary transition-colors hover:bg-muted hover:bg-foreground/10"
+                              : "flex w-full items-center gap-3 px-4 py-2.5 text-sm font-medium text-foreground transition-colors hover:bg-muted hover:bg-foreground/10"
                         }
                     >
                       <Icon size={18} />
