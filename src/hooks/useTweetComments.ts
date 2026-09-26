@@ -153,6 +153,18 @@ export function useTweetComments(
     }
   };
 
+  const reportComment = async (
+      commentId: string,
+  ) => {
+    setError(null);
+
+    try {
+      await commentApi.report(commentId);
+    } catch {
+      setError("Не вдалося надіслати скаргу.");
+    }
+  };
+
   return {
     open,
     comments,
@@ -167,5 +179,6 @@ export function useTweetComments(
 
     createComment,
     deleteComment,
+    reportComment,
   };
 }

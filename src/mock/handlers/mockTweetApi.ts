@@ -215,4 +215,8 @@ export const mockTweetApi = {
 
     setTweets(updatedTweets);
   },
+
+  async report(id: string): Promise<void> {
+    void id;
+  },
 };

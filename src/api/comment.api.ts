@@ -59,6 +59,9 @@ const realCommentApi = {
       ? realCommentApi.unbookmark(id)
       : realCommentApi.bookmark(id),
 
+  report: (id: string) =>
+      apiClient.post(ENDPOINTS.comments.report(id)),
+
   view: (id: string) => apiClient.post<void>(ENDPOINTS.comments.view(id)),
 };
 

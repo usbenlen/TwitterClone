@@ -110,6 +110,9 @@ const realTweetApi = {
     if (bookmarkedByMe) return realTweetApi.unbookmark(id);
     return realTweetApi.bookmark(id);
   },
+
+  report: (id: string) =>
+      apiClient.post(ENDPOINTS.posts.report(id)),
 };
 
 export const tweetApi = MOCK_ENABLED ? mockTweetApi : realTweetApi;

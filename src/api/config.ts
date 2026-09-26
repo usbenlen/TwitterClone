@@ -42,6 +42,7 @@ export const ENDPOINTS = {
     reposts: (username: string) => `users/${username}/reposts`,
     updateProfile: "users/me",
     deleteMe: "users/me",
+    report: (id: string) => `users/${id}/report`,
   },
   posts: {
     all: "posts",
@@ -61,6 +62,7 @@ export const ENDPOINTS = {
     unrepost: (id: string) => `posts/${id}/repost`,
     bookmark: (id: string) => `posts/${id}/bookmark`,
     unbookmark: (id: string) => `posts/${id}/bookmark`,
+    report: (id: string) => `posts/${id}/report`,
   },
   comments: {
     byPost: (postId: string) => `comments/post/${postId}`,
@@ -75,6 +77,7 @@ export const ENDPOINTS = {
     unrepost: (id: string) => `comments/${id}/repost`,
     bookmark: (id: string) => `comments/${id}/bookmark`,
     unbookmark: (id: string) => `comments/${id}/bookmark`,
+    report: (id: string) => `comments/${id}/report`,
   },
   poll: {
     vote: (postId: string) => `posts/${postId}/poll/vote`,
@@ -122,7 +125,6 @@ export const ENDPOINTS = {
         unblock: (userId: string) => `admin/moderation/user/${userId}/unblock`,
       },
     },
-
     users: {
       all: "admin/users",
       byId: (userId: string) => `admin/users/${userId}`,

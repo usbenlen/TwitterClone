@@ -94,7 +94,7 @@ export default function SearchPage() {
       ) : activeType === "posts" ? (
         <div className="divide-y divide-border">
           {posts.map((tweet) => (
-            <TweetCard key={tweet.id} tweet={tweet} />
+            <TweetCard key={tweet.id} tweet={tweet} onReport={() => {}} />
           ))}
         </div>
       ) : (

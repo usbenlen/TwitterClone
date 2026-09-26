@@ -1,4 +1,5 @@
-import { Bookmark, Eye, MessageCircle, Repeat2 } from "lucide-react";
+import {Bookmark, Eye, MessageCircle, Repeat2} from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 
 import { HeartIcon } from "@/shared/icons";
 
@@ -23,18 +24,39 @@ interface TweetActionsProps {
 }
 
 export default function TweetActions({
-  likedByMe,
-  likesCount,
-  repostedByMe,
-  repliesCount,
-  retweetsCount,
-  viewsCount,
-  bookmarkedByMe,
-  onComment,
-  onRepost,
-  onLike,
-  onBookmark,
+    likedByMe,
+    likesCount,
+    repostedByMe,
+    repliesCount,
+    retweetsCount,
+    viewsCount,
+    bookmarkedByMe,
+    onComment,
+    onRepost,
+    onLike,
+    onBookmark,
 }: TweetActionsProps) {
+    const [open, setOpen] = useState(false);
+    const menuRef = useRef<HTMLDivElement | null>(null);
+
+    useEffect(() => {
+        if (!open) return;
+
+        const handlePointerDown = (event: PointerEvent) => {
+            const target = event.target;
+
+            if (target instanceof Node && menuRef.current?.contains(target)) return;
+
+            setOpen(false);
+        };
+
+        document.addEventListener("pointerdown", handlePointerDown);
+
+        return () => {
+            document.removeEventListener("pointerdown", handlePointerDown);
+        };
+    }, [open]);
+
   return (
     <div className="mt-2 flex w-full items-center gap-5 text-muted-foreground">
       <button

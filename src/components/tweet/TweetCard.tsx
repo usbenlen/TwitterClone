@@ -27,19 +27,25 @@ interface TweetCardProps {
   navigateToPost?: boolean;
   commentsInitiallyOpen?: boolean;
   variant?: "feed" | "post";
+  onReport: (tweet: Tweet) => void;
 }
+
+import { useAuth } from "@/hooks/useAuth";
 
 export default function TweetCard({
   tweet,
   navigateToPost = true,
   commentsInitiallyOpen = false,
   variant = "feed",
+  onReport,
 }: TweetCardProps) {
   const navigate = useNavigate();
   const [isCommentModalOpen, setIsCommentModalOpen] = useState(false);
   const [commentModalTarget, setCommentModalTarget] = useState<Comment | null>(
     null,
   );
+
+  const { user } = useAuth();
 
   const like = useTweetLike(tweet);
   const repost = useTweetRepost(tweet);
@@ -94,7 +100,12 @@ export default function TweetCard({
         </div>
 
         <div className="min-w-0">
-          <TweetHeader author={tweet.author} createdAt={tweet.createdAt} />
+          <TweetHeader
+              author={tweet.author}
+              createdAt={tweet.createdAt}
+              isOwn={user?.id === tweet.author.id}
+              onReport={() => onReport(tweet)}
+          />
 
           <TweetContent tweet={tweet} />
 
@@ -128,6 +139,9 @@ export default function TweetCard({
             );
           }}
           onDelete={comments.deleteComment}
+          onReport={(comment) => {
+            void comments.reportComment(comment.id);
+          }}
           onOpenReplyModal={openCommentModal}
         />
       )}

@@ -8,6 +8,7 @@ interface CommentListProps {
   currentUserId?: string;
   onReply: (comment: Comment) => void;
   onDelete: (commentId: string) => Promise<void>;
+  onReport: (comment: Comment) => void;
 }
 
 export default function CommentList({
@@ -16,20 +17,21 @@ export default function CommentList({
   currentUserId,
   onReply,
   onDelete,
+  onReport,
 }: CommentListProps) {
   return (
     <div className="divide-y divide-border">
       {comments.map((comment) => (
-        <CommentItem
-          key={comment.id}
-          comment={comment}
-          replies={repliesByParentId.get(comment.id) ?? []}
-          repliesByParentId={repliesByParentId}
-          currentUserId={currentUserId}
-          depth={0}
-          onReply={onReply}
-          onDelete={onDelete}
-        />
+          <CommentItem
+              key={comment.id}
+              comment={comment}
+              replies={repliesByParentId.get(comment.id) ?? []}
+              repliesByParentId={repliesByParentId}
+              currentUserId={currentUserId}
+              onReply={onReply}
+              onDelete={onDelete}
+              onReport={onReport}
+          />
       ))}
     </div>
   );

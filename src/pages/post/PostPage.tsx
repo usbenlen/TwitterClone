@@ -123,6 +123,9 @@ export default function PostPage() {
                 navigateToPost={false}
                 variant="post"
                 commentsInitiallyOpen={true}
+                onReport={() => {
+                  void tweetApi.report(tweet.id);
+                }}
             />
         )}
       </section>

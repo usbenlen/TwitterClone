@@ -17,6 +17,7 @@ import { CommentList, CommentToolbar } from "@/components/tweet/comment";
 import EmojiPicker from "@/components/composer/emoji/EmojiPicker";
 
 import type { Comment } from "@/types/comment";
+import ReportModal from "@/components/modal/ReportModal.tsx";
 
 interface TweetCommentsProps {
   comments: Comment[];
@@ -34,6 +35,7 @@ interface TweetCommentsProps {
   ) => Promise<boolean>;
 
   onDelete: (commentId: string) => Promise<void>;
+  onReport: (comment: Comment) => void;
 
   onOpenReplyModal: (comment: Comment) => void;
 }
@@ -72,6 +74,7 @@ export default function TweetComments({
   replyingToUsername,
   onSubmit,
   onDelete,
+  onReport,
   onOpenReplyModal,
 }: TweetCommentsProps) {
   const { user } = useAuth();
@@ -82,6 +85,8 @@ export default function TweetComments({
 
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
   const pickerRef = useRef<HTMLDivElement | null>(null);
+
+  const [reportComment, setReportComment] = useState<Comment | null>(null);
 
   //floating-ui
   const { refs, floatingStyles, update } = useFloating({
@@ -323,8 +328,27 @@ export default function TweetComments({
           currentUserId={user?.id}
           onReply={onOpenReplyModal}
           onDelete={onDelete}
+          onReport={(comment) => {
+            setReportComment(comment);
+            onReport(comment);
+          }}
         />
       )}
+
+      <ReportModal
+          open={reportComment !== null}
+          onClose={() => {
+            setReportComment(null);
+          }}
+          onSubmit={(reason) => {
+            console.log({
+              commentId: reportComment?.id,
+              reason,
+            });
+
+            setReportComment(null);
+          }}
+      />
     </section>
   );
 }

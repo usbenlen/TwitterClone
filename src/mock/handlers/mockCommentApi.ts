@@ -292,4 +292,8 @@ export const mockCommentApi = {
       viewsCount: (found.comment.viewsCount ?? 0) + 1,
     };
   },
+
+  async report(id: string): Promise<void> {
+    void id;
+  },
 };
