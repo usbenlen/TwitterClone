@@ -11,17 +11,17 @@ import type {
 } from "@/types";
 
 export type ReportTarget =
-    | {
+| {
     type: "posts";
     id: string;
     data: Tweet;
 }
-    | {
+| {
     type: "comments";
     id: string;
     data: Comment;
 }
-    | {
+| {
     type: "users";
     id: string;
     data: User;

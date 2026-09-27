@@ -24,7 +24,7 @@ export type DashboardChartData = {
 export type DashboardMetric = {
     id: string;
     title: string;
-    value: number;
+    value: number | null;
 };
 
 export type DashboardReportRow =

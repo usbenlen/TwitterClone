@@ -8,9 +8,7 @@ import type { AdminUser } from "@/admin/types/users.ts";
 
 export default function useDashboardTables() {
     const [latestUsers, setLatestUsers] = useState<AdminUser[]>([]);
-    const [latestReports, setLatestReports] = useState<
-        DashboardReportRow[]
-    >([]);
+    const [latestReports, setLatestReports] = useState<DashboardReportRow[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 

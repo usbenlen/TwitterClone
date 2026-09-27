@@ -7,8 +7,7 @@ export default function useUsers() {
     const [users, setUsers] = useState<User[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
-    const [busyAction, setBusyAction] =
-        useState<string | null>(null);
+    const [busyAction, setBusyAction] = useState<string | null>(null);
 
     useEffect(() => {
         let isMounted = true;

@@ -1,8 +1,4 @@
-import {
-    useEffect,
-    useRef,
-    useState,
-} from "react";
+import { useEffect, useRef, useState } from "react";
 
 const easeOutCubic = (value: number) => 1 - Math.pow(1 - value, 3);
 
@@ -11,14 +7,11 @@ export default function useAnimatedNumber(
     duration: number,
     isReady: boolean,
 ) {
-    const [value, setValue] =
-        useState(target);
+    const [value, setValue] = useState(target);
 
-    const previousValue =
-        useRef(target);
+    const previousValue = useRef(target);
 
-    const hasInitialized =
-        useRef(false);
+    const hasInitialized = useRef(false);
 
     useEffect(() => {
         if (!isReady) {

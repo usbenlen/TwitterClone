@@ -1,14 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router";
-import {
-    LockKeyhole,
-    Moon,
-    Palette,
-    Sun,
-    UserRound,
-    Monitor,
-    ArrowRight,
-} from "lucide-react";
+import { LockKeyhole, Moon, Palette, Sun, UserRound, Monitor, ArrowRight } from "lucide-react";
 
 import { userApi, type UpdateProfileRequest } from "@/api";
 
@@ -44,7 +36,7 @@ export default function AdminSettingsPage() {
                 </div>
 
                 <div className="overflow-hidden rounded-2xl border border-border bg-background">
-                    <section className="border-b border-border p-5">
+                    <section className="border-b p-5">
                         <div className="mb-4 flex items-center gap-3">
                             <div className="flex size-10 items-center justify-center rounded-xl bg-muted">
                                 <Palette className="size-5" />
@@ -59,7 +51,7 @@ export default function AdminSettingsPage() {
                             </div>
                         </div>
 
-                        <div className="grid grid-cols-3 gap-2">
+                        <div className="grid-cols-3 gap-2">
                             <button
                                 type="button"
                                 onClick={() => setTheme("light")}

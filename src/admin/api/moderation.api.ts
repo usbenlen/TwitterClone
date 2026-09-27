@@ -17,9 +17,7 @@ const realModerationApi = {
         );
     },
 
-    getById: async (
-        reportId: string,
-    ): Promise<ReportSignal> => {
+    getById: async (reportId: string): Promise<ReportSignal> => {
         return apiClient.get<ReportSignal>(
             ENDPOINTS.admin.moderation.byId(reportId),
         );
@@ -39,41 +37,31 @@ const realModerationApi = {
         );
     },
 
-    deletePost: async (
-        postId: string,
-    ): Promise<void> => {
+    deletePost: async (postId: string): Promise<void> => {
         await apiClient.delete(
             ENDPOINTS.admin.moderation.post.delete(postId),
         );
     },
 
-    deleteComment: async (
-        commentId: string,
-    ): Promise<void> => {
+    deleteComment: async (commentId: string): Promise<void> => {
         await apiClient.delete(
             ENDPOINTS.admin.moderation.comment.delete(commentId),
         );
     },
 
-    blockUser: async (
-        userId: string,
-    ): Promise<void> => {
+    blockUser: async (userId: string): Promise<void> => {
         await apiClient.put(
             ENDPOINTS.admin.moderation.user.block(userId),
         );
     },
 
-    unblockUser: async (
-        userId: string,
-    ): Promise<void> => {
+    unblockUser: async (userId: string): Promise<void> => {
         await apiClient.put(
             ENDPOINTS.admin.moderation.user.unblock(userId),
         );
     },
 
-    deleteUser: async (
-        userId: string,
-    ): Promise<void> => {
+    deleteUser: async (userId: string): Promise<void> => {
         await apiClient.delete(
             ENDPOINTS.admin.moderation.user.delete(userId),
         );

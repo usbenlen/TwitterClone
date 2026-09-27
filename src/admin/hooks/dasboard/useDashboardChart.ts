@@ -219,17 +219,13 @@ export default function useDashboardChart(
         data !== null &&
         audienceData.length > 0;
 
-    const previousAudienceData =
-        useRef<number[]>([]);
+    const previousAudienceData = useRef<number[]>([]);
 
-    const animatedAudienceDataRef =
-        useRef<number[]>([]);
+    const animatedAudienceDataRef = useRef<number[]>([]);
 
-    const audienceMaxRef =
-        useRef(1);
+    const audienceMaxRef = useRef(1);
 
-    const hasInitializedAudience =
-        useRef(false);
+    const hasInitializedAudience = useRef(false);
 
     const [
         animatedAudienceData,
@@ -462,10 +458,7 @@ export default function useDashboardChart(
         isAudienceReady,
     ]);
 
-    const maxAudience = Math.max(
-        ...audienceValues,
-        1,
-    );
+    const maxAudience = Math.max(...audienceValues, 1);
 
     const audiencePoints =
         useMemo<AudiencePoint[]>(

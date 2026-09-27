@@ -130,15 +130,9 @@ export default function AdminReportPage() {
                     </h1>
 
                     <p className="mt-1 text-sm text-muted-foreground font-semibold">
-                        {report.targetType === "posts" &&
-                            "Пост"}
-
-                        {report.targetType ===
-                            "comments" &&
-                            "Коментар"}
-
-                        {report.targetType === "users" &&
-                            "Користувач"}
+                        {report.targetType === "posts" && "Пост"}
+                        {report.targetType === "comments" && "Коментар"}
+                        {report.targetType === "users" && "Користувач"}
 
                         {": "}
                         {report.targetId}
