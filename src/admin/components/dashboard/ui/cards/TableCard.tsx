@@ -13,7 +13,7 @@ export default function TableCard({
 }: TableCardProps) {
     return (
         <div className="flex h-80 flex-col rounded-xl border border-slate-200 bg-muted p-5">
-            <div className="mb-4 flex justify-between border-b-2 border-border border-primary pb-2">
+            <div className="mb-4 flex justify-between border-b-2 border-primary pb-2">
                 <h3 className="text-base font-semibold">
                     {title}
                 </h3>

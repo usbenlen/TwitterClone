@@ -1,6 +1,7 @@
 import type { AdminUser } from "@/admin/types/users";
 import type { ReportSignal } from "@/admin/types/moderation";
-import type { Tweet } from "@/types";
+import type { Comment, Tweet } from "@/types";
+import type { User } from "@/types/user";
 
 export type DashboardPeriod =
     | "7d"
@@ -26,11 +27,27 @@ export type DashboardMetric = {
     value: number;
 };
 
-export type DashboardReportRow = {
+export type DashboardReportRow =
+    | {
+    targetType: "posts";
     targetId: string;
     count: number;
     latestSignal: ReportSignal;
-    tweet: Tweet;
+    target: Tweet;
+}
+    | {
+    targetType: "comments";
+    targetId: string;
+    count: number;
+    latestSignal: ReportSignal;
+    target: Comment;
+}
+    | {
+    targetType: "users";
+    targetId: string;
+    count: number;
+    latestSignal: ReportSignal;
+    target: User;
 };
 
 export type DashboardTables = {

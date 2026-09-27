@@ -11,8 +11,8 @@ export default function ChartCard({
   action,
 }: ChartCardProps) {
     return (
-        <div className="bg-muted overflow-hidden rounded-2xl border border-border bg-card">
-            <div className="flex items-center justify-between border-b border-border">
+        <div className="rounded-2xl border border-border bg-muted">
+            <div className="flex items-center justify-between ">
                 {action && (
                     <div className="shrink-0">
                         {action}

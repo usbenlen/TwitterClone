@@ -270,6 +270,44 @@ export const moderationSignals: ReportSignal[] = [
     {
         id: "user-signal-1",
         targetType: "users",
+        targetId: "u1",
+
+        source: "user",
+        reason: "misinformation",
+        reasonLabel: "Дезінформація",
+        status: "pending",
+        createdAt: new Date(
+            Date.now() - 1000 * 60 * 4,
+        ).toISOString(),
+
+        reporter: {
+            id: "u2",
+            username: "ada",
+        },
+    },
+
+    {
+        id: "user-signal-2",
+        targetType: "users",
+        targetId: "u2",
+
+        source: "user",
+        reason: "spam",
+        reasonLabel: "Спам",
+        status: "pending",
+        createdAt: new Date(
+            Date.now() - 1000 * 60 * 7,
+        ).toISOString(),
+
+        reporter: {
+            id: "u1",
+            username: "dev_user",
+        },
+    },
+
+    {
+        id: "user-signal-3",
+        targetType: "users",
         targetId: "u3",
 
         source: "user",
@@ -287,7 +325,7 @@ export const moderationSignals: ReportSignal[] = [
     },
 
     {
-        id: "user-signal-2",
+        id: "user-signal-4",
         targetType: "users",
         targetId: "u3",
 
@@ -306,7 +344,7 @@ export const moderationSignals: ReportSignal[] = [
     },
 
     {
-        id: "user-signal-3",
+        id: "user-signal-5",
         targetType: "users",
         targetId: "u4",
 
@@ -325,7 +363,7 @@ export const moderationSignals: ReportSignal[] = [
     },
 
     {
-        id: "user-signal-4",
+        id: "user-signal-6",
         targetType: "users",
         targetId: "u5",
 
@@ -344,7 +382,7 @@ export const moderationSignals: ReportSignal[] = [
     },
 
     {
-        id: "user-signal-5",
+        id: "user-signal-7",
         targetType: "users",
         targetId: "u6",
 
@@ -423,6 +461,25 @@ export const moderationSignals: ReportSignal[] = [
         id: "comment-signal-4",
         targetType: "comments",
         targetId: "c6",
+
+        source: "user",
+        reason: "misinformation",
+        reasonLabel: "Дезінформація",
+        status: "pending",
+        createdAt: new Date(
+            Date.now() - 1000 * 60 * 4,
+        ).toISOString(),
+
+        reporter: {
+            id: "u2",
+            username: "ada",
+        },
+    },
+
+    {
+        id: "comment-signal-5",
+        targetType: "users",
+        targetId: "u1",
 
         source: "user",
         reason: "misinformation",

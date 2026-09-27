@@ -16,6 +16,7 @@ type ActivityChartProps = {
     activityData: number[];
     activityScaleMax: number;
     activityYLabels: number[];
+    activityDates: string[];
 
     xAxisLabels: string[];
 
@@ -27,12 +28,33 @@ export default function ActivityChart({
     setContentType,
     animatedTotal,
     activityData,
+    activityDates,
     activityScaleMax,
     activityYLabels,
     xAxisLabels,
+    period,
 }: ActivityChartProps) {
+    function formatChartDate(date: string) {
+        const [year, month, day] = date.split("-");
+        return `${day}.${month}.${year}`;
+    }
+
     return (
         <ChartCard title="Активність">
+            <style>
+                {`
+                    @keyframes activityBarIn {
+                        from {
+                            transform: scaleY(0);
+                        }
+                    
+                        to {
+                            transform: scaleY(1);
+                        }
+                    }
+                    `}
+            </style>
+
             <div className="flex h-full flex-col">
                 <div className="mb-6 flex items-start justify-between gap-4">
                     <div>
@@ -95,23 +117,73 @@ export default function ActivityChart({
                                     value,
                                     index,
                                 ) => {
-                                    const height = activityScaleMax > 0 ? (value / activityScaleMax) * 100 : 0;
+                                    const height =
+                                        activityScaleMax >
+                                        0
+                                            ? (value /
+                                                  activityScaleMax) *
+                                              100
+                                            : 0;
 
                                     return (
                                         <div
-                                            key={index}
-                                            className="group relative z-10 flex h-full flex-1 items-end"
+                                            key={`${period}-${contentType}-${index}`}
+                                            className="group relative flex h-full flex-1 items-end"
                                         >
-                                            <div className="pointer-events-none absolute bottom-full left-1/2 z-20 mb-2 -translate-x-1/2 whitespace-nowrap rounded-lg border border-border bg-muted px-3 py-2 text-xs font-medium text-popover-foreground opacity-0 shadow-lg transition-all duration-150 group-hover:-translate-y-1 group-hover:opacity-100">
-                                                {value}{" "}
-                                                {contentType === "posts" ? "постів" : ""}
-                                                {contentType === "comments" ? "коментарів" : ""}
-                                                {contentType === "all" ? "активностей" : ""}
+                                            <div
+                                                className="pointer-events-none absolute left-1/2 z-100 -translate-x-1/2 whitespace-nowrap rounded-lg border border-border bg-muted px-3 py-2 text-xs font-medium text-popover-foreground opacity-0 shadow-lg transition-all duration-150 group-hover:-translate-y-1 group-hover:opacity-100"
+                                                style={{
+                                                    bottom:
+                                                        value > 0
+                                                            ? `${Math.max(height, 4)}%`
+                                                            : "0%",
+                                                    marginBottom: "8px",
+                                                }}
+                                            >
+                                                <div>
+                                                    {value}{" "}
+                                                    {contentType ===
+                                                    "posts"
+                                                        ? "постів"
+                                                        : ""}
+                                                    {contentType ===
+                                                    "comments"
+                                                        ? "коментарів"
+                                                        : ""}
+                                                    {contentType ===
+                                                    "all"
+                                                        ? "активностей"
+                                                        : ""}
+                                                </div>
+
+                                                <div className="mt-1 text-muted-foreground">
+                                                    {activityDates[
+                                                        index
+                                                    ]
+                                                        ? formatChartDate(
+                                                            activityDates[
+                                                                index
+                                                            ],
+                                                        )
+                                                        : ""}
+                                                </div>
                                             </div>
 
                                             <div
-                                                className="w-full max-w-8 mx-auto rounded-t-2xl bg-primary transition-[height] duration-250 ease-out"
-                                                style={{height: value > 0 ? `${Math.max(height, 4)}%` : "0%"}}
+                                                className="w-full max-w-8 mx-auto origin-bottom rounded-t-2xl bg-primary"
+                                                style={{
+                                                    height:
+                                                        value > 0
+                                                            ? `${Math.max(
+                                                                height,
+                                                                4,
+                                                            )}%`
+                                                            : "0%",
+                                                    animation:
+                                                        value > 0
+                                                            ? "activityBarIn 200ms ease-out both"
+                                                            : "none",
+                                                }}
                                             />
                                         </div>
                                     );
@@ -121,7 +193,9 @@ export default function ActivityChart({
 
                         <div
                             className={`absolute inset-x-0 bottom-0 flex justify-between text-[11px] text-muted-foreground ${
-                                xAxisLabels.length === activityData.length ? "gap-1.5" : ""
+                                xAxisLabels.length ===
+                                activityData.length
+                                    ? "gap-1.5" : ""
                             }`}
                         >
                             {xAxisLabels.map(
@@ -132,13 +206,13 @@ export default function ActivityChart({
                                     <span
                                         key={`${label}-${index}`}
                                         className={
-                                            xAxisLabels.length === activityData.length
-                                                ? "flex-1 text-center"
-                                                : ""
+                                            xAxisLabels.length ===
+                                            activityData.length
+                                                ? "flex-1 text-center" : ""
                                         }
                                     >
-                                    {label}
-                                </span>
+                                        {label}
+                                    </span>
                                 ),
                             )}
                         </div>

@@ -23,10 +23,12 @@ export default function DashboardChart() {
         points,
         areaPoints,
         audienceTotal,
+        audienceDates,
 
         animatedActivityTotal,
         animatedActivityAverage,
         activityData,
+        activityDates,
         activityScaleMax,
         activityYLabels,
 
@@ -90,6 +92,7 @@ export default function DashboardChart() {
                     areaPoints={areaPoints}
                     audienceTotal={audienceTotal}
                     xAxisLabels={xAxisLabels}
+                    audienceDates={audienceDates}
                 />
 
                 <ActivityChart
@@ -100,6 +103,7 @@ export default function DashboardChart() {
                     activityData={activityData}
                     activityScaleMax={activityScaleMax}
                     activityYLabels={activityYLabels}
+                    activityDates={activityDates}
                     xAxisLabels={xAxisLabels}
                     period={period}
                 />

@@ -17,7 +17,7 @@ export default function DashboardTableReports({
     const navigate = useNavigate();
 
     return (
-        <div className="flex h-full flex-col justify-start">
+        <div className="flex h-full min-h-0 flex-col">
             <TableCard
                 title="Останні скарги"
                 action={
@@ -29,65 +29,68 @@ export default function DashboardTableReports({
                     </Link>
                 }
             >
-                <Scroll className="h-full pr-2">
-                    <table className="w-full text-left">
-                        <thead className="sticky top-0 z-50 bg-muted text-muted-foreground shadow-[inset_0_-2px_0_0_var(--border)]">
-                        <tr className="text-xs font-bold uppercase">
-                            <th className="pb-2">
-                                Публікація
-                            </th>
+                    <Scroll>
+                        <table className="w-full table-fixed text-left">
+                            <thead className="sticky top-0 z-50 bg-muted text-muted-foreground shadow-[inset_0_-2px_0_0_var(--border)]">
+                            <tr className="text-xs font-bold uppercase">
+                                <th className="w-1/3 pb-2">
+                                    Автор
+                                </th>
 
-                            <th className="pb-2">
-                                Скарги
-                            </th>
+                                <th className="w-1/7 pb-2">
+                                    Скарги
+                                </th>
 
-                            <th className="pb-2 text-right">
-                                Час
-                            </th>
-                        </tr>
-                        </thead>
-
-                        <tbody className="divide-y divide-border text-sm">
-                        {latestReports.map((report) => (
-                            <tr
-                                key={report.latestSignal.id}
-                                className="cursor-pointer transition-colors hover:bg-muted-foreground/10"
-                                onClick={() =>
-                                    navigate(`/admin/moderation/${report.latestSignal.id}`)
-                                }
-                            >
-                                <td className="py-3 font-medium">
-                                    @{report.tweet.author.username}
-                                </td>
-
-                                <td className="py-3 font-semibold">
-                                    {report.count}{" "}
-                                    {getReportLabel(report.count)}
-                                </td>
-
-                                <td className="py-3 text-right text-muted-foreground">
-                                    {new Date(
-                                        report.latestSignal.createdAt,
-                                    ).toLocaleDateString(
-                                        "uk-UA",
-                                    )}
-                                </td>
+                                <th className="w-1/3 pb-2 text-right">
+                                    Час
+                                </th>
                             </tr>
-                        ))}
+                            </thead>
 
-                        {latestReports.length === 0 && (
-                            <tr>
-                                <td
-                                    colSpan={3}
-                                    className="py-8 text-center text-sm text-muted-foreground"
+                            <tbody className="divide-y divide-border text-sm">
+                            {latestReports.map((report) => (
+                                <tr
+                                    key={report.latestSignal.id}
+                                    className="cursor-pointer transition-colors hover:bg-muted-foreground/10"
+                                    onClick={() =>
+                                        navigate(`/admin/moderation/${report.latestSignal.id}`)
+                                    }
                                 >
-                                    Відкритих скарг немає
-                                </td>
-                            </tr>
-                        )}
-                        </tbody>
-                    </table>
-                </Scroll>
+                                    <td className="py-3 font-medium">
+                                        {report.targetType === "users"
+                                            ? `@${report.target.username}`
+                                            : `@${report.target.author.username}`}
+                                    </td>
+
+                                    <td className="py-3 font-semibold">
+                                        {report.count}{" "}
+                                        {getReportLabel(report.count)}
+                                    </td>
+
+                                    <td className="py-3 text-right text-muted-foreground">
+                                        {new Date(
+                                            report.latestSignal.createdAt,
+                                        ).toLocaleDateString(
+                                            "uk-UA",
+                                        )}
+                                    </td>
+                                </tr>
+                            ))}
+
+                            {latestReports.length === 0 && (
+                                <tr>
+                                    <td
+                                        colSpan={3}
+                                        className="py-8 text-center text-sm text-muted-foreground"
+                                    >
+                                        Відкритих скарг немає
+                                    </td>
+                                </tr>
+                            )}
+                            </tbody>
+                        </table>
+                    </Scroll>
+
             </TableCard>
         </div>
     );

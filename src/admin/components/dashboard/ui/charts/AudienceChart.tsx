@@ -10,6 +10,7 @@ type AudienceChartProps = {
     areaPoints: string;
     audienceTotal: number;
     xAxisLabels: string[];
+    audienceDates: string[];
 };
 
 export default function AudienceChart({
@@ -19,7 +20,13 @@ export default function AudienceChart({
     areaPoints,
     audienceTotal,
     xAxisLabels,
+    audienceDates,
 }: AudienceChartProps) {
+    function formatChartDate(date: string) {
+        const [year, month, day] = date.split("-");
+        return `${day}.${month}.${year}`;
+    }
+
     return (
         <ChartCard title="Зростання аудиторії">
             <div className="flex h-full flex-col">
@@ -42,8 +49,8 @@ export default function AudienceChart({
                     </div>
                 </div>
 
-                <div className="flex min-h-[230px] flex-1">
-                    <div className="flex w-12 flex-col justify-between pb-8 pt-1 text-[11px] text-muted-foreground">
+                <div className="flex min-h-58 flex-1">
+                    <div className="flex w-8 flex-col justify-between pb-8 pt-1 text-[11px] text-muted-foreground">
                         {[100, 75, 50, 25, 0].map(
                             (percent) => {
                                 const value =
@@ -132,7 +139,7 @@ export default function AudienceChart({
                                             top: `${point.y}%`,
                                         }}
                                     >
-                                        <div className="absolute -inset-4 cursor-pointer" />
+                                        <div className="absolute -inset-1" />
 
                                         <div className="pointer-events-none absolute bottom-full left-1/2 z-20 mb-2 -translate-x-1/2 whitespace-nowrap rounded-lg border border-border bg-muted px-3 py-2 text-xs text-popover-foreground opacity-0 shadow-lg transition-all duration-150 group-hover:-translate-y-1 group-hover:opacity-100">
                                             <div className="text-muted-foreground">
@@ -142,14 +149,22 @@ export default function AudienceChart({
                                             <div className="mt-0.5 font-semibold">
                                                 {formatNumber(
                                                     Math.round(
-                                                        point.value
+                                                        point.value,
                                                     ),
                                                 )}
                                             </div>
+
+                                            <div className="mt-1 text-muted-foreground">
+                                                {audienceDates[index]
+                                                    ? formatChartDate(
+                                                        audienceDates[index],
+                                                    )
+                                                    : ""}
+                                            </div>
                                         </div>
 
-                                        <div className="flex size-4 scale-0 items-center justify-center rounded-full border-2 border-primary bg-background opacity-0 transition-all duration-150 group-hover:scale-100 group-hover:opacity-100">
-                                            <div className="size-1.5 rounded-full bg-primary" />
+                                        <div className="flex size-5 scale-0 items-center justify-center rounded-full border-2 border-primary bg-background opacity-0 transition-all duration-150 group-hover:scale-100 group-hover:opacity-100">
+                                            <div className="size-2 rounded-full bg-primary" />
                                         </div>
                                     </div>
                                 ),

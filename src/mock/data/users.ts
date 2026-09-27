@@ -89,4 +89,20 @@ export const sampleAuthors: User[] = [
 
     createdAt: "2023-11-20T00:00:00Z",
   },
+
+  {
+    id: "u6",
+    username: "momo",
+    displayName: "Jonny Sino",
+    email: "jonny@example.com",
+
+    followersCount: 5600,
+    followingCount: 27,
+    postsCount: 4,
+
+    isFollowedByCurrentUser: false,
+    isVerified: true,
+
+    createdAt: "2023-11-20T00:00:00Z",
+  },
 ];

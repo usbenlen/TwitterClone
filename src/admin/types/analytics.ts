@@ -7,17 +7,22 @@ export type AnalyticsContentType =
     | "posts"
     | "comments";
 
+export type AnalyticsPoint = {
+    date: string;
+    value: number;
+};
+
 export type DashboardAnalytics = {
     audience: Record<
         AnalyticsPeriod,
-        number[]
+        AnalyticsPoint[]
     >;
 
     activity: Record<
         AnalyticsPeriod,
         {
-            posts: number[];
-            comments: number[];
+            posts: AnalyticsPoint[];
+            comments: AnalyticsPoint[];
         }
     >;
 };

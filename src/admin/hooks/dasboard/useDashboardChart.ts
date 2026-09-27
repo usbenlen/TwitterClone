@@ -16,93 +16,6 @@ export type AudiencePoint = {
 const easeOutCubic = (value: number) =>
     1 - Math.pow(1 - value, 3);
 
-function useAnimatedNumber(
-    target: number,
-    duration: number,
-    isReady: boolean,
-) {
-    const [value, setValue] =
-        useState(target);
-
-    const previousValue =
-        useRef(target);
-
-    const hasInitialized =
-        useRef(false);
-
-    useEffect(() => {
-        if (!isReady) {
-            return;
-        }
-
-        if (!hasInitialized.current) {
-            hasInitialized.current = true;
-
-            previousValue.current = target;
-
-            setValue(target);
-
-            return;
-        }
-
-        const from = previousValue.current;
-
-        const to = target;
-
-        if (from === to) {
-            return;
-        }
-
-        const startTime = performance.now();
-
-        let animationFrame = 0;
-
-        const animate = (
-            currentTime: number,
-        ) => {
-            const elapsed = currentTime - startTime;
-
-            const progress = Math.min(
-                elapsed / duration, 1
-            );
-
-            const easedProgress = easeOutCubic(progress);
-
-            const nextValue = from + (to - from) * easedProgress;
-
-            setValue(nextValue);
-
-            if (progress < 1) {
-                animationFrame =
-                    requestAnimationFrame(
-                        animate,
-                    );
-            } else {
-                setValue(to);
-
-                previousValue.current = to;
-            }
-        };
-
-        animationFrame =
-            requestAnimationFrame(
-                animate,
-            );
-
-        return () => {
-            cancelAnimationFrame(
-                animationFrame,
-            );
-        };
-    }, [
-        target,
-        duration,
-        isReady,
-    ]);
-
-    return value;
-}
-
 export default function useDashboardChart(
     period: AnalyticsPeriod,
 ) {
@@ -119,37 +32,201 @@ export default function useDashboardChart(
 
     const audienceData = data?.audience[period] ?? [];
 
+    const audienceValues = useMemo(
+        () =>
+            audienceData.map(
+                (point) => point.value,
+            ),
+        [audienceData],
+    );
+
     const activityPeriodData = data?.activity[period];
 
-    const activityData =
-        contentType === "all"
-            ? (
-                activityPeriodData?.posts ?? []
-            ).map(
+    const activityData = useMemo(
+        () =>
+            contentType === "all"
+                ? (
+                    activityPeriodData?.posts ?? []
+                ).map(
+                    (postPoint, index) =>
+                        postPoint.value +
+                        (
+                            activityPeriodData
+                                ?.comments[index]
+                                ?.value ?? 0
+                        ),
+                )
+                : (
+                    activityPeriodData?.[
+                        contentType
+                    ] ?? []
+                ).map(
+                    (point) => point.value,
+                ),
+        [
+            activityPeriodData,
+            contentType,
+        ],
+    );
+
+    const activityDates = useMemo(
+        () =>
+            contentType === "all"
+                ? (
+                    activityPeriodData?.posts ?? []
+                ).map(
+                    (postPoint) =>
+                        postPoint.date,
+                )
+                : (
+                    activityPeriodData?.[
+                        contentType
+                    ] ?? []
+                ).map(
+                    (point) => point.date,
+                ),
+        [
+            activityPeriodData,
+            contentType,
+        ],
+    );
+
+    const [
+        animatedActivityData,
+        setAnimatedActivityData,
+    ] = useState<number[]>([]);
+
+    const [
+        animatedActivityTotal,
+        setAnimatedActivityTotal,
+    ] = useState(0);
+
+    useEffect(() => {
+        if (
+            activityPeriodData === undefined ||
+            activityData.length === 0
+        ) {
+            const resetFrame =
+                requestAnimationFrame(() => {
+                    setAnimatedActivityData(
+                        [],
+                    );
+
+                    setAnimatedActivityTotal(
+                        0,
+                    );
+                });
+
+            return () => {
+                cancelAnimationFrame(
+                    resetFrame,
+                );
+            };
+        }
+
+        const targetValues =
+            activityData;
+
+        const targetTotal =
+            targetValues.reduce(
                 (
-                    postValue: number,
-                    index: number,
-                ) =>
-                    postValue +
-                    (
-                        activityPeriodData
-                            ?.comments[index] ?? 0
-                    ),
+                    sum: number,
+                    value: number,
+                ) => sum + value,
+                0,
+            );
+
+        const duration = 200;
+
+        let animationFrame = 0;
+
+        const startFrame =
+            requestAnimationFrame(() => {
+                setAnimatedActivityData(
+                    targetValues,
+                );
+
+                const startTime =
+                    performance.now();
+
+                const animate = (
+                    currentTime: number,
+                ) => {
+                    const elapsed =
+                        currentTime -
+                        startTime;
+
+                    const progress =
+                        Math.min(
+                            elapsed /
+                                duration,
+                            1,
+                        );
+
+                    const easedProgress =
+                        easeOutCubic(
+                            progress,
+                        );
+
+                    setAnimatedActivityTotal(
+                        targetTotal *
+                            easedProgress,
+                    );
+
+                    if (
+                        progress < 1
+                    ) {
+                        animationFrame =
+                            requestAnimationFrame(
+                                animate,
+                            );
+                    } else {
+                        setAnimatedActivityTotal(
+                            targetTotal,
+                        );
+                    }
+                };
+
+                animationFrame =
+                    requestAnimationFrame(
+                        animate,
+                    );
+            });
+
+        return () => {
+            cancelAnimationFrame(
+                startFrame,
+            );
+
+            cancelAnimationFrame(
+                animationFrame,
+            );
+        };
+    }, [
+        activityData,
+        activityPeriodData,
+    ]);
+
+    const animatedActivityAverage =
+        animatedActivityData.length > 0
+            ? Math.round(
+                animatedActivityTotal /
+                    animatedActivityData.length,
             )
-            : activityPeriodData?.[
-                contentType
-            ] ?? [];
+            : 0;
 
     const isAudienceReady =
         data !== null &&
         audienceData.length > 0;
 
-    const isActivityReady =
-        data !== null &&
-        activityPeriodData !== undefined;
-
     const previousAudienceData =
         useRef<number[]>([]);
+
+    const animatedAudienceDataRef =
+        useRef<number[]>([]);
+
+    const audienceMaxRef =
+        useRef(1);
 
     const hasInitializedAudience =
         useRef(false);
@@ -160,9 +237,9 @@ export default function useDashboardChart(
     ] = useState<number[]>([]);
 
     const [
-        animatedAudienceCurrent,
-        setAnimatedAudienceCurrent,
-    ] = useState(0);
+        animatedAudienceMax,
+        setAnimatedAudienceMax,
+    ] = useState(1);
 
     useEffect(() => {
         if (!isAudienceReady) {
@@ -173,67 +250,130 @@ export default function useDashboardChart(
             hasInitializedAudience.current =
                 true;
 
-            previousAudienceData.current =
-                audienceData;
+            const initialMax =
+                Math.max(
+                    ...audienceValues,
+                    1,
+                );
 
-            setAnimatedAudienceData(
-                audienceData,
+            previousAudienceData.current = audienceValues;
+            animatedAudienceDataRef.current = audienceValues;
+            audienceMaxRef.current = initialMax;
+
+            setAnimatedAudienceMax(
+                initialMax,
             );
 
-            setAnimatedAudienceCurrent(
-                audienceData[audienceData.length - 1] ?? 0
-            );
+            const animationFrame =
+                requestAnimationFrame(() => {
+                    setAnimatedAudienceData(
+                        audienceValues,
+                    );
+                });
 
-            return;
+            return () => {
+                cancelAnimationFrame(
+                    animationFrame,
+                );
+            };
         }
 
         const from =
-            previousAudienceData.current;
+            animatedAudienceDataRef.current
+                .length > 0
+                ? animatedAudienceDataRef.current
+                : previousAudienceData.current;
 
-        const to = audienceData;
+        const to = audienceValues;
+
+        const fromMax = Math.max(audienceMaxRef.current, 1);
+
+        const toMax = Math.max( ...to, 1);
 
         if (
             from.length === to.length &&
             from.every(
                 (value, index) =>
                     value === to[index],
-            )
+            ) &&
+            fromMax === toMax
         ) {
             return;
         }
 
-        const maxLength = Math.max(
-            from.length,
-            to.length,
-        );
+        const targetLength = to.length;
 
         const startValues =
             Array.from(
                 {
-                    length: maxLength,
+                    length: targetLength,
                 },
-                (_, index) =>
-                    from[index] ??
-                    from[
-                        from.length - 1
-                    ] ??
-                    0
+                (_, index) => {
+                    if (
+                        targetLength ===
+                        1
+                    ) {
+                        return from[0] ?? 0;
+                    }
+
+                    if (
+                        from.length ===
+                        0
+                    ) {
+                        return 0;
+                    }
+
+                    if (
+                        from.length ===
+                        1
+                    ) {
+                        return from[0];
+                    }
+
+                    const sourcePosition =
+                        (index /
+                            Math.max(
+                                targetLength -
+                                    1,
+                                1,
+                            )) *
+                        (from.length - 1);
+
+                    const leftIndex =
+                        Math.floor(
+                            sourcePosition,
+                        );
+
+                    const rightIndex =
+                        Math.min(
+                            Math.ceil(
+                                sourcePosition,
+                            ),
+                            from.length - 1,
+                        );
+
+                    const fraction =
+                        sourcePosition -
+                        leftIndex;
+
+                    const leftValue =
+                        from[leftIndex] ??
+                        0;
+
+                    const rightValue =
+                        from[rightIndex] ??
+                        leftValue;
+
+                    return (
+                        leftValue +
+                        (rightValue -
+                            leftValue) *
+                            fraction
+                    );
+                },
             );
 
-        const endValues =
-            Array.from(
-                {
-                    length: maxLength,
-                },
-                (_, index) =>
-                    to[index] ??
-                    to[
-                        to.length - 1
-                    ] ??
-                    0
-            );
-
-        const duration = 300;
+        const duration = 200;
 
         const startTime =
             performance.now();
@@ -243,12 +383,9 @@ export default function useDashboardChart(
         const animate = (
             currentTime: number,
         ) => {
-            const elapsed =
-                currentTime - startTime;
+            const elapsed = currentTime - startTime;
 
-            const progress = Math.min(
-                elapsed / duration, 1
-            );
+            const progress = Math.min(elapsed / duration, 1);
 
             const easedProgress = easeOutCubic(progress);
 
@@ -259,7 +396,8 @@ export default function useDashboardChart(
                         index,
                     ) => {
                         const endValue =
-                            endValues[index];
+                            to[index] ??
+                            startValue;
 
                         return (
                             startValue +
@@ -270,30 +408,23 @@ export default function useDashboardChart(
                     },
                 );
 
+            const nextMax =
+                fromMax +
+                (toMax - fromMax) *
+                    easedProgress;
+
+            animatedAudienceDataRef.current =
+                nextValues;
+
+            audienceMaxRef.current =
+                nextMax;
+
             setAnimatedAudienceData(
                 nextValues,
             );
 
-            const currentIndex = to.length - 1;
-
-            const currentValue =
-                startValues[
-                    currentIndex
-                ] ?? 0;
-
-            const targetValue =
-                endValues[
-                    currentIndex
-                ] ?? 0;
-
-            const animatedCurrent =
-                currentValue +
-                (targetValue -
-                    currentValue) *
-                    easedProgress;
-
-            setAnimatedAudienceCurrent(
-                animatedCurrent,
+            setAnimatedAudienceMax(
+                nextMax,
             );
 
             if (progress < 1) {
@@ -302,15 +433,17 @@ export default function useDashboardChart(
                         animate,
                     );
             } else {
+                animatedAudienceDataRef.current = to;
+                previousAudienceData.current = to;
+                audienceMaxRef.current = toMax;
+
                 setAnimatedAudienceData(
                     to,
                 );
 
-                setAnimatedAudienceCurrent(
-                    targetValue,
+                setAnimatedAudienceMax(
+                    toMax,
                 );
-
-                previousAudienceData.current = to;
             }
         };
 
@@ -325,18 +458,14 @@ export default function useDashboardChart(
             );
         };
     }, [
-        audienceData,
+        audienceValues,
         isAudienceReady,
     ]);
 
     const maxAudience = Math.max(
-        ...audienceData, 1
+        ...audienceValues,
+        1,
     );
-
-    const animatedMaxAudience =
-        Math.max(
-            ...animatedAudienceData, 1
-        );
 
     const audiencePoints =
         useMemo<AudiencePoint[]>(
@@ -355,7 +484,10 @@ export default function useDashboardChart(
                         const y =
                             92 -
                             (value /
-                                animatedMaxAudience) *
+                                Math.max(
+                                    animatedAudienceMax,
+                                    1,
+                                )) *
                                 84;
 
                         return {
@@ -367,7 +499,7 @@ export default function useDashboardChart(
                 ),
             [
                 animatedAudienceData,
-                animatedMaxAudience,
+                animatedAudienceMax,
             ],
         );
 
@@ -392,11 +524,10 @@ export default function useDashboardChart(
         [points],
     );
 
-    const audienceCurrent =
-        animatedAudienceCurrent;
-
     const audienceTotal =
-        audienceCurrent;
+        animatedAudienceData[
+            animatedAudienceData.length - 1
+        ] ?? 0;
 
     const activityMax = Math.max(
         ...activityData,
@@ -411,35 +542,22 @@ export default function useDashboardChart(
             ) * 10,
         );
 
-    const activityTotal = activityData.reduce(
-        (
-            sum: number,
-            value: number,
-        ) => sum + value,
-        0,
-    );
+    const activityTotal =
+        activityData.reduce(
+            (
+                sum: number,
+                value: number,
+            ) => sum + value,
+            0,
+        );
 
     const activityAverage =
         activityData.length > 0
             ? Math.round(
-                  activityTotal /
-                      activityData.length,
-              )
+                activityTotal /
+                    activityData.length,
+            )
             : 0;
-
-    const animatedActivityTotal =
-        useAnimatedNumber(
-            activityTotal,
-            250,
-            isActivityReady,
-        );
-
-    const animatedActivityAverage =
-        useAnimatedNumber(
-            activityAverage,
-            250,
-            isActivityReady,
-        );
 
     const activityYLabels = [
         activityScaleMax,
@@ -456,7 +574,62 @@ export default function useDashboardChart(
     ];
 
     const xAxisLabels =
-        getXAxisLabels(period);
+        audienceData
+            .filter(
+                (_, index) =>
+                    index === 0 ||
+                    index ===
+                        Math.floor(
+                            (audienceData.length -
+                                1) /
+                                6,
+                        ) ||
+                    index ===
+                        Math.floor(
+                            ((audienceData.length -
+                                1) *
+                                2) /
+                                6,
+                        ) ||
+                    index ===
+                        Math.floor(
+                            ((audienceData.length -
+                                1) *
+                                3) /
+                                6,
+                        ) ||
+                    index ===
+                        Math.floor(
+                            ((audienceData.length -
+                                1) *
+                                4) /
+                                6,
+                        ) ||
+                    index ===
+                        Math.floor(
+                            ((audienceData.length -
+                                1) *
+                                5) /
+                                6,
+                        ) ||
+                    index ===
+                        audienceData.length - 1,
+            )
+            .map(
+                (point) =>
+                    formatChartDate(
+                        point.date,
+                    ),
+            );
+
+    function formatChartDate(
+        date: string,
+    ) {
+        const [, month, day] =
+            date.split("-");
+
+        return `${day}.${month}`;
+    }
 
     return {
         period,
@@ -474,42 +647,23 @@ export default function useDashboardChart(
         areaPoints,
         audienceTotal,
 
-        animatedActivityTotal,
-        animatedActivityAverage,
-        activityData,
+        activityData:
+        animatedActivityData,
         activityScaleMax,
         activityYLabels,
+        activityTotal,
+        activityAverage,
+
+        activityDates,
+
+        audienceDates:
+            audienceData.map(
+                (point) => point.date,
+            ),
+
+        animatedActivityTotal,
+        animatedActivityAverage,
 
         xAxisLabels,
     };
-}
-
-function getXAxisLabels(
-    period: AnalyticsPeriod,
-) {
-    if (period === "7d") {
-        return [
-            "Пн",
-            "Вт",
-            "Ср",
-            "Чт",
-            "Пт",
-            "Сб",
-            "Нд",
-        ];
-    }
-
-    if (period === "30d") {
-        return [
-            "1",
-            "5",
-            "10",
-            "15",
-            "20",
-            "25",
-            "30",
-        ];
-    }
-
-    return [];
 }

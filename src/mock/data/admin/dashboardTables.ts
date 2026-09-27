@@ -1,23 +1,12 @@
 import type { AdminUser } from "@/admin/types/users";
-import type { ReportSignal } from "@/admin/types/moderation";
-import type { Tweet } from "@/types";
+import type { DashboardReportRow } from "@/admin/types/dashboard";
 
 import { sampleAuthors } from "@/mock/data/users";
 import { tweets } from "@/mock/data/tweets";
+import { commentsByPostId } from "@/mock/data/comments";
 import { moderationSignals } from "@/mock/data/admin/moderationSignals";
 
-export type DashboardReportRow = {
-    reportId: string;
-    targetId: string;
-    count: number;
-    latestSignal: ReportSignal;
-    tweet: Tweet;
-};
-
-export type DashboardTablesMockData = {
-    latestReports: DashboardReportRow[];
-    latestUsers: AdminUser[];
-};
+const comments = Object.values(commentsByPostId).flat();
 
 const latestUsers = [...sampleAuthors]
     .sort(
@@ -31,30 +20,65 @@ const latestReports = Object.values(
     moderationSignals.reduce<
         Record<string, DashboardReportRow>
     >((groups, signal) => {
-        if (
-            signal.targetType !== "posts" ||
-            signal.source !== "user"
-        ) {
-            return groups;
-        }
+        const groupKey = `${signal.targetType}:${signal.targetId}`;
 
-        const tweet = tweets.find(
-            (item) => item.id === signal.targetId,
-        );
-
-        if (!tweet) {
-            return groups;
-        }
-
-        const existing = groups[signal.targetId];
+        const existing = groups[groupKey];
 
         if (!existing) {
-            groups[signal.targetId] = {
-                reportId: signal.id,
+            if (signal.targetType === "posts") {
+                const target = tweets.find(
+                    (item) => item.id === signal.targetId,
+                );
+
+                if (!target) {
+                    return groups;
+                }
+
+                groups[groupKey] = {
+                    targetType: "posts",
+                    targetId: signal.targetId,
+                    count: 1,
+                    latestSignal: signal,
+                    target,
+                };
+
+                return groups;
+            }
+
+            if (signal.targetType === "comments") {
+                const target = comments.find(
+                    (item) => item.id === signal.targetId,
+                );
+
+                if (!target) {
+                    return groups;
+                }
+
+                groups[groupKey] = {
+                    targetType: "comments",
+                    targetId: signal.targetId,
+                    count: 1,
+                    latestSignal: signal,
+                    target,
+                };
+
+                return groups;
+            }
+
+            const target = sampleAuthors.find(
+                (item) => item.id === signal.targetId,
+            );
+
+            if (!target) {
+                return groups;
+            }
+
+            groups[groupKey] = {
+                targetType: "users",
                 targetId: signal.targetId,
                 count: 1,
                 latestSignal: signal,
-                tweet,
+                target,
             };
 
             return groups;
@@ -67,7 +91,6 @@ const latestReports = Object.values(
             new Date(existing.latestSignal.createdAt)
         ) {
             existing.latestSignal = signal;
-            existing.reportId = signal.id;
         }
 
         return groups;
@@ -75,13 +98,17 @@ const latestReports = Object.values(
 )
     .sort(
         (a, b) =>
-            new Date(
-                b.latestSignal.createdAt,
-            ).getTime() -
-            new Date(
-                a.latestSignal.createdAt,
-            ).getTime(),
+            new Date(b.latestSignal.createdAt).getTime() -
+            new Date(a.latestSignal.createdAt).getTime(),
     )
     .slice(0, 10);
 
-export const mockDashboardTablesData: DashboardTablesMockData = {latestReports, latestUsers};
+export type DashboardTablesMockData = {
+    latestReports: DashboardReportRow[];
+    latestUsers: AdminUser[];
+};
+
+export const mockDashboardTablesData: DashboardTablesMockData = {
+    latestReports,
+    latestUsers,
+};

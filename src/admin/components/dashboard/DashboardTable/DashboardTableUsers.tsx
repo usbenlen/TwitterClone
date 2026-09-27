@@ -30,8 +30,8 @@ export default function DashboardTableUsers({
                     </button>
                 }
             >
-                <Scroll className="h-full pr-2">
-                    <table className="w-full text-left">
+                <Scroll>
+                    <table className="w-full table-fixed text-left">
                         <thead className="sticky top-0 z-50 bg-muted text-muted-foreground shadow-[inset_0_-2px_0_0_var(--border)]">
                         <tr className="text-xs font-bold uppercase">
                             <th className="pb-2">

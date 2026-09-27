@@ -54,14 +54,11 @@ export default function useAnimatedNumber(
 
             const progress = Math.min(elapsed / duration, 1);
 
-            const easedProgress =
-                easeOutCubic(progress);
+            const easedProgress = easeOutCubic(progress);
 
             const nextValue = from + (to - from) * easedProgress;
 
             setValue(nextValue);
-
-            previousValue.current = nextValue;
 
             if (progress < 1) {
                 animationFrame =
@@ -93,4 +90,3 @@ export default function useAnimatedNumber(
 
     return value;
 }
-
