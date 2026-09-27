@@ -61,7 +61,7 @@ export default function ActivityChart({
                     </div>
                 </div>
 
-                <div className="flex min-h-[230px] flex-1">
+                <div className="flex min-h-58 flex-1">
                     <div className="flex w-8 flex-col justify-between pb-8 pt-1 text-[11px] text-muted-foreground">
                         {activityYLabels.map(
                             (
@@ -110,7 +110,7 @@ export default function ActivityChart({
                                             </div>
 
                                             <div
-                                                className="w-full rounded-t-4xl bg-primary transition-[height] duration-250 ease-out"
+                                                className="w-full max-w-8 mx-auto rounded-t-2xl bg-primary transition-[height] duration-250 ease-out"
                                                 style={{height: value > 0 ? `${Math.max(height, 4)}%` : "0%"}}
                                             />
                                         </div>
@@ -119,13 +119,26 @@ export default function ActivityChart({
                             )}
                         </div>
 
-                        <div className="absolute inset-x-0 bottom-0 flex justify-between text-[11px] text-muted-foreground">
+                        <div
+                            className={`absolute inset-x-0 bottom-0 flex justify-between text-[11px] text-muted-foreground ${
+                                xAxisLabels.length === activityData.length ? "gap-1.5" : ""
+                            }`}
+                        >
                             {xAxisLabels.map(
                                 (
                                     label,
                                     index,
                                 ) => (
-                                    <span key={`${label}-${index}`}>{label}</span>
+                                    <span
+                                        key={`${label}-${index}`}
+                                        className={
+                                            xAxisLabels.length === activityData.length
+                                                ? "flex-1 text-center"
+                                                : ""
+                                        }
+                                    >
+                                    {label}
+                                </span>
                                 ),
                             )}
                         </div>
