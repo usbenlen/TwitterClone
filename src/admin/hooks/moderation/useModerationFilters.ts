@@ -1,8 +1,7 @@
-import { useMemo, useState } from "react";
+import { useState } from "react";
 
 import type {
     ReportDecision,
-    ReportSignal,
     ReportSignalSource,
     ReportStatus,
     ReportTargetType,
@@ -21,9 +20,7 @@ export type ReportFiltersState = {
     sort: ReportSort;
 };
 
-export default function useModerationFilters(
-    items: ReportSignal[],
-) {
+export default function useModerationFilters() {
     const getInitialFilters = (): ReportFiltersState => {
         const params = new URLSearchParams(
             window.location.search,
@@ -81,7 +78,10 @@ export default function useModerationFilters(
         if (nextFilters.type === "all") {
             params.delete("type");
         } else {
-            params.set("type", nextFilters.type);
+            params.set(
+                "type",
+                nextFilters.type,
+            );
         }
 
         if (nextFilters.search) {
@@ -123,7 +123,10 @@ export default function useModerationFilters(
         if (nextFilters.sort === "newest") {
             params.delete("sort");
         } else {
-            params.set("sort", nextFilters.sort);
+            params.set(
+                "sort",
+                nextFilters.sort,
+            );
         }
 
         window.history.pushState(
@@ -132,88 +135,6 @@ export default function useModerationFilters(
             `${window.location.pathname}?${params.toString()}`,
         );
     };
-
-    const filteredItems = useMemo(() => {
-        const normalizedSearch =
-            filters.search.trim().toLowerCase();
-
-        return [...items]
-            .filter((item) => {
-                if (
-                    filters.type !== "all" &&
-                    item.targetType !== filters.type
-                ) {
-                    return false;
-                }
-
-                if (
-                    filters.source !== "all" &&
-                    item.source !== filters.source
-                ) {
-                    return false;
-                }
-
-                if (
-                    filters.status !== "all" &&
-                    item.status !== filters.status
-                ) {
-                    return false;
-                }
-
-                if (
-                    filters.decision !== "all" &&
-                    item.decision !== filters.decision
-                ) {
-                    return false;
-                }
-
-                if (!normalizedSearch) {
-                    return true;
-                }
-
-                const reason =
-                    item.reasonLabel.toLowerCase();
-
-                const username =
-                    item.reporter?.username.toLowerCase() ?? "";
-
-                const system =
-                    item.system?.label.toLowerCase() ?? "";
-
-                return (
-                    reason.includes(
-                        normalizedSearch,
-                    ) ||
-                    username.includes(
-                        normalizedSearch,
-                    ) ||
-                    system.includes(
-                        normalizedSearch,
-                    ) ||
-                    item.targetId
-                        .toLowerCase()
-                        .includes(
-                            normalizedSearch,
-                        )
-                );
-            })
-            .sort((a, b) => {
-                const dateA =
-                    new Date(a.createdAt).getTime();
-
-                const dateB =
-                    new Date(b.createdAt).getTime();
-
-                switch (filters.sort) {
-                    case "oldest":
-                        return dateA - dateB;
-
-                    case "newest":
-                    default:
-                        return dateB - dateA;
-                }
-            });
-    }, [items, filters]);
 
     const setSearch = (search: string) => {
         const nextFilters = {
@@ -287,7 +208,6 @@ export default function useModerationFilters(
 
     return {
         filters,
-        filteredItems,
         setSearch,
         setType,
         setSource,

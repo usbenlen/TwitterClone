@@ -1,4 +1,25 @@
-import type {ReportSort} from "@/admin/hooks/moderation/useModerationFilters.ts";
+import type { ReportSort } from "@/admin/hooks/moderation/useModerationFilters.ts";
+
+export type ModerationListParams = {
+    page?: number;
+
+    search?: string;
+    type?: ReportTargetType | "all";
+    source?: ReportSignalSource | "all";
+    status?: ReportStatus | "all";
+    decision?: ReportDecision | "all";
+    sort?: "newest" | "oldest";
+};
+
+export type ModerationListResponse = {
+    items: ReportSignal[];
+
+    pagination: {
+        page: number;
+        total: number;
+        totalPages: number;
+    };
+};
 
 export type ReportSignalSource =
     | "user"

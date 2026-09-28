@@ -1,34 +1,24 @@
-import { useMemo, useState } from "react";
+import { useState } from "react";
 
-import { MODERATION_ITEMS_PER_PAGE } from "@/admin/constants/moderation.ts";
-
-export default function useModerationPagination<T>(
-    items: T[],
+export default function useModerationPagination(
+    totalPagesFromApi: number,
 ) {
     const [currentPage, setCurrentPage] = useState(() => {
-        const params = new URLSearchParams(window.location.search);
+        const params = new URLSearchParams(
+            window.location.search,
+        );
+
         const page = Number(params.get("page"));
 
-        return Number.isFinite(page) && page > 0 ? page : 1;
+        return Number.isFinite(page) && page > 0
+            ? page
+            : 1;
     });
 
     const totalPages = Math.max(
         1,
-        Math.ceil(
-            items.length / MODERATION_ITEMS_PER_PAGE,
-        ),
+        totalPagesFromApi,
     );
-
-    const paginatedItems = useMemo(() => {
-        const start =
-            (currentPage - 1) *
-            MODERATION_ITEMS_PER_PAGE;
-
-        return items.slice(
-            start,
-            start + MODERATION_ITEMS_PER_PAGE,
-        );
-    }, [items, currentPage]);
 
     const goToPage = (page: number) => {
         const nextPage = Math.min(
@@ -52,71 +42,30 @@ export default function useModerationPagination<T>(
     };
 
     const nextPage = () => {
-        setCurrentPage((previousPage) => {
-            const next = Math.min(
-                previousPage + 1,
-                totalPages,
-            );
+        const next = Math.min(
+            currentPage + 1,
+            totalPages,
+        );
 
-            const params = new URLSearchParams(
-                window.location.search,
-            );
-
-            params.set("page", String(next));
-
-            window.history.pushState(
-                null,
-                "",
-                `${window.location.pathname}?${params.toString()}`,
-            );
-
-            return next;
-        });
+        goToPage(next);
     };
 
     const previousPage = () => {
-        setCurrentPage((previousPage) => {
-            const next = Math.max(
-                previousPage - 1,
-                1,
-            );
+        const previous = Math.max(
+            currentPage - 1,
+            1,
+        );
 
-            const params = new URLSearchParams(
-                window.location.search,
-            );
-
-            params.set("page", String(next));
-
-            window.history.pushState(
-                null,
-                "",
-                `${window.location.pathname}?${params.toString()}`,
-            );
-
-            return next;
-        });
+        goToPage(previous);
     };
 
     const resetPage = () => {
-        setCurrentPage(1);
-
-        const params = new URLSearchParams(
-            window.location.search,
-        );
-
-        params.set("page", "1");
-
-        window.history.pushState(
-            null,
-            "",
-            `${window.location.pathname}?${params.toString()}`,
-        );
+        goToPage(1);
     };
 
     return {
         currentPage,
         totalPages,
-        paginatedItems,
         goToPage,
         nextPage,
         previousPage,

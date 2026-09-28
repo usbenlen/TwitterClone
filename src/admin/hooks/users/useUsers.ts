@@ -3,10 +3,30 @@ import { useEffect, useState } from "react";
 import type { User } from "@/types";
 import { usersApi } from "@/admin/api/users.api.ts";
 
-export default function useUsers() {
+import type {
+    UsersFiltersState,
+} from "@/admin/types/users";
+
+export default function useUsers(
+    page = 1,
+    filters: UsersFiltersState = {
+        search: "",
+        sort: "newest",
+        status: "all",
+    },
+) {
     const [users, setUsers] = useState<User[]>([]);
+    const [pagination, setPagination] =
+        useState({
+            page: 1,
+            total: 0,
+            totalPages: 1,
+        });
+
     const [isLoading, setIsLoading] = useState(true);
+
     const [error, setError] = useState<string | null>(null);
+
     const [busyAction, setBusyAction] = useState<string | null>(null);
 
     useEffect(() => {
@@ -18,11 +38,19 @@ export default function useUsers() {
                 setError(null);
 
                 const response =
-                    await usersApi.getAll();
+                    await usersApi.getAll({
+                        page,
+                        search: filters.search,
+                        status: filters.status,
+                        sort: filters.sort,
+                    });
 
-                if (isMounted) {
-                    setUsers(response);
+                if (!isMounted) {
+                    return;
                 }
+
+                setUsers(response.items);
+                setPagination(response.pagination);
             } catch {
                 if (isMounted) {
                     setError(
@@ -36,12 +64,17 @@ export default function useUsers() {
             }
         }
 
-        loadUsers();
+        void loadUsers();
 
         return () => {
             isMounted = false;
         };
-    }, []);
+    }, [
+        page,
+        filters.search,
+        filters.status,
+        filters.sort,
+    ]);
 
     const blockUser = async (user: User) => {
         try {
@@ -119,6 +152,7 @@ export default function useUsers() {
 
     return {
         users,
+        pagination,
         isLoading,
         error,
         busyAction,

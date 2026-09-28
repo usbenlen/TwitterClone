@@ -6,45 +6,59 @@ import {
     useModeration,
     useModerationFilters,
     useModerationPagination,
-    useModerationSelection
+    useModerationSelection,
 } from "@/admin/hooks/moderation";
-
-import { Spinner } from "@/ui";
 
 import type { ReportSignal } from "@/admin/types/moderation";
 
 export default function AdminModerationPage() {
     const navigate = useNavigate();
 
-    const {
-        items,
-        isLoading,
-        error,
-        busyAction,
-        blockItem,
-        keepItem,
-        deleteItem,
-    } = useModeration();
+    const params = new URLSearchParams(
+        window.location.search,
+    );
+
+    const pageParam = Number(
+        params.get("page"),
+    );
+
+    const currentPageFromUrl =
+        Number.isFinite(pageParam) &&
+        pageParam > 0
+            ? pageParam
+            : 1;
 
     const {
         filters,
-        filteredItems,
         setSearch,
         setType,
         setStatus,
         setDecision,
         setSort,
         setSource,
-    } = useModerationFilters(items);
+    } = useModerationFilters();
+
+    const {
+        items,
+        pagination,
+        // isLoading,
+        error,
+        busyAction,
+        blockItem,
+        keepItem,
+        deleteItem,
+    } = useModeration(
+        currentPageFromUrl,
+        filters,
+    );
 
     const {
         currentPage,
         totalPages,
-        paginatedItems,
         goToPage,
         resetPage,
     } = useModerationPagination(
-        filteredItems,
+        pagination.totalPages,
     );
 
     const getModerationKey = (
@@ -58,7 +72,7 @@ export default function AdminModerationPage() {
         toggleSelectAll,
         clearSelection,
     } = useModerationSelection(
-        paginatedItems,
+        items,
         getModerationKey,
     );
 
@@ -132,7 +146,7 @@ export default function AdminModerationPage() {
 
     const handleBlockSelected = async () => {
         const selectedItems =
-            paginatedItems.filter((item) =>
+            items.filter((item) =>
                 selectedIds.includes(
                     getModerationKey(item),
                 ),
@@ -145,19 +159,17 @@ export default function AdminModerationPage() {
         clearSelection();
     };
 
-    if (isLoading) {
-        return (
-            <Spinner/>
-        );
-    }
+    // if (isLoading) {
+    //     return <Spinner />;
+    // }
 
     return (
         <Moderation
-            items={paginatedItems}
+            items={items}
             filters={filters}
             currentPage={currentPage}
             totalPages={totalPages}
-            totalCount={filteredItems.length}
+            totalCount={pagination.total}
             selectedIds={selectedIds}
             allCurrentPageSelected={allCurrentPageSelected}
             busyAction={busyAction}

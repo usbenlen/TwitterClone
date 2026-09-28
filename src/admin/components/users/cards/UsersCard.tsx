@@ -51,7 +51,6 @@ export default function UsersCard({
 
         if (modalAction === "delete") {
             await onDelete();
-            setLocalIsBlocked(false);
         }
 
         setModalAction(null);
@@ -89,9 +88,15 @@ export default function UsersCard({
                 <UsersCardActions
                     isBlocked={isBlocked}
                     busy={busy}
-                    onBlock={() => setModalAction("block")}
-                    onUnblock={() => setModalAction("unblock")}
-                    onDelete={() => setModalAction("delete")}
+                    onBlock={() =>
+                        setModalAction("block")
+                    }
+                    onUnblock={() =>
+                        setModalAction("unblock")
+                    }
+                    onDelete={() =>
+                        setModalAction("delete")
+                    }
                 />
             </article>
 
@@ -100,17 +105,23 @@ export default function UsersCard({
                 title={
                     modalAction === "block"
                         ? "Заблокувати користувача?"
-                        : "Розблокувати користувача?"
+                        : modalAction === "unblock"
+                            ? "Розблокувати користувача?"
+                            : "Видалити користувача?"
                 }
                 description={
                     modalAction === "block"
                         ? `Користувач @${user.username} буде заблокований.`
-                        : `Користувач @${user.username} буде розблокований.`
+                        : modalAction === "unblock"
+                            ? `Користувач @${user.username} буде розблокований.`
+                            : `Користувач @${user.username} буде видалений.`
                 }
                 confirmText={
                     modalAction === "block"
                         ? "Заблокувати"
-                        : "Розблокувати"
+                        : modalAction === "unblock"
+                            ? "Розблокувати"
+                            : "Видалити"
                 }
                 cancelText="Скасувати"
                 onCancel={() =>

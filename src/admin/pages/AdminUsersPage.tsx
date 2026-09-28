@@ -3,45 +3,65 @@ import { useNavigate } from "react-router";
 import {
     useUsers,
     useUsersFilters,
-    useUsersPagination
+    useUsersPagination,
 } from "@/admin/hooks/users";
 
 import Users from "@/admin/components/users/Users";
-import { Spinner } from "@/ui";
+
 import type { User } from "@/types";
 
 export default function AdminUsersPage() {
     const navigate = useNavigate();
 
-    const {
-        users,
-        isLoading,
-        blockUser,
-        unblockUser,
-        deleteUser,
-    } = useUsers();
+    const params = new URLSearchParams(
+        window.location.search,
+    );
+
+    const pageParam = Number(
+        params.get("page"),
+    );
+
+    const currentPageFromUrl =
+        Number.isFinite(pageParam) &&
+        pageParam > 0
+            ? pageParam
+            : 1;
 
     const {
-        filteredUsers,
         filters,
         setSearch,
         setSort,
         setStatus,
-    } = useUsersFilters(users);
+    } = useUsersFilters();
+
+    const {
+        users,
+        pagination,
+        // isLoading,
+        blockUser,
+        unblockUser,
+        deleteUser,
+    } = useUsers(
+        currentPageFromUrl,
+        filters,
+    );
 
     const {
         currentPage,
         totalPages,
-        paginatedItems: paginatedUsers,
         goToPage,
         resetPage,
-    } = useUsersPagination(filteredUsers);
+    } = useUsersPagination(
+        pagination.totalPages,
+    );
 
     const handleOpen = (userId: string) => {
         navigate(`/admin/users/${userId}`);
     };
 
-    const handleSearchChange = (value: string) => {
+    const handleSearchChange = (
+        value: string,
+    ) => {
         setSearch(value);
         resetPage();
     };
@@ -60,32 +80,32 @@ export default function AdminUsersPage() {
         resetPage();
     };
 
-    const handleBlock = async (user: User) => {
+    const handleBlock = async (
+        user: User,
+    ) => {
         await blockUser(user);
     };
 
-    const handleUnblock = async (user: User) => {
+    const handleUnblock = async (
+        user: User,
+    ) => {
         await unblockUser(user);
     };
 
-    const handleDelete = async (user: User) => {
+    const handleDelete = async (
+        user: User,
+    ) => {
         await deleteUser(user);
     };
-
-    if (isLoading) {
-        return (
-            <Spinner/>
-        );
-    }
 
     return (
         <div className="w-full">
             <Users
-                items={paginatedUsers}
+                items={users}
                 filters={filters}
                 currentPage={currentPage}
                 totalPages={totalPages}
-                totalCount={filteredUsers.length}
+                totalCount={pagination.total}
                 onSearchChange={handleSearchChange}
                 onSortChange={handleSortChange}
                 onStatusChange={handleStatusChange}

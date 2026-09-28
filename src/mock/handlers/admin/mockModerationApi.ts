@@ -1,7 +1,9 @@
 import type {
     ReportDecision,
     ReportSignal,
+    ReportSignalSource,
     ReportStatus,
+    ReportTargetType,
 } from "@/admin/types/moderation";
 
 import { moderationSignals } from "@/mock/data/admin/moderationSignals";
@@ -15,6 +17,26 @@ import {
 } from "@/mock/data/users";
 
 import { tweets } from "@/mock/data/tweets";
+
+type ModerationListParams = {
+    page?: number;
+    search?: string;
+    type?: ReportTargetType | "all";
+    source?: ReportSignalSource | "all";
+    status?: ReportStatus | "all";
+    decision?: ReportDecision | "all";
+    sort?: "newest" | "oldest";
+};
+
+type ModerationListResponse = {
+    items: ReportSignal[];
+
+    pagination: {
+        page: number;
+        total: number;
+        totalPages: number;
+    };
+};
 
 const createModerationPostItem = (
     tweetId: string,
@@ -96,7 +118,9 @@ const createModerationCommentItem = (
 };
 
 export const mockModerationApi = {
-    async getItems(): Promise<ReportSignal[]> {
+    async getItems(
+        params: ModerationListParams = {},
+    ): Promise<ModerationListResponse> {
         await new Promise((resolve) =>
             setTimeout(resolve, 300),
         );
@@ -173,11 +197,140 @@ export const mockModerationApi = {
                     item !== null,
             );
 
-        return [
+        let items = [
             ...posts,
             ...users,
             ...comments,
         ];
+
+        const normalizedSearch =
+            params.search?.trim().toLowerCase();
+
+        if (normalizedSearch) {
+            items = items.filter(
+                (item) => {
+                    const reason =
+                        item.reasonLabel.toLowerCase();
+
+                    const username =
+                        item.reporter?.username
+                            .toLowerCase() ?? "";
+
+                    const system =
+                        item.system?.label
+                            .toLowerCase() ?? "";
+
+                    return (
+                        reason.includes(
+                            normalizedSearch,
+                        ) ||
+                        username.includes(
+                            normalizedSearch,
+                        ) ||
+                        system.includes(
+                            normalizedSearch,
+                        ) ||
+                        item.targetId
+                            .toLowerCase()
+                            .includes(
+                                normalizedSearch,
+                            )
+                    );
+                },
+            );
+        }
+
+        if (
+            params.type &&
+            params.type !== "all"
+        ) {
+            items = items.filter(
+                (item) =>
+                    item.targetType ===
+                    params.type,
+            );
+        }
+
+        if (
+            params.source &&
+            params.source !== "all"
+        ) {
+            items = items.filter(
+                (item) =>
+                    item.source ===
+                    params.source,
+            );
+        }
+
+        if (
+            params.status &&
+            params.status !== "all"
+        ) {
+            items = items.filter(
+                (item) =>
+                    item.status ===
+                    params.status,
+            );
+        }
+
+        if (
+            params.decision &&
+            params.decision !== "all"
+        ) {
+            items = items.filter(
+                (item) =>
+                    item.decision ===
+                    params.decision,
+            );
+        }
+
+        items.sort((a, b) => {
+            const dateA =
+                new Date(
+                    a.createdAt,
+                ).getTime();
+
+            const dateB =
+                new Date(
+                    b.createdAt,
+                ).getTime();
+
+            return params.sort === "oldest"
+                ? dateA - dateB
+                : dateB - dateA;
+        });
+
+        const page = Math.max(
+            params.page ?? 1,
+            1,
+        );
+
+        const limit = 10;
+
+        const total = items.length;
+
+        const totalPages = Math.max(
+            1,
+            Math.ceil(total / limit),
+        );
+
+        const start =
+            (page - 1) * limit;
+
+        const paginatedItems =
+            items.slice(
+                start,
+                start + limit,
+            );
+
+        return {
+            items: paginatedItems,
+            pagination: {
+                page,
+                total,
+                totalPages,
+            },
+        };
     },
 
     async getById(

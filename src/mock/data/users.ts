@@ -201,4 +201,20 @@ export const sampleAuthors: User[] = [
 
     createdAt: "2024-07-08T00:00:00Z",
   },
+
+  {
+    id: "u13",
+    username: "maria",
+    displayName: "Maria",
+    email: "maria@example.com",
+
+    followersCount: 4700,
+    followingCount: 11,
+    postsCount: 4,
+
+    isFollowedByCurrentUser: false,
+    isVerified: true,
+
+    createdAt: "2024-07-08T00:00:00Z",
+  },
 ];

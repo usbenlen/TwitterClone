@@ -8,10 +8,32 @@ import type {
     ReportTargetType,
 } from "@/admin/types/moderation";
 
-export default function useModeration() {
+import type {
+    ReportFiltersState,
+} from "./useModerationFilters";
+
+const defaultFilters: ReportFiltersState = {
+    search: "",
+    type: "all",
+    source: "all",
+    status: "all",
+    decision: "all",
+    sort: "newest",
+};
+
+export default function useModeration(
+    page = 1,
+    filters: ReportFiltersState = defaultFilters,
+) {
     const [items, setItems] = useState<ReportSignal[]>(
         [],
     );
+
+    const [pagination, setPagination] = useState({
+        page: 1,
+        total: 0,
+        totalPages: 1,
+    });
 
     const [isLoading, setIsLoading] =
         useState(true);
@@ -33,13 +55,22 @@ export default function useModeration() {
                 setError(null);
 
                 const response =
-                    await moderationApi.getItems();
+                    await moderationApi.getItems({
+                        page,
+                        search: filters.search,
+                        type: filters.type,
+                        source: filters.source,
+                        status: filters.status,
+                        decision: filters.decision,
+                        sort: filters.sort,
+                    });
 
                 if (cancelled) {
                     return;
                 }
 
-                setItems(response);
+                setItems(response.items);
+                setPagination(response.pagination);
             } catch {
                 if (!cancelled) {
                     setError(
@@ -58,7 +89,15 @@ export default function useModeration() {
         return () => {
             cancelled = true;
         };
-    }, []);
+    }, [
+        page,
+        filters.search,
+        filters.type,
+        filters.source,
+        filters.status,
+        filters.decision,
+        filters.sort,
+    ]);
 
     const updateReport = async (
         item: ReportSignal,
@@ -83,8 +122,7 @@ export default function useModeration() {
                         currentItem.id === item.id
                             ? {
                                 ...currentItem,
-                                reportStatus:
-                                    "resolved",
+                                status: "resolved",
                                 decision,
                             }
                             : currentItem,
@@ -125,7 +163,50 @@ export default function useModeration() {
     const deleteItem = async (
         item: ReportSignal,
     ) => {
-        await updateReport(item, "deleted");
+        try {
+            setBusyAction(
+                `item:${item.targetType}:${item.targetId}`,
+            );
+
+            setError(null);
+
+            if (item.targetType === "posts") {
+                await moderationApi.deletePost(
+                    item.targetId,
+                );
+            }
+
+            if (item.targetType === "comments") {
+                await moderationApi.deleteComment(
+                    item.targetId,
+                );
+            }
+
+            if (item.targetType === "users") {
+                await moderationApi.deleteUser(
+                    item.targetId,
+                );
+            }
+
+            await moderationApi.updateStatus(
+                item.id,
+                "resolved",
+                "deleted",
+            );
+
+            setItems((previousItems) =>
+                previousItems.filter(
+                    (currentItem) =>
+                        currentItem.id !== item.id,
+                ),
+            );
+        } catch {
+            setError(
+                "Не вдалося видалити об'єкт.",
+            );
+        } finally {
+            setBusyAction(null);
+        }
     };
 
     const rejectItem = async (
@@ -153,6 +234,7 @@ export default function useModeration() {
 
     return {
         items,
+        pagination,
         isLoading,
         error,
         busyAction,

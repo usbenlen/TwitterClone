@@ -401,6 +401,25 @@ export const moderationSignals: ReportSignal[] = [
     },
 
     {
+        id: "user-signal-8",
+        targetType: "users",
+        targetId: "u7",
+
+        source: "system",
+        reason: "spam",
+        reasonLabel: "Спам",
+        status: "pending",
+        createdAt: new Date(
+            Date.now() - 1000 * 60 * 18,
+        ).toISOString(),
+
+        reporter: {
+            id: "u2",
+            username: "ada",
+        },
+    },
+
+    {
         id: "comment-signal-1",
         targetType: "comments",
         targetId: "c1",
