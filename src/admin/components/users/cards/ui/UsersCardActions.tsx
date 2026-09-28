@@ -24,7 +24,7 @@ export default function UsersCardActions({
 }: UsersCardActionsProps) {
     return (
         <div
-            className="flex flex-col gap-2"
+            className="flex flex-col gap-2 w-39"
             onClick={(event) =>
                 event.stopPropagation()
             }

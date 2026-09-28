@@ -69,7 +69,7 @@ export default function useModerationReport(
             current
                 ? {
                     ...current,
-                    reportStatus,
+                    status: reportStatus,
                     decision,
                 }
                 : current,

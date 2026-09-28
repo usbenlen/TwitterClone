@@ -3,7 +3,15 @@ import { useMemo, useState } from "react";
 import { USERS_ITEMS_PER_PAGE } from "@/admin/constants/users.ts";
 
 export default function useUsersPagination<T>(items: T[]) {
-    const [currentPage, setCurrentPage] = useState(1);
+    const [currentPage, setCurrentPage] = useState(() => {
+        const params = new URLSearchParams(
+            window.location.search,
+        );
+
+        const page = Number(params.get("page"));
+
+        return Number.isFinite(page) && page > 0 ? page : 1;
+    });
 
     const totalPages = Math.max(
         1,
@@ -29,25 +37,80 @@ export default function useUsersPagination<T>(items: T[]) {
         );
 
         setCurrentPage(nextPage);
+
+        const params = new URLSearchParams(
+            window.location.search,
+        );
+
+        params.set("page", String(nextPage));
+
+        window.history.pushState(
+            null,
+            "",
+            `${window.location.pathname}?${params.toString()}`,
+        );
     };
 
     const nextPage = () => {
-        setCurrentPage((previousPage) =>
-            Math.min(
+        setCurrentPage((previousPage) => {
+            const next = Math.min(
                 previousPage + 1,
                 totalPages,
-            ),
-        );
+            );
+
+            const params = new URLSearchParams(
+                window.location.search,
+            );
+
+            params.set("page", String(next));
+
+            window.history.pushState(
+                null,
+                "",
+                `${window.location.pathname}?${params.toString()}`,
+            );
+
+            return next;
+        });
     };
 
     const previousPage = () => {
-        setCurrentPage((previousPage) =>
-            Math.max(previousPage - 1, 1),
-        );
+        setCurrentPage((previousPage) => {
+            const next = Math.max(
+                previousPage - 1,
+                1,
+            );
+
+            const params = new URLSearchParams(
+                window.location.search,
+            );
+
+            params.set("page", String(next));
+
+            window.history.pushState(
+                null,
+                "",
+                `${window.location.pathname}?${params.toString()}`,
+            );
+
+            return next;
+        });
     };
 
     const resetPage = () => {
         setCurrentPage(1);
+
+        const params = new URLSearchParams(
+            window.location.search,
+        );
+
+        params.set("page", "1");
+
+        window.history.pushState(
+            null,
+            "",
+            `${window.location.pathname}?${params.toString()}`,
+        );
     };
 
     return {

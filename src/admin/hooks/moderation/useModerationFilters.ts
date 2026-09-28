@@ -24,15 +24,114 @@ export type ReportFiltersState = {
 export default function useModerationFilters(
     items: ReportSignal[],
 ) {
+    const getInitialFilters = (): ReportFiltersState => {
+        const params = new URLSearchParams(
+            window.location.search,
+        );
+
+        const type =
+            params.get("type") as
+                | ReportTargetType
+                | null;
+
+        const source =
+            params.get("source") as
+                | ReportSignalSource
+                | null;
+
+        const status =
+            params.get("status") as
+                | ReportStatus
+                | null;
+
+        const decision =
+            params.get("decision") as
+                | ReportDecision
+                | null;
+
+        const sort =
+            params.get("sort") as
+                | ReportSort
+                | null;
+
+        return {
+            type: type ?? "all",
+            search: params.get("search") ?? "",
+            source: source ?? "all",
+            status: status ?? "all",
+            decision: decision ?? "all",
+            sort: sort ?? "newest",
+        };
+    };
+
     const [filters, setFilters] =
-        useState<ReportFiltersState>({
-            type: "all",
-            search: "",
-            source: "all",
-            status: "all",
-            decision: "all",
-            sort: "newest",
-        });
+        useState<ReportFiltersState>(
+            getInitialFilters,
+        );
+
+    const updateUrl = (
+        nextFilters: ReportFiltersState,
+    ) => {
+        const params = new URLSearchParams(
+            window.location.search,
+        );
+
+        params.set("page", "1");
+
+        if (nextFilters.type === "all") {
+            params.delete("type");
+        } else {
+            params.set("type", nextFilters.type);
+        }
+
+        if (nextFilters.search) {
+            params.set(
+                "search",
+                nextFilters.search,
+            );
+        } else {
+            params.delete("search");
+        }
+
+        if (nextFilters.source === "all") {
+            params.delete("source");
+        } else {
+            params.set(
+                "source",
+                nextFilters.source,
+            );
+        }
+
+        if (nextFilters.status === "all") {
+            params.delete("status");
+        } else {
+            params.set(
+                "status",
+                nextFilters.status,
+            );
+        }
+
+        if (nextFilters.decision === "all") {
+            params.delete("decision");
+        } else {
+            params.set(
+                "decision",
+                nextFilters.decision,
+            );
+        }
+
+        if (nextFilters.sort === "newest") {
+            params.delete("sort");
+        } else {
+            params.set("sort", nextFilters.sort);
+        }
+
+        window.history.pushState(
+            null,
+            "",
+            `${window.location.pathname}?${params.toString()}`,
+        );
+    };
 
     const filteredItems = useMemo(() => {
         const normalizedSearch =
@@ -72,11 +171,14 @@ export default function useModerationFilters(
                     return true;
                 }
 
-                const reason = item.reasonLabel.toLowerCase();
+                const reason =
+                    item.reasonLabel.toLowerCase();
 
-                const username = item.reporter?.username.toLowerCase() ?? "";
+                const username =
+                    item.reporter?.username.toLowerCase() ?? "";
 
-                const system = item.system?.label.toLowerCase() ?? "";
+                const system =
+                    item.system?.label.toLowerCase() ?? "";
 
                 return (
                     reason.includes(
@@ -92,12 +194,15 @@ export default function useModerationFilters(
                         .toLowerCase()
                         .includes(
                             normalizedSearch,
-                    )
+                        )
                 );
             })
             .sort((a, b) => {
-                const dateA = new Date(a.createdAt).getTime();
-                const dateB = new Date(b.createdAt).getTime();
+                const dateA =
+                    new Date(a.createdAt).getTime();
+
+                const dateB =
+                    new Date(b.createdAt).getTime();
 
                 switch (filters.sort) {
                     case "oldest":
@@ -111,55 +216,73 @@ export default function useModerationFilters(
     }, [items, filters]);
 
     const setSearch = (search: string) => {
-        setFilters((previous) => ({
-            ...previous,
+        const nextFilters = {
+            ...filters,
             search,
-        }));
+        };
+
+        setFilters(nextFilters);
+        updateUrl(nextFilters);
     };
 
     const setType = (
         type: ReportTargetType | "all",
     ) => {
-        setFilters((previous) => ({
-            ...previous,
+        const nextFilters = {
+            ...filters,
             type,
-        }));
+        };
+
+        setFilters(nextFilters);
+        updateUrl(nextFilters);
     };
 
     const setSource = (
         source: ReportSignalSource | "all",
     ) => {
-        setFilters((previous) => ({
-            ...previous,
+        const nextFilters = {
+            ...filters,
             source,
-        }));
+        };
+
+        setFilters(nextFilters);
+        updateUrl(nextFilters);
     };
 
     const setStatus = (
         status: ReportStatus | "all",
     ) => {
-        setFilters((previous) => ({
-            ...previous,
+        const nextFilters = {
+            ...filters,
             status,
-        }));
+        };
+
+        setFilters(nextFilters);
+        updateUrl(nextFilters);
     };
 
     const setDecision = (
         decision: ReportDecision | "all",
     ) => {
-        setFilters((previous) => ({
-            ...previous,
+        const nextFilters = {
+            ...filters,
             decision,
-        }));
+        };
+
+        setFilters(nextFilters);
+        updateUrl(nextFilters);
     };
 
     const setSort = (
         sort: ReportSort,
     ) => {
-        setFilters((previous) => ({
-            ...previous,
+        const nextFilters = {
+            ...filters,
             sort,
-        }));
+        };
+
+        setFilters(nextFilters);
+        updateUrl(nextFilters);
     };
 
     return {
