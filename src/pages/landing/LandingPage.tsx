@@ -13,28 +13,24 @@ import { GoogleAuthButton } from "@/components/auth";
 import { RightSidebarFooterLinks } from "@/components/layout/desktop/rightSidebar";
 import { APP_ROUTES } from "@/constants/routes";
 import { HeartIcon } from "@/shared/icons";
-import { AppLogo } from "@/ui";
+import { AppLogo, Avatar } from "@/ui";
 import { cn } from "@/utils/cn";
 
 interface PreviewPostProps {
-  initials: string;
   name: string;
   username: string;
   time: string;
   children: string;
-  accent: string;
   replies: number;
   reposts: number;
   likes: number;
 }
 
 function PreviewPost({
-  initials,
   name,
   username,
   time,
   children,
-  accent,
   replies,
   reposts,
   likes,
@@ -45,14 +41,7 @@ function PreviewPost({
 
   return (
     <article className="flex gap-3 border-t border-border px-4 py-4 text-left">
-      <div
-        className={cn(
-          "cursor-default flex size-10 shrink-0 items-center justify-center rounded-full bg-linear-to-br text-xs font-bold text-white",
-          accent,
-        )}
-      >
-        {initials}
-      </div>
+      <Avatar name={name} fallbackName={username} />
       <div className="min-w-0 flex-1">
         <div className="flex min-w-0 items-center gap-1 text-sm">
           <span className="truncate font-bold text-foreground">{name}</span>
@@ -199,9 +188,7 @@ export default function LandingPage() {
                   <span className="text-lg font-extrabold">Головна</span>
                 </div>
                 <div className="flex gap-3 px-4 py-4">
-                  <div className="cursor-default flex size-10 shrink-0 items-center justify-center rounded-full bg-primary font-bold text-primary-foreground">
-                    В
-                  </div>
+                  <Avatar name="Ви" />
                   <div className="flex flex-1 items-center justify-between gap-3">
                     <textarea
                       value={draft}
@@ -226,11 +213,9 @@ export default function LandingPage() {
                   </div>
                 </div>
                 <PreviewPost
-                  initials="ОК"
                   name="Стас Даруйщук"
                   username="darye_schyk"
                   time="12 хв"
-                  accent="from-sky-400 to-blue-600"
                   replies={18}
                   reposts={42}
                   likes={286}
@@ -239,11 +224,9 @@ export default function LandingPage() {
                   чим працюєте сьогодні ✨
                 </PreviewPost>
                 <PreviewPost
-                  initials="МЛ"
                   name="Максим Левченко"
                   username="max_codes"
                   time="1 год"
-                  accent="from-violet-400 to-fuchsia-600"
                   replies={9}
                   reposts={16}
                   likes={124}

@@ -101,6 +101,8 @@ function CommentModalInner({
             <div className="relative grid grid-cols-[44px_1fr] gap-3">
               <div className="flex flex-col items-center">
                 <Avatar
+                  userId={displayedTweet.author.id}
+                  fallbackName={displayedTweet.author.username}
                   name={displayedTweet.author.displayName}
                   src={displayedTweet.author.avatarUrl}
                   className="size-11 shrink-0"

@@ -20,6 +20,8 @@ export default function SearchPostResult({
       className="flex w-full gap-3 px-4 py-3 text-left transition-colors hover:bg-muted/50"
     >
       <Avatar
+        userId={tweet.author.id}
+        fallbackName={tweet.author.username}
         name={displayName}
         src={tweet.author.avatarUrl ?? undefined}
         className="size-8"

@@ -69,6 +69,7 @@ export default function QuotedTweetCard({ quote }: QuotedTweetCardProps) {
             className="block size-6 shrink-0"
           >
             <Avatar
+              userId={target.author.id}
               name={authorName}
               fallbackName={target.author.username}
               src={target.author.avatarUrl}

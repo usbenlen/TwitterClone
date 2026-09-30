@@ -173,6 +173,7 @@ function TweetCard({
 
         <div className="flex justify-center">
           <Avatar
+            userId={tweet.author.id}
             name={tweet.author.displayName}
             fallbackName={tweet.author.username}
             src={tweet.author.avatarUrl}

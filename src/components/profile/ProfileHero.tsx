@@ -42,6 +42,7 @@ export default function ProfileHero({
         <div className="flex items-end justify-between">
           <div className="-mt-12">
             <Avatar
+              userId={user.id}
               name={user.displayName}
               fallbackName={user.username}
               src={user.avatarUrl}

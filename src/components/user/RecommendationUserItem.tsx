@@ -51,6 +51,8 @@ export default function RecommendationUserItem({
           className="flex min-w-0 flex-1 gap-3"
         >
           <Avatar
+            userId={user.id}
+            fallbackName={user.username}
             name={user.displayName ?? user.username}
             src={user.avatarUrl}
             className={compact ? "size-10" : "size-11"}

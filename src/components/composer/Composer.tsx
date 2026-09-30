@@ -91,6 +91,8 @@ export default function Composer({
       >
         {showAvatar && (
           <Avatar
+            userId={user.id}
+            fallbackName={user.username}
             name={user.displayName}
             src={user.avatarUrl}
             className="size-11 shrink-0"
@@ -242,6 +244,8 @@ export default function Composer({
     >
       {showAvatar && (
         <Avatar
+          userId={user.id}
+          fallbackName={user.username}
           name={user.displayName}
           src={user.avatarUrl}
           className="size-10 shrink-0"

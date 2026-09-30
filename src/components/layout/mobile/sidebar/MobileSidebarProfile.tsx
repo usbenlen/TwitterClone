@@ -31,6 +31,8 @@ export default function MobileSidebarProfile({
         className="flex min-w-0 flex-1 items-center gap-4"
       >
         <Avatar
+          userId={user.id}
+          fallbackName={user.username}
           name={user.displayName}
           src={user.avatarUrl}
           className="size-14"

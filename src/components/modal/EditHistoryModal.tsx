@@ -128,6 +128,7 @@ export default function EditHistoryModal({
 
                     <div className="flex gap-3">
                       <Avatar
+                        userId={version.author.id}
                         name={authorName}
                         fallbackName={version.author.username}
                         src={version.author.avatarUrl}

@@ -476,6 +476,7 @@ function EditProfileModalInner({
                 onClick={() => avatarInputRef.current?.click()}
               >
                 <Avatar
+                  userId={user.id}
                   name={displayName}
                   fallbackName={user.username}
                   src={avatarPreview}

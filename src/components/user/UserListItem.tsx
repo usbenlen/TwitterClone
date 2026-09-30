@@ -39,6 +39,8 @@ export default function UserListItem({
     >
       <div className="flex min-w-0 items-center gap-3">
         <Avatar
+          userId={user.id}
+          fallbackName={user.username}
           name={user.displayName ?? user.username}
           src={user.avatarUrl ?? undefined}
           className="size-12 shrink-0"

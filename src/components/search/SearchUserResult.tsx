@@ -27,6 +27,8 @@ export default function SearchUserResult({ user }: SearchUserResultProps) {
     >
       <div className="flex min-w-0 items-center gap-3">
         <Avatar
+          userId={user.id}
+          fallbackName={user.username}
           name={user.displayName}
           src={user.avatarUrl}
           className="size-12 shrink-0"

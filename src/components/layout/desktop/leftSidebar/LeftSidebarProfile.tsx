@@ -19,6 +19,8 @@ export default function LeftSidebarProfile() {
         className="flex min-w-0 flex-1 items-center gap-3"
       >
         <Avatar
+          userId={user.id}
+          fallbackName={user.username}
           src={user.avatarUrl}
           name={user.displayName}
           className="size-10"
