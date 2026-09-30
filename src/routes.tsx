@@ -4,6 +4,7 @@ import { createBrowserRouter } from "react-router";
 import MainLayout from "@/layouts/MainLayout";
 import { ProtectedRoute, GuestRoute } from "@/components/routeGuards";
 import { APP_ROUTES } from "@/constants/routes";
+import { Spinner } from "@/ui/Spinner";
 
 type PageModule = { default: ComponentType };
 
@@ -14,6 +15,7 @@ const lazyPage = (load: () => Promise<PageModule>) => async () => ({
 export const routes = createBrowserRouter([
   {
     element: <ProtectedRoute />,
+    hydrateFallbackElement: <Spinner className="size-8 text-primary" />,
     children: [
       {
         element: <MainLayout />,
@@ -81,6 +83,7 @@ export const routes = createBrowserRouter([
 
   {
     element: <GuestRoute />,
+    hydrateFallbackElement: <Spinner className="size-8 text-primary" />,
     children: [
       {
         path: APP_ROUTES.LANDING,
