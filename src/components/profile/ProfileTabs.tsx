@@ -1,3 +1,4 @@
+import { PROFILE_TABS } from "@/constants/profile";
 import { Link } from "react-router";
 
 import type { ProfileTab } from "@/hooks/useProfile";
@@ -7,16 +8,6 @@ import { Tab } from "@/ui";
 interface ProfileTabsProps {
   activeTab: ProfileTab;
 }
-
-const PROFILE_TABS: Array<{
-  id: ProfileTab;
-  label: string;
-}> = [
-  { id: "posts", label: "Твіти" },
-  { id: "replies", label: "Відповіді" },
-  { id: "likes", label: "Лайки" },
-  { id: "reposts", label: "Репости" },
-];
 
 export default function ProfileTabs({ activeTab }: ProfileTabsProps) {
   return (

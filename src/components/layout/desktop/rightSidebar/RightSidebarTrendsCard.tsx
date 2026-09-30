@@ -1,3 +1,5 @@
+import { formatCompactCount } from "@/utils/format";
+import { SIDEBAR } from "@/constants/layout";
 import { Loader2 } from "lucide-react";
 import { Link } from "react-router";
 
@@ -6,13 +8,8 @@ import RightSidebarCard from "@/components/layout/desktop/rightSidebar/RightSide
 import { useTrends } from "@/hooks";
 import { APP_ROUTES } from "@/constants/routes";
 
-const postCountFormatter = new Intl.NumberFormat("uk-UA", {
-  notation: "compact",
-  maximumFractionDigits: 1,
-});
-
 export default function RightSidebarTrendsCard() {
-  const { trends, isLoading, error, reload } = useTrends(4);
+  const { trends, isLoading, error, reload } = useTrends(SIDEBAR.TRENDS_LIMIT);
 
   if (!isLoading && !error && trends.length === 0) return null;
 
@@ -49,7 +46,7 @@ export default function RightSidebarTrendsCard() {
               </p>
               {trend.postsCount !== undefined && (
                 <p className="mt-0.5 text-xs text-muted-foreground">
-                  {postCountFormatter.format(trend.postsCount)} дописів
+                  {formatCompactCount(trend.postsCount)} дописів
                 </p>
               )}
             </Link>

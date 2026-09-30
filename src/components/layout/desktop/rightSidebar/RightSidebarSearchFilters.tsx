@@ -1,5 +1,5 @@
+import { RadioOption } from "@/ui/RadioOption";
 import { useState } from "react";
-import { Check, Circle } from "lucide-react";
 import { useNavigate, useSearchParams } from "react-router";
 
 import RightSidebarCard from "@/components/layout/desktop/rightSidebar/RightSidebarCard";
@@ -9,58 +9,6 @@ import { APP_ROUTES } from "@/constants/routes";
 import { parseSearchCriteria } from "@/utils/search";
 
 import type { SearchCriteria, SearchLocation, SearchPeople } from "@/types";
-
-interface FilterOptionProps<T extends string> {
-  checked: boolean;
-  disabled?: boolean;
-  label: string;
-  value: T;
-  onChange: (value: T) => void;
-}
-
-function FilterOption<T extends string>({
-  checked,
-  disabled,
-  label,
-  value,
-  onChange,
-}: FilterOptionProps<T>) {
-  return (
-    <button
-      type="button"
-      role="radio"
-      aria-checked={checked}
-      disabled={disabled}
-      onClick={() => onChange(value)}
-      className="group flex w-full cursor-pointer items-center justify-between text-sm text-foreground focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
-    >
-      <span>{label}</span>
-      {checked ? (
-        <span
-          className={`relative flex size-5 items-center justify-center before:absolute before:-inset-2 before:rounded-full before:transition-colors ${
-            disabled
-              ? ""
-              : "group-hover:before:bg-primary/10 group-focus-visible:before:bg-primary/10"
-          }`}
-        >
-          <span className="relative flex size-5 items-center justify-center rounded-full bg-primary text-primary-foreground">
-            <Check className="size-3.5" />
-          </span>
-        </span>
-      ) : (
-        <span
-          className={`relative flex size-5 items-center justify-center before:absolute before:-inset-2 before:rounded-full before:transition-colors ${
-            disabled
-              ? ""
-              : "group-hover:before:bg-muted group-focus-visible:before:bg-muted"
-          }`}
-        >
-          <Circle className="relative size-5 text-muted-foreground" />
-        </span>
-      )}
-    </button>
-  );
-}
 
 export default function RightSidebarSearchFilters() {
   const navigate = useNavigate();
@@ -82,13 +30,15 @@ export default function RightSidebarSearchFilters() {
               People
             </legend>
             <div role="radiogroup" aria-label="People" className="space-y-2">
-              <FilterOption<SearchPeople>
+              <RadioOption<SearchPeople>
+                className="text-foreground"
                 checked={criteria.people === "anyone"}
                 label="From anyone"
                 value="anyone"
                 onChange={(people) => updateCriteria({ ...criteria, people })}
               />
-              <FilterOption<SearchPeople>
+              <RadioOption<SearchPeople>
+                className="text-foreground"
                 checked={criteria.people === "following"}
                 label="People you follow"
                 value="following"
@@ -102,7 +52,8 @@ export default function RightSidebarSearchFilters() {
               Location
             </legend>
             <div role="radiogroup" aria-label="Location" className="space-y-2">
-              <FilterOption<SearchLocation>
+              <RadioOption<SearchLocation>
+                className="text-foreground"
                 checked={criteria.location === "anywhere"}
                 label="Anywhere"
                 value="anywhere"
@@ -110,7 +61,8 @@ export default function RightSidebarSearchFilters() {
                   updateCriteria({ ...criteria, location })
                 }
               />
-              <FilterOption<SearchLocation>
+              <RadioOption<SearchLocation>
+                className="text-foreground"
                 checked={criteria.location === "near"}
                 disabled={!user?.location}
                 label="Near you"

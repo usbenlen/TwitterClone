@@ -1,9 +1,14 @@
+import { RadioOption } from "@/ui/RadioOption";
+import { useBodyScrollLock } from "@/hooks/useBodyScrollLock";
 import { useEffect, useState, type FormEvent } from "react";
 import { createPortal } from "react-dom";
-import { Check, Circle, X } from "lucide-react";
+import { X } from "lucide-react";
 
 import { Button, Input } from "@/ui";
-import { DEFAULT_SEARCH_CRITERIA } from "@/utils/search";
+import {
+  DEFAULT_SEARCH_CRITERIA,
+  SEARCH_NEARBY_RADIUS_KM,
+} from "@/constants/search";
 
 import type { SearchCriteria, SearchLocation, SearchPeople } from "@/types";
 
@@ -12,58 +17,6 @@ interface AdvancedSearchModalProps {
   viewerHasLocation: boolean;
   onApply: (criteria: SearchCriteria) => void;
   onClose: () => void;
-}
-
-interface RadioOptionProps<T extends string> {
-  checked: boolean;
-  disabled?: boolean;
-  label: string;
-  value: T;
-  onChange: (value: T) => void;
-}
-
-function RadioOption<T extends string>({
-  checked,
-  disabled,
-  label,
-  value,
-  onChange,
-}: RadioOptionProps<T>) {
-  return (
-    <button
-      type="button"
-      role="radio"
-      aria-checked={checked}
-      disabled={disabled}
-      onClick={() => onChange(value)}
-      className="group flex w-full cursor-pointer items-center justify-between py-1 text-left text-sm focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
-    >
-      <span>{label}</span>
-      {checked ? (
-        <span
-          className={`relative flex size-5 items-center justify-center before:absolute before:-inset-2 before:rounded-full before:transition-colors ${
-            disabled
-              ? ""
-              : "group-hover:before:bg-primary/10 group-focus-visible:before:bg-primary/10"
-          }`}
-        >
-          <span className="relative flex size-5 items-center justify-center rounded-full bg-primary text-primary-foreground">
-            <Check className="size-3.5" />
-          </span>
-        </span>
-      ) : (
-        <span
-          className={`relative flex size-5 items-center justify-center before:absolute before:-inset-2 before:rounded-full before:transition-colors ${
-            disabled
-              ? ""
-              : "group-hover:before:bg-muted group-focus-visible:before:bg-muted"
-          }`}
-        >
-          <Circle className="relative size-5 text-muted-foreground" />
-        </span>
-      )}
-    </button>
-  );
 }
 
 export default function AdvancedSearchModal({
@@ -75,17 +28,15 @@ export default function AdvancedSearchModal({
   const [draft, setDraft] = useState<SearchCriteria>(criteria);
   const [dateError, setDateError] = useState("");
 
-  useEffect(() => {
-    const previousOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
+  useBodyScrollLock(true);
 
+  useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") onClose();
     };
 
     window.addEventListener("keydown", handleKeyDown);
     return () => {
-      document.body.style.overflow = previousOverflow;
       window.removeEventListener("keydown", handleKeyDown);
     };
   }, [onClose]);
@@ -217,6 +168,7 @@ export default function AdvancedSearchModal({
             />
             <div role="radiogroup" aria-label="People" className="space-y-1">
               <RadioOption<SearchPeople>
+                className="py-1 text-left"
                 checked={draft.people === "anyone"}
                 label="From anyone"
                 value="anyone"
@@ -225,6 +177,7 @@ export default function AdvancedSearchModal({
                 }
               />
               <RadioOption<SearchPeople>
+                className="py-1 text-left"
                 checked={draft.people === "following"}
                 label="People you follow"
                 value="following"
@@ -239,6 +192,7 @@ export default function AdvancedSearchModal({
             <legend className="mb-3 text-lg font-bold">Location</legend>
             <div role="radiogroup" aria-label="Location" className="space-y-1">
               <RadioOption<SearchLocation>
+                className="py-1 text-left"
                 checked={draft.location === "anywhere"}
                 label="Anywhere"
                 value="anywhere"
@@ -247,9 +201,10 @@ export default function AdvancedSearchModal({
                 }
               />
               <RadioOption<SearchLocation>
+                className="py-1 text-left"
                 checked={draft.location === "near"}
                 disabled={!viewerHasLocation}
-                label="Near you (within 50 km)"
+                label={`Near you (within ${SEARCH_NEARBY_RADIUS_KM} km)`}
                 value="near"
                 onChange={(location) =>
                   setDraft((current) => ({ ...current, location }))

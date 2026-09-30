@@ -1,4 +1,5 @@
-import { useEffect, type ReactNode } from "react";
+import { useBodyScrollLock } from "@/hooks/useBodyScrollLock";
+import { type ReactNode } from "react";
 import { X } from "lucide-react";
 
 import { Button, AppLogo } from "@/ui";
@@ -16,13 +17,7 @@ export default function MobileSidebar({
   onClose,
   children,
 }: MobileSidebarProps) {
-  useEffect(() => {
-    document.body.style.overflow = open ? "hidden" : "";
-
-    return () => {
-      document.body.style.overflow = "";
-    };
-  }, [open]);
+  useBodyScrollLock(open);
 
   return (
     <>

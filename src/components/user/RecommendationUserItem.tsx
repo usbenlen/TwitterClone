@@ -1,5 +1,6 @@
+import { VerifiedBadge } from "@/ui/VerifiedBadge";
 import { useState } from "react";
-import { BadgeCheck, Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { Link } from "react-router";
 
 import { useFollow } from "@/hooks";
@@ -64,10 +65,9 @@ export default function RecommendationUserItem({
                 {user.displayName ?? user.username}
               </span>
               {user.isVerified && (
-                <BadgeCheck
+                <VerifiedBadge
                   size={17}
                   className="shrink-0 text-background"
-                  fill="#1d9bf0"
                   aria-label="Верифікований профіль"
                 />
               )}

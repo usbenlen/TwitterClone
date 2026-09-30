@@ -1,3 +1,4 @@
+import { SEARCH_NEARBY_RADIUS_KM } from "@/constants/search";
 import type {
   Location,
   SearchCriteria,
@@ -8,8 +9,6 @@ import type {
 
 import { sampleAuthors, tweets } from "@/mock/data";
 import { delay } from "@/mock/utils/delay";
-
-const NEARBY_RADIUS_KM = 50;
 
 function words(value: string) {
   return value
@@ -39,8 +38,9 @@ function distanceInKm(first: Location, second: Location) {
   const longitudeDelta = toRadians(second.longitude - first.longitude);
   const startLatitude = toRadians(first.latitude);
   const endLatitude = toRadians(second.latitude);
-  const haversine = Math.sin(latitudeDelta / 2) ** 2 + Math.cos(startLatitude) *
-    Math.cos(endLatitude) * Math.sin(longitudeDelta / 2) ** 2;
+  const haversine =
+    Math.sin(latitudeDelta / 2) ** 2 + Math.cos(startLatitude) *
+      Math.cos(endLatitude) * Math.sin(longitudeDelta / 2) ** 2;
 
   return 6371 * 2 * Math.atan2(Math.sqrt(haversine), Math.sqrt(1 - haversine));
 }
@@ -50,7 +50,7 @@ function isNearViewer(
   viewer?: SearchViewerContext,
 ) {
   if (!location || !viewer?.location) return false;
-  return distanceInKm(location, viewer.location) <= NEARBY_RADIUS_KM;
+  return distanceInKm(location, viewer.location) <= SEARCH_NEARBY_RADIUS_KM;
 }
 
 export const mockSearchApi = {

@@ -1,4 +1,4 @@
-import { BadgeCheck } from "lucide-react";
+import { VerifiedBadge } from "@/ui/VerifiedBadge";
 import { Link } from "react-router";
 
 import ActionsMenu from "@/components/tweet/ActionsMenu";
@@ -40,11 +40,7 @@ export default function TweetHeader({
           </Link>
 
           {author.isVerified && (
-            <BadgeCheck
-              size={18}
-              className="shrink-0 text-background"
-              fill="#1d9bf0"
-            />
+            <VerifiedBadge size={18} className="shrink-0 text-background" />
           )}
 
           <span className="truncate text-muted-foreground">

@@ -1,3 +1,5 @@
+import { AVATAR_DEFAULT_NAME } from "@/constants/avatar";
+import { getAvatarGradient, getAvatarInitials } from "@/utils/avatar";
 import { useState } from "react";
 
 import { useImageCache } from "@/hooks/useImageCache";
@@ -10,39 +12,6 @@ interface AvatarProps {
   name?: string | null;
   fallbackName?: string;
   className?: string;
-}
-
-// Якщо скажуть що нейтральні градієнти занадто тусклі і треба щось яскравіше
-// const gradients = [
-//   "from-sky-400 to-blue-600",
-//   "from-violet-400 to-fuchsia-600",
-//   "from-pink-400 to-rose-600",
-//   "from-teal-400 to-emerald-600",
-//   "from-indigo-400 to-violet-600",
-//   "from-orange-400 to-red-600",
-//   "from-blue-400 to-indigo-600",
-//   "from-cyan-400 to-blue-600",
-// ] as const;
-
-// Нейтральні градієнти
-const gradients = [
-  ["to bottom right", 5, 15],
-  ["to bottom left", 5, 15],
-  ["to top right", 5, 15],
-  ["to top left", 5, 15],
-  ["to bottom right", 8, 22],
-  ["to bottom left", 8, 22],
-  ["to top right", 8, 22],
-  ["to top left", 8, 22],
-] as const;
-
-function gradientFor(seed: string) {
-  let hash = 2166136261;
-  for (const char of seed) {
-    hash = Math.imul(hash ^ char.codePointAt(0)!, 16777619);
-  }
-  const [direction, start, end] = gradients[(hash >>> 0) % gradients.length];
-  return `linear-gradient(${direction}, color-mix(in oklab, var(--muted), var(--foreground) ${start}%), color-mix(in oklab, var(--muted), var(--foreground) ${end}%))`;
 }
 
 // Remount for each original URL so cached images and failures cannot leak
@@ -71,14 +40,9 @@ export function Avatar({
   fallbackName,
   className,
 }: AvatarProps) {
-  const resolvedName = name?.trim() || fallbackName?.trim() || "User";
+  const resolvedName = name?.trim() || fallbackName?.trim() || AVATAR_DEFAULT_NAME;
 
-  const initials = resolvedName
-    .split(/\s+/)
-    .slice(0, 2)
-    .map((part) => Array.from(part)[0])
-    .join("")
-    .toUpperCase();
+  const initials = getAvatarInitials(resolvedName);
 
   return (
     <div
@@ -89,7 +53,7 @@ export function Avatar({
         className,
       )}
       style={{
-        backgroundImage: gradientFor(
+        backgroundImage: getAvatarGradient(
           userId?.trim() || fallbackName?.trim() || resolvedName,
         ),
       }}

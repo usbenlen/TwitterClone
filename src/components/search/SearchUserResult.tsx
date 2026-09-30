@@ -1,4 +1,4 @@
-import { BadgeCheck } from "lucide-react";
+import { VerifiedBadge } from "@/ui/VerifiedBadge";
 import { Link } from "react-router";
 
 import { useAuth, useFollow } from "@/hooks";
@@ -41,11 +41,7 @@ export default function SearchUserResult({ user }: SearchUserResultProps) {
             </p>
 
             {user.isVerified && (
-              <BadgeCheck
-                size={18}
-                className="shrink-0 text-background"
-                fill="#1d9bf0"
-              />
+              <VerifiedBadge size={18} className="shrink-0 text-background" />
             )}
           </div>
 

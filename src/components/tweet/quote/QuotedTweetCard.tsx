@@ -1,4 +1,5 @@
-import { BadgeCheck, PenLine } from "lucide-react";
+import { VerifiedBadge } from "@/ui/VerifiedBadge";
+import { PenLine } from "lucide-react";
 import { Link, useNavigate } from "react-router";
 
 import { Avatar, TwemojiText } from "@/ui";
@@ -85,9 +86,8 @@ export default function QuotedTweetCard({ quote }: QuotedTweetCardProps) {
           </Link>
 
           {target.author.isVerified && (
-            <BadgeCheck
+            <VerifiedBadge
               className="size-4 shrink-0 text-background"
-              fill="#1d9bf0"
               aria-label="Підтверджений акаунт"
             />
           )}

@@ -1,4 +1,4 @@
-import { BadgeCheck } from "lucide-react";
+import { VerifiedBadge } from "@/ui/VerifiedBadge";
 
 import type { User } from "@/types/user";
 
@@ -15,11 +15,7 @@ export default function ProfileInfo({ user }: ProfileInfoProps) {
         </h2>
 
         {user.isVerified && (
-          <BadgeCheck
-            size={20}
-            className="shrink-0 text-background"
-            fill="#1d9bf0"
-          />
+          <VerifiedBadge size={20} className="shrink-0 text-background" />
         )}
       </div>
 

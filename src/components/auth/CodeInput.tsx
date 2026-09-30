@@ -1,3 +1,4 @@
+import { AUTH_LIMITS } from "@/constants/app";
 import { useRef, useState } from "react";
 
 interface CodeInputProps {
@@ -10,7 +11,7 @@ interface CodeInputProps {
 export default function CodeInput({
   value,
   onChange,
-  length = 6,
+  length = AUTH_LIMITS.VERIFICATION_CODE_LENGTH,
   disabled = false,
 }: CodeInputProps) {
   const [focusedIndex, setFocusedIndex] = useState(0);

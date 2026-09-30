@@ -1,4 +1,5 @@
-import { BadgeCheck, Search } from "lucide-react";
+import { VerifiedBadge } from "@/ui/VerifiedBadge";
+import { Search } from "lucide-react";
 import { useNavigate } from "react-router";
 
 import { PageHeader } from "@/components/layout/pageHeader";
@@ -31,10 +32,9 @@ export default function ProfileHeader({ user }: ProfileHeaderProps) {
         <span className="flex min-w-0 items-center gap-1">
           <span className="truncate">{displayName}</span>
           {user.isVerified && (
-            <BadgeCheck
+            <VerifiedBadge
               size={19}
               className="shrink-0 text-background"
-              fill="#1d9bf0"
               role="img"
               aria-label="Верифікований профіль"
             />

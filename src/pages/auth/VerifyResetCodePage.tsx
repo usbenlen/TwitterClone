@@ -1,3 +1,4 @@
+import { AUTH_LIMITS } from "@/constants/app";
 import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useLocation, useNavigate } from "react-router";
@@ -228,7 +229,7 @@ export default function VerifyResetCodePage({
             size="lg"
             fullWidth
             isLoading={isSubmitting}
-            disabled={code.length !== 6}
+            disabled={code.length !== AUTH_LIMITS.VERIFICATION_CODE_LENGTH}
           >
             Підтвердити код
           </Button>

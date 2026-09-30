@@ -1,3 +1,4 @@
+import { APP_ROUTES } from "@/constants/routes";
 import { useState } from "react";
 import { Menu } from "lucide-react";
 
@@ -31,7 +32,7 @@ export default function MobileBottomNavigation() {
                 key={item.label}
                 to={item.to}
                 icon={<Icon />}
-                end={item.label === "Головна"}
+                end={item.to === APP_ROUTES.HOME}
               />
             );
           })}

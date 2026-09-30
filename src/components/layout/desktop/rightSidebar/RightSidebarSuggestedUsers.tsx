@@ -1,3 +1,4 @@
+import { SIDEBAR } from "@/constants/layout";
 import { Loader2 } from "lucide-react";
 import { Link } from "react-router";
 
@@ -8,7 +9,10 @@ import { useRecommendedUsers } from "@/hooks";
 import { APP_ROUTES } from "@/constants/routes";
 
 export default function RightSidebarSuggestedUsers() {
-  const { users, isLoading, error, reload } = useRecommendedUsers("people", 3);
+  const { users, isLoading, error, reload } = useRecommendedUsers(
+    "people",
+    SIDEBAR.RECOMMENDED_USERS_LIMIT,
+  );
 
   if (!isLoading && !error && users.length === 0) return null;
 

@@ -1,3 +1,4 @@
+import { APP_ROUTES } from "@/constants/routes";
 import { useNavigation } from "@/hooks/useNavigation";
 
 import { NavigationItem } from "@/components/layout/desktop/navigation";
@@ -22,7 +23,7 @@ export default function Navigation({ vertical = false }: NavigationProps) {
             to={item.to}
             icon={<Icon />}
             vertical={vertical}
-            end={item.label === "Головна"}
+            end={item.to === APP_ROUTES.HOME}
           >
             {item.label}
           </NavigationItem>
