@@ -1,28 +1,15 @@
+import type { ComponentType } from "react";
 import { createBrowserRouter } from "react-router";
 
 import MainLayout from "@/layouts/MainLayout";
 import { ProtectedRoute, GuestRoute } from "@/components/routeGuards";
-
-import {
-  HomePage,
-  PostPage,
-  LoginPage,
-  RegisterPage,
-  ForgotPasswordPage,
-  VerifyResetCodePage,
-  ResetPasswordPage,
-  VerifyEmailPage,
-  ProfilePage,
-  FollowingPage,
-  FollowersPage,
-  SettingsPage,
-  SearchPage,
-  BookmarksPage,
-  FollowRecommendationsPage,
-  LandingPage,
-} from "@/pages";
-
 import { APP_ROUTES } from "@/constants/routes";
+
+type PageModule = { default: ComponentType };
+
+const lazyPage = (load: () => Promise<PageModule>) => async () => ({
+  Component: (await load()).default,
+});
 
 export const routes = createBrowserRouter([
   {
@@ -33,49 +20,61 @@ export const routes = createBrowserRouter([
         children: [
           {
             path: APP_ROUTES.HOME,
-            element: <HomePage />,
+            lazy: lazyPage(() => import("@/pages/home/HomePage")),
           },
           {
             path: APP_ROUTES.POST,
-            element: <PostPage />,
+            lazy: lazyPage(() => import("@/pages/post/PostPage")),
           },
           {
             path: APP_ROUTES.SEARCH,
-            element: <SearchPage />,
+            lazy: lazyPage(() => import("@/pages/search/SearchPage")),
           },
           {
             path: APP_ROUTES.BOOKMARKS,
-            element: <BookmarksPage />,
+            lazy: lazyPage(() => import("@/pages/bookmarks/BookmarksPage")),
           },
           {
             path: APP_ROUTES.FOLLOW_RECOMMENDATIONS,
-            element: <FollowRecommendationsPage />,
+            lazy: lazyPage(
+              () => import("@/pages/follow/FollowRecommendationsPage"),
+            ),
           },
           {
             path: APP_ROUTES.PROFILE,
-            element: <ProfilePage />,
+            lazy: lazyPage(() => import("@/pages/profile/ProfilePage")),
           },
           {
             path: APP_ROUTES.FOLLOWING,
-            element: <FollowingPage />,
+            lazy: lazyPage(() => import("@/pages/profile/FollowingPage")),
           },
           {
             path: APP_ROUTES.FOLLOWERS,
-            element: <FollowersPage />,
+            lazy: lazyPage(() => import("@/pages/profile/FollowersPage")),
           },
           {
             path: APP_ROUTES.SETTINGS,
-            element: <SettingsPage />,
+            lazy: lazyPage(() => import("@/pages/settings/SettingsPage")),
           },
         ],
       },
       {
         path: APP_ROUTES.SETTINGS_CHANGE_PASSWORD,
-        element: <VerifyResetCodePage variant="settings" />,
+        lazy: async () => {
+          const { default: VerifyResetCodePage } =
+            await import("@/pages/auth/VerifyResetCodePage");
+          return {
+            Component: () => <VerifyResetCodePage variant="settings" />,
+          };
+        },
       },
       {
         path: APP_ROUTES.SETTINGS_CHANGE_PASSWORD_RESET,
-        element: <ResetPasswordPage variant="settings" />,
+        lazy: async () => {
+          const { default: ResetPasswordPage } =
+            await import("@/pages/auth/ResetPasswordPage");
+          return { Component: () => <ResetPasswordPage variant="settings" /> };
+        },
       },
     ],
   },
@@ -85,31 +84,31 @@ export const routes = createBrowserRouter([
     children: [
       {
         path: APP_ROUTES.LANDING,
-        element: <LandingPage />,
+        lazy: lazyPage(() => import("@/pages/landing/LandingPage")),
       },
       {
         path: APP_ROUTES.LOGIN,
-        element: <LoginPage />,
+        lazy: lazyPage(() => import("@/pages/auth/LoginPage")),
       },
       {
         path: APP_ROUTES.REGISTER,
-        element: <RegisterPage />,
+        lazy: lazyPage(() => import("@/pages/auth/RegisterPage")),
       },
       {
         path: APP_ROUTES.VERIFY_EMAIL,
-        element: <VerifyEmailPage />,
+        lazy: lazyPage(() => import("@/pages/auth/VerifyEmailPage")),
       },
       {
         path: APP_ROUTES.FORGOT_PASSWORD,
-        element: <ForgotPasswordPage />,
+        lazy: lazyPage(() => import("@/pages/auth/ForgotPasswordPage")),
       },
       {
         path: APP_ROUTES.VERIFY_RESET_CODE,
-        element: <VerifyResetCodePage />,
+        lazy: lazyPage(() => import("@/pages/auth/VerifyResetCodePage")),
       },
       {
         path: APP_ROUTES.RESET_PASSWORD,
-        element: <ResetPasswordPage />,
+        lazy: lazyPage(() => import("@/pages/auth/ResetPasswordPage")),
       },
     ],
   },
