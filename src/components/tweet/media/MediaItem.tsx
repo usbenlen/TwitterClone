@@ -1,3 +1,4 @@
+import { formatMediaTime } from "@/utils/format";
 import { useEffect, useRef, useState } from "react";
 
 import type { MediaAttachment } from "@/types/media";
@@ -8,16 +9,6 @@ interface MediaItemProps {
   openOnClick?: boolean;
   autoPlayInline?: boolean;
 }
-
-const formatTime = (seconds: number) => {
-  if (!Number.isFinite(seconds) || seconds < 0) return "0:00";
-
-  const totalSeconds = Math.ceil(seconds);
-  const minutes = Math.floor(totalSeconds / 60);
-  const remainingSeconds = totalSeconds % 60;
-
-  return `${minutes}:${remainingSeconds.toString().padStart(2, "0")}`;
-};
 
 export default function MediaItem({
   attachment,
@@ -62,8 +53,7 @@ export default function MediaItem({
 
       video.muted = true;
       video.defaultMuted = true;
-      void video.play().catch(() => {
-      });
+      void video.play().catch(() => {});
     };
 
     const handleEnded = () => {
@@ -159,7 +149,7 @@ export default function MediaItem({
 
           {isAutoPlaying && !showControls && (
             <div className="pointer-events-none absolute bottom-2 right-2 z-content rounded-md bg-black/70 px-2 py-1 text-xs font-medium text-white backdrop-blur">
-              {formatTime(remainingTime)}
+              {formatMediaTime(remainingTime)}
             </div>
           )}
         </div>

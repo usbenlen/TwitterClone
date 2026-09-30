@@ -1,10 +1,7 @@
-import { useEffect, useRef, useState } from "react";
+import { useEditProfileForm, useBodyScrollLock } from "@/hooks";
 import { Balloon, Pencil, X } from "lucide-react";
 
 import type { UpdateProfileRequest } from "@/api/user.api";
-
-import { useLocationSearch, useUnsavedChangesGuard } from "@/hooks";
-import { invalidateImageCache } from "@/hooks/useImageCache";
 
 import { Avatar, Button, Input } from "@/ui";
 
@@ -12,37 +9,9 @@ import { LocationPicker } from "@/components/composer";
 import { ConfirmModal } from "@/components/modal/ConfirmModal";
 import BirthDateEditor from "@/components/modal/BirthDateEditor";
 
-import { MAX_BIO_LENGTH, MAX_NAME_LENGTH } from "@/constants/app";
+import { MAX_BIO_LENGTH, MAX_NAME_LENGTH, MEDIA } from "@/constants/app";
 
-import type { BirthDateVisibility, Location, User } from "@/types";
-import { formatBirthMonthDay, getBirthYear } from "@/utils/format";
-
-const DEFAULT_BIRTH_DATE_VISIBILITY: BirthDateVisibility = "only_me";
-
-function parseBirthDate(value?: string | null) {
-  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value ?? "");
-
-  return {
-    year: match?.[1] ?? "",
-    month: match ? String(Number(match[2])) : "",
-    day: match ? String(Number(match[3])) : "",
-  };
-}
-
-function buildBirthDate(year: string, month: string, day: string) {
-  if (!year || !month || !day) return null;
-
-  const date = new Date(Number(year), Number(month) - 1, Number(day));
-  const isValid =
-    date.getFullYear() === Number(year) &&
-    date.getMonth() === Number(month) - 1 &&
-    date.getDate() === Number(day) &&
-    date <= new Date();
-
-  if (!isValid) return null;
-
-  return `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
-}
+import type { User } from "@/types";
 
 interface EditProfileModalProps {
   open: boolean;
@@ -65,316 +34,57 @@ function EditProfileModalInner({
   onClose,
   onSave,
 }: EditProfileModalProps) {
-  const avatarInputRef = useRef<HTMLInputElement | null>(null);
-  const bannerInputRef = useRef<HTMLInputElement | null>(null);
-
-  const avatarPreviewUrlRef = useRef<string | null>(null);
-  const bannerPreviewUrlRef = useRef<string | null>(null);
-
-  const initialDisplayName = user.displayName?.trim() || user.username;
-  const initialBio = user.bio ?? "";
-  const initialLocation = user.location ?? null;
-  const initialBirthDate = user.birthDate ?? null;
-  const initialBirthDateParts = parseBirthDate(initialBirthDate);
-  const initialBirthDateVisibility =
-    user.birthDateVisibility ?? DEFAULT_BIRTH_DATE_VISIBILITY;
-  const initialBirthYearVisibility =
-    user.birthYearVisibility ?? DEFAULT_BIRTH_DATE_VISIBILITY;
-
-  const [displayName, setDisplayName] = useState(initialDisplayName);
-  const [bio, setBio] = useState(initialBio);
-  const [location, setLocation] = useState<Location | null>(initialLocation);
-  const [birthMonth, setBirthMonth] = useState(initialBirthDateParts.month);
-  const [birthDay, setBirthDay] = useState(initialBirthDateParts.day);
-  const [birthYear, setBirthYear] = useState(initialBirthDateParts.year);
-  const [birthDateVisibility, setBirthDateVisibility] =
-    useState<BirthDateVisibility>(initialBirthDateVisibility);
-  const [birthYearVisibility, setBirthYearVisibility] =
-    useState<BirthDateVisibility>(initialBirthYearVisibility);
-
-  const [avatar, setAvatar] = useState<File | null>(null);
-  const [banner, setBanner] = useState<File | null>(null);
-
-  const [avatarPreview, setAvatarPreview] = useState(user.avatarUrl);
-  const [bannerPreview, setBannerPreview] = useState(user.bannerUrl);
-
-  const [isLocationOpen, setIsLocationOpen] = useState(false);
-  const [isBirthDateEditing, setIsBirthDateEditing] = useState(false);
-  const [isBirthDateConfirmOpen, setIsBirthDateConfirmOpen] = useState(false);
-
-  const [removeLocation, setRemoveLocation] = useState(false);
-  const [removeBirthDate, setRemoveBirthDate] = useState(false);
-  const [removeAvatar, setRemoveAvatar] = useState(false);
-  const [removeBanner, setRemoveBanner] = useState(false);
-
-  const [isSaving, setIsSaving] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  const locationSearch = useLocationSearch();
-
-  useEffect(() => {
-    return () => {
-      if (avatarPreviewUrlRef.current) URL.revokeObjectURL(avatarPreviewUrlRef.current);
-      if (bannerPreviewUrlRef.current) URL.revokeObjectURL(bannerPreviewUrlRef.current);
-    };
-  }, []);
-
-  const hasChanges =
-    displayName.trim() !== initialDisplayName ||
-    bio.trim() !== initialBio ||
-    avatar !== null ||
-    banner !== null ||
-    removeLocation ||
-    removeBirthDate ||
-    removeAvatar ||
-    removeBanner ||
-    location?.id !== initialLocation?.id ||
-    birthMonth !== initialBirthDateParts.month ||
-    birthDay !== initialBirthDateParts.day ||
-    birthYear !== initialBirthDateParts.year ||
-    birthDateVisibility !== initialBirthDateVisibility ||
-    birthYearVisibility !== initialBirthYearVisibility;
-
-  const { isConfirmOpen, requestClose, cancelDiscard, confirmDiscard } =
-    useUnsavedChangesGuard({
-      hasChanges,
-      isBusy: isSaving,
-      onClose,
-    });
-
-  const handleDiscardChanges = () => {
-    setIsLocationOpen(false);
-    locationSearch.reset();
-
-    setDisplayName(initialDisplayName);
-    setBio(initialBio);
-    setLocation(initialLocation);
-    setBirthMonth(initialBirthDateParts.month);
-    setBirthDay(initialBirthDateParts.day);
-    setBirthYear(initialBirthDateParts.year);
-    setBirthDateVisibility(initialBirthDateVisibility);
-    setBirthYearVisibility(initialBirthYearVisibility);
-    setIsBirthDateEditing(false);
-    setIsBirthDateConfirmOpen(false);
-
-    setAvatar(null);
-    setBanner(null);
-
-    if (avatarPreviewUrlRef.current) {
-      URL.revokeObjectURL(avatarPreviewUrlRef.current);
-      avatarPreviewUrlRef.current = null;
-    }
-
-    if (bannerPreviewUrlRef.current) {
-      URL.revokeObjectURL(bannerPreviewUrlRef.current);
-      bannerPreviewUrlRef.current = null;
-    }
-
-    setAvatarPreview(user.avatarUrl);
-    setBannerPreview(user.bannerUrl);
-
-    setRemoveLocation(false);
-    setRemoveBirthDate(false);
-    setRemoveAvatar(false);
-    setRemoveBanner(false);
-
-    setError(null);
-
-    confirmDiscard();
-  };
-
-  const handleAvatarChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-
-    if (!file) return;
-
-    if (avatarPreviewUrlRef.current) URL.revokeObjectURL(avatarPreviewUrlRef.current);
-
-    const previewUrl = URL.createObjectURL(file);
-
-    avatarPreviewUrlRef.current = previewUrl;
-
-    setAvatar(file);
-    setRemoveAvatar(false);
-    setAvatarPreview(previewUrl);
-  };
-
-  const handleBannerChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-
-    if (!file) return;
-
-    if (bannerPreviewUrlRef.current) URL.revokeObjectURL(bannerPreviewUrlRef.current);
-
-    const previewUrl = URL.createObjectURL(file);
-
-    bannerPreviewUrlRef.current = previewUrl;
-
-    setBanner(file);
-    setRemoveBanner(false);
-    setBannerPreview(previewUrl);
-  };
-
-  const handleRemoveAvatar = () => {
-    setAvatar(null);
-    setAvatarPreview(null);
-
-    if (avatarPreviewUrlRef.current) {
-      URL.revokeObjectURL(avatarPreviewUrlRef.current);
-      avatarPreviewUrlRef.current = null;
-    }
-
-    setRemoveAvatar(Boolean(user.avatarUrl));
-  };
-
-  const handleRemoveBanner = () => {
-    setBanner(null);
-    setBannerPreview(null);
-
-    if (bannerPreviewUrlRef.current) {
-      URL.revokeObjectURL(bannerPreviewUrlRef.current);
-      bannerPreviewUrlRef.current = null;
-    }
-
-    setRemoveBanner(Boolean(user.bannerUrl));
-  };
-
-  const handleLocationSelect = (value: Location) => {
-    setLocation(value);
-    setRemoveLocation(false);
-
-    setIsLocationOpen(false);
-    locationSearch.reset();
-  };
-
-  const handleRemoveLocation = () => {
-    setLocation(null);
-    setRemoveLocation(Boolean(user.location));
-  };
-
-  const handleBirthMonthChange = (value: string) => {
-    setBirthMonth(value);
-    setRemoveBirthDate(false);
-    setError(null);
-
-    if (!birthDay) return;
-
-    const today = new Date();
-    const selectedYear = Number(birthYear) || 2000;
-    const daysInMonth = new Date(selectedYear, Number(value), 0).getDate();
-    const maxDay =
-      selectedYear === today.getFullYear() &&
-      Number(value) === today.getMonth() + 1
-        ? Math.min(daysInMonth, today.getDate())
-        : daysInMonth;
-
-    if (Number(birthDay) > maxDay) setBirthDay(String(maxDay));
-  };
-
-  const handleBirthYearChange = (value: string) => {
-    setBirthYear(value);
-    setRemoveBirthDate(false);
-    setError(null);
-
-    const today = new Date();
-    let selectedMonth = Number(birthMonth);
-
-    if (
-      Number(value) === today.getFullYear() &&
-      selectedMonth > today.getMonth() + 1
-    ) {
-      selectedMonth = today.getMonth() + 1;
-      setBirthMonth(String(selectedMonth));
-    }
-
-    if (!selectedMonth || !birthDay) return;
-
-    const daysInMonth = new Date(
-      Number(value),
-      selectedMonth,
-      0,
-    ).getDate();
-    const maxDay =
-      Number(value) === today.getFullYear() &&
-      selectedMonth === today.getMonth() + 1
-        ? Math.min(daysInMonth, today.getDate())
-        : daysInMonth;
-
-    if (Number(birthDay) > maxDay) setBirthDay(String(maxDay));
-  };
-
-  const handleCancelBirthDateEditing = () => {
-    setBirthMonth(initialBirthDateParts.month);
-    setBirthDay(initialBirthDateParts.day);
-    setBirthYear(initialBirthDateParts.year);
-    setBirthDateVisibility(initialBirthDateVisibility);
-    setBirthYearVisibility(initialBirthYearVisibility);
-    setRemoveBirthDate(false);
-    setIsBirthDateEditing(false);
-    setError(null);
-  };
-
-  const handleRemoveBirthDate = () => {
-    setBirthMonth("");
-    setBirthDay("");
-    setBirthYear("");
-    setRemoveBirthDate(Boolean(initialBirthDate));
-    setIsBirthDateEditing(false);
-    setError(null);
-  };
-
-  const handleSave = async () => {
-    const hasAnyBirthDatePart = Boolean(birthMonth || birthDay || birthYear);
-    const birthDate = buildBirthDate(birthYear, birthMonth, birthDay);
-
-    if (!removeBirthDate && hasAnyBirthDatePart && !birthDate) {
-      setError("Оберіть коректні місяць, день і рік народження.");
-      return;
-    }
-
-    setError(null);
-    setIsSaving(true);
-
-    try {
-      if (avatar || removeAvatar) await invalidateImageCache(user.avatarUrl);
-
-      if (banner || removeBanner) await invalidateImageCache(user.bannerUrl);
-
-      await onSave({
-        displayName: displayName.trim() || user.username,
-        bio: bio.trim() || undefined,
-
-        location: removeLocation ? undefined : location,
-
-        birthDate: removeBirthDate ? undefined : birthDate ?? undefined,
-        birthDateVisibility,
-        birthYearVisibility,
-
-        removeLocation,
-        removeBirthDate,
-        removeAvatar,
-        removeBanner,
-
-        avatar,
-        banner,
-      });
-
-      onClose();
-    } catch (error) {
-      setError(
-        error instanceof Error ? error.message : "Не вдалося зберегти зміни.",
-      );
-    } finally {
-      setIsSaving(false);
-    }
-  };
-
-  const currentBirthDate = removeBirthDate
-    ? null
-    : buildBirthDate(birthYear, birthMonth, birthDay);
-  const currentBirthDateLabel = currentBirthDate
-    ? `${formatBirthMonthDay(currentBirthDate)} ${getBirthYear(currentBirthDate)} р.`
-    : null;
+  useBodyScrollLock(open);
+
+  // Окей це полюбе треба скоротити бо це триндець
+  const {
+    avatarInputRef,
+    bannerInputRef,
+    displayName,
+    setDisplayName,
+    bio,
+    setBio,
+    location,
+    birthMonth,
+    birthDay,
+    setBirthDay,
+    birthYear,
+    birthDateVisibility,
+    setBirthDateVisibility,
+    birthYearVisibility,
+    setBirthYearVisibility,
+    avatarPreview,
+    bannerPreview,
+    isLocationOpen,
+    setIsLocationOpen,
+    isBirthDateEditing,
+    setIsBirthDateEditing,
+    isBirthDateConfirmOpen,
+    setIsBirthDateConfirmOpen,
+    setRemoveBirthDate,
+    isSaving,
+    error,
+    setError,
+    locationSearch,
+    hasChanges,
+    isConfirmOpen,
+    requestClose,
+    cancelDiscard,
+    handleDiscardChanges,
+    handleAvatarChange,
+    handleBannerChange,
+    handleRemoveAvatar,
+    handleRemoveBanner,
+    handleLocationSelect,
+    handleRemoveLocation,
+    handleBirthMonthChange,
+    handleBirthYearChange,
+    handleCancelBirthDateEditing,
+    handleRemoveBirthDate,
+    handleSave,
+    currentBirthDateLabel,
+    initialBirthDate,
+  } = useEditProfileForm({ user, onClose, onSave });
 
   if (!open) return null;
 
@@ -463,7 +173,7 @@ function EditProfileModalInner({
               <input
                 ref={bannerInputRef}
                 type="file"
-                accept="image/jpeg,image/png,image/webp"
+                accept={MEDIA.IMAGE.ALLOWED_TYPES.join(",")}
                 className="hidden"
                 onChange={handleBannerChange}
               />
@@ -503,7 +213,7 @@ function EditProfileModalInner({
               <input
                 ref={avatarInputRef}
                 type="file"
-                accept="image/jpeg,image/png,image/webp"
+                accept={MEDIA.IMAGE.ALLOWED_TYPES.join(",")}
                 className="hidden"
                 onChange={handleAvatarChange}
               />

@@ -1,6 +1,9 @@
+import { useBodyScrollLock } from "@/hooks/useBodyScrollLock";
+import { formatDateTime } from "@/utils/format";
+import { VerifiedBadge } from "@/ui/VerifiedBadge";
 import { useEffect } from "react";
 import { createPortal } from "react-dom";
-import { BadgeCheck, X } from "lucide-react";
+import { X } from "lucide-react";
 
 import { useGetHistoryQuery, targetOf, errorMessage } from "@/store/postsApi";
 import TweetContent from "@/components/tweet/TweetContent";
@@ -12,13 +15,6 @@ interface EditHistoryModalProps {
   open: boolean;
   tweet: Pick<Tweet, "id" | "isComment">;
   onClose: () => void;
-}
-
-function formatVersionDate(value: string) {
-  return new Date(value).toLocaleString("uk-UA", {
-    dateStyle: "medium",
-    timeStyle: "short",
-  });
 }
 
 export default function EditHistoryModal({
@@ -34,10 +30,10 @@ export default function EditHistoryModal({
     void query.refetch();
   };
 
+  useBodyScrollLock(open);
+
   useEffect(() => {
     if (!open) return;
-    const previousOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
 
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") onClose();
@@ -45,7 +41,6 @@ export default function EditHistoryModal({
 
     window.addEventListener("keydown", handleKeyDown);
     return () => {
-      document.body.style.overflow = previousOverflow;
       window.removeEventListener("keydown", handleKeyDown);
     };
   }, [onClose, open]);
@@ -120,9 +115,7 @@ export default function EditHistoryModal({
                         {label}
                       </span>
                       <time className="text-xs text-muted-foreground">
-                        {formatVersionDate(
-                          version.updatedAt ?? version.createdAt,
-                        )}
+                        {formatDateTime(version.updatedAt ?? version.createdAt)}
                       </time>
                     </div>
 
@@ -140,9 +133,8 @@ export default function EditHistoryModal({
                             {authorName}
                           </span>
                           {version.author.isVerified && (
-                            <BadgeCheck
+                            <VerifiedBadge
                               className="size-4 shrink-0 text-background"
-                              fill="#1d9bf0"
                               aria-label="Підтверджений акаунт"
                             />
                           )}

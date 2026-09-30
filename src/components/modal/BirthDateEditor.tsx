@@ -1,3 +1,9 @@
+import { MONTH_OPTIONS } from "@/constants/date";
+import {
+  BIRTH_DATE_MIN_YEAR,
+  BIRTH_DATE_VISIBILITY_OPTIONS,
+} from "@/constants/profile";
+import { maxBirthDay } from "@/utils/date";
 import type { BirthDateVisibility } from "@/types";
 import type { ReactNode } from "react";
 
@@ -16,24 +22,6 @@ interface BirthDateEditorProps {
   onCancel: () => void;
   onRemove: () => void;
 }
-
-const VISIBILITY_OPTIONS: Array<{
-  value: BirthDateVisibility;
-  label: string;
-}> = [
-  { value: "public", label: "Загальнодоступно" },
-  { value: "followers", label: "Ваші підписники" },
-  { value: "following", label: "Люди, яких ви читаєте" },
-  { value: "mutual", label: "Ви читаєте одне одного" },
-  { value: "only_me", label: "Лише ви" },
-];
-
-const MONTHS = Array.from({ length: 12 }, (_, index) => ({
-  value: String(index + 1),
-  label: new Date(2000, index, 1).toLocaleDateString("uk-UA", {
-    month: "long",
-  }),
-}));
 
 const SELECT_CLASS = "h-14 w-full cursor-pointer rounded-lg border border-border bg-background px-3 pt-4 text-foreground outline-none transition focus:ring-2 focus:ring-ring";
 
@@ -81,17 +69,7 @@ export default function BirthDateEditor({
 }: BirthDateEditorProps) {
   const today = new Date();
   const currentYear = today.getFullYear();
-  const selectedYear = Number(year) || 2000;
-  const selectedMonth = Number(month) || 1;
-  const daysInSelectedMonth = new Date(
-    selectedYear,
-    selectedMonth,
-    0,
-  ).getDate();
-  const maxDay =
-    Number(year) === currentYear && Number(month) === today.getMonth() + 1
-      ? Math.min(daysInSelectedMonth, today.getDate())
-      : daysInSelectedMonth;
+  const maxDay = maxBirthDay(year, month, today);
 
   return (
     <section className="space-y-5 rounded-xl border border-border p-4">
@@ -116,7 +94,7 @@ export default function BirthDateEditor({
           <option value="" disabled>
             Оберіть
           </option>
-          {MONTHS.map((item) => (
+          {MONTH_OPTIONS.map((item) => (
             <option
               key={item.value}
               value={item.value}
@@ -148,7 +126,7 @@ export default function BirthDateEditor({
             Оберіть
           </option>
           {Array.from(
-            { length: currentYear - 1899 },
+            { length: currentYear - BIRTH_DATE_MIN_YEAR + 1 },
             (_, index) => String(currentYear - index),
           ).map((value) => (
             <option key={value} value={value}>
@@ -173,7 +151,7 @@ export default function BirthDateEditor({
             onDateVisibilityChange(value as BirthDateVisibility)
           }
         >
-          {VISIBILITY_OPTIONS.map((item) => (
+          {BIRTH_DATE_VISIBILITY_OPTIONS.map((item) => (
             <option key={item.value} value={item.value}>
               {item.label}
             </option>
@@ -187,7 +165,7 @@ export default function BirthDateEditor({
             onYearVisibilityChange(value as BirthDateVisibility)
           }
         >
-          {VISIBILITY_OPTIONS.map((item) => (
+          {BIRTH_DATE_VISIBILITY_OPTIONS.map((item) => (
             <option key={item.value} value={item.value}>
               {item.label}
             </option>

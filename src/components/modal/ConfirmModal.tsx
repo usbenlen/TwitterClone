@@ -1,3 +1,4 @@
+import { useBodyScrollLock } from "@/hooks/useBodyScrollLock";
 interface ConfirmModalProps {
   open: boolean;
   title: string;
@@ -19,6 +20,7 @@ export function ConfirmModal({
   onCancel,
   onConfirm,
 }: ConfirmModalProps) {
+  useBodyScrollLock(open);
   if (!open) return null;
 
   return (

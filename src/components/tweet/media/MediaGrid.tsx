@@ -1,3 +1,4 @@
+import { MEDIA_GRID_VISIBLE_LIMIT } from "@/constants/media";
 interface MediaGridProps<T extends { id: string }> {
   items: T[];
   renderItem: (item: T, index: number) => React.ReactNode;
@@ -47,7 +48,7 @@ export default function MediaGrid<T extends { id: string }>({
     default:
       return (
         <div className={`${frameClassName} grid aspect-16/10 grid-cols-2 grid-rows-2 gap-0.5 overflow-hidden`}>
-          {items.slice(0, 4).map((item, index) => (
+          {items.slice(0, MEDIA_GRID_VISIBLE_LIMIT).map((item, index) => (
             <div key={item.id}>{renderItem(item, index)}</div>
           ))}
         </div>
