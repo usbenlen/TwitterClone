@@ -73,7 +73,7 @@ export const mockAuthApi = {
 
   async me(): Promise<User> {
     await delay(200);
-    return currentUser;
+    return structuredClone(currentUser);
   },
 
   async forgotPassword(_data: ForgotPasswordRequest): Promise<MessageResponse> {

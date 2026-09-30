@@ -10,6 +10,7 @@ import {
 } from "@/mock/data";
 
 import { withAncestors } from "@/utils/ancestors";
+import { updateTweetAuthors } from "@/utils/updateTweetAuthors";
 import { delay } from "@/mock/utils/delay";
 
 const likedTweetsByUsername: Record<string, string[]> = {
@@ -161,9 +162,12 @@ export const mockUserApi = {
     if (data.removeBanner) user.bannerUrl = null;
     else if (data.banner) user.bannerUrl = URL.createObjectURL(data.banner);
 
-    return {
-      ...user,
-    };
+    updateTweetAuthors(
+      [...tweets, ...Object.values(commentsByPostId).flat()],
+      user,
+    );
+
+    return structuredClone(user);
   },
 
   async deleteMe(): Promise<void> {

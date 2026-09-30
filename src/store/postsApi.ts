@@ -2,7 +2,9 @@ import { current } from "@reduxjs/toolkit";
 import { tweetApi, commentApi, userApi, searchApi, pollApi } from "@/api";
 import { MOCK_ENABLED } from "@/mock/config";
 import { appApi, request } from "@/store/api";
+import { updateTweetAuthors } from "@/utils/updateTweetAuthors";
 import type {
+  User,
   UserShort,
   Tweet,
   TweetBase,
@@ -406,6 +408,30 @@ function patchTweets(
     );
   }
   return patches;
+}
+
+export function updateCachedProfileAuthors(
+  user: User,
+  dispatch: AppDispatch,
+  state: RootState,
+) {
+  for (const arg of postsApi.util.selectCachedArgsForQuery(state, "getPosts")) {
+    dispatch(
+      postsApi.util.updateQueryData("getPosts", arg, (draft) => {
+        updateTweetAuthors(draft, user);
+      }),
+    );
+  }
+  for (const id of postsApi.util.selectCachedArgsForQuery(state, "getThread")) {
+    dispatch(
+      postsApi.util.updateQueryData("getThread", id, (draft) => {
+        updateTweetAuthors(
+          [draft.target, ...draft.ancestors, ...draft.replies],
+          user,
+        );
+      }),
+    );
+  }
 }
 
 export function publishPosts(

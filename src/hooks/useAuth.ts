@@ -4,6 +4,8 @@ import { authCleared, authReady, authUserUpdated } from "@/store/auth";
 import { useAppDispatch, useAppSelector, useAppStore } from "@/store/hooks";
 import { sessionChanged, sessionGeneration } from "@/store/session";
 import { sharedApi } from "@/store/sharedApi";
+import { updateCachedProfileAuthors } from "@/store/postsApi";
+import { MOCK_ENABLED } from "@/mock/config";
 import type {
   AuthResponse,
   LoginRequest,
@@ -71,6 +73,8 @@ export function useAuth() {
   const updateUser = useCallback(
     (updatedUser: User) => {
       dispatch(authUserUpdated(updatedUser));
+      if (MOCK_ENABLED)
+        updateCachedProfileAuthors(updatedUser, dispatch, store.getState());
       dispatch(
         sharedApi.util.upsertQueryData(
           "getProfile",
@@ -79,7 +83,7 @@ export function useAuth() {
         ),
       );
     },
-    [dispatch],
+    [dispatch, store],
   );
 
   return {

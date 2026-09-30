@@ -1,11 +1,17 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { tweetApi, commentApi, userApi, searchApi, pollApi } from "@/api";
 import { createAppStore, type AppStore } from "./index";
-import { postsApi, publishPosts, type PostsQuery } from "./postsApi";
+import {
+  postsApi,
+  publishPosts,
+  updateCachedProfileAuthors,
+  type PostsQuery,
+} from "./postsApi";
 import { runReaction } from "./reactions";
 import { sessionChanged } from "./session";
 import type {
   Tweet,
+  User,
   ThreadResponse,
   SearchCriteria,
   ToggleLikeResponse,
@@ -127,6 +133,105 @@ afterEach(() => {
 });
 
 describe("post queries and mutations", () => {
+  it("updates profile authors in cached lists and deep threads without a refetch", async () => {
+    const root = tweet();
+    const parent = tweet({ id: "parent", isComment: true, postId: root.id });
+    const target = tweet({
+      id: "deep",
+      isComment: true,
+      postId: root.id,
+      parentCommentId: parent.id,
+      ancestors: [root, parent],
+    });
+    const reply = tweet({
+      id: "reply",
+      parentCommentId: target.id,
+      ancestors: [root, parent, target],
+    });
+    const other = tweet({
+      id: "other",
+      author: { ...root.author, id: "other-user" },
+    });
+    const quote = tweet({
+      id: "quote",
+      quote: {
+        targetType: "comment",
+        targetId: target.id,
+        targetVersionId: target.versionId,
+        hasNewVersion: false,
+        replyingToUsernames: [],
+        target,
+      },
+    });
+    posts = [target, quote, other];
+    comments = [target, reply];
+    vi.mocked(commentApi.getThread).mockImplementation(async () =>
+      clone({ target, ancestors: [root, parent], replies: [reply, other] }),
+    );
+    const args: PostsQuery[] = [
+      feed,
+      { kind: "comments", postId: root.id },
+      { kind: "profile", username: "alice", tab: "replies" },
+    ];
+    await Promise.all([
+      ...args.map(load),
+      store.dispatch(postsApi.endpoints.getThread.initiate(target.id)),
+    ]);
+    const before = read()!;
+    const profile: User = {
+      ...root.author,
+      displayName: "Updated author",
+      avatarUrl: "blob:new-avatar",
+      isVerified: true,
+      followersCount: 0,
+      followingCount: 0,
+      postsCount: 0,
+      isFollowedByCurrentUser: false,
+      createdAt: root.createdAt,
+    };
+    const calls = vi.mocked(commentApi.getThread).mock.calls.length;
+    updateCachedProfileAuthors(profile, store.dispatch, store.getState());
+    const expected = {
+      displayName: profile.displayName,
+      avatarUrl: profile.avatarUrl,
+      isVerified: true,
+    };
+    for (const arg of args) {
+      const item = read(arg)![0];
+      expect(item.author).toMatchObject(expected);
+      for (const ancestor of item.ancestors ?? [])
+        expect(ancestor.author).toMatchObject(expected);
+      expect(item.content).toBe(target.content);
+      expect(item.repliesCount).toBe(target.repliesCount);
+    }
+    const thread = postsApi.endpoints.getThread.select(target.id)(
+      store.getState(),
+    ).data!;
+    for (const item of [thread.target, ...thread.ancestors, thread.replies[0]])
+      expect(item.author).toMatchObject(expected);
+    expect(thread.replies[0].ancestors?.at(-1)?.author).toMatchObject(expected);
+    expect(read()![1].quote?.target?.author).toMatchObject(expected);
+    expect(read()![2]).toBe(before[2]);
+    expect(thread.replies[1].author).toEqual(other.author);
+    expect(before[0].author.displayName).toBe("Alice");
+    expect(commentApi.getThread).toHaveBeenCalledTimes(calls);
+
+    updateCachedProfileAuthors(
+      { ...profile, displayName: "Next name", avatarUrl: null },
+      store.dispatch,
+      store.getState(),
+    );
+    expect(read()![1].quote?.target?.author).toMatchObject({
+      displayName: "Next name",
+      avatarUrl: null,
+    });
+    expect(
+      postsApi.endpoints.getThread.select(target.id)(store.getState()).data
+        ?.target.author,
+    ).toMatchObject({ displayName: "Next name", avatarUrl: null });
+    expect(thread.target.author).toMatchObject(expected);
+  });
+
   it("does not freeze objects owned by the mock backend", async () => {
     vi.mocked(tweetApi.getFeed).mockResolvedValueOnce(posts);
     await load();
