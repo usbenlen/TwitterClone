@@ -1,6 +1,6 @@
-import { useRef, useState } from "react";
+import { useState } from "react";
 import type { UpdateProfileRequest } from "@/api/user.api";
-import type { BirthDateVisibility, Location, User } from "@/types";
+import type { Location, User } from "@/types";
 import { DEFAULT_BIRTH_DATE_VISIBILITY } from "@/constants/profile";
 import { buildBirthDate, parseBirthDate, maxBirthDay } from "@/utils/date";
 import { formatBirthMonthDay, getBirthYear } from "@/utils/format";
@@ -12,273 +12,201 @@ interface EditProfileFormOptions {
   onSave: (data: UpdateProfileRequest) => Promise<void>;
 }
 
+const INITIAL_UI = {
+  isLocationOpen: false,
+  isBirthDateEditing: false,
+  isBirthDateConfirmOpen: false,
+  isSaving: false,
+  error: null as string | null,
+};
+
+function initialValues(user: User) {
+  const birthDate = parseBirthDate(user.birthDate ?? null);
+  return {
+    displayName: user.displayName?.trim() || user.username,
+    bio: user.bio ?? "",
+    location: user.location ?? null,
+    birthMonth: birthDate.month,
+    birthDay: birthDate.day,
+    birthYear: birthDate.year,
+    birthDateVisibility: user.birthDateVisibility ?? DEFAULT_BIRTH_DATE_VISIBILITY,
+    birthYearVisibility: user.birthYearVisibility ?? DEFAULT_BIRTH_DATE_VISIBILITY,
+    removeLocation: false,
+    removeBirthDate: false,
+  };
+}
+
 export function useEditProfileForm({
   user,
   onClose,
   onSave,
 }: EditProfileFormOptions) {
-  const {
-    file: avatar,
-    preview: avatarPreview,
-    removed: removeAvatar,
-    onChange: handleAvatarChange,
-    remove: handleRemoveAvatar,
-    reset: resetAvatar,
-  } = useImageSelection(user.avatarUrl);
-  const {
-    file: banner,
-    preview: bannerPreview,
-    removed: removeBanner,
-    onChange: handleBannerChange,
-    remove: handleRemoveBanner,
-    reset: resetBanner,
-  } = useImageSelection(user.bannerUrl);
-
-  // це все обов'язково тоже якось скоротити
-  const avatarInputRef = useRef<HTMLInputElement | null>(null);
-  const bannerInputRef = useRef<HTMLInputElement | null>(null);
-
-  const initialDisplayName = user.displayName?.trim() || user.username;
-  const initialBio = user.bio ?? "";
-  const initialLocation = user.location ?? null;
-  const initialBirthDate = user.birthDate ?? null;
-  const initialBirthDateParts = parseBirthDate(initialBirthDate);
-  const initialBirthDateVisibility =
-    user.birthDateVisibility ?? DEFAULT_BIRTH_DATE_VISIBILITY;
-  const initialBirthYearVisibility =
-    user.birthYearVisibility ?? DEFAULT_BIRTH_DATE_VISIBILITY;
-
-  const [displayName, setDisplayName] = useState(initialDisplayName);
-  const [bio, setBio] = useState(initialBio);
-  const [location, setLocation] = useState<Location | null>(initialLocation);
-  const [birthMonth, setBirthMonth] = useState(initialBirthDateParts.month);
-  const [birthDay, setBirthDay] = useState(initialBirthDateParts.day);
-  const [birthYear, setBirthYear] = useState(initialBirthDateParts.year);
-  const [birthDateVisibility, setBirthDateVisibility] =
-    useState<BirthDateVisibility>(initialBirthDateVisibility);
-  const [birthYearVisibility, setBirthYearVisibility] =
-    useState<BirthDateVisibility>(initialBirthYearVisibility);
-
-  const [isLocationOpen, setIsLocationOpen] = useState(false);
-  const [isBirthDateEditing, setIsBirthDateEditing] = useState(false);
-  const [isBirthDateConfirmOpen, setIsBirthDateConfirmOpen] = useState(false);
-
-  const [removeLocation, setRemoveLocation] = useState(false);
-  const [removeBirthDate, setRemoveBirthDate] = useState(false);
-
-  const [isSaving, setIsSaving] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
+  const avatar = useImageSelection(user.avatarUrl);
+  const banner = useImageSelection(user.bannerUrl);
+  const [initial] = useState(() => initialValues(user));
+  const [values, setValues] = useState(initial);
+  const [ui, setUi] = useState(INITIAL_UI);
   const locationSearch = useLocationSearch();
 
-  const hasChanges =
-    displayName.trim() !== initialDisplayName ||
-    bio.trim() !== initialBio ||
-    avatar !== null ||
-    banner !== null ||
-    removeLocation ||
-    removeBirthDate ||
-    removeAvatar ||
-    removeBanner ||
-    location?.id !== initialLocation?.id ||
-    birthMonth !== initialBirthDateParts.month ||
-    birthDay !== initialBirthDateParts.day ||
-    birthYear !== initialBirthDateParts.year ||
-    birthDateVisibility !== initialBirthDateVisibility ||
-    birthYearVisibility !== initialBirthYearVisibility;
+  const updateValues = (patch: Partial<typeof values>) =>
+    setValues((current) => ({ ...current, ...patch }));
+  const updateUi = (patch: Partial<typeof ui>) =>
+    setUi((current) => ({ ...current, ...patch }));
 
-  const { isConfirmOpen, requestClose, cancelDiscard, confirmDiscard } =
-    useUnsavedChangesGuard({
-      hasChanges,
-      isBusy: isSaving,
-      onClose,
-    });
+  const baseline = { ...initial, location: initial.location?.id };
+  const comparable = {
+    ...values,
+    displayName: values.displayName.trim(),
+    bio: values.bio.trim(),
+    location: values.location?.id,
+  };
+  const hasChanges =
+    avatar.file !== null ||
+    banner.file !== null ||
+    avatar.removed ||
+    banner.removed ||
+    Object.entries(comparable).some(
+      ([key, value]) => value !== baseline[key as keyof typeof baseline],
+    );
+  const guard = useUnsavedChangesGuard({
+    hasChanges,
+    isBusy: ui.isSaving,
+    onClose,
+  });
 
   const handleDiscardChanges = () => {
-    setIsLocationOpen(false);
+    setValues(initial);
+    setUi(INITIAL_UI);
     locationSearch.reset();
-
-    setDisplayName(initialDisplayName);
-    setBio(initialBio);
-    setLocation(initialLocation);
-    setBirthMonth(initialBirthDateParts.month);
-    setBirthDay(initialBirthDateParts.day);
-    setBirthYear(initialBirthDateParts.year);
-    setBirthDateVisibility(initialBirthDateVisibility);
-    setBirthYearVisibility(initialBirthYearVisibility);
-    setIsBirthDateEditing(false);
-    setIsBirthDateConfirmOpen(false);
-
-    resetAvatar();
-    resetBanner();
-
-    setRemoveLocation(false);
-    setRemoveBirthDate(false);
-
-    setError(null);
-
-    confirmDiscard();
+    avatar.reset();
+    banner.reset();
+    guard.confirmDiscard();
   };
 
-  const handleLocationSelect = (value: Location) => {
-    setLocation(value);
-    setRemoveLocation(false);
-
-    setIsLocationOpen(false);
+  const toggleLocation = () => {
+    if (ui.isLocationOpen) locationSearch.reset();
+    setUi((current) => ({
+      ...current,
+      isLocationOpen: !current.isLocationOpen,
+    }));
+  };
+  const handleLocationSelect = (location: Location) => {
+    updateValues({ location, removeLocation: false });
+    updateUi({ isLocationOpen: false });
     locationSearch.reset();
   };
+  const handleRemoveLocation = () =>
+    updateValues({ location: null, removeLocation: Boolean(user.location) });
 
-  const handleRemoveLocation = () => {
-    setLocation(null);
-    setRemoveLocation(Boolean(user.location));
+  const updateBirthDate = (patch: Partial<typeof values>) => {
+    updateValues(patch);
+    updateUi({ error: null });
   };
-
-  const handleBirthMonthChange = (value: string) => {
-    setBirthMonth(value);
-    setRemoveBirthDate(false);
-    setError(null);
-
-    if (!birthDay) return;
-
-    const maxDay = maxBirthDay(birthYear, value);
-
-    if (Number(birthDay) > maxDay) setBirthDay(String(maxDay));
+  const handleBirthMonthChange = (birthMonth: string) => {
+    const maxDay = maxBirthDay(values.birthYear, birthMonth);
+    updateBirthDate({
+      birthMonth,
+      birthDay: Number(values.birthDay) > maxDay ? String(maxDay) : values.birthDay,
+      removeBirthDate: false,
+    });
   };
-
-  const handleBirthYearChange = (value: string) => {
-    setBirthYear(value);
-    setRemoveBirthDate(false);
-    setError(null);
-
+  const handleBirthYearChange = (birthYear: string) => {
     const today = new Date();
-    let selectedMonth = Number(birthMonth);
-
-    if (
-      Number(value) === today.getFullYear() &&
-      selectedMonth > today.getMonth() + 1
-    ) {
-      selectedMonth = today.getMonth() + 1;
-      setBirthMonth(String(selectedMonth));
-    }
-
-    if (!selectedMonth || !birthDay) return;
-
-    const maxDay = maxBirthDay(value, String(selectedMonth), today);
-
-    if (Number(birthDay) > maxDay) setBirthDay(String(maxDay));
+    const month = Number(values.birthMonth);
+    const birthMonth =
+      Number(birthYear) === today.getFullYear() && month > today.getMonth() + 1
+        ? String(today.getMonth() + 1)
+        : values.birthMonth;
+    const maxDay = maxBirthDay(birthYear, birthMonth, today);
+    updateBirthDate({
+      birthYear,
+      birthMonth,
+      birthDay:
+        Number(birthMonth) && Number(values.birthDay) > maxDay
+          ? String(maxDay)
+          : values.birthDay,
+      removeBirthDate: false,
+    });
   };
-
   const handleCancelBirthDateEditing = () => {
-    setBirthMonth(initialBirthDateParts.month);
-    setBirthDay(initialBirthDateParts.day);
-    setBirthYear(initialBirthDateParts.year);
-    setBirthDateVisibility(initialBirthDateVisibility);
-    setBirthYearVisibility(initialBirthYearVisibility);
-    setRemoveBirthDate(false);
-    setIsBirthDateEditing(false);
-    setError(null);
+    updateBirthDate({
+      birthMonth: initial.birthMonth,
+      birthDay: initial.birthDay,
+      birthYear: initial.birthYear,
+      birthDateVisibility: initial.birthDateVisibility,
+      birthYearVisibility: initial.birthYearVisibility,
+      removeBirthDate: false,
+    });
+    updateUi({ isBirthDateEditing: false });
   };
-
   const handleRemoveBirthDate = () => {
-    setBirthMonth("");
-    setBirthDay("");
-    setBirthYear("");
-    setRemoveBirthDate(Boolean(initialBirthDate));
-    setIsBirthDateEditing(false);
-    setError(null);
+    updateBirthDate({
+      birthMonth: "",
+      birthDay: "",
+      birthYear: "",
+      removeBirthDate: Boolean(user.birthDate),
+    });
+    updateUi({ isBirthDateEditing: false });
   };
 
-  const handleSave = async () => {
-    const hasAnyBirthDatePart = Boolean(birthMonth || birthDay || birthYear);
-    const birthDate = buildBirthDate(birthYear, birthMonth, birthDay);
-
-    if (!removeBirthDate && hasAnyBirthDatePart && !birthDate) {
-      setError("Оберіть коректні місяць, день і рік народження.");
-      return;
-    }
-
-    setError(null);
-    setIsSaving(true);
-
-    try {
-      if (avatar || removeAvatar) await invalidateImageCache(user.avatarUrl);
-
-      if (banner || removeBanner) await invalidateImageCache(user.bannerUrl);
-
-      await onSave({
-        displayName: displayName.trim() || user.username,
-        bio: bio.trim() || undefined,
-
-        location: removeLocation ? undefined : location,
-
-        birthDate: removeBirthDate ? undefined : (birthDate ?? undefined),
-        birthDateVisibility,
-        birthYearVisibility,
-
-        removeLocation,
-        removeBirthDate,
-        removeAvatar,
-        removeBanner,
-
-        avatar,
-        banner,
-      });
-
-      onClose();
-    } catch (error) {
-      setError(
-        error instanceof Error ? error.message : "Не вдалося зберегти зміни.",
-      );
-    } finally {
-      setIsSaving(false);
-    }
-  };
-
-  const currentBirthDate = removeBirthDate
+  const currentBirthDate = values.removeBirthDate
     ? null
-    : buildBirthDate(birthYear, birthMonth, birthDay);
+    : buildBirthDate(values.birthYear, values.birthMonth, values.birthDay);
   const currentBirthDateLabel = currentBirthDate
     ? `${formatBirthMonthDay(currentBirthDate)} ${getBirthYear(currentBirthDate)} р.`
     : null;
 
+  const handleSave = async () => {
+    if (
+      !values.removeBirthDate &&
+      (values.birthMonth || values.birthDay || values.birthYear) &&
+      !currentBirthDate
+    ) {
+      updateUi({ error: "Оберіть коректні місяць, день і рік народження." });
+      return;
+    }
+    updateUi({ error: null, isSaving: true });
+    try {
+      if (avatar.file || avatar.removed) await invalidateImageCache(user.avatarUrl);
+      if (banner.file || banner.removed) await invalidateImageCache(user.bannerUrl);
+      await onSave({
+        displayName: values.displayName.trim() || user.username,
+        bio: values.bio.trim() || undefined,
+        location: values.removeLocation ? undefined : values.location,
+        birthDate: currentBirthDate ?? undefined,
+        birthDateVisibility: values.birthDateVisibility,
+        birthYearVisibility: values.birthYearVisibility,
+        removeLocation: values.removeLocation,
+        removeBirthDate: values.removeBirthDate,
+        removeAvatar: avatar.removed,
+        removeBanner: banner.removed,
+        avatar: avatar.file,
+        banner: banner.file,
+      });
+      onClose();
+    } catch (error) {
+      updateUi({
+        error: error instanceof Error ? error.message : "Не вдалося зберегти зміни.",
+      });
+    } finally {
+      updateUi({ isSaving: false });
+    }
+  };
+
   return {
-    avatarInputRef,
-    bannerInputRef,
-    displayName,
-    setDisplayName,
-    bio,
-    setBio,
-    location,
-    birthMonth,
-    birthDay,
-    setBirthDay,
-    birthYear,
-    birthDateVisibility,
-    setBirthDateVisibility,
-    birthYearVisibility,
-    setBirthYearVisibility,
-    avatarPreview,
-    bannerPreview,
-    isLocationOpen,
-    setIsLocationOpen,
-    isBirthDateEditing,
-    setIsBirthDateEditing,
-    isBirthDateConfirmOpen,
-    setIsBirthDateConfirmOpen,
-    setRemoveBirthDate,
-    isSaving,
-    error,
-    setError,
+    values,
+    ui,
+    updateValues,
+    updateUi,
+    updateBirthDate,
+    avatar,
+    banner,
     locationSearch,
+    guard,
     hasChanges,
-    isConfirmOpen,
-    requestClose,
-    cancelDiscard,
+    currentBirthDateLabel,
     handleDiscardChanges,
-    handleAvatarChange,
-    handleBannerChange,
-    handleRemoveAvatar,
-    handleRemoveBanner,
+    toggleLocation,
     handleLocationSelect,
     handleRemoveLocation,
     handleBirthMonthChange,
@@ -286,7 +214,5 @@ export function useEditProfileForm({
     handleCancelBirthDateEditing,
     handleRemoveBirthDate,
     handleSave,
-    currentBirthDateLabel,
-    initialBirthDate,
   };
 }

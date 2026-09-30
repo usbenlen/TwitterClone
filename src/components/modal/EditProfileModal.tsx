@@ -1,5 +1,6 @@
 import { useEditProfileForm, useBodyScrollLock } from "@/hooks";
 import { Balloon, Pencil, X } from "lucide-react";
+import { useRef } from "react";
 
 import type { UpdateProfileRequest } from "@/api/user.api";
 
@@ -36,55 +37,9 @@ function EditProfileModalInner({
 }: EditProfileModalProps) {
   useBodyScrollLock(open);
 
-  // Окей це полюбе треба скоротити бо це триндець
-  const {
-    avatarInputRef,
-    bannerInputRef,
-    displayName,
-    setDisplayName,
-    bio,
-    setBio,
-    location,
-    birthMonth,
-    birthDay,
-    setBirthDay,
-    birthYear,
-    birthDateVisibility,
-    setBirthDateVisibility,
-    birthYearVisibility,
-    setBirthYearVisibility,
-    avatarPreview,
-    bannerPreview,
-    isLocationOpen,
-    setIsLocationOpen,
-    isBirthDateEditing,
-    setIsBirthDateEditing,
-    isBirthDateConfirmOpen,
-    setIsBirthDateConfirmOpen,
-    setRemoveBirthDate,
-    isSaving,
-    error,
-    setError,
-    locationSearch,
-    hasChanges,
-    isConfirmOpen,
-    requestClose,
-    cancelDiscard,
-    handleDiscardChanges,
-    handleAvatarChange,
-    handleBannerChange,
-    handleRemoveAvatar,
-    handleRemoveBanner,
-    handleLocationSelect,
-    handleRemoveLocation,
-    handleBirthMonthChange,
-    handleBirthYearChange,
-    handleCancelBirthDateEditing,
-    handleRemoveBirthDate,
-    handleSave,
-    currentBirthDateLabel,
-    initialBirthDate,
-  } = useEditProfileForm({ user, onClose, onSave });
+  const form = useEditProfileForm({ user, onClose, onSave });
+  const avatarInputRef = useRef<HTMLInputElement | null>(null);
+  const bannerInputRef = useRef<HTMLInputElement | null>(null);
 
   if (!open) return null;
 
@@ -93,7 +48,7 @@ function EditProfileModalInner({
       <div
         className="fixed inset-0 z-modal flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm"
         onMouseDown={(event) => {
-          if (event.target === event.currentTarget) requestClose();
+          if (event.target === event.currentTarget) form.guard.requestClose();
         }}
       >
         <div className="flex max-h-[90vh] w-full max-w-2xl flex-col overflow-hidden rounded-2xl border border-border bg-background shadow-2xl">
@@ -102,8 +57,8 @@ function EditProfileModalInner({
             <div className="flex items-center gap-3">
               <button
                 type="button"
-                onClick={requestClose}
-                disabled={isSaving}
+                onClick={form.guard.requestClose}
+                disabled={form.ui.isSaving}
                 className="flex size-9 cursor-pointer items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground disabled:cursor-not-allowed disabled:opacity-50"
                 aria-label="Закрити"
               >
@@ -112,7 +67,7 @@ function EditProfileModalInner({
 
               <h2 className="text-lg font-bold">Редагувати профіль</h2>
 
-              {hasChanges && (
+              {form.hasChanges && (
                 <p className="mt-0.5 text-xs text-muted-foreground">
                   Є незбережені зміни
                 </p>
@@ -123,8 +78,8 @@ function EditProfileModalInner({
               className="cursor-pointer"
               type="button"
               size="sm"
-              isLoading={isSaving}
-              onClick={() => void handleSave()}
+              isLoading={form.ui.isSaving}
+              onClick={() => void form.handleSave()}
             >
               Зберегти
             </Button>
@@ -137,9 +92,9 @@ function EditProfileModalInner({
               className="group relative h-48 cursor-pointer bg-muted"
               onClick={() => bannerInputRef.current?.click()}
             >
-              {bannerPreview ? (
+              {form.banner.preview ? (
                 <img
-                  src={bannerPreview}
+                  src={form.banner.preview}
                   alt=""
                   className="size-full object-cover"
                 />
@@ -156,12 +111,12 @@ function EditProfileModalInner({
                 </div>
               </div>
 
-              {bannerPreview && (
+              {form.banner.preview && (
                 <button
                   type="button"
                   onClick={(event) => {
                     event.stopPropagation();
-                    handleRemoveBanner();
+                    form.banner.remove();
                   }}
                   className="absolute right-3 top-3 z-content flex size-9 items-center justify-center rounded-full bg-black/60 text-white transition hover:bg-black/80"
                   aria-label="Видалити банер"
@@ -175,7 +130,7 @@ function EditProfileModalInner({
                 type="file"
                 accept={MEDIA.IMAGE.ALLOWED_TYPES.join(",")}
                 className="hidden"
-                onChange={handleBannerChange}
+                onChange={form.banner.onChange}
               />
             </div>
 
@@ -187,9 +142,9 @@ function EditProfileModalInner({
               >
                 <Avatar
                   userId={user.id}
-                  name={displayName}
+                  name={form.values.displayName}
                   fallbackName={user.username}
-                  src={avatarPreview}
+                  src={form.avatar.preview}
                   className="size-24 border-4 border-background"
                 />
 
@@ -199,10 +154,10 @@ function EditProfileModalInner({
                 </div>
               </div>
 
-              {avatarPreview && (
+              {form.avatar.preview && (
                 <button
                   type="button"
-                  onClick={handleRemoveAvatar}
+                  onClick={form.avatar.remove}
                   className="absolute -right-1 -top-1 z-content flex size-7 items-center justify-center rounded-full bg-black/70 text-white transition hover:bg-black"
                   aria-label="Видалити аватар"
                 >
@@ -215,22 +170,24 @@ function EditProfileModalInner({
                 type="file"
                 accept={MEDIA.IMAGE.ALLOWED_TYPES.join(",")}
                 className="hidden"
-                onChange={handleAvatarChange}
+                onChange={form.avatar.onChange}
               />
             </div>
 
             <div className="space-y-5 p-5">
-              {error && (
+              {form.ui.error && (
                 <p className="rounded-lg bg-destructive/10 p-3 text-sm text-destructive">
-                  {error}
+                  {form.ui.error}
                 </p>
               )}
 
               {/* Name */}
               <Input
                 label="Ім'я"
-                value={displayName}
-                onChange={(event) => setDisplayName(event.target.value)}
+                value={form.values.displayName}
+                onChange={(event) =>
+                  form.updateValues({ displayName: event.target.value })
+                }
                 maxLength={MAX_NAME_LENGTH}
               />
 
@@ -241,8 +198,10 @@ function EditProfileModalInner({
                 </label>
 
                 <textarea
-                  value={bio}
-                  onChange={(event) => setBio(event.target.value)}
+                  value={form.values.bio}
+                  onChange={(event) =>
+                    form.updateValues({ bio: event.target.value })
+                  }
                   maxLength={MAX_BIO_LENGTH}
                   rows={4}
                   placeholder="Розкажіть трохи про себе"
@@ -250,7 +209,7 @@ function EditProfileModalInner({
                 />
 
                 <div className="mt-1 text-right text-xs text-muted-foreground">
-                  {bio.length}/{MAX_BIO_LENGTH}
+                  {form.values.bio.length}/{MAX_BIO_LENGTH}
                 </div>
               </div>
 
@@ -262,38 +221,34 @@ function EditProfileModalInner({
 
                 <button
                   type="button"
-                  onClick={() => {
-                    setIsLocationOpen((value) => !value);
-
-                    if (isLocationOpen) {
-                      locationSearch.reset();
-                    }
-                  }}
+                  onClick={form.toggleLocation}
                   className="flex min-h-10 w-full items-center justify-between rounded-lg border border-border bg-background px-3 text-left outline-none transition-colors hover:bg-muted/50 focus:ring-2 focus:ring-ring"
                 >
                   <span
                     className={
-                      location ? "text-foreground" : "text-muted-foreground"
+                      form.values.location
+                        ? "text-foreground"
+                        : "text-muted-foreground"
                     }
                   >
-                    {location
-                      ? `${location.name}, ${location.country}`
+                    {form.values.location
+                      ? `${form.values.location.name}, ${form.values.location.country}`
                       : "Додати локацію"}
                   </span>
 
-                  {location && (
+                  {form.values.location && (
                     <span
                       role="button"
                       tabIndex={0}
                       onClick={(event) => {
                         event.stopPropagation();
-                        handleRemoveLocation();
+                        form.handleRemoveLocation();
                       }}
                       onKeyDown={(event) => {
                         if (event.key === "Enter" || event.key === " ") {
                           event.preventDefault();
                           event.stopPropagation();
-                          handleRemoveLocation();
+                          form.handleRemoveLocation();
                         }
                       }}
                       className="ml-2 flex size-7 cursor-pointer items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
@@ -304,46 +259,42 @@ function EditProfileModalInner({
                   )}
                 </button>
 
-                {isLocationOpen && (
+                {form.ui.isLocationOpen && (
                   <div className="mt-2 overflow-hidden rounded-lg border border-border bg-background shadow-sm">
                     <LocationPicker
-                      locations={locationSearch.locations}
-                      query={locationSearch.query}
-                      loading={locationSearch.loading}
-                      error={locationSearch.error}
-                      onQueryChange={locationSearch.setQuery}
-                      onSelect={handleLocationSelect}
+                      locations={form.locationSearch.locations}
+                      query={form.locationSearch.query}
+                      loading={form.locationSearch.loading}
+                      error={form.locationSearch.error}
+                      onQueryChange={form.locationSearch.setQuery}
+                      onSelect={form.handleLocationSelect}
                     />
                   </div>
                 )}
               </div>
 
               {/* Birth date */}
-              {isBirthDateEditing ? (
+              {form.ui.isBirthDateEditing ? (
                 <BirthDateEditor
-                  month={birthMonth}
-                  day={birthDay}
-                  year={birthYear}
-                  dateVisibility={birthDateVisibility}
-                  yearVisibility={birthYearVisibility}
-                  canRemove={Boolean(initialBirthDate)}
-                  onMonthChange={handleBirthMonthChange}
-                  onDayChange={(value) => {
-                    setBirthDay(value);
-                    setRemoveBirthDate(false);
-                    setError(null);
-                  }}
-                  onYearChange={handleBirthYearChange}
-                  onDateVisibilityChange={(value) => {
-                    setBirthDateVisibility(value);
-                    setError(null);
-                  }}
-                  onYearVisibilityChange={(value) => {
-                    setBirthYearVisibility(value);
-                    setError(null);
-                  }}
-                  onCancel={handleCancelBirthDateEditing}
-                  onRemove={handleRemoveBirthDate}
+                  month={form.values.birthMonth}
+                  day={form.values.birthDay}
+                  year={form.values.birthYear}
+                  dateVisibility={form.values.birthDateVisibility}
+                  yearVisibility={form.values.birthYearVisibility}
+                  canRemove={Boolean(user.birthDate)}
+                  onMonthChange={form.handleBirthMonthChange}
+                  onDayChange={(birthDay) =>
+                    form.updateBirthDate({ birthDay, removeBirthDate: false })
+                  }
+                  onYearChange={form.handleBirthYearChange}
+                  onDateVisibilityChange={(birthDateVisibility) =>
+                    form.updateBirthDate({ birthDateVisibility })
+                  }
+                  onYearVisibilityChange={(birthYearVisibility) =>
+                    form.updateBirthDate({ birthYearVisibility })
+                  }
+                  onCancel={form.handleCancelBirthDateEditing}
+                  onRemove={form.handleRemoveBirthDate}
                 />
               ) : (
                 <div className="flex items-center justify-between gap-4 rounded-xl border border-border p-4">
@@ -355,17 +306,19 @@ function EditProfileModalInner({
                     <div className="min-w-0">
                       <p className="text-sm font-medium">Дата народження</p>
                       <p className="truncate text-sm text-muted-foreground">
-                        {currentBirthDateLabel ?? "Не вказано"}
+                        {form.currentBirthDateLabel ?? "Не вказано"}
                       </p>
                     </div>
                   </div>
 
                   <button
                     type="button"
-                    onClick={() => setIsBirthDateConfirmOpen(true)}
+                    onClick={() =>
+                      form.updateUi({ isBirthDateConfirmOpen: true })
+                    }
                     className="shrink-0 cursor-pointer text-sm font-semibold text-primary hover:underline"
                   >
-                    {currentBirthDateLabel ? "Редагувати" : "Додати"}
+                    {form.currentBirthDateLabel ? "Редагувати" : "Додати"}
                   </button>
                 </div>
               )}
@@ -375,27 +328,29 @@ function EditProfileModalInner({
       </div>
 
       <ConfirmModal
-        open={isBirthDateConfirmOpen}
+        open={form.ui.isBirthDateConfirmOpen}
         title="Редагувати дату народження?"
         description="Дату народження можна змінити лише кілька разів. Переконайтеся, що ви вказуєте вік людини, яка користується цим акаунтом."
         confirmText="Редагувати"
         cancelText="Скасувати"
         confirmVariant="primary"
-        onCancel={() => setIsBirthDateConfirmOpen(false)}
-        onConfirm={() => {
-          setIsBirthDateConfirmOpen(false);
-          setIsBirthDateEditing(true);
-        }}
+        onCancel={() => form.updateUi({ isBirthDateConfirmOpen: false })}
+        onConfirm={() =>
+          form.updateUi({
+            isBirthDateConfirmOpen: false,
+            isBirthDateEditing: true,
+          })
+        }
       />
 
       <ConfirmModal
-        open={isConfirmOpen}
+        open={form.guard.isConfirmOpen}
         title="Вийти без збереження?"
         description="У вас є незбережені зміни. Якщо вийти зараз, вони будуть втрачені."
         confirmText="Вийти без збереження"
         cancelText="Скасувати"
-        onCancel={cancelDiscard}
-        onConfirm={handleDiscardChanges}
+        onCancel={form.guard.cancelDiscard}
+        onConfirm={form.handleDiscardChanges}
       />
     </>
   );
