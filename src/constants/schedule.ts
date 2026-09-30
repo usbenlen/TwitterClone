@@ -1,0 +1,8 @@
+import { MILLISECONDS_PER_MINUTE } from "@/constants/date";
+
+export const SCHEDULE = {
+  MIN_DELAY_MINUTES: 1,
+  MAX_MONTHS_AHEAD: 18,
+} as const;
+
+export const SCHEDULE_MIN_DELAY_MS = SCHEDULE.MIN_DELAY_MINUTES * MILLISECONDS_PER_MINUTE;

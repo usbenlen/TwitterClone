@@ -2,6 +2,7 @@
 
 interface ImportMetaEnv {
   readonly VITE_APP_NAME: string;
+  readonly VITE_APP_LOCALE?: string;
 
   readonly VITE_PATH_TO_SERVER: string;
   readonly VITE_PATH_TO_API: string;

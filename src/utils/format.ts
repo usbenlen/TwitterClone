@@ -1,3 +1,6 @@
+import { APP_LOCALE } from "@/constants/app";
+import { SECONDS_PER_MINUTE } from "@/constants/date";
+
 // Відносний час "2 хв", "3 год", "5 дн".
 export function formatRelativeTime(iso: string): string {
   const date = new Date(iso);
@@ -11,13 +14,19 @@ export function formatRelativeTime(iso: string): string {
   const days = Math.floor(hours / 24);
   if (days < 7) return `${days} дн`;
 
-  return date.toLocaleDateString("uk-UA", { day: "numeric", month: "short" });
+  return date.toLocaleDateString(APP_LOCALE, {
+    day: "numeric",
+    month: "short",
+  });
 }
 
 // Повна дата для профілю: "Приєднався у березні 2024"
 export function formatJoinDate(iso: string): string {
   const date = new Date(iso);
-  return date.toLocaleDateString("uk-UA", { month: "long", year: "numeric" });
+  return date.toLocaleDateString(APP_LOCALE, {
+    month: "long",
+    year: "numeric",
+  });
 }
 
 function parseDateOnly(iso: string): Date | null {
@@ -32,7 +41,7 @@ export function formatBirthMonthDay(iso: string): string | null {
   const date = parseDateOnly(iso);
   if (!date) return null;
 
-  return date.toLocaleDateString("uk-UA", {
+  return date.toLocaleDateString(APP_LOCALE, {
     day: "numeric",
     month: "long",
   });
@@ -49,7 +58,7 @@ export function formatCount(n: number): string {
   return `${(n / 1_000_000).toFixed(1).replace(".0", "")} млн`;
 }
 
-const postCountPluralRules = new Intl.PluralRules("uk-UA");
+const postCountPluralRules = new Intl.PluralRules(APP_LOCALE);
 
 export function formatPostCount(count: number): string {
   const label = {
@@ -62,4 +71,29 @@ export function formatPostCount(count: number): string {
   }[postCountPluralRules.select(count)];
 
   return `${formatCount(count)} ${label}`;
+}
+
+export function formatDateTime(
+  value: string | Date,
+  dateStyle: "medium" | "full" = "medium",
+): string {
+  return new Intl.DateTimeFormat(APP_LOCALE, {
+    dateStyle,
+    timeStyle: "short",
+  }).format(new Date(value));
+}
+
+const compactCountFormatter = new Intl.NumberFormat(APP_LOCALE, {
+  notation: "compact",
+  maximumFractionDigits: 1,
+});
+
+export function formatCompactCount(value: number): string {
+  return compactCountFormatter.format(value);
+}
+
+export function formatMediaTime(seconds: number): string {
+  if (!Number.isFinite(seconds) || seconds < 0) return "0:00";
+  const total = Math.ceil(seconds);
+  return `${Math.floor(total / SECONDS_PER_MINUTE)}:${String(total % SECONDS_PER_MINUTE).padStart(2, "0")}`;
 }

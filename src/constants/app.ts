@@ -1,4 +1,5 @@
 export const APP_NAME = import.meta.env.VITE_APP_NAME;
+export const APP_LOCALE = import.meta.env.VITE_APP_LOCALE?.trim() || "uk-UA";
 
 export const MAX_TWEET_LENGTH = Number(import.meta.env.VITE_MAX_TWEET_LENGTH);
 export const MAX_NAME_LENGTH = Number(import.meta.env.VITE_MAX_NAME_LENGTH);
@@ -8,6 +9,7 @@ export const SEARCH_DEBOUNCE_MS = 350;
 export const LOCATION_SEARCH_DEBOUNCE_MS = 200;
 
 export const AUTH_LIMITS = {
+  VERIFICATION_CODE_LENGTH: 6,
   USERNAME_MIN_LENGTH: 3,
   USERNAME_MAX_LENGTH: 20,
   PASSWORD_MIN_LENGTH: 6,

@@ -16,7 +16,12 @@ export { useClickOrDrag } from "@/hooks/useClickOrDrag";
 export { useUnsavedChangesGuard } from "@/hooks/useUnsavedChangesGuard";
 export { useBackNavigation } from "@/hooks/useBackNavigation";
 export { useRecommendedUsers, useTrends } from "@/hooks/useRecommendations";
+export { useEditProfileForm } from "@/hooks/useEditProfileForm"
+export { useBodyScrollLock } from "@/hooks/useBodyScrollLock";
+export { useMediaZoom } from "@/hooks/useMediaZoom";
+export { useImageSelection } from "@/hooks/useImageSelection";
 
 export { useLocationSearch } from "@/hooks/location/useLocationSearch";
 
+export * from "@/hooks/useImageCache";
 export * from "@/hooks/composer";

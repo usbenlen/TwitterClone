@@ -1,18 +1,7 @@
 import type { SearchCriteria, SearchType } from "@/types";
+import { DEFAULT_SEARCH_CRITERIA } from "@/constants/search";
 
-export const DEFAULT_SEARCH_CRITERIA: SearchCriteria = {
-  query: "",
-  type: "posts",
-  people: "anyone",
-  location: "anywhere",
-  exactPhrase: "",
-  anyWords: "",
-  excludeWords: "",
-  from: "",
-  fromDate: "",
-  toDate: "",
-  hasMedia: false,
-};
+export { DEFAULT_SEARCH_CRITERIA };
 
 function optionalNonNegativeInteger(value: string | null) {
   if (!value || !/^\d+$/.test(value)) return undefined;
@@ -47,6 +36,7 @@ export function parseSearchCriteria(params: URLSearchParams): SearchCriteria {
 export function serializeSearchCriteria(criteria: SearchCriteria) {
   const params = new URLSearchParams();
 
+  // будь ласка скоротити ну серйозно
   if (criteria.query.trim()) params.set("q", criteria.query.trim());
   params.set("type", criteria.type);
   if (criteria.people === "following") params.set("people", "following");
