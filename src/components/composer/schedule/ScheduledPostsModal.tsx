@@ -1,3 +1,5 @@
+import { useBodyScrollLock } from "@/hooks/useBodyScrollLock";
+import { formatDateTime } from "@/utils/format";
 import { createPortal } from "react-dom";
 import { ArrowLeft, CalendarClock, Pencil, Trash2, X } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -24,16 +26,15 @@ export default function ScheduledPostsModal({
   const [editing, setEditing] = useState<ScheduledPost | null>(null);
   const [deleting, setDeleting] = useState<ScheduledPost | null>(null);
 
+  useBodyScrollLock(open);
+
   useEffect(() => {
     if (!open) return;
-    const previousOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape" && !editing && !deleting) onClose();
     };
     window.addEventListener("keydown", onKeyDown);
     return () => {
-      document.body.style.overflow = previousOverflow;
       window.removeEventListener("keydown", onKeyDown);
     };
   }, [deleting, editing, onClose, open]);
@@ -111,10 +112,7 @@ export default function ScheduledPostsModal({
                     </div>
                     <p className="mt-2 flex items-center gap-2 text-sm text-muted-foreground">
                       <CalendarClock size={16} />
-                      {new Intl.DateTimeFormat("uk-UA", {
-                        dateStyle: "medium",
-                        timeStyle: "short",
-                      }).format(new Date(post.scheduledAt))}
+                      {formatDateTime(post.scheduledAt)}
                     </p>
                   </div>
                   <div className="flex shrink-0 items-start gap-1">

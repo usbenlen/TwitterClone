@@ -1,6 +1,6 @@
+import { useBodyScrollLock } from "@/hooks/useBodyScrollLock";
 import { createPortal } from "react-dom";
 import { X } from "lucide-react";
-import { useEffect } from "react";
 
 import Composer from "@/components/composer/Composer";
 import { ConfirmModal } from "@/components/modal/ConfirmModal";
@@ -40,13 +40,7 @@ export default function ScheduledPostEditModal({
       onClose,
     });
 
-  useEffect(() => {
-    const previousOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    return () => {
-      document.body.style.overflow = previousOverflow;
-    };
-  }, []);
+  useBodyScrollLock(true);
 
   return createPortal(
     <>

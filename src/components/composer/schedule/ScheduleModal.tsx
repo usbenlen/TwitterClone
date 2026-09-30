@@ -1,3 +1,18 @@
+import { useBodyScrollLock } from "@/hooks/useBodyScrollLock";
+import {
+  MONTH_OPTIONS,
+  HOURS_PER_DAY,
+  MINUTES_PER_HOUR,
+} from "@/constants/date";
+import { SCHEDULE } from "@/constants/schedule";
+import {
+  daysInMonth,
+  nextScheduledMinute,
+  maximumScheduleDate,
+  isScheduleDateValid,
+  padDatePart,
+} from "@/utils/date";
+import { formatDateTime } from "@/utils/format";
 import { createPortal } from "react-dom";
 import { CalendarClock, X } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
@@ -12,18 +27,6 @@ interface ScheduleModalProps {
   onApply: (scheduledAt: string) => void | Promise<void>;
   onClear?: () => void;
   onOpenScheduledPosts?: (draftAt: string) => void;
-}
-
-const pad = (value: number) => String(value).padStart(2, "0");
-
-function nextMinute() {
-  const date = new Date(Math.ceil((Date.now() + 60_000) / 60_000) * 60_000);
-  date.setSeconds(0, 0);
-  return date;
-}
-
-function daysInMonth(year: number, month: number) {
-  return new Date(year, month, 0).getDate();
 }
 
 function SelectField({
@@ -60,7 +63,7 @@ export default function ScheduleModal({
   onClear,
   onOpenScheduledPosts,
 }: ScheduleModalProps) {
-  const initial = initialAt ? new Date(initialAt) : nextMinute();
+  const initial = initialAt ? new Date(initialAt) : nextScheduledMinute();
   const [year, setYear] = useState(initial.getFullYear());
   const [month, setMonth] = useState(initial.getMonth() + 1);
   const [day, setDay] = useState(initial.getDate());
@@ -73,19 +76,10 @@ export default function ScheduleModal({
     () => new Date(year, month - 1, day, hour, minute, 0, 0),
     [year, month, day, hour, minute],
   );
-  const maximumDate = useMemo(() => {
-    const date = new Date();
-    date.setMonth(date.getMonth() + 18);
-    return date;
-  }, []);
-  const isValid =
-    selectedDate.getTime() >= openedAt + 60_000 &&
-    selectedDate.getTime() <= maximumDate.getTime();
+  const maximumDate = useMemo(() => maximumScheduleDate(), []);
+  const isValid = isScheduleDateValid(selectedDate, openedAt, maximumDate);
   const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-  const dateLabel = new Intl.DateTimeFormat("uk-UA", {
-    dateStyle: "full",
-    timeStyle: "short",
-  }).format(selectedDate);
+  const dateLabel = formatDateTime(selectedDate, "full");
 
   const changeMonth = (value: number) => {
     setMonth(value);
@@ -96,16 +90,15 @@ export default function ScheduleModal({
     setDay((current) => Math.min(current, daysInMonth(value, month)));
   };
 
+  useBodyScrollLock(open);
+
   useEffect(() => {
     if (!open) return;
-    const previousOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") onClose();
     };
     window.addEventListener("keydown", onKeyDown);
     return () => {
-      document.body.style.overflow = previousOverflow;
       window.removeEventListener("keydown", onKeyDown);
     };
   }, [onClose, open]);
@@ -146,7 +139,7 @@ export default function ScheduleModal({
           )}
           <Button
             onClick={async () => {
-              if (!isValid || selectedDate.getTime() < Date.now() + 60_000)
+              if (!isValid || !isScheduleDateValid(selectedDate, Date.now(), maximumDate))
                 return;
               setIsSaving(true);
               try {
@@ -171,15 +164,11 @@ export default function ScheduleModal({
           <p className="mb-2 text-sm text-muted-foreground">Дата</p>
           <div className="flex gap-3">
             <SelectField label="Місяць" value={month} onChange={changeMonth}>
-              {Array.from({ length: 12 }, (_, index) => index + 1).map(
-                (value) => (
-                  <option key={value} value={value}>
-                    {new Intl.DateTimeFormat("uk-UA", { month: "long" }).format(
-                      new Date(2024, value - 1, 1),
-                    )}
-                  </option>
-                ),
-              )}
+              {MONTH_OPTIONS.map(({ value, label }) => (
+                <option key={value} value={value}>
+                  {label}
+                </option>
+              ))}
             </SelectField>
             <SelectField label="День" value={day} onChange={setDay}>
               {Array.from(
@@ -205,16 +194,21 @@ export default function ScheduleModal({
           <p className="mb-2 mt-6 text-sm text-muted-foreground">Час</p>
           <div className="flex gap-3">
             <SelectField label="Година" value={hour} onChange={setHour}>
-              {Array.from({ length: 24 }, (_, index) => index).map((value) => (
-                <option key={value} value={value}>
-                  {pad(value)}
-                </option>
-              ))}
+              {Array.from({ length: HOURS_PER_DAY }, (_, index) => index).map(
+                (value) => (
+                  <option key={value} value={value}>
+                    {padDatePart(value)}
+                  </option>
+                ),
+              )}
             </SelectField>
             <SelectField label="Хвилина" value={minute} onChange={setMinute}>
-              {Array.from({ length: 60 }, (_, index) => index).map((value) => (
+              {Array.from(
+                { length: MINUTES_PER_HOUR },
+                (_, index) => index,
+              ).map((value) => (
                 <option key={value} value={value}>
-                  {pad(value)}
+                  {padDatePart(value)}
                 </option>
               ))}
             </SelectField>
@@ -222,7 +216,11 @@ export default function ScheduleModal({
 
           {!isValid && (
             <p className="mt-3 text-sm text-destructive">
-              Виберіть час від наступної хвилини до 18 місяців наперед.
+              Виберіть час від{" "}
+              {SCHEDULE.MIN_DELAY_MINUTES === 1
+                ? "наступної хвилини"
+                : `${SCHEDULE.MIN_DELAY_MINUTES} хв затримки`}{" "}
+              до {SCHEDULE.MAX_MONTHS_AHEAD} місяців наперед.
             </p>
           )}
 

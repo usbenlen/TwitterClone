@@ -1,3 +1,4 @@
+import { COMPOSER_POPOVER } from "@/constants/composer";
 import {
   autoUpdate,
   flip,
@@ -28,7 +29,11 @@ export default function ComposerPopover({
     open,
     onOpenChange,
     placement: "bottom-start",
-    middleware: [offset(8), flip({ padding: 12 }), shift({ padding: 12 })],
+    middleware: [
+      offset(COMPOSER_POPOVER.OFFSET),
+      flip({ padding: COMPOSER_POPOVER.VIEWPORT_PADDING }),
+      shift({ padding: COMPOSER_POPOVER.VIEWPORT_PADDING }),
+    ],
     whileElementsMounted: autoUpdate,
   });
 

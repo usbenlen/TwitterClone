@@ -1,3 +1,4 @@
+import { POLL, POLL_DURATION_OPTIONS } from "@/constants/poll";
 import { Plus, Trash2 } from "lucide-react";
 
 import type { ComposerPoll } from "@/types/poll";
@@ -33,7 +34,7 @@ export default function PollComposer({
               className="flex-1 rounded-xl border border-border bg-background px-3 py-2 outline-none focus:border-primary"
             />
 
-            {poll.options.length > 2 && (
+            {poll.options.length > POLL.MIN_OPTIONS && (
               <button
                 type="button"
                 onClick={() => onRemoveOption(option.id)}
@@ -46,7 +47,7 @@ export default function PollComposer({
         ))}
       </div>
 
-      {poll.options.length < 4 && (
+      {poll.options.length < POLL.MAX_OPTIONS && (
         <button
           type="button"
           onClick={onAddOption}
@@ -65,13 +66,11 @@ export default function PollComposer({
           onChange={(e) => onDurationChange(Number(e.target.value))}
           className="rounded-lg border border-border bg-background px-3 py-2"
         >
-          <option value={30}>30 хв</option>
-          <option value={60}>1 година</option>
-          <option value={360}>6 годин</option>
-          <option value={720}>12 годин</option>
-          <option value={1440}>1 день</option>
-          <option value={4320}>3 дні</option>
-          <option value={10080}>7 днів</option>
+          {POLL_DURATION_OPTIONS.map(({ value, label }) => (
+            <option key={value} value={value}>
+              {label}
+            </option>
+          ))}
         </select>
       </div>
     </div>

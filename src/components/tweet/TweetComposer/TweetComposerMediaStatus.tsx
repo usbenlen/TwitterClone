@@ -1,3 +1,4 @@
+import { MEDIA_UPLOAD_SUCCESS_VISIBLE_MS } from "@/constants/media";
 import { useEffect, useState } from "react";
 import { Loader2, AlertCircle, CheckCircle2 } from "lucide-react";
 
@@ -24,7 +25,7 @@ export default function TweetComposerMediaStatus({
 
     const timer = setTimeout(() => {
       setShowUploaded(false);
-    }, 800);
+    }, MEDIA_UPLOAD_SUCCESS_VISIBLE_MS);
 
     return () => clearTimeout(timer);
   }, [status]);

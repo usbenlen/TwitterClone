@@ -1,4 +1,5 @@
-import { useEffect, type RefObject } from "react";
+import { useAutosizeTextarea } from "@/hooks/useAutosizeTextarea";
+import { type RefObject } from "react";
 
 import { EmojiTextarea } from "@/ui";
 
@@ -23,42 +24,7 @@ export default function TweetComposerEditor({
   rows = 3,
   className = "",
 }: TweetComposerEditorProps) {
-  useEffect(() => {
-    const textarea = editorRef.current;
-
-    if (!textarea) return;
-
-    const styles = window.getComputedStyle(textarea);
-
-    const lineHeight = parseFloat(styles.lineHeight);
-    const padding = parseFloat(styles.paddingTop) + parseFloat(styles.paddingBottom);
-
-    const rowsHeight = lineHeight * rows + padding;
-    const maxHeight = parseFloat(styles.maxHeight);
-
-    const currentHeight = textarea.offsetHeight;
-
-    textarea.style.transition = "none";
-    textarea.style.height = "auto";
-
-    const contentHeight = textarea.scrollHeight;
-
-    const targetHeight = Math.min(
-      Math.max(contentHeight, rowsHeight),
-      Number.isFinite(maxHeight) ? maxHeight : Number.POSITIVE_INFINITY,
-    );
-
-    textarea.style.height = `${currentHeight}px`;
-
-    requestAnimationFrame(() => {
-      textarea.style.transition = "";
-
-      textarea.style.height = `${targetHeight}px`;
-
-      textarea.style.overflowY =
-        contentHeight > targetHeight ? "auto" : "hidden";
-    });
-  }, [value, rows, editorRef]);
+  useAutosizeTextarea(editorRef, value, rows);
 
   return (
     <EmojiTextarea

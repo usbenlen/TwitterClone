@@ -1,13 +1,4 @@
-import { BarChart3, Image, MapPin, Smile, Video, Calendar } from "lucide-react";
-
-import {
-  ENABLE_GIFS,
-  ENABLE_IMAGE_UPLOAD,
-  ENABLE_LOCATION,
-  ENABLE_POLLS,
-  ENABLE_VIDEO_UPLOAD,
-} from "@/constants/app";
-
+import { COMPOSER_ACTIONS } from "@/constants/composer";
 import type { ComposerAction } from "@/types/composer";
 
 interface ComposerToolbarProps {
@@ -37,52 +28,7 @@ export default function ComposerToolbar({
   showEmojiPicker = false,
   className = "",
 }: ComposerToolbarProps) {
-  const actions = [
-    {
-      id: "image" as const,
-      enabled: ENABLE_IMAGE_UPLOAD,
-      label: "Додати зображення",
-      icon: <Image size={20} />,
-    },
-    {
-      id: "gif" as const,
-      enabled: ENABLE_GIFS,
-      label: "GIF",
-      icon: <span className="text-[11px] font-bold tracking-wide">GIF</span>,
-    },
-    {
-      id: "video" as const,
-      enabled: ENABLE_VIDEO_UPLOAD,
-      label: "Додати відео",
-      icon: <Video size={20} />,
-    },
-    {
-      id: "poll" as const,
-      enabled: ENABLE_POLLS,
-      label: "Опитування",
-      icon: <BarChart3 size={20} />,
-    },
-    {
-      id: "emoji" as const,
-      enabled: true,
-      label: "Емодзі",
-      icon: <Smile size={20} />,
-    },
-    {
-      id: "schedule" as const,
-      enabled: true,
-      label: "Запланувати",
-      icon: <Calendar size={20} />,
-    },
-    {
-      id: "location" as const,
-      enabled: ENABLE_LOCATION,
-      label: "Місце",
-      icon: <MapPin size={20} />,
-    },
-  ];
-
-  const filteredActions = actions.filter((action) => {
+  const filteredActions = COMPOSER_ACTIONS.filter((action) => {
     if (!action.enabled) return false;
     if (hiddenActions.includes(action.id)) return false;
     if (allowedActions && !allowedActions.includes(action.id)) return false;
@@ -91,20 +37,27 @@ export default function ComposerToolbar({
 
   return (
     <div className={`flex items-center gap-1 ${className}`}>
-      {filteredActions.map((action) => (
-        <button
-          key={action.id}
-          ref={buttonRefs[action.id]}
-          type="button"
-          aria-label={action.label}
-          aria-expanded={action.id === "emoji" ? showEmojiPicker : undefined}
-          disabled={disabled || disabledActions.includes(action.id)}
-          onClick={() => onAction(action.id)}
-          className="flex size-9 items-center justify-center rounded-full text-primary transition-colors hover:bg-primary/10 disabled:pointer-events-none disabled:opacity-50"
-        >
-          {action.icon}
-        </button>
-      ))}
+      {filteredActions.map((action) => {
+        const Icon = action.icon;
+        return (
+          <button
+            key={action.id}
+            ref={buttonRefs[action.id]}
+            type="button"
+            aria-label={action.label}
+            aria-expanded={action.id === "emoji" ? showEmojiPicker : undefined}
+            disabled={disabled || disabledActions.includes(action.id)}
+            onClick={() => onAction(action.id)}
+            className="flex size-9 items-center justify-center rounded-full text-primary transition-colors hover:bg-primary/10 disabled:pointer-events-none disabled:opacity-50"
+          >
+            {Icon ? (
+              <Icon size={20} />
+            ) : (
+              <span className="text-[11px] font-bold tracking-wide">GIF</span>
+            )}
+          </button>
+        );
+      })}
     </div>
   );
 }

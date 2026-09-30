@@ -1,28 +1,25 @@
+import { POLL } from "@/constants/poll";
 import { useState } from "react";
 
 import { useComposerPopup } from "@/hooks/composer/useComposerPopup";
 
 import type { ComposerPoll } from "@/types/poll";
 
-const DEFAULT_DURATION = 1440;
+function createEmptyPoll(): ComposerPoll {
+  return {
+    duration: POLL.DEFAULT_DURATION_MINUTES,
+    options: Array.from({ length: POLL.MIN_OPTIONS }, () => ({
+      id: crypto.randomUUID(),
+      text: "",
+    })),
+  };
+}
 
 export function useComposerPoll(initialPoll?: ComposerPoll | null) {
   const popup = useComposerPopup();
 
   const [poll, setPoll] = useState<ComposerPoll>(
-    initialPoll ?? {
-      duration: DEFAULT_DURATION,
-      options: [
-        {
-          id: crypto.randomUUID(),
-          text: "",
-        },
-        {
-          id: crypto.randomUUID(),
-          text: "",
-        },
-      ],
-    },
+    () => initialPoll ?? createEmptyPoll(),
   );
 
   const hasPoll = poll.options.some((option) => option.text.trim().length > 0);
@@ -44,7 +41,7 @@ export function useComposerPoll(initialPoll?: ComposerPoll | null) {
 
   const addOption = () => {
     setPoll((current) => {
-      if (current.options.length >= 4) return current;
+      if (current.options.length >= POLL.MAX_OPTIONS) return current;
 
       return {
         ...current,
@@ -62,7 +59,7 @@ export function useComposerPoll(initialPoll?: ComposerPoll | null) {
 
   const removeOption = (id: string) => {
     setPoll((current) => {
-      if (current.options.length <= 2) return current;
+      if (current.options.length <= POLL.MIN_OPTIONS) return current;
 
       return {
         ...current,
@@ -80,20 +77,7 @@ export function useComposerPoll(initialPoll?: ComposerPoll | null) {
   };
 
   const reset = () => {
-    setPoll({
-      duration: DEFAULT_DURATION,
-
-      options: [
-        {
-          id: crypto.randomUUID(),
-          text: "",
-        },
-        {
-          id: crypto.randomUUID(),
-          text: "",
-        },
-      ],
-    });
+    setPoll(createEmptyPoll());
   };
 
   return {

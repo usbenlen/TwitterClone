@@ -9,7 +9,7 @@ import {
   useComposerLinkPreview,
 } from "@/hooks/composer";
 
-import { MAX_TWEET_LENGTH, MEDIA_STATUS } from "@/constants/app";
+import { MAX_TWEET_LENGTH, MEDIA_STATUS, MEDIA } from "@/constants/app";
 
 import type {
   Gif,
@@ -123,7 +123,7 @@ export function useTweetComposer({
     if (!allMediaUploaded) return false;
 
     if (mediaManager.media.every((item) => item.type === "image"))
-      return mediaManager.media.length <= 4;
+      return mediaManager.media.length <= MEDIA.MAX_ATTACHMENTS;
 
     return (
       mediaManager.media.length === 1 &&

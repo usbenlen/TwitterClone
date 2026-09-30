@@ -1,3 +1,5 @@
+import { ComposerAttachments, ComposerInputsAndPopovers } from "@/components/composer";
+import { formatDateTime } from "@/utils/format";
 import { useState } from "react";
 import { CalendarClock, X } from "lucide-react";
 
@@ -7,25 +9,18 @@ import { Avatar, Button } from "@/ui";
 
 import {
   ComposerToolbar,
-  ComposerPopovers,
   ScheduleModal,
   ScheduledPostsModal,
 } from "@/components/composer";
 
 import {
   TweetComposerEditor,
-  TweetComposerMediaPreview,
   TweetComposerFooter,
   TweetComposerDropOverlay,
   TweetComposerErrors,
-  TweetComposerFileInputs,
-  TweetComposerPollPreview,
-  TweetComposerLocationPreview,
-  TweetComposerLinkPreview,
 } from "@/components/tweet/TweetComposer";
 
 import { cn } from "@/utils/cn";
-import { QuotedTweetCard } from "@/components/tweet/quote";
 
 import type { TweetQuote } from "@/types";
 
@@ -111,44 +106,13 @@ export default function Composer({
             className="max-h-160 text-lg"
           />
 
-          <TweetComposerMediaPreview
-            media={composer.media}
-            onRemove={composer.removeMedia}
-          />
-
-          {composer.pollPreview.visible && (
-            <TweetComposerPollPreview
-              poll={composer.pollPreview.poll}
-              onRemove={composer.pollPreview.onRemove}
-            />
-          )}
-
-          {composer.locationPreview.visible &&
-            composer.locationPreview.location && (
-              <TweetComposerLocationPreview
-                location={composer.locationPreview.location}
-                onRemove={composer.locationPreview.onRemove}
-              />
-            )}
-
-          {composer.linkPreview.visible && (
-            <TweetComposerLinkPreview
-              preview={composer.linkPreview.preview}
-              loading={composer.linkPreview.loading}
-              onRemove={composer.linkPreview.onRemove}
-            />
-          )}
-
-          {quotedTweet && <QuotedTweetCard quote={quotedTweet} />}
+          <ComposerAttachments composer={composer} quotedTweet={quotedTweet} />
 
           {composer.scheduling.scheduledAt && (
             <div className="mt-3 flex items-center justify-between rounded-xl border border-border px-3 py-2 text-sm">
               <span className="flex items-center gap-2 text-muted-foreground">
                 <CalendarClock size={17} />
-                {new Intl.DateTimeFormat("uk-UA", {
-                  dateStyle: "medium",
-                  timeStyle: "short",
-                }).format(new Date(composer.scheduling.scheduledAt))}
+                {formatDateTime(composer.scheduling.scheduledAt)}
               </span>
               {composer.scheduling.canClear && (
                 <button
@@ -186,18 +150,7 @@ export default function Composer({
             />
           </div>
 
-          <ComposerPopovers
-            emoji={composer.popovers.emoji}
-            gif={composer.popovers.gif}
-            poll={composer.popovers.poll}
-            location={composer.popovers.location}
-          />
-
-          <TweetComposerFileInputs
-            imageRef={composer.imageInputRef}
-            videoRef={composer.videoInputRef}
-            onFilesSelected={composer.onFilesSelected}
-          />
+          <ComposerInputsAndPopovers composer={composer} />
 
           {composer.scheduling.open && (
             <ScheduleModal
@@ -288,35 +241,10 @@ export default function Composer({
         {/* Expanded state */}
         {isExpanded && (
           <div>
-            <TweetComposerMediaPreview
-              media={composer.media}
-              onRemove={composer.removeMedia}
+            <ComposerAttachments
+              composer={composer}
+              quotedTweet={quotedTweet}
             />
-
-            {composer.pollPreview.visible && (
-              <TweetComposerPollPreview
-                poll={composer.pollPreview.poll}
-                onRemove={composer.pollPreview.onRemove}
-              />
-            )}
-
-            {composer.locationPreview.visible &&
-              composer.locationPreview.location && (
-                <TweetComposerLocationPreview
-                  location={composer.locationPreview.location}
-                  onRemove={composer.locationPreview.onRemove}
-                />
-              )}
-
-            {composer.linkPreview.visible && (
-              <TweetComposerLinkPreview
-                preview={composer.linkPreview.preview}
-                loading={composer.linkPreview.loading}
-                onRemove={composer.linkPreview.onRemove}
-              />
-            )}
-
-            {quotedTweet && <QuotedTweetCard quote={quotedTweet} />}
 
             <TweetComposerErrors errors={composer.errors} />
 
@@ -339,18 +267,7 @@ export default function Composer({
               />
             </div>
 
-            <ComposerPopovers
-              emoji={composer.popovers.emoji}
-              gif={composer.popovers.gif}
-              poll={composer.popovers.poll}
-              location={composer.popovers.location}
-            />
-
-            <TweetComposerFileInputs
-              imageRef={composer.imageInputRef}
-              videoRef={composer.videoInputRef}
-              onFilesSelected={composer.onFilesSelected}
-            />
+            <ComposerInputsAndPopovers composer={composer} />
           </div>
         )}
       </div>
