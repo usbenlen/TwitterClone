@@ -38,20 +38,7 @@ function MediaViewerInner({
 }: MediaViewerProps) {
   const attachment = attachments[currentIndex];
 
-  // Так само по можливості скоротити якось
-  const {
-    zoom,
-    isPanning,
-    setMediaRef,
-    zoomIn,
-    zoomOut,
-    resetZoom,
-    handleWheel,
-    handlePointerDown,
-    handlePointerMove,
-    handlePointerUp,
-    handlePointerCancel,
-  } = useMediaZoom(open);
+  const mediaZoom = useMediaZoom(open);
 
   useEffect(() => {
     if (!open) return;
@@ -88,9 +75,17 @@ function MediaViewerInner({
 
   const isVideo = attachment.type === "video";
 
-  const mediaClassName = "select-none object-contain";
+  const mediaProps = {
+    ref: mediaZoom.setMediaRef,
+    src: attachment.url,
+    className: "select-none object-contain",
+    onPointerDown: mediaZoom.handlePointerDown,
+    onPointerMove: mediaZoom.handlePointerMove,
+    onPointerUp: mediaZoom.handlePointerUp,
+    onPointerCancel: mediaZoom.handlePointerCancel,
+  };
   const mediaStyle = {
-    transition: isPanning
+    transition: mediaZoom.isPanning
       ? "none"
       : `transform ${MEDIA_VIEWER.TRANSITION_MS}ms ease`,
     touchAction: "none" as const,
@@ -151,27 +146,21 @@ function MediaViewerInner({
       >
         <div
           className={`flex items-center justify-center ${
-            zoom > 1
-              ? isPanning
+            mediaZoom.zoom > 1
+              ? mediaZoom.isPanning
                 ? "cursor-grabbing"
                 : "cursor-grab"
               : "cursor-default"
           }`}
-          onWheel={handleWheel}
+          onWheel={mediaZoom.handleWheel}
         >
           {isVideo ? (
             <video
-              ref={setMediaRef}
-              src={attachment.url}
+              {...mediaProps}
               controls
               playsInline
               autoPlay
               preload="metadata"
-              onPointerDown={handlePointerDown}
-              onPointerMove={handlePointerMove}
-              onPointerUp={handlePointerUp}
-              onPointerCancel={handlePointerCancel}
-              className={mediaClassName}
               style={{
                 ...mediaStyle,
                 display: "block",
@@ -184,15 +173,9 @@ function MediaViewerInner({
             />
           ) : (
             <img
-              ref={setMediaRef}
-              src={attachment.url}
+              {...mediaProps}
               alt=""
               draggable={false}
-              onPointerDown={handlePointerDown}
-              onPointerMove={handlePointerMove}
-              onPointerUp={handlePointerUp}
-              onPointerCancel={handlePointerCancel}
-              className={mediaClassName}
               style={{
                 ...mediaStyle,
                 width: "min(70vw, 800px)",
@@ -210,8 +193,8 @@ function MediaViewerInner({
       >
         <button
           type="button"
-          onClick={zoomOut}
-          disabled={zoom <= MEDIA_VIEWER.MIN_ZOOM}
+          onClick={mediaZoom.zoomOut}
+          disabled={mediaZoom.zoom <= MEDIA_VIEWER.MIN_ZOOM}
           className="flex size-9 items-center justify-center rounded-full transition hover:bg-white/10 disabled:cursor-default disabled:opacity-40"
           aria-label="Зменшити"
         >
@@ -220,16 +203,16 @@ function MediaViewerInner({
 
         <button
           type="button"
-          onClick={resetZoom}
+          onClick={mediaZoom.resetZoom}
           className="min-w-16 rounded-full px-3 py-2 text-sm font-medium transition hover:bg-white/10"
         >
-          {Math.round(zoom * 100)}%
+          {Math.round(mediaZoom.zoom * 100)}%
         </button>
 
         <button
           type="button"
-          onClick={zoomIn}
-          disabled={zoom >= MEDIA_VIEWER.MAX_ZOOM}
+          onClick={mediaZoom.zoomIn}
+          disabled={mediaZoom.zoom >= MEDIA_VIEWER.MAX_ZOOM}
           className="flex size-9 items-center justify-center rounded-full transition hover:bg-white/10 disabled:cursor-default disabled:opacity-40"
           aria-label="Збільшити"
         >
