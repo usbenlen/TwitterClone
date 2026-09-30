@@ -36,21 +36,30 @@ export function parseSearchCriteria(params: URLSearchParams): SearchCriteria {
 export function serializeSearchCriteria(criteria: SearchCriteria) {
   const params = new URLSearchParams();
 
-  // будь ласка скоротити ну серйозно
-  if (criteria.query.trim()) params.set("q", criteria.query.trim());
-  params.set("type", criteria.type);
-  if (criteria.people === "following") params.set("people", "following");
-  if (criteria.location === "near") params.set("location", "near");
-  if (criteria.exactPhrase.trim()) params.set("exactPhrase", criteria.exactPhrase.trim());
-  if (criteria.anyWords.trim()) params.set("anyWords", criteria.anyWords.trim());
-  if (criteria.excludeWords.trim()) params.set("excludeWords", criteria.excludeWords.trim());
-  if (criteria.from.trim()) params.set("from", criteria.from.trim().replace(/^@+/, ""));
-  if (criteria.minReplies !== undefined) params.set("minReplies", String(criteria.minReplies));
-  if (criteria.minLikes !== undefined) params.set("minLikes", String(criteria.minLikes));
-  if (criteria.minReposts !== undefined) params.set("minReposts", String(criteria.minReposts));
-  if (criteria.fromDate) params.set("fromDate", criteria.fromDate);
-  if (criteria.toDate) params.set("toDate", criteria.toDate);
-  if (criteria.hasMedia) params.set("hasMedia", "true");
+  const entries = {
+    q: criteria.query.trim(),
+    type: criteria.type,
+    people: criteria.people === "following" && criteria.people,
+    location: criteria.location === "near" && criteria.location,
+    exactPhrase: criteria.exactPhrase.trim(),
+    anyWords: criteria.anyWords.trim(),
+    excludeWords: criteria.excludeWords.trim(),
+    from: criteria.from.trim(),
+    minReplies: criteria.minReplies,
+    minLikes: criteria.minLikes,
+    minReposts: criteria.minReposts,
+    fromDate: criteria.fromDate,
+    toDate: criteria.toDate,
+    hasMedia: criteria.hasMedia && "true",
+  };
+
+  for (const [key, value] of Object.entries(entries)) {
+    if (value === undefined || value === "" || value === false) continue;
+    params.set(
+      key,
+      key === "from" ? String(value).replace(/^@+/, "") : String(value),
+    );
+  }
 
   return params;
 }
