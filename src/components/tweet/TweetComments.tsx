@@ -138,7 +138,7 @@ export default function TweetComments({
 
   const composer = useTweetComposer({
     onSubmit: async (data) => {
-      return onSubmit(data, null);
+      return onSubmit(data, parentCommentId);
     },
   });
 
@@ -249,7 +249,9 @@ export default function TweetComments({
                       onOpenReplyModal={onOpenReplyModal}
                       onDelete={onDelete}
                       onUpdate={onUpdate}
-                      className={connectsToNext ? "relative border-b-0" : undefined}
+                      className={
+                        connectsToNext ? "relative border-b-0" : undefined
+                      }
                     />
                   </div>
                 );

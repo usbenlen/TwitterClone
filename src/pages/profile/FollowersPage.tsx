@@ -1,7 +1,9 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { skipToken } from "@reduxjs/toolkit/query/react";
 import { useParams } from "react-router";
 
-import { useAuth, useFollow, useProfile } from "@/hooks";
+import { useAuth, useFollow } from "@/hooks";
+import { useGetProfileQuery, useGetFollowersQuery } from "@/store/sharedApi";
 
 import { Spinner } from "@/ui";
 
@@ -16,21 +18,18 @@ export default function FollowersPage() {
     username: string;
   }>();
 
-  const { user, isLoading } = useProfile(username, "posts");
+  const profile = useGetProfileQuery(username ?? skipToken);
+  const user =
+    profile.currentData?.username === username ? profile.currentData : null;
+  const isLoading = Boolean(username) && !user && !profile.error;
   const { user: currentUser } = useAuth();
-
-  const { followers, removeFollower, loadFollowers } = useFollow();
-
-  const [profileFollowers, setProfileFollowers] = useState<UserShort[]>([]);
+  const { removeFollower } = useFollow();
+  const { data: users = [] } = useGetFollowersQuery(user?.id ?? skipToken);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedFollower, setSelectedFollower] = useState<UserShort | null>(
     null,
   );
-
-  useEffect(() => {
-    if (user) loadFollowers(user.id).then(setProfileFollowers);
-  }, [user, loadFollowers]);
 
   if (isLoading) {
     return (
@@ -45,12 +44,11 @@ export default function FollowersPage() {
   if (!user) return null;
 
   const isOwnProfile = currentUser?.id === user.id;
-  const users = isOwnProfile ? followers : profileFollowers;
 
   const handleRemoveFollower = async () => {
     if (!selectedFollower || !isOwnProfile) return;
 
-    await removeFollower(user.id, selectedFollower.id);
+    await removeFollower(selectedFollower);
 
     setIsModalOpen(false);
     setSelectedFollower(null);

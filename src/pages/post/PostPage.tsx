@@ -1,7 +1,7 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useMemo } from "react";
+import { skipToken } from "@reduxjs/toolkit/query/react";
+import { useGetThreadQuery, useViewPostMutation } from "@/store/postsApi";
 import { useParams } from "react-router";
-
-import { tweetApi, commentApi } from "@/api";
 
 import { Spinner } from "@/ui";
 import { PageHeader } from "@/components/layout/pageHeader";
@@ -10,188 +10,37 @@ import { TweetCard } from "@/components/tweet";
 import { APP_ROUTES } from "@/constants/routes";
 
 import { withAncestorContext } from "@/utils/ancestors";
-import {
-  markQuotedTargetEditedInTweets,
-  markQuotedTargetUnavailableInTweets,
-} from "@/utils/quotes";
-
-import type { Tweet } from "@/types/tweet";
-
-const viewedPostIds = new Set<string>();
-
 export default function PostPage() {
   const { postId } = useParams<{ postId: string }>();
-  const [thread, setThread] = useState<{
-    target: Tweet;
-    replies: Tweet[];
-  } | null>(null);
-
-  const [isLoading, setIsLoading] = useState(true);
-  const [notFound, setNotFound] = useState(false);
-
-  const targetRef = useRef<HTMLDivElement | null>(null);
-
-  useEffect(() => {
-    if (!postId) return;
-
-    let active = true;
-    const currentId = postId;
-
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setIsLoading(true);
-    setNotFound(false);
-    setThread(null);
-
-    async function loadThread() {
-      try {
-        const threadData = await commentApi.getThread(currentId);
-
-        if (!active) return;
-
-        setThread({
-          target: {
-            ...threadData.target,
-            ancestors: threadData.ancestors,
-          },
-          replies: threadData.replies,
-        });
-
-        if (!viewedPostIds.has(currentId)) {
-          viewedPostIds.add(currentId);
-
-          try {
-            if (!threadData.target.isComment) {
-              await tweetApi.view(currentId);
-
-              if (!active) return;
-
-              setThread((current) =>
-                current && current.target.id === currentId
-                  ? {
-                      ...current,
-                      target: {
-                        ...current.target,
-                        viewsCount: current.target.viewsCount + 1,
-                      },
-                    }
-                  : current,
-              );
-            }
-          } catch {
-            viewedPostIds.delete(currentId);
+  const query = useGetThreadQuery(postId ?? skipToken);
+  const data = query.currentData;
+  const thread = useMemo(
+    () =>
+      data
+        ? {
+            target: { ...data.target, ancestors: data.ancestors },
+            replies: data.replies,
           }
-        }
-      } catch {
-        if (!active) return;
-
-        setNotFound(true);
-        setThread(null);
-      } finally {
-        if (active) setIsLoading(false);
-      }
-    }
-
-    queueMicrotask(() => {
-      if (!active) return;
-
-      setIsLoading(true);
-      setNotFound(false);
-      void loadThread();
-    });
-
-    return () => {
-      active = false;
-    };
-  }, [postId]);
+        : null,
+    [data],
+  );
+  const isLoading = query.isFetching && !data;
+  const notFound = query.isError;
+  const targetRef = useRef<HTMLDivElement | null>(null);
+  const targetId = data?.target.id;
+  const isComment = data?.target.isComment;
+  const [viewPost, viewState] = useViewPostMutation({
+    fixedCacheKey: targetId ? `view:${targetId}` : undefined,
+  });
 
   useEffect(() => {
-    const applyUpdate = (targetType: "post" | "comment", updated: Tweet) => {
-      setThread((current) => {
-        if (!current) return current;
-
-        const updateItems = (items: Tweet[]) =>
-          markQuotedTargetEditedInTweets(
-            items.map((item) =>
-              item.id === updated.id
-                ? { ...updated, ancestors: item.ancestors }
-                : item,
-            ),
-            targetType,
-            updated.id,
-          );
-
-        const ancestors = updateItems(current.target.ancestors ?? []);
-        const target = updateItems([{ ...current.target, ancestors }])[0];
-
-        return {
-          target,
-          replies: updateItems(current.replies),
-        };
-      });
-    };
-
-    const applyDeletion = (
-      targetType: "post" | "comment",
-      targetId: string,
-    ) => {
-      setThread((current) => {
-        if (!current) return current;
-
-        const ancestors = markQuotedTargetUnavailableInTweets(
-          (current.target.ancestors ?? []).filter(
-            (item) => item.id !== targetId,
-          ),
-          targetType,
-          targetId,
-        );
-
-        return {
-          target: markQuotedTargetUnavailableInTweets(
-            [{ ...current.target, ancestors }],
-            targetType,
-            targetId,
-          )[0],
-          replies: markQuotedTargetUnavailableInTweets(
-            current.replies.filter((item) => item.id !== targetId),
-            targetType,
-            targetId,
-          ),
-        };
-      });
-    };
-
-    const handleTweetUpdated = (event: Event) => {
-      const { tweet } = (event as CustomEvent<{ tweet: Tweet }>).detail;
-      applyUpdate("post", tweet);
-    };
-    const handleCommentUpdated = (event: Event) => {
-      const { comment } = (event as CustomEvent<{ comment: Tweet }>).detail;
-      applyUpdate("comment", comment);
-    };
-    const handleTweetDeleted = (event: Event) => {
-      const { tweetId } = (event as CustomEvent<{ tweetId: string }>).detail;
-      applyDeletion("post", tweetId);
-    };
-    const handleCommentDeleted = (event: Event) => {
-      const { commentId } = (event as CustomEvent<{ commentId: string }>)
-        .detail;
-      applyDeletion("comment", commentId);
-    };
-
-    window.addEventListener("tweet-updated", handleTweetUpdated);
-    window.addEventListener("comment-updated", handleCommentUpdated);
-    window.addEventListener("tweet-deleted", handleTweetDeleted);
-    window.addEventListener("comment-deleted", handleCommentDeleted);
-    return () => {
-      window.removeEventListener("tweet-updated", handleTweetUpdated);
-      window.removeEventListener("comment-updated", handleCommentUpdated);
-      window.removeEventListener("tweet-deleted", handleTweetDeleted);
-      window.removeEventListener("comment-deleted", handleCommentDeleted);
-    };
-  }, []);
+    if (!targetId || isComment) return;
+    if (viewState.isLoading || viewState.isSuccess) return;
+    void viewPost(targetId);
+  }, [isComment, targetId, viewPost, viewState.isLoading, viewState.isSuccess]);
 
   useEffect(() => {
-    if (!thread || !targetRef.current) return;
+    if (!targetId || !targetRef.current) return;
 
     const frame = requestAnimationFrame(() => {
       const target = targetRef.current;
@@ -202,7 +51,7 @@ export default function PostPage() {
     });
 
     return () => cancelAnimationFrame(frame);
-  }, [thread]);
+  }, [targetId]);
 
   return (
     <section className="w-full max-w-3xl border-r border-border bg-background min-h-screen">

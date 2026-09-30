@@ -22,20 +22,12 @@ export default function ProfilePage() {
       ? tabParam
       : "posts";
 
-  const {
-    user,
-    tweets,
-    isLoading,
-    isTabLoading,
-    notFound,
-    tabError,
-    updateUser,
-  } = useProfile(username, activeTab);
+  const { user, tweets, isLoading, isTabLoading, notFound, tabError } =
+    useProfile(username, activeTab);
 
   const handleUpdateProfile = async (data: UpdateProfileRequest) => {
     const updatedUser = await userApi.updateProfile(data);
 
-    updateUser(updatedUser);
     updateAuthUser(updatedUser);
   };
 

@@ -29,7 +29,7 @@ export default function RecommendationUserItem({
     setError(null);
 
     try {
-      if (following) await unfollow(user.id);
+      if (following) await unfollow(user);
       else await follow(user);
     } catch {
       setError("Не вдалося оновити підписку.");

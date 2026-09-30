@@ -10,10 +10,20 @@ interface TweetPollProps {
   tweetId: string;
   poll: TweetPollType;
   readOnly?: boolean;
+  isComment?: boolean;
 }
 
-export default function TweetPoll({ poll, tweetId, readOnly = false }: TweetPollProps) {
-  const { poll: currentPoll, loading, vote } = usePollVote(tweetId, poll);
+export default function TweetPoll({
+  poll,
+  tweetId,
+  readOnly = false,
+  isComment = false,
+}: TweetPollProps) {
+  const {
+    poll: currentPoll,
+    loading,
+    vote,
+  } = usePollVote(tweetId, poll, isComment);
   const countdown = usePollCountdown(currentPoll.expiresAt);
 
   const expired = currentPoll.isClosed || countdown.expired;

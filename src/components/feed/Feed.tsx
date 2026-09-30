@@ -5,13 +5,13 @@ import { PageHeader } from "@/components/layout/pageHeader";
 import { TweetComposer } from "@/components/tweet";
 
 export default function Feed() {
-  const { tweets, isLoading, error, prepend } = useFeed();
+  const { tweets, isLoading, error } = useFeed();
 
   return (
     <section className="w-full max-w-3xl border-r border-border bg-background">
       <PageHeader title="Головна" showMobileLogo />
 
-      <TweetComposer onCreated={prepend} />
+      <TweetComposer />
 
       <FeedList
         tweets={tweets}

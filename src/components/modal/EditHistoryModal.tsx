@@ -1,12 +1,12 @@
-import { useCallback, useEffect, useState } from "react";
+import { useEffect } from "react";
 import { createPortal } from "react-dom";
 import { BadgeCheck, X } from "lucide-react";
 
-import { commentApi, tweetApi } from "@/api";
+import { useGetHistoryQuery, targetOf, errorMessage } from "@/store/postsApi";
 import TweetContent from "@/components/tweet/TweetContent";
 import { Avatar, Button, Spinner } from "@/ui";
 
-import type { EditHistoryResponse, Tweet } from "@/types";
+import type { Tweet } from "@/types";
 
 interface EditHistoryModalProps {
   open: boolean;
@@ -26,36 +26,16 @@ export default function EditHistoryModal({
   tweet,
   onClose,
 }: EditHistoryModalProps) {
-  const [history, setHistory] = useState<EditHistoryResponse | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  const load = useCallback(async () => {
-    setIsLoading(true);
-    setError(null);
-
-    try {
-      const result = tweet.isComment
-        ? await commentApi.getEditHistory(tweet.id)
-        : await tweetApi.getEditHistory(tweet.id);
-      setHistory(result);
-    } catch (loadError) {
-      setError(
-        loadError instanceof Error
-          ? loadError.message
-          : "Не вдалося завантажити історію редагувань.",
-      );
-    } finally {
-      setIsLoading(false);
-    }
-  }, [tweet.id, tweet.isComment]);
+  const query = useGetHistoryQuery(targetOf(tweet), { skip: !open });
+  const history = query.currentData;
+  const isLoading = query.isFetching;
+  const error = query.error ? errorMessage(query.error) : null;
+  const load = () => {
+    void query.refetch();
+  };
 
   useEffect(() => {
     if (!open) return;
-    const loadFrame = requestAnimationFrame(() => {
-      void load();
-    });
-
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
 
@@ -65,11 +45,10 @@ export default function EditHistoryModal({
 
     window.addEventListener("keydown", handleKeyDown);
     return () => {
-      cancelAnimationFrame(loadFrame);
       document.body.style.overflow = previousOverflow;
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, [load, onClose, open]);
+  }, [onClose, open]);
 
   if (!open) return null;
 

@@ -63,7 +63,7 @@ export default function ProfileHero({
                 className={"cursor-pointer"}
                 size="sm"
                 variant={following ? "outline" : "primary"}
-                onClick={() => (following ? unfollow(user.id) : follow(user))}
+                onClick={() => void (following ? unfollow(user) : follow(user))}
               >
                 {following ? "Читаю" : "Читати"}
               </Button>

@@ -14,7 +14,10 @@ interface TweetContentProps {
   readOnly?: boolean;
 }
 
-export default function TweetContent({ tweet, readOnly = false }: TweetContentProps) {
+export default function TweetContent({
+  tweet,
+  readOnly = false,
+}: TweetContentProps) {
   const displayContent = removePreviewUrl(
     tweet.content,
     tweet.linkPreview?.url,
@@ -34,7 +37,12 @@ export default function TweetContent({ tweet, readOnly = false }: TweetContentPr
       )}
 
       {tweet.poll && (
-        <TweetPoll tweetId={tweet.id} poll={tweet.poll} readOnly={readOnly} />
+        <TweetPoll
+          isComment={tweet.isComment}
+          tweetId={tweet.id}
+          poll={tweet.poll}
+          readOnly={readOnly}
+        />
       )}
 
       {tweet.linkPreview && <LinkPreviewCard preview={tweet.linkPreview} />}

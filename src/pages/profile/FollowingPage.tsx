@@ -1,30 +1,23 @@
-import { useEffect, useState } from "react";
+import { skipToken } from "@reduxjs/toolkit/query/react";
 import { useParams } from "react-router";
 
-import { useAuth, useFollow, useProfile } from "@/hooks";
+import { useGetProfileQuery, useGetFollowingQuery } from "@/store/sharedApi";
 
 import { Spinner } from "@/ui";
 
 import { FollowNavigation } from "@/components/profile";
 import { UserListItem } from "@/components/user";
 
-import type { UserShort } from "@/types";
-
 export default function FollowingPage() {
   const { username } = useParams<{
     username: string;
   }>();
 
-  const { user, isLoading } = useProfile(username, "posts");
-  const { user: currentUser } = useAuth();
-
-  const { following, loadFollowing } = useFollow();
-
-  const [profileFollowing, setProfileFollowing] = useState<UserShort[]>([]);
-
-  useEffect(() => {
-    if (user) loadFollowing(user.id).then(setProfileFollowing);
-  }, [user, loadFollowing]);
+  const profile = useGetProfileQuery(username ?? skipToken);
+  const user =
+    profile.currentData?.username === username ? profile.currentData : null;
+  const isLoading = Boolean(username) && !user && !profile.error;
+  const { data: users = [] } = useGetFollowingQuery(user?.id ?? skipToken);
 
   if (isLoading) {
     return (
@@ -37,9 +30,6 @@ export default function FollowingPage() {
   }
 
   if (!user) return null;
-
-  const isOwnProfile = currentUser?.id === user.id;
-  const users = isOwnProfile ? following : profileFollowing;
 
   return (
     <section>

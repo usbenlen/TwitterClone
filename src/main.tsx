@@ -1,23 +1,14 @@
+import { Provider } from "react-redux";
+import { store } from "@/store";
 import ReactDOM from "react-dom/client";
 import "@/index.css";
 import { routes } from "@/routes";
 import { RouterProvider } from "react-router";
-
-import {
-  AuthProvider,
-  ThemeProvider,
-  FollowProvider,
-  ScheduledPostsProvider,
-} from "@/providers";
+import { AppEffects } from "@/providers/AppEffects";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
-  <ThemeProvider>
-    <AuthProvider>
-      <ScheduledPostsProvider>
-        <FollowProvider>
-          <RouterProvider router={routes} />
-        </FollowProvider>
-      </ScheduledPostsProvider>
-    </AuthProvider>
-  </ThemeProvider>,
+  <Provider store={store}>
+    <AppEffects />
+    <RouterProvider router={routes} />
+  </Provider>,
 );

@@ -1,13 +1,18 @@
-import { useContext } from "react";
-
-import { ThemeContext } from "@/providers/ThemeContext";
+import { useCallback } from "react";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import { systemTheme, themeChanged } from "@/store/theme";
+import type { Theme } from "@/types/theme";
 
 export function useTheme() {
-  const context = useContext(ThemeContext);
-  if (!context)
-    throw new Error(
-      "useTheme повинен використовуватись всередині ThemeProvider",
-    );
-
-  return context;
+  const dispatch = useAppDispatch();
+  const theme = useAppSelector((state) => state.theme.value);
+  const setTheme = useCallback(
+    (nextTheme: Theme) => dispatch(themeChanged(nextTheme)),
+    [dispatch],
+  );
+  const toggleTheme = useCallback(() => {
+    const activeTheme = theme === "system" ? systemTheme() : theme;
+    dispatch(themeChanged(activeTheme === "dark" ? "light" : "dark"));
+  }, [dispatch, theme]);
+  return { theme, setTheme, toggleTheme };
 }

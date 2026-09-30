@@ -1,51 +1,28 @@
-import { useState } from "react";
-
-import { pollApi } from "@/api/poll.api";
-
+import { useAppSelector, useAppStore } from "@/store/hooks";
+import { postsApi, reactionKey } from "@/store/postsApi";
+import { runReaction } from "@/store/reactions";
 import type { TweetPoll } from "@/types/poll";
 
-export function usePollVote(tweetId: string, initialPoll: TweetPoll) {
-  const [poll, setPoll] = useState(initialPoll);
-  const [loading, setLoading] = useState(false);
-
-  const vote = async (optionId: string) => {
-    if (loading || poll.votedOptionId || poll.isClosed) return;
-
-    const previous = poll;
-
-    setLoading(true);
-
-    setPoll((current) => ({
-      ...current,
-
-      votedOptionId: optionId,
-      totalVotes: current.totalVotes + 1,
-
-      options: current.options.map((option) =>
-        option.id === optionId
-          ? {
-              ...option,
-
-              votesCount: option.votesCount + 1,
-            }
-          : option,
-      ),
-    }));
-
-    try {
-      const updated = await pollApi.vote(tweetId, optionId);
-
-      setPoll(updated);
-    } catch {
-      setPoll(previous);
-    } finally {
-      setLoading(false);
-    }
+export function usePollVote(
+  tweetId: string,
+  poll: TweetPoll,
+  isComment = false,
+) {
+  const store = useAppStore();
+  const target = {
+    id: tweetId,
+    type: isComment ? ("comment" as const) : ("post" as const),
   };
-
+  const loading = useAppSelector(
+    (state) =>
+      postsApi.endpoints.react.select(
+        reactionKey({ ...target, action: "vote" }),
+      )(state).isLoading,
+  );
   return {
     poll,
     loading,
-    vote,
+    vote: (optionId: string) =>
+      runReaction(store, { ...target, action: "vote", optionId, poll }),
   };
 }

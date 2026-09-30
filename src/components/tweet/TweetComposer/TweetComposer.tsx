@@ -2,15 +2,8 @@ import { useTweetComposer } from "@/hooks/composer";
 
 import { Composer } from "@/components/composer";
 
-import type { Tweet } from "@/types/tweet";
-
-interface TweetComposerProps {
-  onCreated: (tweet: Tweet) => void;
-}
-
-export default function TweetComposer({ onCreated }: TweetComposerProps) {
+export default function TweetComposer() {
   const composer = useTweetComposer({
-    onCreated,
     allowScheduling: true,
   });
 

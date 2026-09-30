@@ -80,7 +80,10 @@ export default function FeedList({
     return (
       <>
         {tweets.map((tweet) => (
-          <ReplyTweetItem key={tweet.id} tweet={tweet} />
+          <ReplyTweetItem
+            key={`${tweet.isComment ? "comment" : "post"}:${tweet.id}`}
+            tweet={tweet}
+          />
         ))}
       </>
     );
@@ -91,9 +94,16 @@ export default function FeedList({
       <>
         {tweets.map((tweet) =>
           isReply(tweet) ? (
-            <ReplyTweetItem key={tweet.id} tweet={tweet} />
+            <ReplyTweetItem
+              key={`${tweet.isComment ? "comment" : "post"}:${tweet.id}`}
+              tweet={tweet}
+            />
           ) : (
-            <TweetCard key={tweet.id} tweet={tweet} variant="feed" />
+            <TweetCard
+              key={`${tweet.isComment ? "comment" : "post"}:${tweet.id}`}
+              tweet={tweet}
+              variant="feed"
+            />
           ),
         )}
       </>
@@ -104,7 +114,7 @@ export default function FeedList({
     <>
       {tweets.map((tweet) => (
         <TweetCard
-          key={tweet.id}
+          key={`${tweet.isComment ? "comment" : "post"}:${tweet.id}`}
           tweet={tweet}
           variant="feed"
           repostedBy={repostedBy}

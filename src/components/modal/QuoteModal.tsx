@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { createPortal } from "react-dom";
 import { X } from "lucide-react";
 
-import { tweetApi } from "@/api";
+import { useCreatePostMutation } from "@/store/postsApi";
 
 import { useTweetComposer, useUnsavedChangesGuard } from "@/hooks";
 
@@ -44,6 +44,7 @@ function QuoteModalInner({
   onEnsureRepost,
   onClose,
 }: QuoteModalProps) {
+  const [createPost] = useCreatePostMutation();
   const quote: TweetQuote = {
     targetType: tweet.isComment ? "comment" : "post",
     targetId: tweet.id,
@@ -63,17 +64,13 @@ function QuoteModalInner({
         return true;
       }
 
-      const created = await tweetApi.create({
+      const created = await createPost({
         ...data,
         poll: data.poll ?? undefined,
         quotedPostId: tweet.isComment ? undefined : tweet.id,
         quotedCommentId: tweet.isComment ? tweet.id : undefined,
         quotedTargetVersionId: tweet.versionId,
-      });
-
-      window.dispatchEvent(
-        new CustomEvent("tweet-created", { detail: { tweet: created } }),
-      );
+      }).unwrap();
 
       return created;
     },

@@ -45,9 +45,13 @@ function CommentModalInner({
   onClose,
   onSubmit,
 }: CommentModalProps) {
+  const displayedTweet = replyTo ?? tweet;
   const composer = useTweetComposer({
     onSubmit: async (data) => {
-      return onSubmit(data, replyTo?.id || null);
+      return onSubmit(
+        data,
+        displayedTweet.isComment ? displayedTweet.id : null,
+      );
     },
   });
 
@@ -69,8 +73,8 @@ function CommentModalInner({
     };
   }, [open]);
 
-  const displayedTweet = replyTo ?? tweet;
-  const authorName = displayedTweet.author.displayName || displayedTweet.author.username;
+  const authorName =
+    displayedTweet.author.displayName || displayedTweet.author.username;
   const replyingToUsernames = getReplyingToUsernames(tweet, replyTo);
 
   return createPortal(

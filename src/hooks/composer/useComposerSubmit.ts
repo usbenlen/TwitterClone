@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-import { tweetApi } from "@/api/tweet.api";
+import { useCreatePostMutation } from "@/store/postsApi";
 
 import type {
   Tweet,
@@ -37,6 +37,7 @@ export function useComposerSubmit({
   onSubmit,
 }: UseComposerSubmitProps) {
   const [isPosting, setIsPosting] = useState(false);
+  const [createPost] = useCreatePostMutation();
 
   const submit = async () => {
     setIsPosting(true);
@@ -65,13 +66,13 @@ export function useComposerSubmit({
       let result;
       if (onSubmit) result = await onSubmit(payload);
       else {
-        result = await tweetApi.create({
+        result = await createPost({
           content: payload.content,
           mediaIds: payload.mediaIds,
           poll: pollData || undefined,
           location: payload.location,
           linkPreview: payload.linkPreview,
-        });
+        }).unwrap();
       }
 
       if (result && typeof result === "object") onCreated(result as Tweet);

@@ -85,7 +85,7 @@ export default function UserListItem({
                 event.preventDefault();
                 event.stopPropagation();
 
-                if (following) unfollow(user.id);
+                if (following) void unfollow(user);
                 else follow(user);
               }}
               size="sm"

@@ -7,8 +7,6 @@ import {
   ProfileTabs,
 } from "@/components/profile";
 
-import { FollowProvider } from "@/providers/FollowProvider";
-
 import type { UpdateProfileRequest } from "@/api/user.api";
 
 import type { ProfileTab } from "@/hooks/useProfile";
@@ -44,31 +42,29 @@ export default function Profile({
           : "Користувач ще нічого не публікував.";
 
   return (
-    <FollowProvider>
-      <section className="max-w-3xl border-r border-border bg-background">
-        <ProfileHeader user={user} />
+    <section className="max-w-3xl border-r border-border bg-background">
+      <ProfileHeader user={user} />
 
-        <ProfileHero
-          user={user}
-          isOwnProfile={isOwnProfile}
-          onUpdateProfile={onUpdateProfile}
-        />
+      <ProfileHero
+        user={user}
+        isOwnProfile={isOwnProfile}
+        onUpdateProfile={onUpdateProfile}
+      />
 
-        <ProfileInfo user={user} />
+      <ProfileInfo user={user} />
 
-        <ProfileStats user={user} isOwnProfile={isOwnProfile} />
+      <ProfileStats user={user} isOwnProfile={isOwnProfile} />
 
-        <ProfileTabs activeTab={activeTab} />
+      <ProfileTabs activeTab={activeTab} />
 
-        <FeedList
-          tweets={tweets}
-          variant={activeTab === "replies" ? "replies" : "feed"}
-          repostedBy={activeTab === "reposts" ? user : undefined}
-          isLoading={isTabLoading}
-          error={tabError}
-          emptyMessage={emptyMessage}
-        />
-      </section>
-    </FollowProvider>
+      <FeedList
+        tweets={tweets}
+        variant={activeTab === "replies" ? "replies" : "feed"}
+        repostedBy={activeTab === "reposts" ? user : undefined}
+        isLoading={isTabLoading}
+        error={tabError}
+        emptyMessage={emptyMessage}
+      />
+    </section>
   );
 }

@@ -1,8 +1,12 @@
-import { useState } from "react";
+import { memo, useState } from "react";
 import { Link, useNavigate } from "react-router";
 import { Repeat2 } from "lucide-react";
 
-import { commentApi, tweetApi } from "@/api";
+import {
+  targetOf,
+  useDeletePostMutation,
+  useUpdatePostMutation,
+} from "@/store/postsApi";
 
 import {
   useAuth,
@@ -13,11 +17,7 @@ import {
   useClickOrDrag,
 } from "@/hooks";
 
-import {
-  EditHistoryModal,
-  EditModal,
-  QuoteModal,
-} from "@/components/modal";
+import { EditHistoryModal, EditModal, QuoteModal } from "@/components/modal";
 
 import { Avatar } from "@/ui";
 
@@ -54,7 +54,7 @@ interface TweetCardProps {
   ) => Promise<boolean | Tweet>;
 }
 
-export default function TweetCard({
+function TweetCard({
   tweet,
   navigateToPost = true,
   commentsInitiallyOpen = false,
@@ -66,6 +66,8 @@ export default function TweetCard({
   onUpdate,
 }: TweetCardProps) {
   const navigate = useNavigate();
+  const [deletePost] = useDeletePostMutation();
+  const [updatePost] = useUpdatePostMutation();
   const { user } = useAuth();
   const [isCommentModalOpen, setIsCommentModalOpen] = useState(false);
   const [commentModalTarget, setCommentModalTarget] = useState<Tweet | null>(
@@ -80,20 +82,7 @@ export default function TweetCard({
   const handleDelete = async () => {
     try {
       if (onDelete) await onDelete(tweet.id);
-      else if (tweet.isComment) await commentApi.delete(tweet.id);
-      else await tweetApi.delete(tweet.id);
-
-      if (!onDelete) {
-        window.dispatchEvent(
-          tweet.isComment
-            ? new CustomEvent("comment-deleted", {
-                detail: { commentId: tweet.id },
-              })
-            : new CustomEvent("tweet-deleted", {
-                detail: { tweetId: tweet.id },
-              }),
-        );
-      }
+      else await deletePost(targetOf(tweet)).unwrap();
 
       if (variant === "post") navigate(APP_ROUTES.HOME);
     } catch (error) {
@@ -105,25 +94,10 @@ export default function TweetCard({
     try {
       const result = onUpdate
         ? await onUpdate(tweet.id, data)
-        : tweet.isComment
-          ? await commentApi.update(tweet.id, data)
-          : await tweetApi.update(tweet.id, data);
+        : await updatePost({ ...targetOf(tweet), data }).unwrap();
 
       if (result === false) throw new Error("Не вдалося оновити матеріал.");
-
       const updatedTweet = result === true ? { ...tweet, ...data } : result;
-
-      if (!onUpdate) {
-        window.dispatchEvent(
-          tweet.isComment
-            ? new CustomEvent("comment-updated", {
-                detail: { comment: updatedTweet },
-              })
-            : new CustomEvent("tweet-updated", {
-                detail: { tweet: updatedTweet },
-              }),
-        );
-      }
 
       return updatedTweet;
     } catch (error) {
@@ -250,9 +224,7 @@ export default function TweetCard({
           replyingToUsername={tweet.author.username}
           parentCommentId={tweet.isComment ? tweet.id : null}
           threadAuthorId={tweet.author.id}
-          onSubmit={async (data) => {
-            return comments.createComment(data, null);
-          }}
+          onSubmit={comments.createComment}
           onDelete={comments.deleteComment}
           onUpdate={comments.updateComment}
           onOpenReplyModal={openCommentModal}
@@ -297,3 +269,5 @@ export default function TweetCard({
     </>
   );
 }
+
+export default memo(TweetCard);
