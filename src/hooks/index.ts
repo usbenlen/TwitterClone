@@ -1,27 +1,36 @@
-export { useFeed } from "@/hooks/useFeed";
-export { useProfile } from "@/hooks/useProfile";
+// Session and navigation
 export { useAuth } from "@/hooks/useAuth";
-export { useScheduledPosts } from "@/hooks/useScheduledPosts.ts";
-export { useTheme } from "@/hooks/useTheme";
-export { useNavigation } from "@/hooks/useNavigation";
-export { useTweetLike } from "@/hooks/useTweetLike";
-export { useTweetRepost } from "@/hooks/useTweetRepost";
-export { useBookmarks } from "@/hooks/useBookmarks";
-export { useTweetComments } from "@/hooks/useTweetComments";
-export { useFollow } from "@/hooks/useFollow";
-export { useSearch } from "@/hooks/useSearch";
-export { useImageCache } from "@/hooks/useImageCache";
-export { useTweetBookmark } from "@/hooks/useTweetBookmark";
-export { useClickOrDrag } from "@/hooks/useClickOrDrag";
-export { useUnsavedChangesGuard } from "@/hooks/useUnsavedChangesGuard";
 export { useBackNavigation } from "@/hooks/useBackNavigation";
+export { useNavigation } from "@/hooks/useNavigation";
+export { useTheme } from "@/hooks/useTheme";
+
+// Feed and discovery
+export { useBookmarks } from "@/hooks/useBookmarks";
+export { useFeed } from "@/hooks/useFeed";
+export { useFollow } from "@/hooks/useFollow";
+export { useProfile } from "@/hooks/useProfile";
 export { useRecommendedUsers, useTrends } from "@/hooks/useRecommendations";
-export { useEditProfileForm } from "@/hooks/useEditProfileForm"
+export { useScheduledPosts } from "@/hooks/useScheduledPosts";
+export { useSearch } from "@/hooks/useSearch";
+
+// Tweet actions
+export { useTweetBookmark } from "@/hooks/useTweetBookmark";
+export { useTweetComments } from "@/hooks/useTweetComments";
+export { useTweetLike } from "@/hooks/useTweetLike";
+export { useTweetReaction } from "@/hooks/useTweetReaction";
+export { useTweetRepost } from "@/hooks/useTweetRepost";
+
+// Forms and interaction
+export { useAutosizeTextarea } from "@/hooks/useAutosizeTextarea";
 export { useBodyScrollLock } from "@/hooks/useBodyScrollLock";
-export { useMediaZoom } from "@/hooks/useMediaZoom";
+export { useClickOrDrag } from "@/hooks/useClickOrDrag";
+export { useEditProfileForm } from "@/hooks/useEditProfileForm";
+export { invalidateImageCache, useImageCache } from "@/hooks/useImageCache";
 export { useImageSelection } from "@/hooks/useImageSelection";
+export { useMediaZoom } from "@/hooks/useMediaZoom";
+export { useUnsavedChangesGuard } from "@/hooks/useUnsavedChangesGuard";
 
-export { useLocationSearch } from "@/hooks/location/useLocationSearch";
-
-export * from "@/hooks/useImageCache";
+// Feature hooks
 export * from "@/hooks/composer";
+export { useLocationSearch } from "@/hooks/location/useLocationSearch";
+export * from "@/hooks/poll";

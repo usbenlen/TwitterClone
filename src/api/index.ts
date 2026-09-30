@@ -1,13 +1,21 @@
+// Client and configuration
+export * from "@/api/client";
+export * from "@/api/config";
+
+// Response mappers
+export * from "@/api/mappers/post.mapper";
+
+// Domain APIs
 export * from "@/api/auth.api";
+export * from "@/api/comment.api";
+export * from "@/api/follow.api";
+export * from "@/api/gif.api";
+export * from "@/api/linkPreview.api";
+export * from "@/api/location.api";
+export * from "@/api/media.api";
+export * from "@/api/poll.api";
+export * from "@/api/recommendations.api";
+export * from "@/api/scheduledPost.api";
+export * from "@/api/search.api";
 export * from "@/api/tweet.api";
 export * from "@/api/user.api";
-export * from "@/api/media.api";
-export * from "@/api/gif.api";
-export * from "@/api/location.api";
-export * from "@/api/follow.api";
-export * from "@/api/search.api";
-export * from "@/api/comment.api";
-export * from "@/api/poll.api";
-export * from "@/api/linkPreview.api"
-export * from "@/api/scheduledPost.api";
-export * from "@/api/recommendations.api";
