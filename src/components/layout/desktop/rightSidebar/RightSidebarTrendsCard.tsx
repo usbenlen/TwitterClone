@@ -30,12 +30,12 @@ export default function RightSidebarTrendsCard() {
           </button>
         </div>
       ) : (
-        <div className="-mx-4">
+        <div className="-mx-4 -mb-4">
           {trends.map((trend) => (
             <Link
               key={trend.id}
               to={APP_ROUTES.search({ query: trend.query, type: "posts" })}
-              className="block px-4 py-2.5 transition-colors hover:bg-muted/40"
+              className="block px-4 py-2.5 transition-colors last:rounded-b-2xl hover:bg-muted/40"
             >
               <p className="truncate text-xs text-muted-foreground">
                 {trend.context}
