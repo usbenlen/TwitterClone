@@ -16,6 +16,7 @@ import type {
 } from "@/types";
 
 import { delay } from "@/mock/utils/delay";
+import { removeMockContent } from "@/mock/utils/removeMockContent";
 
 import { mediaStore } from "@/mock/stores/mediaStore";
 import { editHistoryStore } from "@/mock/stores/editHistoryStore";
@@ -26,10 +27,7 @@ import {
   toggleBookmarkInList,
   incrementViewsInList,
 } from "@/mock/utils/mockTweetActions";
-import {
-  markQuotedTargetUnavailable,
-  markQuotedTargetEdited,
-} from "@/mock/utils/mockQuotes";
+import { markQuotedTargetEdited } from "@/mock/utils/mockQuotes";
 import { getQuoteReplyingToUsernames, withAncestors } from "@/utils/ancestors";
 
 function resolveQuote(payload: CreateTweetRequest): TweetQuote | null {
@@ -201,14 +199,7 @@ export const mockTweetApi = {
     if (tweet.author.id !== currentUser.id)
       throw new Error("Ви не можете видалити цей пост.");
 
-    setTweets(
-      markQuotedTargetUnavailable(
-        tweets.filter((item) => item.id !== id),
-        "post",
-        id,
-      ),
-    );
-    editHistoryStore.remove("post", id);
+    removeMockContent("post", id);
   },
 
   async getEditHistory(id: string) {

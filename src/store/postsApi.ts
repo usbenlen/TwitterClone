@@ -30,7 +30,12 @@ import {
 import * as cache from "@/store/posts/cache";
 export { errorMessage } from "@/store/api";
 export { targetOf, targetKey, reactionKey } from "@/store/posts/types";
-export type { ProfileTab, PostsQuery, Target, Reaction } from "@/store/posts/types";
+export type {
+  ProfileTab,
+  PostsQuery,
+  Target,
+  Reaction,
+} from "@/store/posts/types";
 
 function tagsFor(tweets: Tweet[]): ReturnType<typeof entityTag>[] {
   return tweets.flatMap((tweet) => [
@@ -303,7 +308,7 @@ function patchTweets(
 ): void {
   cache.patchTweets(postsApi, dispatch, state, update);
 }
-function removeCachedTweet(
+export function removeCachedTweet(
   target: Target,
   dispatch: AppDispatch,
   state: RootState,

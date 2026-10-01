@@ -48,6 +48,12 @@ export function readAppIdentity(env: Env) {
   };
 }
 
+export function readMockUserRole(env: Env): "USER" | "ADMIN" {
+  const role = env.VITE_MOCK_USER_ROLE ?? "USER";
+  if (role !== "USER" && role !== "ADMIN") throw new Error("Invalid environment variable: VITE_MOCK_USER_ROLE");
+  return role;
+}
+
 export function escapeHtml(value: string): string {
   const entities: Record<string, string> = {
     "&": "&amp;",

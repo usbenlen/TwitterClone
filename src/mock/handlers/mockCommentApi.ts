@@ -1,9 +1,5 @@
 import { MOCK_DELAYS } from "@/mock/constants";
-import {
-  toTweetAuthor,
-  getCommentAncestors,
-  withAncestors,
-} from "@/utils";
+import { toTweetAuthor, getCommentAncestors, withAncestors } from "@/utils";
 import { createMockPoll, updateMockPoll } from "@/mock/utils/mockPoll";
 import type {
   CreateCommentRequest,
@@ -13,13 +9,10 @@ import type {
 } from "@/types";
 
 import { tweets, setTweets } from "@/mock/data/tweets";
-import {
-  commentsByPostId,
-  nextCommentId,
-  currentUser,
-} from "@/mock/data";
+import { commentsByPostId, nextCommentId, currentUser } from "@/mock/data";
 
 import { delay } from "@/mock/utils/delay";
+import { removeMockContent } from "@/mock/utils/removeMockContent";
 
 import { mediaStore } from "@/mock/stores/mediaStore";
 import { editHistoryStore } from "@/mock/stores/editHistoryStore";
@@ -30,10 +23,7 @@ import {
   toggleBookmarkInList,
   incrementViewsInList,
 } from "@/mock/utils/mockTweetActions";
-import {
-  markQuotedTargetUnavailable,
-  markQuotedTargetEdited,
-} from "@/mock/utils/mockQuotes";
+import { markQuotedTargetEdited } from "@/mock/utils/mockQuotes";
 
 function findComment(id: string) {
   for (const [postId, comments] of Object.entries(commentsByPostId)) {
@@ -272,12 +262,7 @@ export const mockCommentApi = {
     if (found.comment.author.id !== currentUser.id)
       throw new Error("Ви не можете видалити цей коментар.");
 
-    found.comments.splice(found.index, 1);
-
-    setTweets(markQuotedTargetUnavailable(tweets, "comment", id));
-    editHistoryStore.remove("comment", id);
-
-    updateCommentCount(found.postId, -1);
+    removeMockContent("comment", id);
   },
 
   async getEditHistory(id: string) {

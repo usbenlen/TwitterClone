@@ -1,8 +1,12 @@
 import type { User } from "@/types/user";
 
 import { locations } from "@/mock/data/locations";
+import { readMockUserRole } from "@/config/env";
 
 export const currentUser: User = {
+  role: readMockUserRole(
+    import.meta.env.VITE_USE_MOCK === "true" ? import.meta.env : {},
+  ),
   id: "u1",
   username: "dev_user",
   displayName: "Розробник",

@@ -8,6 +8,7 @@ interface ImportMetaEnv {
   readonly VITE_PATH_TO_API: string;
 
   readonly VITE_USE_MOCK?: string;
+  readonly VITE_MOCK_USER_ROLE?: string;
 
   readonly VITE_MAX_NAME_LENGTH?: string;
   readonly VITE_MAX_BIO_LENGTH?: string;

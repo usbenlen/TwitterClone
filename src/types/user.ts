@@ -1,13 +1,10 @@
 import type { Location } from "@/types/location";
 
-export type BirthDateVisibility =
-  | "public"
-  | "followers"
-  | "following"
-  | "mutual"
-  | "only_me";
+export type BirthDateVisibility = "public" | "followers" | "following" | "mutual" | "only_me";
 
 export interface User {
+  role?: "USER" | "ADMIN";
+  isBlocked?: boolean;
   id: string;
   username: string;
   displayName?: string | null;

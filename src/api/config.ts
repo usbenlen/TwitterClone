@@ -18,6 +18,25 @@ export const API_BASE_URL = buildApiBaseUrl();
 
 // Ендпоінти API. Тут зібрано всі шляхи, щоб не дублювати рядки
 export const ENDPOINTS = {
+  admin: {
+    dashboard: {
+      metrics: "admin/dashboard/metrics",
+      charts: (period: string) => `admin/dashboard/charts?period=${encodeURIComponent(period)}`,
+      tables: (limit: number) => `admin/dashboard/tables?limit=${limit}`,
+    },
+    users: {
+      all: "admin/users",
+      byId: (id: string) => `admin/users/${encodeURIComponent(id)}`,
+      block: (id: string) => `admin/users/${encodeURIComponent(id)}/block`,
+      unblock: (id: string) => `admin/users/${encodeURIComponent(id)}/unblock`,
+      delete: (id: string) => `admin/users/${encodeURIComponent(id)}/delete`,
+    },
+    moderation: {
+      all: "admin/moderation",
+      byId: (id: string) => `admin/moderation/${encodeURIComponent(id)}`,
+      status: (id: string) => `admin/moderation/${encodeURIComponent(id)}/status`,
+    },
+  },
   auth: {
     google: "auth/google",
     login: "auth/login",
@@ -35,6 +54,7 @@ export const ENDPOINTS = {
     resendVerificationCode: "auth/resend-verification-code",
   },
   users: {
+    report: (id: string) => `users/${encodeURIComponent(id)}/report`,
     all: "users",
     byId: (id: string) => `users/by-id/${id}`,
     byUsername: (username: string) => `users/by-username/${username}`,
@@ -46,6 +66,7 @@ export const ENDPOINTS = {
     deleteMe: "me",
   },
   posts: {
+    report: (id: string) => `posts/${encodeURIComponent(id)}/report`,
     all: "posts",
     feed: "posts/feed",
     myPosts: "me/posts",
@@ -70,6 +91,7 @@ export const ENDPOINTS = {
     scheduledById: (id: string) => `posts/scheduled/${id}`,
   },
   comments: {
+    report: (id: string) => `comments/${encodeURIComponent(id)}/report`,
     byPost: (postId: string) => `comments/post/${postId}`,
     thread: (id: string) => `comments/${id}/thread`,
     editHistory: (id: string) => `comments/${id}/edit-history`,

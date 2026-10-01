@@ -37,6 +37,9 @@ export const appApi = createApi({
   reducerPath: "api",
   baseQuery: fakeBaseQuery<QueryError>(),
   tagTypes: [
+    "AdminUser",
+    "Report",
+    "Dashboard",
     "Post",
     "List",
     "History",

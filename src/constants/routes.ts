@@ -5,6 +5,15 @@ import {
 } from "@/utils/search";
 
 export const APP_ROUTES = {
+  ADMIN: "/admin",
+  ADMIN_USERS: "/admin/users",
+  ADMIN_USER: "/admin/users/:userId",
+  ADMIN_MODERATION: "/admin/moderation",
+  ADMIN_REPORT: "/admin/moderation/:reportId",
+  ADMIN_SETTINGS: "/admin/settings",
+  adminUser: (id: string) => `/admin/users/${encodeURIComponent(id)}`,
+  adminReport: (id: string) => `/admin/moderation/${encodeURIComponent(id)}`,
+
   LANDING: "/",
   HOME: "/home",
 
@@ -36,11 +45,13 @@ export const APP_ROUTES = {
   following: (username: string) => `/${username}/following`,
   followers: (username: string) => `/${username}/followers`,
 
-  followRecommendations: (tab: "people" | "creators" = "people") => `/follow?tab=${tab}`,
+  followRecommendations: (tab: "people" | "creators" = "people") =>
+    `/follow?tab=${tab}`,
 
   post: (postId: string) => `/post/${postId}`,
 
-  search: (criteria: Partial<SearchCriteria> = {}) => `/search?${serializeSearchCriteria({ ...DEFAULT_SEARCH_CRITERIA, ...criteria })}`,
+  search: (criteria: Partial<SearchCriteria> = {}) =>
+    `/search?${serializeSearchCriteria({ ...DEFAULT_SEARCH_CRITERIA, ...criteria })}`,
 
   forgotPassword: () => "/forgot-password",
   verifyResetCode: () => "/verify-reset-code",
