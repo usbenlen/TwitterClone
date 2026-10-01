@@ -1,4 +1,4 @@
-import { Modal, Button } from "@/ui";
+import { Modal, Button, type ButtonProps } from "@/ui";
 interface ConfirmModalProps {
   open: boolean;
   title: string;
@@ -6,6 +6,8 @@ interface ConfirmModalProps {
   confirmText?: string;
   cancelText?: string;
   confirmVariant?: "primary" | "destructive";
+  buttonSize?: ButtonProps["size"];
+  buttonShape?: ButtonProps["shape"];
   busy?: boolean;
   error?: string | null;
   onCancel: () => void;
@@ -19,6 +21,8 @@ export function ConfirmModal({
   confirmText = "Підтвердити",
   cancelText = "Скасувати",
   confirmVariant = "destructive",
+  buttonSize,
+  buttonShape,
   busy = false,
   error,
   onCancel,
@@ -40,11 +44,23 @@ export function ConfirmModal({
           {error}
         </p>
       )}
-      <div className="mt-6 flex justify-end gap-3">
-        <Button variant="outline" disabled={busy} onClick={onCancel}>
+      <div className="mt-6 flex flex-wrap justify-end gap-3">
+        <Button
+          variant="outline"
+          size={buttonSize}
+          shape={buttonShape}
+          disabled={busy}
+          onClick={onCancel}
+        >
           {cancelText}
         </Button>
-        <Button variant={confirmVariant} isLoading={busy} onClick={onConfirm}>
+        <Button
+          variant={confirmVariant}
+          size={buttonSize}
+          shape={buttonShape}
+          isLoading={busy}
+          onClick={onConfirm}
+        >
           {confirmText}
         </Button>
       </div>

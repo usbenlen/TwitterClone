@@ -36,6 +36,8 @@ export default function LeftSidebarProfile() {
       </NavLink>
 
       <button
+        type="button"
+        aria-label="Вийти"
         onClick={logout}
         className="flex items-center rounded-sm bg-destructive/10 px-3 py-2 text-destructive transition-colors hover:bg-destructive/20"
       >

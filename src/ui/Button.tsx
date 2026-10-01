@@ -7,7 +7,7 @@ import { Spinner } from "@/ui/Spinner";
 import { cn } from "@/utils/cn";
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 rounded-full font-bold whitespace-nowrap transition-colors outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50",
+  "inline-flex items-center justify-center gap-2 font-bold whitespace-nowrap transition-colors outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50",
   {
     variants: {
       variant: {
@@ -21,8 +21,13 @@ const buttonVariants = cva(
       size: {
         sm: "h-8 px-4 text-sm",
         md: "h-10 px-5 text-sm",
+        comfortable: "h-11 px-4 text-sm",
         lg: "h-12 px-6 text-base",
         icon: "h-10 w-10",
+      },
+      shape: {
+        pill: "rounded-full",
+        rounded: "rounded-sm",
       },
       fullWidth: {
         true: "w-full",
@@ -31,6 +36,7 @@ const buttonVariants = cva(
     defaultVariants: {
       variant: "primary",
       size: "md",
+      shape: "pill",
     },
   },
 );
@@ -48,6 +54,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       className,
       variant,
       size,
+      shape,
       fullWidth,
       isLoading,
       children,
@@ -59,7 +66,9 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     return (
       <button
         ref={ref}
-        className={cn(buttonVariants({ variant, size, fullWidth, className }))}
+        className={cn(
+          buttonVariants({ variant, size, shape, fullWidth, className }),
+        )}
         disabled={disabled || isLoading}
         {...props}
       >
