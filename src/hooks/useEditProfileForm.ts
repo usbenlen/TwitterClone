@@ -2,8 +2,14 @@ import { useState } from "react";
 import type { UpdateProfileRequest } from "@/api/user.api";
 import type { Location, User } from "@/types";
 import { DEFAULT_BIRTH_DATE_VISIBILITY } from "@/constants/profile";
-import { buildBirthDate, parseBirthDate, maxBirthDay } from "@/utils/date";
-import { formatBirthMonthDay, getBirthYear } from "@/utils/format";
+import {
+  buildBirthDate,
+  parseBirthDate,
+  maxBirthDay,
+  formatBirthMonthDay,
+  getBirthYear,
+} from "@/utils";
+
 import { useLocationSearch, useUnsavedChangesGuard, invalidateImageCache, useImageSelection } from "@/hooks";
 
 interface EditProfileFormOptions {
@@ -171,7 +177,7 @@ export function useEditProfileForm({
       if (banner.file || banner.removed) await invalidateImageCache(user.bannerUrl);
       await onSave({
         displayName: values.displayName.trim() || user.username,
-        bio: values.bio.trim() || undefined,
+        bio: values.bio.trim(),
         location: values.removeLocation ? undefined : values.location,
         birthDate: currentBirthDate ?? undefined,
         birthDateVisibility: values.birthDateVisibility,

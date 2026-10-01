@@ -1,3 +1,4 @@
+import { APP_NAME, APP_ROUTES } from "@/constants";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Link, useLocation, useNavigate } from "react-router";
@@ -12,8 +13,6 @@ import { useAuth } from "@/hooks/useAuth";
 import { Input, Button } from "@/ui";
 
 import { AuthShell, GoogleAuthButton } from "@/components/auth";
-
-import { APP_ROUTES } from "@/constants/routes";
 
 interface LocationState {
   from?: { pathname: string };
@@ -52,7 +51,7 @@ export default function LoginPage() {
 
   return (
     <AuthShell
-      title="Увійти в Chirp"
+      title={`Увійти в ${APP_NAME}`}
       subtitle="Раді знову бачити вас."
       footer={
         <span>

@@ -1,10 +1,9 @@
-import { AUTH_LIMITS } from "@/constants/app";
+import { AUTH_LIMITS, APP_ROUTES } from "@/constants";
 import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useLocation, useNavigate } from "react-router";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
 
 import { authApi } from "@/api/auth.api";
 import { ApiError } from "@/api/client";
@@ -13,18 +12,12 @@ import { useAuth } from "@/hooks";
 
 import { Button } from "@/ui";
 
-import { AuthShell, CodeInput } from "@/components/auth";
+import { AuthShell, CodeInput } from "@/components/auth/index";
 
-import { APP_ROUTES } from "@/constants/routes";
-
-const verifyEmailSchema = z.object({
-  code: z
-    .string()
-    .length(6, "Код має містити 6 цифр")
-    .regex(/^\d+$/, "Код має містити лише цифри"),
-});
-
-type VerifyEmailFormValues = z.infer<typeof verifyEmailSchema>;
+import {
+  verificationCodeSchema,
+  type VerificationCodeFormValues,
+} from "@/schemas/auth.schema";
 
 interface LocationState {
   email?: string;
@@ -46,8 +39,8 @@ export default function VerifyEmailPage() {
     handleSubmit,
     setValue,
     formState: { isSubmitting },
-  } = useForm<VerifyEmailFormValues>({
-    resolver: zodResolver(verifyEmailSchema),
+  } = useForm<VerificationCodeFormValues>({
+    resolver: zodResolver(verificationCodeSchema),
     defaultValues: {
       code: "",
     },
@@ -127,7 +120,7 @@ export default function VerifyEmailPage() {
   return (
     <AuthShell
       title="Підтвердження пошти"
-      subtitle={`Ми надіслали 6-значний код підтвердження на ${email}. Будь ласка, введіть його нижче.`}
+      subtitle={`Ми надіслали ${AUTH_LIMITS.VERIFICATION_CODE_LENGTH}-значний код підтвердження на ${email}. Будь ласка, введіть його нижче.`}
       footer={footer}
     >
       {serverError && (

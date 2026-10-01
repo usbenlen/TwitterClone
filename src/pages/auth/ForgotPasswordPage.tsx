@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { AUTH_LIMITS, APP_ROUTES } from "@/constants";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Link, useNavigate } from "react-router";
@@ -8,7 +9,6 @@ import { Input, Button } from "@/ui";
 
 import { ApiError } from "@/api/client";
 import { authApi } from "@/api";
-import { APP_ROUTES } from "@/constants/routes";
 
 import { z } from "zod";
 
@@ -55,7 +55,7 @@ export default function ForgotPasswordPage() {
   return (
     <AuthShell
       title="Відновлення пароля"
-      subtitle="Введіть email, прив'язаний до вашого акаунта. Ми надішлемо вам 6-значний код."
+      subtitle={`Введіть email, прив'язаний до вашого акаунта. Ми надішлемо вам ${AUTH_LIMITS.VERIFICATION_CODE_LENGTH}-значний код.`}
       footer={
         <>
           Згадали пароль?{" "}

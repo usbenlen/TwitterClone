@@ -1,3 +1,4 @@
+import { APP_NAME, APP_ROUTES } from "@/constants";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router";
@@ -11,8 +12,6 @@ import { registerSchema, type RegisterFormValues } from "@/schemas/auth.schema";
 import { Input, Button } from "@/ui";
 
 import { AuthShell } from "@/components/auth/AuthShell";
-
-import { APP_ROUTES } from "@/constants/routes";
 
 export default function RegisterPage() {
   const navigate = useNavigate();
@@ -46,7 +45,7 @@ export default function RegisterPage() {
   return (
     <AuthShell
       title="Створити акаунт"
-      subtitle="Приєднуйтесь до Chirp за кілька секунд."
+      subtitle={`Приєднуйтесь до ${APP_NAME} за кілька секунд.`}
       footer={
         <span>
           Вже маєте акаунт?{" "}

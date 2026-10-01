@@ -1,23 +1,16 @@
+import { THEME_OPTIONS, APP_NAME, APP_ROUTES } from "@/constants";
+
 import { useState } from "react";
 import { Link } from "react-router";
-import {
-  LockKeyhole,
-  Moon,
-  Palette,
-  Sun,
-  UserRound,
-  Monitor,
-  ArrowRight,
-} from "lucide-react";
+import { LockKeyhole, Palette, UserRound, ArrowRight } from "lucide-react";
 
 import { userApi, type UpdateProfileRequest } from "@/api";
 
 import { useAuth, useTheme } from "@/hooks";
 
-import { EditProfileModal } from "@/components/modal";
-import { PageHeader } from "@/components/layout/pageHeader";
+import { EditProfileModal } from "@/components/modal/index";
+import { PageHeader } from "@/components/layout/pageHeader/index";
 
-import { APP_ROUTES } from "@/constants/routes";
 import { cn } from "@/utils/cn";
 
 export default function SettingsPage() {
@@ -40,7 +33,7 @@ export default function SettingsPage() {
 
         <div className="mx-auto w-full max-w-2xl px-4 py-6">
           <p className="mb-6 text-sm text-muted-foreground">
-            Керуйте виглядом профілю та налаштуваннями Chirp.
+            Керуйте виглядом профілю та налаштуваннями {APP_NAME}.
           </p>
 
           <div className="overflow-hidden rounded-2xl border border-border bg-background">
@@ -61,47 +54,22 @@ export default function SettingsPage() {
               </div>
 
               <div className="grid grid-cols-3 gap-2">
-                <button
-                  type="button"
-                  onClick={() => setTheme("light")}
-                  className={cn(
-                    "flex items-center justify-center gap-2 rounded-xl border px-3 py-2.5 text-sm transition",
-                    theme === "light"
-                      ? "border-primary bg-primary/10 text-primary"
-                      : "border-border hover:bg-muted",
-                  )}
-                >
-                  <Sun className="size-4" />
-                  Світла
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => setTheme("dark")}
-                  className={cn(
-                    "flex items-center justify-center gap-2 rounded-xl border px-3 py-2.5 text-sm transition",
-                    theme === "dark"
-                      ? "border-primary bg-primary/10 text-primary"
-                      : "border-border hover:bg-muted",
-                  )}
-                >
-                  <Moon className="size-4" />
-                  Темна
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => setTheme("system")}
-                  className={cn(
-                    "flex items-center justify-center gap-2 rounded-xl border px-3 py-2.5 text-sm transition",
-                    theme === "system"
-                      ? "border-primary bg-primary/10 text-primary"
-                      : "border-border hover:bg-muted",
-                  )}
-                >
-                  <Monitor className="size-4" />
-                  Системна
-                </button>
+                {THEME_OPTIONS.map(({ value, label, icon: Icon }) => (
+                  <button
+                    key={value}
+                    type="button"
+                    onClick={() => setTheme(value)}
+                    className={cn(
+                      "flex items-center justify-center gap-2 rounded-xl border px-3 py-2.5 text-sm transition",
+                      theme === value
+                        ? "border-primary bg-primary/10 text-primary"
+                        : "border-border hover:bg-muted",
+                    )}
+                  >
+                    <Icon className="size-4" />
+                    {label}
+                  </button>
+                ))}
               </div>
             </section>
 

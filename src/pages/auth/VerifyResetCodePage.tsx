@@ -1,14 +1,15 @@
-import { AUTH_LIMITS } from "@/constants/app";
+import { AUTH_LIMITS, APP_ROUTES } from "@/constants";
 import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useLocation, useNavigate } from "react-router";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
 
 import {
   changePasswordBaseSchema,
   type ChangePasswordFormValues,
+  verificationCodeSchema,
+  type VerificationCodeFormValues,
 } from "@/schemas/auth.schema";
 
 import { authApi } from "@/api/auth.api";
@@ -18,18 +19,7 @@ import { useAuth } from "@/hooks";
 
 import { Button, Input } from "@/ui";
 
-import { AuthShell, CodeInput } from "@/components/auth";
-
-import { APP_ROUTES } from "@/constants/routes";
-
-const verifyResetCodeSchema = z.object({
-  code: z
-    .string()
-    .length(6, "Код має містити 6 цифр")
-    .regex(/^\d+$/, "Код має містити лише цифри"),
-});
-
-type VerifyResetCodeFormValues = z.infer<typeof verifyResetCodeSchema>;
+import { AuthShell, CodeInput } from "@/components/auth/index";
 
 const currentPasswordSchema = changePasswordBaseSchema.pick({
   currentPassword: true,
@@ -71,8 +61,8 @@ export default function VerifyResetCodePage({
     handleSubmit,
     setValue,
     formState: { isSubmitting },
-  } = useForm<VerifyResetCodeFormValues>({
-    resolver: zodResolver(verifyResetCodeSchema),
+  } = useForm<VerificationCodeFormValues>({
+    resolver: zodResolver(verificationCodeSchema),
     defaultValues: {
       code: "",
     },
@@ -123,7 +113,7 @@ export default function VerifyResetCodePage({
 
     if (isSettings) {
       // In settings, we pass currentPassword and code to the next step
-      navigate(APP_ROUTES.SETTINGS_CHANGE_PASSWORD + "/reset", {
+      navigate(APP_ROUTES.SETTINGS_CHANGE_PASSWORD_RESET, {
         state: { email, currentPassword: currentPasswordVal, code },
       });
     } else {
@@ -150,8 +140,8 @@ export default function VerifyResetCodePage({
   const subtitle = isSettings
     ? !codeSent
       ? "Введіть ваш поточний пароль, щоб отримати код підтвердження на email"
-      : `Введіть 6-значний код, який ми надіслали на ${email}`
-    : `Введіть 6-значний код, який ми надіслали на ${email}`;
+      : `Введіть ${AUTH_LIMITS.VERIFICATION_CODE_LENGTH}-значний код, який ми надіслали на ${email}`
+    : `Введіть ${AUTH_LIMITS.VERIFICATION_CODE_LENGTH}-значний код, який ми надіслали на ${email}`;
 
   const footer = isSettings ? (
     <button

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useLocation, useNavigate } from "react-router";
 
@@ -6,31 +6,17 @@ import { authApi } from "@/api/auth.api";
 import { ApiError } from "@/api/client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
 
-import { type ChangePasswordFormValues } from "@/schemas/auth.schema";
+import {
+  resetPasswordSchema,
+  type ResetPasswordFormValues,
+  type ChangePasswordFormValues,
+} from "@/schemas/auth.schema";
+import { PASSWORD_SUCCESS_REDIRECT_MS, APP_ROUTES } from "@/constants";
 
 import { Input, Button } from "@/ui";
 
 import { AuthShell } from "@/components/auth/AuthShell";
-
-import { APP_ROUTES } from "@/constants/routes";
-
-const resetPasswordSchema = z
-  .object({
-    password: z
-      .string()
-      .min(6, "Мінімум 6 символів")
-      .max(100, "Максимум 100 символів"),
-
-    confirmPassword: z.string().min(1, "Підтвердіть пароль"),
-  })
-  .refine((data) => data.password === data.confirmPassword, {
-    message: "Паролі не збігаються",
-    path: ["confirmPassword"],
-  });
-
-type ResetPasswordFormValues = z.infer<typeof resetPasswordSchema>;
 
 interface LocationState {
   email?: string;
@@ -67,17 +53,22 @@ export default function ResetPasswordPage({
     },
   });
 
-  if (isSettings) {
-    if (!email || !code || !currentPassword) {
-      navigate(APP_ROUTES.SETTINGS, { replace: true });
-      return null;
-    }
-  } else {
-    if (!email || !code) {
-      navigate(APP_ROUTES.FORGOT_PASSWORD, { replace: true });
-      return null;
-    }
-  }
+  const missingState = !email || !code || (isSettings && !currentPassword);
+  useEffect(() => {
+    if (missingState)
+      navigate(isSettings ? APP_ROUTES.SETTINGS : APP_ROUTES.FORGOT_PASSWORD, {
+        replace: true,
+      });
+  }, [missingState, isSettings, navigate]);
+  useEffect(() => {
+    if (!successMessage || !isSettings) return;
+    const timer = window.setTimeout(
+      () => navigate(APP_ROUTES.SETTINGS, { replace: true }),
+      PASSWORD_SUCCESS_REDIRECT_MS,
+    );
+    return () => window.clearTimeout(timer);
+  }, [successMessage, isSettings, navigate]);
+  if (missingState) return null;
 
   const onSubmit = async (values: ResetPasswordFormValues) => {
     setServerError(null);
@@ -92,9 +83,6 @@ export default function ResetPasswordPage({
         };
         const response = await authApi.changePassword(payload);
         setSuccessMessage(response.message || "Пароль успішно змінено.");
-        setTimeout(() => {
-          navigate(APP_ROUTES.SETTINGS, { replace: true });
-        }, 2000);
       } else {
         await authApi.resetPassword({
           email: email!,
@@ -115,7 +103,7 @@ export default function ResetPasswordPage({
     }
   };
 
-  const title = isSettings ? "Новий пароль" : "Новий пароль";
+  const title = "Новий пароль";
   const subtitle = isSettings
     ? "Введіть новий пароль для вашого акаунта, щоб завершити зміну."
     : "Введіть новий пароль для вашого акаунта.";

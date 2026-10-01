@@ -1,8 +1,9 @@
-import { MONTH_OPTIONS } from "@/constants/date";
 import {
+  MONTH_OPTIONS,
   BIRTH_DATE_MIN_YEAR,
   BIRTH_DATE_VISIBILITY_OPTIONS,
-} from "@/constants/profile";
+} from "@/constants";
+
 import { maxBirthDay } from "@/utils/date";
 import type { BirthDateVisibility } from "@/types";
 import type { ReactNode } from "react";

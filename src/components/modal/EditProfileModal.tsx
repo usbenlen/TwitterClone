@@ -6,7 +6,7 @@ import type { UpdateProfileRequest } from "@/api/user.api";
 
 import { Avatar, Button, Input } from "@/ui";
 
-import { LocationPicker } from "@/components/composer";
+import { LocationPicker } from "@/components/composer/index";
 import { ConfirmModal } from "@/components/modal/ConfirmModal";
 import BirthDateEditor from "@/components/modal/BirthDateEditor";
 

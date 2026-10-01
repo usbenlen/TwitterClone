@@ -12,6 +12,39 @@ export const loginSchema = z.object({
   password: z.string().min(1, "Введіть пароль"),
 });
 
+export const passwordSchema = z
+  .string()
+  .min(
+    AUTH_LIMITS.PASSWORD_MIN_LENGTH,
+    `Мінімум ${AUTH_LIMITS.PASSWORD_MIN_LENGTH} символів`,
+  )
+  .max(
+    AUTH_LIMITS.PASSWORD_MAX_LENGTH,
+    `Максимум ${AUTH_LIMITS.PASSWORD_MAX_LENGTH} символів`,
+  );
+
+export const verificationCodeSchema = z.object({
+  code: z
+    .string()
+    .length(
+      AUTH_LIMITS.VERIFICATION_CODE_LENGTH,
+      `Код має містити ${AUTH_LIMITS.VERIFICATION_CODE_LENGTH} цифр`,
+    )
+    .regex(/^\d+$/, "Код має містити лише цифри"),
+});
+export type VerificationCodeFormValues = z.infer<typeof verificationCodeSchema>;
+
+export const resetPasswordSchema = z
+  .object({
+    password: passwordSchema,
+    confirmPassword: z.string().min(1, "Підтвердіть пароль"),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Паролі не збігаються",
+    path: ["confirmPassword"],
+  });
+export type ResetPasswordFormValues = z.infer<typeof resetPasswordSchema>;
+
 export const registerSchema = z.object({
   displayName: z
     .string()
@@ -32,30 +65,12 @@ export const registerSchema = z.object({
 
   email: z.string().min(1, "Введіть email").email("Некоректний email"),
 
-  password: z
-    .string()
-    .min(
-      AUTH_LIMITS.PASSWORD_MIN_LENGTH,
-      `Мінімум ${AUTH_LIMITS.PASSWORD_MIN_LENGTH} символів`,
-    )
-    .max(
-      AUTH_LIMITS.PASSWORD_MAX_LENGTH,
-      `Максимум ${AUTH_LIMITS.PASSWORD_MAX_LENGTH} символів`,
-    ),
+  password: passwordSchema,
 });
 
 export const changePasswordBaseSchema = z.object({
   currentPassword: z.string().min(1, "Введіть поточний пароль"),
-  newPassword: z
-    .string()
-    .min(
-      AUTH_LIMITS.PASSWORD_MIN_LENGTH,
-      `Мінімум ${AUTH_LIMITS.PASSWORD_MIN_LENGTH} символів`,
-    )
-    .max(
-      AUTH_LIMITS.PASSWORD_MAX_LENGTH,
-      `Максимум ${AUTH_LIMITS.PASSWORD_MAX_LENGTH} символів`,
-    ),
+  newPassword: passwordSchema,
   confirmPassword: z.string().min(1, "Підтвердіть новий пароль"),
   code: z.string().optional(),
 });
