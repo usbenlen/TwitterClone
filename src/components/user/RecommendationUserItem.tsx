@@ -64,13 +64,7 @@ export default function RecommendationUserItem({
               <span className="truncate font-bold text-foreground">
                 {user.displayName ?? user.username}
               </span>
-              {user.isVerified && (
-                <VerifiedBadge
-                  size={17}
-                  className="shrink-0 text-background"
-                  aria-label="Верифікований профіль"
-                />
-              )}
+              <VerifiedBadge user={user} size={17} />
             </div>
             <p className="truncate text-sm text-muted-foreground">
               @{user.username}

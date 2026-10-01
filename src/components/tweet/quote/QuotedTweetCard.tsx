@@ -84,12 +84,7 @@ export default function QuotedTweetCard({ quote }: QuotedTweetCardProps) {
             {authorName}
           </Link>
 
-          {target.author.isVerified && (
-            <VerifiedBadge
-              className="size-4 shrink-0 text-background"
-              aria-label="Підтверджений акаунт"
-            />
-          )}
+          <VerifiedBadge user={target.author} className="size-4" />
 
           <span className="min-w-0 truncate text-muted-foreground">
             @{target.author.username}

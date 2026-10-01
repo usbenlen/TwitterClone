@@ -7,6 +7,7 @@ export function toTweetAuthor(user: User): Tweet["author"] {
     displayName: user.displayName,
     avatarUrl: user.avatarUrl ?? null,
     isVerified: user.isVerified,
+    role: user.role,
   };
 }
 

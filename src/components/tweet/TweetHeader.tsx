@@ -41,9 +41,7 @@ export default function TweetHeader({
             {author.displayName}
           </Link>
 
-          {author.isVerified && (
-            <VerifiedBadge size={18} className="shrink-0 text-background" />
-          )}
+          <VerifiedBadge user={author} size={18} />
 
           <span className="truncate text-muted-foreground">
             @{author.username}

@@ -14,9 +14,7 @@ export default function ProfileInfo({ user }: ProfileInfoProps) {
           {user.displayName}
         </h2>
 
-        {user.isVerified && (
-          <VerifiedBadge size={20} className="shrink-0 text-background" />
-        )}
+        <VerifiedBadge user={user} size={20} />
       </div>
 
       <p className="text-muted-foreground">@{user.username}</p>

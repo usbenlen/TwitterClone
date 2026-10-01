@@ -132,12 +132,10 @@ export default function EditHistoryModal({
                           <span className="truncate font-bold">
                             {authorName}
                           </span>
-                          {version.author.isVerified && (
-                            <VerifiedBadge
-                              className="size-4 shrink-0 text-background"
-                              aria-label="Підтверджений акаунт"
-                            />
-                          )}
+                          <VerifiedBadge
+                            user={version.author}
+                            className="size-4"
+                          />
                           <span className="truncate text-muted-foreground">
                             @{version.author.username}
                           </span>

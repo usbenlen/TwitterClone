@@ -1,14 +1,9 @@
 import type { Tweet } from "@/types";
 
 import { currentUser, sampleAuthors } from "@/mock/data/users";
+import { toTweetAuthor } from "@/utils/user";
 
-const author = (user: (typeof sampleAuthors)[number]) => ({
-  id: user.id,
-  username: user.username,
-  displayName: user.displayName,
-  avatarUrl: user.avatarUrl ?? null,
-  isVerified: user.isVerified,
-});
+const author = toTweetAuthor;
 
 export const commentsByPostId: Record<string, Tweet[]> = {
   t1: [

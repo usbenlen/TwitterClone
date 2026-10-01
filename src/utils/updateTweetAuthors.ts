@@ -14,6 +14,7 @@ export function updateTweetAuthors(items: Tweet[], user: User): void {
         displayName: user.displayName,
         avatarUrl: user.avatarUrl ?? null,
         isVerified: user.isVerified,
+        role: user.role,
       };
     }
 

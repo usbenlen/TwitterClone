@@ -1,4 +1,5 @@
 import type { UserShort } from "@/types";
+import { sampleAuthors } from "@/mock/data/users";
 
 export const mockFollowing: Record<string, UserShort[]> = {
   u1: [
@@ -81,3 +82,11 @@ export const mockFollowers: Record<string, UserShort[]> = {
     },
   ],
 };
+
+for (const relationships of [mockFollowing, mockFollowers]) {
+  for (const users of Object.values(relationships)) {
+    for (const user of users) {
+      user.role = sampleAuthors.find((author) => author.id === user.id)?.role;
+    }
+  }
+}

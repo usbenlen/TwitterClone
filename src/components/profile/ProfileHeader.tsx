@@ -31,14 +31,7 @@ export default function ProfileHeader({ user }: ProfileHeaderProps) {
       title={
         <span className="flex min-w-0 items-center gap-1">
           <span className="truncate">{displayName}</span>
-          {user.isVerified && (
-            <VerifiedBadge
-              size={19}
-              className="shrink-0 text-background"
-              role="img"
-              aria-label="Верифікований профіль"
-            />
-          )}
+          <VerifiedBadge user={user} size={19} />
         </span>
       }
       subtitle={formatPostCount(user.postsCount)}

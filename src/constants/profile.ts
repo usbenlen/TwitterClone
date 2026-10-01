@@ -22,3 +22,4 @@ export const PROFILE_TABS = [
 ] as const satisfies ReadonlyArray<{ id: ProfileTab; label: string }>;
 
 export const VERIFIED_BADGE_COLOR = "#1d9bf0";
+export const ADMIN_BADGE_COLOR = "#8899a6";

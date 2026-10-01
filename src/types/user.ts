@@ -30,6 +30,7 @@ export interface User {
 }
 
 export interface UserShort {
+  role?: User["role"];
   id: string;
   username: string;
   displayName?: string | null;

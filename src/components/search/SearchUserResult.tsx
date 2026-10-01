@@ -40,9 +40,7 @@ export default function SearchUserResult({ user }: SearchUserResultProps) {
               {user.displayName}
             </p>
 
-            {user.isVerified && (
-              <VerifiedBadge size={18} className="shrink-0 text-background" />
-            )}
+            <VerifiedBadge user={user} size={18} />
           </div>
 
           <p className="truncate text-sm text-muted-foreground">

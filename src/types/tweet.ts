@@ -22,7 +22,7 @@ export interface TweetBase {
 
   author: Pick<
     User,
-    "id" | "username" | "displayName" | "avatarUrl" | "isVerified"
+    "id" | "username" | "displayName" | "avatarUrl" | "isVerified" | "role"
   >;
 
   attachments: MediaAttachment[];
