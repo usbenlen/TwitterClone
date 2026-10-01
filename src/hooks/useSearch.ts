@@ -1,4 +1,5 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo } from "react";
+import { useDebouncedValue } from "@/hooks/useDebouncedValue";
 import { skipToken } from "@reduxjs/toolkit/query/react";
 import { SEARCH_DEBOUNCE_MS } from "@/constants/app";
 import { useAuth } from "@/hooks/useAuth";
@@ -16,14 +17,11 @@ const EMPTY_USERS: UserShort[] = [];
 export function useSearch(criteria: SearchCriteria) {
   const { user } = useAuth();
   const { following } = useFollow();
-  const [debounced, setDebounced] = useState<SearchCriteria | null>(null);
-  useEffect(() => {
-    const timer = window.setTimeout(
-      () => setDebounced(criteria),
-      SEARCH_DEBOUNCE_MS,
-    );
-    return () => window.clearTimeout(timer);
-  }, [criteria]);
+  const debounced = useDebouncedValue<SearchCriteria | null>(
+    criteria,
+    SEARCH_DEBOUNCE_MS,
+    null,
+  );
 
   const hasCriteria = hasActiveSearchCriteria(criteria);
   const enabled = hasCriteria && debounced === criteria;
@@ -41,16 +39,24 @@ export function useSearch(criteria: SearchCriteria) {
   }, [debounced, enabled, following, user?.location]);
 
   const posts = useGetPostsQuery(
-    args ? { kind: "search", ...args } : skipToken,
+    args && criteria.type === "posts" ? { kind: "search", ...args } : skipToken,
   );
-  const users = useGetSearchUsersQuery(args ?? skipToken);
-  const error = posts.error ?? users.error;
+  const users = useGetSearchUsersQuery(
+    args && criteria.type === "users" ? args : skipToken,
+  );
+  const active = criteria.type === "posts" ? posts : users;
+  const error = active.error;
 
   return {
-    users: enabled ? (users.currentData ?? EMPTY_USERS) : EMPTY_USERS,
-    posts: enabled ? (posts.currentData ?? EMPTY_POSTS) : EMPTY_POSTS,
-    isLoading:
-      hasCriteria && (!enabled || posts.isFetching || users.isFetching),
+    users:
+      enabled && criteria.type === "users"
+        ? (users.currentData ?? EMPTY_USERS)
+        : EMPTY_USERS,
+    posts:
+      enabled && criteria.type === "posts"
+        ? (posts.currentData ?? EMPTY_POSTS)
+        : EMPTY_POSTS,
+    isLoading: hasCriteria && (!enabled || active.isFetching),
     error: enabled && error ? errorMessage(error) : null,
   };
 }

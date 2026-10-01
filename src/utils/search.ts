@@ -1,4 +1,4 @@
-import type { SearchCriteria, SearchType } from "@/types";
+import type { SearchCriteria, SearchType } from "@/types/index";
 import { DEFAULT_SEARCH_CRITERIA } from "@/constants/search";
 
 export { DEFAULT_SEARCH_CRITERIA };
@@ -61,6 +61,16 @@ export function serializeSearchCriteria(criteria: SearchCriteria) {
     );
   }
 
+  return params;
+}
+
+export function serializeSearchApiCriteria(
+  criteria: SearchCriteria,
+  target: SearchType,
+) {
+  const selected = criteriaForType(criteria, target);
+  const params = serializeSearchCriteria(selected);
+  params.delete("type");
   return params;
 }
 

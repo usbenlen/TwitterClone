@@ -24,6 +24,7 @@ export { useTweetRepost } from "@/hooks/useTweetRepost";
 export { useAutosizeTextarea } from "@/hooks/useAutosizeTextarea";
 export { useBodyScrollLock } from "@/hooks/useBodyScrollLock";
 export { useClickOrDrag } from "@/hooks/useClickOrDrag";
+export { useDebouncedValue } from "@/hooks/useDebouncedValue";
 export { useEditProfileForm } from "@/hooks/useEditProfileForm";
 export { invalidateImageCache, useImageCache } from "@/hooks/useImageCache";
 export { useImageSelection } from "@/hooks/useImageSelection";
@@ -31,6 +32,6 @@ export { useMediaZoom } from "@/hooks/useMediaZoom";
 export { useUnsavedChangesGuard } from "@/hooks/useUnsavedChangesGuard";
 
 // Feature hooks
-export * from "@/hooks/composer";
+export * from "@/hooks/composer/index";
 export { useLocationSearch } from "@/hooks/location/useLocationSearch";
-export * from "@/hooks/poll";
+export * from "@/hooks/poll/index";

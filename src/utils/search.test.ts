@@ -4,8 +4,40 @@ import {
   criteriaForType,
   parseSearchCriteria,
   serializeSearchCriteria,
-} from "./search";
+  serializeSearchApiCriteria,
+} from "@/utils/search";
 import type { SearchCriteria } from "@/types";
+
+describe("search API serialization", () => {
+  const criteria: SearchCriteria = {
+    ...DEFAULT_SEARCH_CRITERIA,
+    query: " React & TS ",
+    people: "following",
+    location: "near",
+    exactPhrase: " hello ",
+    from: "@ada",
+    minLikes: 0,
+    hasMedia: true,
+  };
+  it("keeps post filters and zero thresholds without the route discriminator", () => {
+    expect(
+      Object.fromEntries(serializeSearchApiCriteria(criteria, "posts")),
+    ).toEqual({
+      q: "React & TS",
+      people: "following",
+      location: "near",
+      exactPhrase: "hello",
+      from: "ada",
+      minLikes: "0",
+      hasMedia: "true",
+    });
+  });
+  it("only sends common filters for user search", () => {
+    expect(
+      Object.fromEntries(serializeSearchApiCriteria(criteria, "users")),
+    ).toEqual({ q: "React & TS", people: "following", location: "near" });
+  });
+});
 
 describe("search parameter serialization", () => {
   it.each<[string, Partial<SearchCriteria>, [string, string][]]>([

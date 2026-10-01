@@ -26,28 +26,31 @@ export function useLocationSearch() {
 
     if (!normalizedQuery) return;
 
-    let cancelled = false;
+    const controller = new AbortController();
 
     const timeout = setTimeout(async () => {
       try {
         setLoading(true);
         setError(null);
 
-        const result = await locationApi.search(normalizedQuery);
+        const result = await locationApi.search(
+          normalizedQuery,
+          controller.signal,
+        );
 
-        if (!cancelled) setLocations(result);
+        if (!controller.signal.aborted) setLocations(result);
       } catch {
-        if (!cancelled) {
+        if (!controller.signal.aborted) {
           setError("Не вдалося знайти локації.");
           setLocations([]);
         }
       } finally {
-        if (!cancelled) setLoading(false);
+        if (!controller.signal.aborted) setLoading(false);
       }
     }, LOCATION_SEARCH_DEBOUNCE_MS);
 
     return () => {
-      cancelled = true;
+      controller.abort();
       clearTimeout(timeout);
     };
   }, [query]);
