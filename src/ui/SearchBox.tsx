@@ -44,6 +44,7 @@ export default function SearchBox({
           value={value}
           onChange={(event) => onChange(event.target.value)}
           placeholder={placeholder}
+          aria-label={placeholder}
           className="min-w-0 flex-1 bg-transparent text-sm leading-none outline-none placeholder:text-muted-foreground"
         />
 

@@ -225,8 +225,8 @@ export default function LandingPage() {
                   чим працюєте сьогодні ✨
                 </PreviewPost>
                 <PreviewPost
-                  name="Максим Левченко"
-                  username="max_codes"
+                  name="Артік Кривчановський"
+                  username="artik_codes"
                   time="1 год"
                   replies={9}
                   reposts={16}
