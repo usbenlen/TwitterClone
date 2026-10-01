@@ -1,4 +1,6 @@
-import { Link, useParams } from "react-router";
+import { useParams } from "react-router";
+import { BackButton } from "@/components/layout/pageHeader";
+import { REPORT_ACTION_LABELS } from "@/admin/constants";
 import { skipToken } from "@reduxjs/toolkit/query/react";
 import { useAdminReportQuery, useResolveReportMutation } from "@/admin/store";
 import { useActionConfirmation } from "@/admin/components/ActionConfirmation";
@@ -19,12 +21,7 @@ export default function ReportPage() {
   const act = (decision: ReportDecision) => {
     if (!report) return;
     confirmation.ask({
-      label:
-        decision === "kept"
-          ? "Залишити"
-          : decision === "deleted"
-            ? "Видалити"
-            : "Заблокувати",
+      label: REPORT_ACTION_LABELS[decision],
       tasks: [
         {
           id: report.id,
@@ -35,13 +32,14 @@ export default function ReportPage() {
   };
   return (
     <>
-      <Link
-        to={APP_ROUTES.ADMIN_MODERATION}
-        className="text-sm text-primary hover:underline"
-      >
-        ← До модерації
-      </Link>
-      <h1 className="text-2xl font-bold">Розгляд скарги</h1>
+      <header className="flex items-center gap-3">
+        <BackButton
+          fallbackTo={APP_ROUTES.ADMIN_MODERATION}
+          ariaLabel="До модерації"
+          className="size-11 rounded-sm"
+        />
+        <h1 className="text-2xl font-bold">Розгляд скарги</h1>
+      </header>
       <QueryState
         loading={query.isFetching && !report}
         error={query.error}
@@ -49,11 +47,11 @@ export default function ReportPage() {
         retry={query.refetch}
       >
         {report && (
-          <article className="space-y-5 rounded-2xl border border-border p-5">
+          <article className="min-w-0 space-y-5 rounded-2xl border border-border bg-card p-5">
             <ReportSummary report={report} />
             <ReportPreview report={report} />
             {report.resolvedAt && (
-              <p className="text-sm text-muted-foreground">
+              <p className="text-sm break-words text-muted-foreground">
                 Розглянуто {formatDateTime(report.resolvedAt)}
                 {report.resolvedBy ? ` · @${report.resolvedBy.username}` : ""}
               </p>

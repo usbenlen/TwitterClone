@@ -1,16 +1,14 @@
-import { Link, NavLink, Outlet } from "react-router";
-import { ArrowLeft, LogOut } from "lucide-react";
+import { NavLink, Outlet } from "react-router";
 import { ADMIN_NAVIGATION } from "@/admin/constants";
 import { APP_ROUTES } from "@/constants/routes";
-import { AppLogo, Avatar, Button } from "@/ui";
-import { useAuth } from "@/hooks/useAuth";
+import { AppLogo } from "@/ui";
+import { LeftSidebarProfile } from "@/components/layout/desktop/leftSidebar";
+import { BackButton } from "@/components/layout/pageHeader";
 import { cn } from "@/utils/cn";
 
 export default function AdminLayout() {
-  const { user, logout } = useAuth();
-
   return (
-    <div className="min-h-dvh bg-background text-foreground lg:grid lg:grid-cols-[16rem_minmax(0,1fr)]">
+    <div className="min-h-dvh bg-background text-foreground lg:grid lg:grid-cols-[18rem_minmax(0,1fr)]">
       <aside className="border-b border-border lg:border-b-0 lg:border-r">
         <div className="flex flex-col gap-5 p-4 lg:sticky lg:top-0 lg:h-dvh lg:p-6">
           <AppLogo to={APP_ROUTES.ADMIN} />
@@ -28,47 +26,27 @@ export default function AdminLayout() {
                 end={to === APP_ROUTES.ADMIN}
                 className={({ isActive }) =>
                   cn(
-                    "flex items-center gap-3 rounded-full px-4 py-2.5 font-semibold hover:bg-muted",
+                    "flex min-h-13 items-center gap-3 rounded-xl px-4 py-3 text-lg font-semibold transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
                     isActive && "bg-primary/10 text-primary",
                   )
                 }
               >
-                <Icon className="size-5" />
+                <Icon className="size-6 shrink-0" aria-hidden="true" />
                 {label}
               </NavLink>
             ))}
           </nav>
-          <Link
-            to={APP_ROUTES.HOME}
-            className="flex items-center gap-2 rounded-full px-4 py-2 text-sm hover:bg-muted lg:mt-auto"
-          >
-            <ArrowLeft className="size-4" />
-            До застосунку
-          </Link>
-          {user && (
-            <div className="flex items-center gap-3 border-t border-border pt-4">
-              <Avatar
-                userId={user.id}
-                src={user.avatarUrl}
-                name={user.displayName}
-                fallbackName={user.username}
-              />
-              <Link
-                to={APP_ROUTES.profile(user.username)}
-                className="min-w-0 flex-1 truncate text-sm font-semibold"
-              >
-                @{user.username}
-              </Link>
-              <Button
-                variant="ghost"
-                size="icon"
-                aria-label="Вийти"
-                onClick={() => void logout()}
-              >
-                <LogOut className="size-5" />
-              </Button>
+          <div className="space-y-3 lg:mt-auto">
+            <BackButton
+              fallbackTo={APP_ROUTES.HOME}
+              mode="destination"
+              label="До застосунку"
+              className="justify-start rounded-sm font-medium text-muted-foreground hover:text-foreground"
+            />
+            <div className="border-t border-border pt-3">
+              <LeftSidebarProfile />
             </div>
-          )}
+          </div>
         </div>
       </aside>
       <main className="min-w-0">

@@ -1,4 +1,5 @@
-import { Link, useNavigate, useParams } from "react-router";
+import { useNavigate, useParams } from "react-router";
+import { BackButton } from "@/components/layout/pageHeader";
 import { skipToken } from "@reduxjs/toolkit/query/react";
 import { useAdminUserQuery, useAdminUserActionMutation } from "@/admin/store";
 import { USER_ACTION_LABELS } from "@/admin/constants";
@@ -34,13 +35,14 @@ export default function UserPage() {
 
   return (
     <>
-      <Link
-        to={APP_ROUTES.ADMIN_USERS}
-        className="text-sm text-primary hover:underline"
-      >
-        ← До користувачів
-      </Link>
-      <h1 className="text-2xl font-bold">Акаунт користувача</h1>
+      <header className="flex items-center gap-3">
+        <BackButton
+          fallbackTo={APP_ROUTES.ADMIN_USERS}
+          ariaLabel="До користувачів"
+          className="size-11 rounded-sm"
+        />
+        <h1 className="text-2xl font-bold">Акаунт користувача</h1>
+      </header>
       <QueryState
         loading={query.isFetching && !user}
         error={query.error}
@@ -49,14 +51,14 @@ export default function UserPage() {
       >
         {user && (
           <section className="space-y-5 overflow-hidden rounded-2xl border border-border p-5">
-            <UserSummary user={user} />
-            <p className="whitespace-pre-wrap">
+            <UserSummary user={user} linkName={false} />
+            <p className="break-words whitespace-pre-wrap">
               {user.bio || "Опис відсутній."}
             </p>
-            <dl className="grid gap-3 text-sm sm:grid-cols-2">
+            <dl className="grid grid-cols-1 gap-3 text-sm sm:grid-cols-2">
               <div>
                 <dt className="text-muted-foreground">Email</dt>
-                <dd>{user.email || "—"}</dd>
+                <dd className="break-words">{user.email || "—"}</dd>
               </div>
               <div>
                 <dt className="text-muted-foreground">Приєднався</dt>
@@ -74,17 +76,13 @@ export default function UserPage() {
                 <dd>{formatCount(user.postsCount)}</dd>
               </div>
             </dl>
-            <Link
-              to={APP_ROUTES.profile(user.username)}
-              className="block text-primary hover:underline"
-            >
-              Відкрити профіль
-            </Link>
-            <UserActions
-              user={user}
-              busy={confirmation.busy || query.isFetching}
-              onAction={act}
-            />
+            <div className="border-t border-border pt-4">
+              <UserActions
+                user={user}
+                busy={confirmation.busy || query.isFetching}
+                onAction={act}
+              />
+            </div>
           </section>
         )}
       </QueryState>

@@ -1,7 +1,7 @@
 import { useAuth } from "@/hooks/useAuth";
 
 import { MAIN_NAVIGATION, type NavigationItem } from "@/constants/navigation";
-import { ShieldCheck } from "lucide-react";
+import { Shield } from "lucide-react";
 import { APP_ROUTES } from "@/constants/routes";
 
 export function useNavigation() {
@@ -13,7 +13,7 @@ export function useNavigation() {
           ...MAIN_NAVIGATION,
           {
             label: "Адмін-панель",
-            icon: ShieldCheck,
+            icon: Shield,
             getPath: () => APP_ROUTES.ADMIN,
             requiresAuth: true,
             mobilePlacement: ["more"],

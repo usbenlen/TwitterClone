@@ -1,5 +1,10 @@
 import { useAdminReportsQuery, useResolveReportMutation } from "@/admin/store";
-import { MODERATION_DEFAULTS } from "@/admin/constants";
+import { ListX } from "lucide-react";
+import {
+  MODERATION_DEFAULTS,
+  REPORT_ACTION_ICONS,
+  REPORT_ACTION_LABELS,
+} from "@/admin/constants";
 import {
   useCorrectPage,
   useListParams,
@@ -30,12 +35,6 @@ const choices = {
   sort: ["newest", "oldest"],
 };
 
-const actionLabels: Record<ReportDecision, string> = {
-  kept: "Залишити",
-  deleted: "Видалити",
-  blocked: "Заблокувати",
-};
-
 export default function ModerationPage() {
   const state = useListParams(MODERATION_DEFAULTS, choices);
   const query = useAdminReportsQuery(state.queryParams, {
@@ -59,7 +58,7 @@ export default function ModerationPage() {
   const confirmation = useActionConfirmation();
   const act = (items: ReportSignal[], decision: ReportDecision) =>
     confirmation.ask({
-      label: actionLabels[decision],
+      label: REPORT_ACTION_LABELS[decision],
       tasks: items.map((report) => ({
         id: report.id,
         run: () => mutate({ id: report.id, decision }).unwrap(),
@@ -138,46 +137,46 @@ export default function ModerationPage() {
             {selected.length > 0 && (
               <>
                 <span className="text-sm">Вибрано: {selected.length}</span>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  disabled={confirmation.busy || query.isFetching}
-                  onClick={() => act(selected, "kept")}
-                >
-                  Залишити
-                </Button>
-                <Button
-                  variant="destructive"
-                  size="sm"
-                  disabled={
-                    confirmation.busy ||
-                    query.isFetching ||
-                    selected.some((report) => !report.target)
-                  }
-                  onClick={() => act(selected, "deleted")}
-                >
-                  Видалити
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  disabled={
-                    confirmation.busy ||
-                    query.isFetching ||
-                    selected.some(
-                      (report) =>
-                        report.targetType !== "users" || !report.target,
-                    )
-                  }
-                  onClick={() => act(selected, "blocked")}
-                >
-                  Заблокувати
-                </Button>
+                {(Object.keys(REPORT_ACTION_LABELS) as ReportDecision[]).map(
+                  (decision) => {
+                    const Icon = REPORT_ACTION_ICONS[decision];
+                    const unavailable =
+                      decision === "deleted"
+                        ? selected.some((report) => !report.target)
+                        : decision === "blocked" &&
+                          selected.some(
+                            (report) =>
+                              report.targetType !== "users" || !report.target,
+                          );
+                    return (
+                      <Button
+                        key={decision}
+                        variant={
+                          decision === "deleted" ? "destructive" : "outline"
+                        }
+                        size="comfortable"
+                        shape="rounded"
+                        disabled={
+                          confirmation.busy || query.isFetching || unavailable
+                        }
+                        onClick={() => act(selected, decision)}
+                      >
+                        <Icon
+                          className="size-4.5 shrink-0"
+                          aria-hidden="true"
+                        />
+                        {REPORT_ACTION_LABELS[decision]}
+                      </Button>
+                    );
+                  },
+                )}
                 <Button
                   variant="ghost"
-                  size="sm"
+                  size="comfortable"
+                  shape="rounded"
                   onClick={() => selection.set([])}
                 >
+                  <ListX className="size-4.5 shrink-0" aria-hidden="true" />
                   Зняти виділення
                 </Button>
               </>
@@ -186,7 +185,7 @@ export default function ModerationPage() {
           {reports.map((report) => (
             <article
               key={report.id}
-              className="space-y-4 rounded-2xl border border-border p-4"
+              className="min-w-0 space-y-5 rounded-2xl border border-border bg-card p-5"
             >
               <div className="flex items-start gap-3">
                 <input
@@ -202,14 +201,21 @@ export default function ModerationPage() {
                   className="mt-1 accent-primary"
                 />
                 <div className="min-w-0 flex-1">
-                  <ReportSummary report={report} />
+                  <ReportSummary report={report} compact />
                 </div>
               </div>
-              <ReportPreview report={report} />
+              {report.targetType === "users" && (
+                <ReportPreview report={report} />
+              )}
               <ReportActions
                 report={report}
                 busy={confirmation.busy || query.isFetching}
                 onAction={(decision) => act([report], decision)}
+                leading={
+                  report.targetType !== "users" && report.target ? (
+                    <ReportPreview report={report} compact />
+                  ) : undefined
+                }
               />
             </article>
           ))}

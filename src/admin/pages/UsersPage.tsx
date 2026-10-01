@@ -1,5 +1,10 @@
 import { useAdminUsersQuery, useAdminUserActionMutation } from "@/admin/store";
-import { USERS_DEFAULTS, USER_ACTION_LABELS } from "@/admin/constants";
+import { ListX } from "lucide-react";
+import {
+  USERS_DEFAULTS,
+  USER_ACTION_ICONS,
+  USER_ACTION_LABELS,
+} from "@/admin/constants";
 import {
   useCorrectPage,
   useListParams,
@@ -104,23 +109,35 @@ export default function UsersPage() {
                   Вибрано: {selection.selected.length}
                 </span>
                 {(Object.keys(USER_ACTION_LABELS) as UserAction[]).map(
-                  (action) => (
-                    <Button
-                      key={action}
-                      size="sm"
-                      variant={action === "delete" ? "destructive" : "outline"}
-                      disabled={confirmation.busy || query.isFetching}
-                      onClick={() => act(selection.selected, action)}
-                    >
-                      {USER_ACTION_LABELS[action]}
-                    </Button>
-                  ),
+                  (action) => {
+                    const Icon = USER_ACTION_ICONS[action];
+                    return (
+                      <Button
+                        key={action}
+                        size="comfortable"
+                        shape="rounded"
+                        variant={
+                          action === "delete" ? "destructive" : "outline"
+                        }
+                        disabled={confirmation.busy || query.isFetching}
+                        onClick={() => act(selection.selected, action)}
+                      >
+                        <Icon
+                          className="size-4.5 shrink-0"
+                          aria-hidden="true"
+                        />
+                        {USER_ACTION_LABELS[action]}
+                      </Button>
+                    );
+                  },
                 )}
                 <Button
                   variant="ghost"
-                  size="sm"
+                  size="comfortable"
+                  shape="rounded"
                   onClick={() => selection.set([])}
                 >
+                  <ListX className="size-4.5 shrink-0" aria-hidden="true" />
                   Зняти виділення
                 </Button>
               </>
@@ -130,7 +147,7 @@ export default function UsersPage() {
             {users.map((user) => (
               <article
                 key={user.id}
-                className="flex flex-wrap items-center gap-4 p-4"
+                className="grid grid-cols-[auto_minmax(0,1fr)] items-center gap-4 p-4 sm:p-5 xl:grid-cols-[auto_minmax(0,1fr)_auto]"
               >
                 <input
                   type="checkbox"
@@ -147,11 +164,13 @@ export default function UsersPage() {
                 <div className="min-w-0 flex-1">
                   <UserSummary user={user} />
                 </div>
-                <UserActions
-                  user={user}
-                  busy={confirmation.busy || query.isFetching}
-                  onAction={(action) => act([user.id], action)}
-                />
+                <div className="col-span-2 xl:col-span-1">
+                  <UserActions
+                    user={user}
+                    busy={confirmation.busy || query.isFetching}
+                    onAction={(action) => act([user.id], action)}
+                  />
+                </div>
               </article>
             ))}
           </div>

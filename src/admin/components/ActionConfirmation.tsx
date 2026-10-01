@@ -79,6 +79,8 @@ export function useActionConfirmation() {
           : "Підтвердьте адміністративну дію."
       }
       confirmText={action?.label}
+      buttonSize="comfortable"
+      buttonShape="rounded"
       busy={busy}
       error={error}
       onCancel={() => {

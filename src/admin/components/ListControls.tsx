@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 import { Button } from "@/ui/Button";
 import { Spinner } from "@/ui/Spinner";
@@ -58,19 +59,23 @@ export function Pagination({
       <div className="flex gap-2">
         <Button
           variant="outline"
-          size="sm"
+          size="comfortable"
+          shape="rounded"
           disabled={busy || page <= 1}
           onClick={() => onChange(page - 1)}
         >
+          <ChevronLeft className="size-4.5 shrink-0" aria-hidden="true" />
           Назад
         </Button>
         <Button
           variant="outline"
-          size="sm"
+          size="comfortable"
+          shape="rounded"
           disabled={busy || page >= totalPages}
           onClick={() => onChange(page + 1)}
         >
           Далі
+          <ChevronRight className="size-4.5 shrink-0" aria-hidden="true" />
         </Button>
       </div>
     </nav>
@@ -104,7 +109,12 @@ export function QueryState({
         className="space-y-3 rounded-xl border border-destructive/40 p-5"
       >
         <p className="text-destructive">{errorMessage(error)}</p>
-        <Button variant="outline" onClick={() => void retry()}>
+        <Button
+          variant="outline"
+          size="comfortable"
+          shape="rounded"
+          onClick={() => void retry()}
+        >
           Спробувати знову
         </Button>
       </div>
