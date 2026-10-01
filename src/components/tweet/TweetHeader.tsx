@@ -10,6 +10,7 @@ import { formatRelativeTime } from "@/utils/format";
 import type { Tweet } from "@/types/tweet";
 
 interface TweetHeaderProps {
+  onReport?: () => void;
   author: Tweet["author"];
   createdAt: string;
   updatedAt?: string | null;
@@ -27,6 +28,7 @@ export default function TweetHeader({
   onDelete,
   onEdit,
   onOpenEditHistory,
+  onReport,
 }: TweetHeaderProps) {
   return (
     <div className="relative flex flex-col gap-0.5 min-w-0">
@@ -77,9 +79,13 @@ export default function TweetHeader({
           )}
         </div>
 
-        {(onDelete || onEdit) && (
+        {(onDelete || onEdit || onReport) && (
           <div className="absolute right-0 top-0">
-            <ActionsMenu onDelete={onDelete} onEdit={onEdit} />
+            <ActionsMenu
+              onDelete={onDelete}
+              onEdit={onEdit}
+              onReport={onReport}
+            />
           </div>
         )}
       </div>

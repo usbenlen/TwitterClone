@@ -1,10 +1,17 @@
 import { useEffect, useRef, useState } from "react";
 
-import { MoreHorizontal, Trash2, Pencil, type LucideIcon } from "lucide-react";
+import {
+  MoreHorizontal,
+  Trash2,
+  Pencil,
+  Flag,
+  type LucideIcon,
+} from "lucide-react";
 
 import { cn } from "@/utils/cn";
 
 interface ActionsMenuProps {
+  onReport?: () => void;
   onDelete?: () => void;
   onEdit?: () => void;
 }
@@ -16,8 +23,21 @@ interface ActionButton {
   onClick: () => void;
 }
 
-export default function ActionsMenu({ onDelete, onEdit }: ActionsMenuProps) {
+export default function ActionsMenu({
+  onDelete,
+  onEdit,
+  onReport,
+}: ActionsMenuProps) {
   const ACTION_BUTTONS: readonly ActionButton[] = [
+    ...(onReport
+      ? [
+          {
+            icon: Flag,
+            label: "Поскаржитися",
+            onClick: onReport
+          }
+        ]
+      : []),
     ...(onEdit
       ? [
           {
@@ -54,9 +74,17 @@ export default function ActionsMenu({ onDelete, onEdit }: ActionsMenuProps) {
     };
 
     document.addEventListener("pointerdown", handlePointerDown);
+    const escape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setOpen(false);
+        menuRef.current?.querySelector("button")?.focus();
+      }
+    };
+    document.addEventListener("keydown", escape);
 
     return () => {
       document.removeEventListener("pointerdown", handlePointerDown);
+      document.removeEventListener("keydown", escape);
     };
   }, [open]);
 
@@ -95,11 +123,12 @@ export default function ActionsMenu({ onDelete, onEdit }: ActionsMenuProps) {
                   setOpen(false);
                   action.onClick();
                 }}
-                className={cn("cursor-pointer flex w-full items-center gap-3 px-4 py-2.5 text-sm font-medium transition-colors first:rounded-t-xl last:rounded-b-xl",
+                className={cn(
+                  "cursor-pointer flex w-full items-center gap-3 px-4 py-2.5 text-sm font-medium transition-colors first:rounded-t-xl last:rounded-b-xl",
                   action.variant === "danger"
-                  ? "text-destructive  hover:bg-destructive/10"
-                  : "hover:bg-muted")
-                }
+                    ? "text-destructive  hover:bg-destructive/10"
+                    : "hover:bg-muted",
+                )}
               >
                 <Icon size={18} />
                 {action.label}

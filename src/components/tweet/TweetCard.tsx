@@ -25,6 +25,7 @@ import {
 } from "@/components/modal/index";
 
 import { Avatar } from "@/ui";
+import ReportModal from "@/components/modal/ReportModal";
 
 import {
   TweetHeader,
@@ -34,11 +35,7 @@ import {
 } from "@/components/tweet";
 
 import { APP_ROUTES } from "@/constants/routes";
-import {
-  mapMediaToComposerMedia,
-  mapPollToComposerPoll,
-  cn,
-} from "@/utils";
+import { mapMediaToComposerMedia, mapPollToComposerPoll, cn } from "@/utils";
 
 import type { Tweet, ComposerSubmitData, User } from "@/types";
 
@@ -79,6 +76,7 @@ function TweetCard({
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isQuoteModalOpen, setIsQuoteModalOpen] = useState(false);
   const [isEditHistoryOpen, setIsEditHistoryOpen] = useState(false);
+  const [isReportOpen, setIsReportOpen] = useState(false);
 
   const isOwnTweet = user?.id === tweet.author.id;
 
@@ -186,6 +184,9 @@ function TweetCard({
 
         <div className="min-w-0">
           <TweetHeader
+            onReport={
+              user && !isOwnTweet ? () => setIsReportOpen(true) : undefined
+            }
             author={tweet.author}
             createdAt={tweet.createdAt}
             updatedAt={tweet.updatedAt}
@@ -270,6 +271,13 @@ function TweetCard({
         tweet={tweet}
         onClose={() => setIsEditHistoryOpen(false)}
       />
+      {isReportOpen && (
+        <ReportModal
+          targetType={tweet.isComment ? "comments" : "posts"}
+          targetId={tweet.id}
+          onClose={() => setIsReportOpen(false)}
+        />
+      )}
     </>
   );
 }

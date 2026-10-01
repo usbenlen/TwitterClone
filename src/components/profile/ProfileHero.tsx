@@ -1,4 +1,6 @@
 import { useState } from "react";
+import ActionsMenu from "@/components/tweet/ActionsMenu";
+import ReportModal from "@/components/modal/ReportModal";
 
 import { Avatar, Button } from "@/ui";
 
@@ -25,6 +27,7 @@ export default function ProfileHero({
   const following = isFollowing(user.id);
 
   const [isEditProfileOpen, setIsEditProfileOpen] = useState(false);
+  const [isReportOpen, setIsReportOpen] = useState(false);
 
   return (
     <>
@@ -50,7 +53,10 @@ export default function ProfileHero({
             />
           </div>
 
-          <div className="pt-3">
+          <div className="flex items-center gap-3 pt-3">
+            {!isOwnProfile && (
+              <ActionsMenu onReport={() => setIsReportOpen(true)} />
+            )}
             {isOwnProfile ? (
               <Button
                 className={"cursor-pointer"}
@@ -79,6 +85,13 @@ export default function ProfileHero({
         onClose={() => setIsEditProfileOpen(false)}
         onSave={onUpdateProfile}
       />
+      {isReportOpen && (
+        <ReportModal
+          targetType="users"
+          targetId={user.id}
+          onClose={() => setIsReportOpen(false)}
+        />
+      )}
     </>
   );
 }
