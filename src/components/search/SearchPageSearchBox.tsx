@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { useLocation, useNavigate } from "react-router";
 
-import { SearchBox } from "@/ui";
+import { SearchBox } from "@/ui/index";
 
-import { APP_ROUTES } from "@/constants/routes.ts";
+import { APP_ROUTES } from "@/constants/routes";
 
 import type { SearchCriteria } from "@/types";
 

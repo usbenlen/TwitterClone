@@ -1,10 +1,10 @@
-import { TweetCard } from "@/components/tweet";
+import { TweetCard } from "@/components/tweet/index";
 import { Spinner } from "@/ui/Spinner";
 
 import type { Tweet } from "@/types/tweet";
 import type { User } from "@/types/user";
 
-import { withAncestorContext } from "@/utils/ancestors.ts";
+import { withAncestorContext } from "@/utils/ancestors";
 
 interface FeedListProps {
   tweets: Tweet[];

@@ -1,5 +1,5 @@
-import { APP_NAME } from "@/constants/app";
-import { FOOTER_LINKS, FOOTER_TECHNOLOGIES } from "@/constants/layout";
+import { APP_NAME, FOOTER_LINKS, FOOTER_TECHNOLOGIES } from "@/constants";
+
 import { cn } from "@/utils/cn";
 
 interface RightSidebarFooterLinksProps {

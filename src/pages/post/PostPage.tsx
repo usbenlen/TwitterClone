@@ -4,8 +4,8 @@ import { useGetThreadQuery, useViewPostMutation } from "@/store/postsApi";
 import { useParams } from "react-router";
 
 import { Spinner } from "@/ui";
-import { PageHeader } from "@/components/layout/pageHeader";
-import { TweetCard } from "@/components/tweet";
+import { PageHeader } from "@/components/layout/pageHeader/index";
+import { TweetCard } from "@/components/tweet/index";
 
 import { APP_ROUTES } from "@/constants/routes";
 
@@ -62,7 +62,7 @@ export default function PostPage() {
 
       {isLoading ? (
         <div className="flex justify-center py-16">
-          <Spinner />
+          <Spinner variant="inline" />
         </div>
       ) : notFound || !thread ? (
         <div className="px-4 py-16 text-center">

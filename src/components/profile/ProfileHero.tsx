@@ -4,7 +4,7 @@ import { Avatar, Button } from "@/ui";
 
 import { useImageCache, useFollow } from "@/hooks";
 
-import { EditProfileModal } from "@/components/modal";
+import { EditProfileModal } from "@/components/modal/index";
 
 import type { UpdateProfileRequest } from "@/api/user.api";
 import type { User } from "@/types/user";

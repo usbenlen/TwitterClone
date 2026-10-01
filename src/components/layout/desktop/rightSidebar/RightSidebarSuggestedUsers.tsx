@@ -1,12 +1,11 @@
-import { SIDEBAR } from "@/constants/layout";
+import { SIDEBAR, APP_ROUTES } from "@/constants";
 import { Loader2 } from "lucide-react";
 import { Link } from "react-router";
 
 import RightSidebarCard from "@/components/layout/desktop/rightSidebar/RightSidebarCard";
-import { RecommendationUserItem } from "@/components/user";
+import { RecommendationUserItem } from "@/components/user/index";
 
 import { useRecommendedUsers } from "@/hooks";
-import { APP_ROUTES } from "@/constants/routes";
 
 export default function RightSidebarSuggestedUsers() {
   const { users, isLoading, error, reload } = useRecommendedUsers(

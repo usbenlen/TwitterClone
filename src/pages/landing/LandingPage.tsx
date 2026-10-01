@@ -1,3 +1,4 @@
+import { APP_NAME, APP_ROUTES } from "@/constants";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router";
 import {
@@ -10,8 +11,8 @@ import {
 } from "lucide-react";
 
 import { GoogleAuthButton } from "@/components/auth";
-import { RightSidebarFooterLinks } from "@/components/layout/desktop/rightSidebar";
-import { APP_ROUTES } from "@/constants/routes";
+import { RightSidebarFooterLinks } from "@/components/layout/desktop/rightSidebar/index";
+
 import { HeartIcon } from "@/shared/icons";
 import { AppLogo, Avatar } from "@/ui";
 import { cn } from "@/utils/cn";
@@ -162,8 +163,8 @@ export default function LandingPage() {
                 <span className="text-primary">має значення.</span>
               </h1>
               <p className="mx-auto mt-6 max-w-xl text-lg leading-8 text-muted-foreground text-pretty sm:text-xl lg:mx-0">
-                Chirp - простір для живих розмов, нових знайомств і думок, якими
-                хочеться ділитися.
+                {APP_NAME} - простір для живих розмов, нових знайомств і думок,
+                якими хочеться ділитися.
               </p>
 
               <div className="mx-auto mt-9 flex max-w-md flex-col gap-3 lg:mx-0">

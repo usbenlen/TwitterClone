@@ -10,7 +10,11 @@ import {
   SEARCH_NEARBY_RADIUS_KM,
 } from "@/constants/search";
 
-import type { SearchCriteria, SearchLocation, SearchPeople } from "@/types";
+import type {
+  SearchCriteria,
+  SearchLocation,
+  SearchPeople,
+} from "@/types";
 
 interface AdvancedSearchModalProps {
   criteria: SearchCriteria;

@@ -1,13 +1,20 @@
+import {
+  MILLISECONDS_PER_MINUTE,
+  MINUTES_PER_HOUR,
+  HOURS_PER_DAY,
+  POLL_COUNTDOWN_INTERVAL_MS,
+} from "@/constants";
+
 import { useEffect, useMemo, useState } from "react";
 
 function formatRemaining(ms: number) {
-  const minutes = Math.floor(ms / 1000 / 60);
-  if (minutes < 60) return `${minutes} хв`;
+  const minutes = Math.floor(ms / MILLISECONDS_PER_MINUTE);
+  if (minutes < MINUTES_PER_HOUR) return `${minutes} хв`;
 
-  const hours = Math.floor(minutes / 60);
-  if (hours < 24) return `${hours} год`;
+  const hours = Math.floor(minutes / MINUTES_PER_HOUR);
+  if (hours < HOURS_PER_DAY) return `${hours} год`;
 
-  const days = Math.floor(hours / 24);
+  const days = Math.floor(hours / HOURS_PER_DAY);
   return `${days} дн`;
 }
 
@@ -18,7 +25,7 @@ export function usePollCountdown(expiresAt: string) {
   useEffect(() => {
     const timer = setInterval(() => {
       setNow(Date.now());
-    }, 60_000);
+    }, POLL_COUNTDOWN_INTERVAL_MS);
 
     return () => clearInterval(timer);
   }, []);

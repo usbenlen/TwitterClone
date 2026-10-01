@@ -1,4 +1,4 @@
-import { FeedList } from "@/components/feed";
+import { FeedList } from "@/components/feed/index";
 import {
   ProfileHeader,
   ProfileHero,

@@ -3,9 +3,9 @@ import { Bookmark, Eye, MessageCircle, Repeat2 } from "lucide-react";
 
 import { HeartIcon } from "@/shared/icons";
 
-import { cn } from "@/utils/cn";
-import { formatCount } from "@/utils/format";
-import { RepostMenu } from "@/components/tweet/repost";
+import { cn, formatCount } from "@/utils";
+
+import { RepostMenu } from "@/components/tweet/repost/index";
 
 interface TweetActionsProps {
   likedByMe: boolean;

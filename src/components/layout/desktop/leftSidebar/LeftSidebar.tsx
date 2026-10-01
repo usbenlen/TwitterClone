@@ -1,10 +1,8 @@
 import { useAuth } from "@/hooks/useAuth";
 
-import { Navigation } from "@/components/layout/desktop/navigation";
-import {
-  LeftSidebarProfile,
-  LeftSidebarHeader,
-} from "@/components/layout/desktop/leftSidebar";
+import { Navigation } from "@/components/layout/desktop/navigation/index";
+import LeftSidebarProfile from "@/components/layout/desktop/leftSidebar/LeftSidebarProfile";
+import LeftSidebarHeader from "@/components/layout/desktop/leftSidebar/LeftSidebarHeader";
 
 export default function LeftSidebar() {
   const { user } = useAuth();

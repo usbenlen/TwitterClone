@@ -2,7 +2,7 @@ import type { ComponentType } from "react";
 import { createBrowserRouter } from "react-router";
 
 import MainLayout from "@/layouts/MainLayout";
-import { ProtectedRoute, GuestRoute } from "@/components/routeGuards";
+import { ProtectedRoute, GuestRoute } from "@/components/routeGuards/index";
 import { APP_ROUTES } from "@/constants/routes";
 import { Spinner } from "@/ui/Spinner";
 

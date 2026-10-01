@@ -4,12 +4,15 @@ import { useLocation, useNavigate, useSearchParams } from "react-router";
 
 import { useSearch } from "@/hooks/useSearch";
 
-import { Spinner, Tab } from "@/ui";
+import { Spinner, Tab } from "@/ui/index";
 
-import { AdvancedSearchModal, SearchPageSearchBox } from "@/components/search";
-import { PageHeader } from "@/components/layout/pageHeader";
-import { TweetCard } from "@/components/tweet";
-import { UserListItem } from "@/components/user";
+import {
+  AdvancedSearchModal,
+  SearchPageSearchBox,
+} from "@/components/search/index";
+import { PageHeader } from "@/components/layout/pageHeader/index";
+import { TweetCard } from "@/components/tweet/index";
+import { UserListItem } from "@/components/user/index";
 
 import { APP_ROUTES } from "@/constants/routes";
 import { useAuth } from "@/hooks";
@@ -96,7 +99,7 @@ export default function SearchPage() {
 
       {isLoading ? (
         <div className="flex justify-center py-12">
-          <Spinner />
+          <Spinner variant="inline" />
         </div>
       ) : error ? (
         <p className="px-4 py-10 text-center text-sm text-destructive">

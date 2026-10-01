@@ -1,2 +1,2 @@
-export * from "@/components/layout/mobile/navigation";
-export * from "@/components/layout/mobile/sidebar";
+export * from "@/components/layout/mobile/navigation/index";
+export * from "@/components/layout/mobile/sidebar/index";

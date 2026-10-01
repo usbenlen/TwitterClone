@@ -1,8 +1,8 @@
-export * from "@/components/tweet/linkPreview";
-export * from "@/components/tweet/media";
-export * from "@/components/tweet/quote";
-export * from "@/components/tweet/repost";
-export * from "@/components/tweet/TweetComposer";
+export * from "@/components/tweet/linkPreview/index";
+export * from "@/components/tweet/media/index";
+export * from "@/components/tweet/quote/index";
+export * from "@/components/tweet/repost/index";
+export * from "@/components/tweet/TweetComposer/index";
 
 export { default as ActionsMenu } from "@/components/tweet/ActionsMenu";
 export { default as TweetLocation } from "@/components/tweet/location/TweetLocation";

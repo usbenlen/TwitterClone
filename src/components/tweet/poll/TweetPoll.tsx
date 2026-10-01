@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 
-import { usePollVote, usePollCountdown } from "@/hooks/poll";
+import { usePollVote, usePollCountdown } from "@/hooks";
 
 import { cn } from "@/utils/cn";
 

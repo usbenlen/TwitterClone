@@ -3,7 +3,7 @@ import { Link } from "react-router";
 
 import type { ProfileTab } from "@/hooks/useProfile";
 
-import { Tab } from "@/ui";
+import { Tab } from "@/ui/index";
 
 interface ProfileTabsProps {
   activeTab: ProfileTab;

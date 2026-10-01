@@ -1,12 +1,11 @@
 import { formatCompactCount } from "@/utils/format";
-import { SIDEBAR } from "@/constants/layout";
+import { SIDEBAR, APP_ROUTES } from "@/constants";
 import { Loader2 } from "lucide-react";
 import { Link } from "react-router";
 
 import RightSidebarCard from "@/components/layout/desktop/rightSidebar/RightSidebarCard";
 
 import { useTrends } from "@/hooks";
-import { APP_ROUTES } from "@/constants/routes";
 
 export default function RightSidebarTrendsCard() {
   const { trends, isLoading, error, reload } = useTrends(SIDEBAR.TRENDS_LIMIT);

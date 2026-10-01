@@ -1,14 +1,14 @@
 import { renderToString } from "react-dom/server";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import CommentModal from "./CommentModal";
+import CommentModal from "@/components/modal/CommentModal";
 import { useTweetComposer } from "@/hooks";
 import type { Tweet, ComposerSubmitData } from "@/types";
 
-vi.mock("@/hooks", () => ({
+vi.mock("@/hooks/index", () => ({
   useTweetComposer: vi.fn(() => ({})),
   useUnsavedChangesGuard: () => ({}),
 }));
-vi.mock("@/components/composer", () => ({ Composer: () => null }));
+vi.mock("@/components/composer/index", () => ({ Composer: () => null }));
 vi.mock("react-dom", () => ({ createPortal: () => null }));
 
 const post = {

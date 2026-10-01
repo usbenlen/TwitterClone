@@ -1,8 +1,8 @@
 import { useFeed } from "@/hooks/useFeed";
 
-import { FeedList } from "@/components/feed";
-import { PageHeader } from "@/components/layout/pageHeader";
-import { TweetComposer } from "@/components/tweet";
+import FeedList from "@/components/feed/FeedList";
+import { PageHeader } from "@/components/layout/pageHeader/index";
+import { TweetComposer } from "@/components/tweet/index";
 
 export default function Feed() {
   const { tweets, isLoading, error } = useFeed();

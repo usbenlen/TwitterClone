@@ -2,9 +2,9 @@ import { VerifiedBadge } from "@/ui/VerifiedBadge";
 import { PenLine } from "lucide-react";
 import { Link, useNavigate } from "react-router";
 
-import { Avatar, TwemojiText } from "@/ui";
+import { Avatar, TwemojiText } from "@/ui/index";
 
-import { LinkPreviewCard } from "@/components/tweet/linkPreview";
+import { LinkPreviewCard } from "@/components/tweet/linkPreview/index";
 import TweetLocation from "@/components/tweet/location/TweetLocation";
 import TweetMedia from "@/components/tweet/TweetMedia";
 import TweetPoll from "@/components/tweet/poll/TweetPoll";
@@ -12,8 +12,7 @@ import TweetPoll from "@/components/tweet/poll/TweetPoll";
 import { useClickOrDrag } from "@/hooks";
 
 import { APP_ROUTES } from "@/constants/routes";
-import { formatRelativeTime } from "@/utils/format";
-import { removePreviewUrl } from "@/utils/linkPreview";
+import { formatRelativeTime, removePreviewUrl } from "@/utils";
 
 import type { TweetQuote } from "@/types";
 

@@ -3,12 +3,16 @@ import { useState } from "react";
 import { useNavigate, useSearchParams } from "react-router";
 
 import RightSidebarCard from "@/components/layout/desktop/rightSidebar/RightSidebarCard";
-import { AdvancedSearchModal } from "@/components/search";
+import { AdvancedSearchModal } from "@/components/search/index";
 import { useAuth } from "@/hooks";
 import { APP_ROUTES } from "@/constants/routes";
 import { parseSearchCriteria } from "@/utils/search";
 
-import type { SearchCriteria, SearchLocation, SearchPeople } from "@/types";
+import type {
+  SearchCriteria,
+  SearchLocation,
+  SearchPeople,
+} from "@/types";
 
 export default function RightSidebarSearchFilters() {
   const navigate = useNavigate();

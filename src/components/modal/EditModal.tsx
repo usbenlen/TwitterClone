@@ -4,7 +4,7 @@ import { X } from "lucide-react";
 
 import { useTweetComposer, useUnsavedChangesGuard } from "@/hooks";
 
-import { Composer } from "@/components/composer";
+import { Composer } from "@/components/composer/index";
 import { ConfirmModal } from "@/components/modal/ConfirmModal";
 
 import type {

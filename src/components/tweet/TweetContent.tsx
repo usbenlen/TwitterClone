@@ -1,10 +1,10 @@
-import { TwemojiText } from "@/ui";
+import { TwemojiText } from "@/ui/index";
 
 import TweetLocation from "@/components/tweet/location/TweetLocation";
-import { LinkPreviewCard } from "@/components/tweet/linkPreview";
+import { LinkPreviewCard } from "@/components/tweet/linkPreview/index";
 import TweetPoll from "@/components/tweet/poll/TweetPoll";
 import TweetMedia from "@/components/tweet/TweetMedia";
-import { QuotedTweetCard } from "@/components/tweet/quote";
+import { QuotedTweetCard } from "@/components/tweet/quote/index";
 
 import type { Tweet } from "@/types/tweet";
 import { removePreviewUrl } from "@/utils/linkPreview";

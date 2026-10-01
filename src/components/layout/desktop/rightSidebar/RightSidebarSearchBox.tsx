@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router";
 
-import { SearchBox } from "@/ui";
+import { SearchBox } from "@/ui/index";
 
 import { APP_ROUTES } from "@/constants/routes";
 

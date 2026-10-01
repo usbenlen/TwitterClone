@@ -7,8 +7,8 @@ import type { ProfileTab } from "@/hooks/useProfile";
 
 import { Spinner } from "@/ui";
 
-import { Profile } from "@/components/profile";
-import { PageHeader } from "@/components/layout/pageHeader";
+import { Profile } from "@/components/profile/index";
+import { PageHeader } from "@/components/layout/pageHeader/index";
 import { APP_ROUTES } from "@/constants/routes";
 
 export default function ProfilePage() {
@@ -36,7 +36,7 @@ export default function ProfilePage() {
       <section className="max-w-3xl border-r border-border">
         <PageHeader title={`@${username ?? ""}`} backTo={APP_ROUTES.HOME} />
         <div className="flex justify-center py-16">
-          <Spinner />
+          <Spinner variant="inline" />
         </div>
       </section>
     );

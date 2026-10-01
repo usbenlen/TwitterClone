@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 
 import { MoreHorizontal, Trash2, Pencil, type LucideIcon } from "lucide-react";
 
-import { cn } from "@/utils/cn.ts";
+import { cn } from "@/utils/cn";
 
 interface ActionsMenuProps {
   onDelete?: () => void;

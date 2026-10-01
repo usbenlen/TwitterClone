@@ -1,6 +1,6 @@
 import { PenLine, Repeat2 } from "lucide-react";
 
-import { ComposerPopover } from "@/components/composer";
+import { ComposerPopover } from "@/components/composer/index";
 
 interface RepostMenuProps {
   open: boolean;

@@ -1,12 +1,10 @@
-import { getChildrenByParent, buildThreadRows } from "@/utils/commentThreads";
+import { getChildrenByParent, buildThreadRows, cn } from "@/utils/index";
 import { useMemo, useState } from "react";
 
-import { useTweetComposer } from "@/hooks/composer";
+import { useTweetComposer } from "@/hooks";
 
-import { Composer } from "@/components/composer";
-import { TweetCard } from "@/components/tweet";
-
-import { cn } from "@/utils/cn";
+import { Composer } from "@/components/composer/index";
+import TweetCard from "@/components/tweet/TweetCard";
 
 import type { Tweet, ComposerSubmitData } from "@/types";
 

@@ -1,6 +1,10 @@
 import { useState } from "react";
 
-import { MediaItem, MediaGrid, MediaViewer } from "@/components/tweet/media";
+import {
+  MediaItem,
+  MediaGrid,
+  MediaViewer,
+} from "@/components/tweet/media/index";
 
 import type { MediaAttachment } from "@/types/media";
 

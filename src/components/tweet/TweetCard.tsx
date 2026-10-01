@@ -17,7 +17,12 @@ import {
   useClickOrDrag,
 } from "@/hooks";
 
-import { EditHistoryModal, EditModal, QuoteModal } from "@/components/modal";
+import {
+  EditHistoryModal,
+  EditModal,
+  QuoteModal,
+  CommentModal,
+} from "@/components/modal/index";
 
 import { Avatar } from "@/ui";
 
@@ -27,15 +32,13 @@ import {
   TweetComments,
   TweetContent,
 } from "@/components/tweet";
-import { CommentModal } from "@/components/modal";
 
 import { APP_ROUTES } from "@/constants/routes";
 import {
   mapMediaToComposerMedia,
   mapPollToComposerPoll,
-} from "@/utils/mappers";
-
-import { cn } from "@/utils/cn";
+  cn,
+} from "@/utils";
 
 import type { Tweet, ComposerSubmitData, User } from "@/types";
 

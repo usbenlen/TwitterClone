@@ -1,6 +1,6 @@
 import { NavLink, useParams } from "react-router";
 
-import { PageHeader } from "@/components/layout/pageHeader";
+import { PageHeader } from "@/components/layout/pageHeader/index";
 import Tab from "@/ui/Tab";
 
 import { APP_ROUTES } from "@/constants/routes";

@@ -5,8 +5,8 @@ import { useGetProfileQuery, useGetFollowingQuery } from "@/store/sharedApi";
 
 import { Spinner } from "@/ui";
 
-import { FollowNavigation } from "@/components/profile";
-import { UserListItem } from "@/components/user";
+import { FollowNavigation } from "@/components/profile/index";
+import { UserListItem } from "@/components/user/index";
 
 export default function FollowingPage() {
   const { username } = useParams<{
@@ -23,7 +23,7 @@ export default function FollowingPage() {
     return (
       <section className="max-w-3xl border-r bg-background">
         <div className="flex justify-center py-16">
-          <Spinner />
+          <Spinner variant="inline" />
         </div>
       </section>
     );

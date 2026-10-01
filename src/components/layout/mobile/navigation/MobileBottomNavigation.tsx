@@ -4,13 +4,11 @@ import { Menu } from "lucide-react";
 
 import { useNavigation } from "@/hooks/useNavigation";
 
-import {
-  MobileNavigationItem,
-  MobileSidebar,
-  MobileSidebarNavigation,
-  MobileSidebarProfile,
-  MobileSidebarSettings,
-} from "@/components/layout/mobile";
+import MobileNavigationItem from "@/components/layout/mobile/navigation/MobileNavigationItem";
+import MobileSidebar from "@/components/layout/mobile/sidebar/MobileSidebar";
+import MobileSidebarNavigation from "@/components/layout/mobile/sidebar/MobileSidebarNavigation";
+import MobileSidebarProfile from "@/components/layout/mobile/sidebar/MobileSidebarProfile";
+import MobileSidebarSettings from "@/components/layout/mobile/sidebar/MobileSidebarSettings";
 
 export default function MobileBottomNavigation() {
   const navigation = useNavigation();

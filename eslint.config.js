@@ -19,4 +19,22 @@ export default defineConfig([
       globals: globals.browser,
     },
   },
+  {
+    files: ['src/**/*.{ts,tsx}'],
+    rules: {
+      'no-restricted-imports': ['error', {
+        patterns: [{
+          group: ['./**', '../**'],
+          message: 'Use @/ aliases for local imports',
+        }],
+      }],
+      'no-restricted-syntax': ['error', {
+        selector: 'ImportExpression[source.value=/^\\.\\.?\\//]',
+        message: 'Use @/ aliases for dynamic local imports',
+      }, {
+        selector: 'CallExpression[callee.object.name=/^(vi|jest)$/][callee.property.name=/^(mock|doMock|unmock|doUnmock|importActual|importMock)$/][arguments.0.value=/^\\.\\.?\\//]',
+        message: 'Use @/ aliases for local mock module paths',
+      }],
+    },
+  },
 ])

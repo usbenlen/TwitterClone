@@ -1,18 +1,17 @@
 import { Loader2 } from "lucide-react";
 import { useSearchParams } from "react-router";
 
-import { PageHeader } from "@/components/layout/pageHeader";
-import { RecommendationUserItem } from "@/components/user";
+import { PageHeader } from "@/components/layout/pageHeader/index";
+import { RecommendationUserItem } from "@/components/user/index";
 import { useRecommendedUsers } from "@/hooks";
-import { Button, Tab } from "@/ui";
+import { Button, Tab } from "@/ui/index";
 
 import type { RecommendationCategory } from "@/types";
-import { APP_ROUTES } from "@/constants/routes";
-
-const tabs: Array<{ value: RecommendationCategory; label: string }> = [
-  { value: "people", label: "Кого читати" },
-  { value: "creators", label: "Автори для вас" },
-];
+import {
+  APP_ROUTES,
+  RECOMMENDATIONS_PAGE_LIMIT,
+  RECOMMENDATION_TABS,
+} from "@/constants";
 
 function parseCategory(value: string | null): RecommendationCategory {
   return value === "creators" ? "creators" : "people";
@@ -29,7 +28,7 @@ export default function FollowRecommendationsPage() {
     error,
     reload,
     loadMore,
-  } = useRecommendedUsers(category, 4);
+  } = useRecommendedUsers(category, RECOMMENDATIONS_PAGE_LIMIT);
 
   const selectCategory = (nextCategory: RecommendationCategory) => {
     setSearchParams({ tab: nextCategory }, { replace: true });
@@ -46,7 +45,7 @@ export default function FollowRecommendationsPage() {
             aria-label="Категорії рекомендацій"
             role="tablist"
           >
-            {tabs.map((tab) => (
+            {RECOMMENDATION_TABS.map((tab) => (
               <button
                 key={tab.value}
                 type="button"

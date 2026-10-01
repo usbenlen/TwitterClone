@@ -4,10 +4,10 @@ import { X } from "lucide-react";
 
 import { useTweetComposer, useUnsavedChangesGuard } from "@/hooks";
 
-import { Composer } from "@/components/composer";
+import { Composer } from "@/components/composer/index";
 import { ConfirmModal } from "@/components/modal/ConfirmModal";
 
-import { Avatar, TwemojiText } from "@/ui";
+import { Avatar, TwemojiText } from "@/ui/index";
 
 import { getReplyingToUsernames } from "@/utils/ancestors";
 

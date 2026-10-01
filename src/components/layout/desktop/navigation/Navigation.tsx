@@ -1,7 +1,7 @@
 import { APP_ROUTES } from "@/constants/routes";
 import { useNavigation } from "@/hooks/useNavigation";
 
-import { NavigationItem } from "@/components/layout/desktop/navigation";
+import NavigationItem from "@/components/layout/desktop/navigation/NavigationItem";
 
 interface NavigationProps {
   vertical?: boolean;
