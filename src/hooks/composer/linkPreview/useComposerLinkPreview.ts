@@ -1,12 +1,13 @@
 import { useEffect, useRef, useState } from "react";
 
 import { linkPreviewApi } from "@/api/linkPreview.api";
-import { ENABLE_LINK_PREVIEWS } from "@/constants/app";
+import {
+  ENABLE_LINK_PREVIEWS,
+  LINK_PREVIEW_DEBOUNCE_MS,
+} from "@/constants";
 import { findFirstHttpUrl } from "@/utils/linkPreview";
 
 import type { LinkPreview } from "@/types/linkPreview";
-
-const RESOLVE_DELAY_MS = 450;
 
 export function useComposerLinkPreview(
   content: string,
@@ -56,7 +57,7 @@ export function useComposerLinkPreview(
       } finally {
         if (requestId.current === currentRequestId) setLoadingUrl(null);
       }
-    }, RESOLVE_DELAY_MS);
+    }, LINK_PREVIEW_DEBOUNCE_MS);
 
     return () => {
       window.clearTimeout(timer);

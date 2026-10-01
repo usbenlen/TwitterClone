@@ -1,4 +1,4 @@
-import { useComposerPopup } from "@/hooks/composer";
+import { useComposerPopup } from "@/hooks/composer/useComposerPopup";
 import { useLocationSearch } from "@/hooks/location/useLocationSearch";
 
 export function useComposerLocation() {

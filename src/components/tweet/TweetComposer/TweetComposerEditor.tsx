@@ -1,7 +1,7 @@
 import { useAutosizeTextarea } from "@/hooks/useAutosizeTextarea";
-import { type RefObject } from "react";
+import type { RefObject } from "react";
 
-import { EmojiTextarea } from "@/ui";
+import { EmojiTextarea } from "@/ui/index";
 
 import { cn } from "@/utils/cn";
 

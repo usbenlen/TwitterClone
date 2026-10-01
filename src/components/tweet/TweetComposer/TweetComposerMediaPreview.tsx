@@ -1,4 +1,4 @@
-import { MediaGrid, ComposerMediaItem } from "@/components/tweet/media";
+import { MediaGrid, ComposerMediaItem } from "@/components/tweet/media/index";
 
 import type { ComposerMedia } from "@/types/composer";
 

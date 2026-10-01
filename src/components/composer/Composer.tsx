@@ -1,5 +1,6 @@
-import { ComposerAttachments, ComposerInputsAndPopovers } from "@/components/composer";
-import { formatDateTime } from "@/utils/format";
+import { ComposerAttachments } from "@/components/composer/ComposerAttachments";
+import { ComposerInputsAndPopovers } from "@/components/composer/ComposerInputsAndPopovers";
+import { formatDateTime, cn } from "@/utils";
 import { useState } from "react";
 import { CalendarClock, X } from "lucide-react";
 
@@ -7,20 +8,16 @@ import { useAuth, useTweetComposer, useDragAndDrop } from "@/hooks";
 
 import { Avatar, Button } from "@/ui";
 
-import {
-  ComposerToolbar,
-  ScheduleModal,
-  ScheduledPostsModal,
-} from "@/components/composer";
+import ComposerToolbar from "@/components/composer/ComposerToolbar";
+import ScheduleModal from "@/components/composer/schedule/ScheduleModal";
+import ScheduledPostsModal from "@/components/composer/schedule/ScheduledPostsModal";
 
 import {
   TweetComposerEditor,
   TweetComposerFooter,
   TweetComposerDropOverlay,
   TweetComposerErrors,
-} from "@/components/tweet/TweetComposer";
-
-import { cn } from "@/utils/cn";
+} from "@/components/tweet/TweetComposer/index";
 
 import type { TweetQuote } from "@/types";
 

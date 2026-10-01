@@ -4,7 +4,7 @@ import { X } from "lucide-react";
 
 import Composer from "@/components/composer/Composer";
 import { ConfirmModal } from "@/components/modal/ConfirmModal";
-import { useTweetComposer } from "@/hooks/composer";
+import { useTweetComposer } from "@/hooks";
 import { useUnsavedChangesGuard } from "@/hooks/useUnsavedChangesGuard";
 import { mapMediaToComposerMedia } from "@/utils/mappers";
 

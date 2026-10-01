@@ -1,4 +1,5 @@
-import { GifGrid, GifSearch } from "@/components/composer/gif";
+import GifGrid from "@/components/composer/gif/GifGrid";
+import GifSearch from "@/components/composer/gif/GifSearch";
 
 import type { Gif } from "@/types/gif";
 

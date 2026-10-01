@@ -8,7 +8,7 @@ export { default as ComposerToolbar } from "@/components/composer/ComposerToolba
 
 // Features
 export { default as EmojiPicker } from "@/components/composer/emoji/EmojiPicker";
-export * from "@/components/composer/gif";
+export * from "@/components/composer/gif/index";
 export { default as LocationPicker } from "@/components/composer/location/LocationPicker";
 export { default as PollComposer } from "@/components/composer/poll/PollComposer";
 export { default as ScheduledPostEditModal } from "@/components/composer/schedule/ScheduledPostEditModal";

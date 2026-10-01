@@ -6,8 +6,8 @@ import { useEffect, useState } from "react";
 
 import ScheduledPostEditModal from "@/components/composer/schedule/ScheduledPostEditModal";
 import { ConfirmModal } from "@/components/modal";
-import { useScheduledPosts } from "@/hooks/useScheduledPosts.ts";
-import { Spinner, TwemojiText } from "@/ui";
+import { useScheduledPosts } from "@/hooks/useScheduledPosts";
+import { Spinner, TwemojiText } from "@/ui/index";
 
 import type { ScheduledPost } from "@/types";
 

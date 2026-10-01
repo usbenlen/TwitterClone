@@ -1,6 +1,6 @@
 import { X } from "lucide-react";
 
-import { TweetComposerMediaStatus } from "@/components/tweet/TweetComposer";
+import { TweetComposerMediaStatus } from "@/components/tweet/TweetComposer/index";
 
 import { MEDIA_STATUS } from "@/constants/app";
 import { cn } from "@/utils/cn";

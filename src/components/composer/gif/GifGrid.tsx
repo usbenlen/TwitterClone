@@ -1,4 +1,4 @@
-import { GifItem } from "@/components/composer/gif";
+import GifItem from "@/components/composer/gif/GifItem";
 
 import type { Gif } from "@/types/gif";
 

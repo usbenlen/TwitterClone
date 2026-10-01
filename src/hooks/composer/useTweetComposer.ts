@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
-import { useScheduledPosts } from "@/hooks/useScheduledPosts.ts";
+import { useComposerScheduling } from "@/hooks/composer/useComposerScheduling";
+import { canScheduleMedia, hasComposerChanges } from "@/utils/composer";
 
 import {
   useComposerActions,
@@ -9,7 +10,7 @@ import {
   useComposerLinkPreview,
 } from "@/hooks/composer";
 
-import { MAX_TWEET_LENGTH, MEDIA_STATUS, MEDIA } from "@/constants/app";
+import { MAX_TWEET_LENGTH, MEDIA_STATUS } from "@/constants/app";
 
 import type {
   Gif,
@@ -59,13 +60,6 @@ export function useTweetComposer({
   const [selectedLocation, setSelectedLocation] = useState<Location | null>(
     initialLocation,
   );
-  const [scheduledAt, setScheduledAt] = useState<string | null>(
-    initialScheduledAt,
-  );
-  const [scheduleDraftAt, setScheduleDraftAt] = useState<string | null>(null);
-  const [isScheduleListOpen, setIsScheduleListOpen] = useState(false);
-  const [isScheduling, setIsScheduling] = useState(false);
-  const scheduledPosts = useScheduledPosts();
   const cursor = useComposerEditor();
   const linkPreview = useComposerLinkPreview(content, initialLinkPreview);
 
@@ -95,6 +89,17 @@ export function useTweetComposer({
     schedule,
   } = useComposerActions(initialPoll);
 
+  const scheduleState = useComposerScheduling({
+    popup: schedule,
+    initialScheduledAt,
+    enabled: allowScheduling,
+    submitLabel: scheduleSubmitLabel,
+    showScheduledPostsLink,
+    canClear: canClearSchedule,
+    onSubmit: onScheduledSubmit,
+  });
+  const { scheduledAt, isScheduling } = scheduleState;
+
   const { submit: submitComposer, isPosting: isPostingNow } = useComposerSubmit(
     {
       content,
@@ -106,30 +111,14 @@ export function useTweetComposer({
       clearMedia: mediaManager.clearMedia,
       clearErrors: mediaManager.clearErrors,
 
-      onCreated: onCreated || (() => {}),
+      onCreated,
       onSubmit,
     },
   );
 
   const isPosting = isPostingNow || isScheduling;
 
-  const hasScheduleCompatibleMedia = useMemo(() => {
-    if (mediaManager.media.length === 0) return true;
-
-    const allMediaUploaded = mediaManager.media.every(
-      (item) =>
-        item.status === MEDIA_STATUS.UPLOADED && Boolean(item.attachmentId),
-    );
-    if (!allMediaUploaded) return false;
-
-    if (mediaManager.media.every((item) => item.type === "image"))
-      return mediaManager.media.length <= MEDIA.MAX_ATTACHMENTS;
-
-    return (
-      mediaManager.media.length === 1 &&
-      ["video", "gif"].includes(mediaManager.media[0].type)
-    );
-  }, [mediaManager.media]);
+  const hasScheduleCompatibleMedia = canScheduleMedia(mediaManager.media);
 
   const hasPostContent = Boolean(
     content.trim().length > 0 ||
@@ -147,33 +136,24 @@ export function useTweetComposer({
     selectedLocation === null &&
     hasScheduleCompatibleMedia;
 
-  const initialMediaIds = initialMedia.map(
-    (item) => item.attachmentId ?? item.id,
+  const hasChanges = hasComposerChanges(
+    {
+      content,
+      media: mediaManager.media,
+      poll: poll.hasPoll ? poll.poll : null,
+      location: selectedLocation,
+      linkPreview: linkPreview.preview,
+      scheduledAt,
+    },
+    {
+      content: initialContent,
+      media: initialMedia,
+      poll: initialPoll,
+      location: initialLocation,
+      linkPreview: initialLinkPreview,
+      scheduledAt: initialScheduledAt,
+    },
   );
-  const currentMediaIds = mediaManager.media.map(
-    (item) => item.attachmentId ?? item.id,
-  );
-  const normalizedInitialPoll = initialPoll
-    ? {
-        duration: initialPoll.duration,
-        options: initialPoll.options.map((option) => option.text),
-      }
-    : null;
-  const normalizedCurrentPoll = poll.hasPoll
-    ? {
-        duration: poll.poll.duration,
-        options: poll.poll.options.map((option) => option.text),
-      }
-    : null;
-  const hasChanges =
-    content !== initialContent ||
-    JSON.stringify(currentMediaIds) !== JSON.stringify(initialMediaIds) ||
-    JSON.stringify(normalizedCurrentPoll) !==
-      JSON.stringify(normalizedInitialPoll) ||
-    JSON.stringify(selectedLocation) !== JSON.stringify(initialLocation) ||
-    JSON.stringify(linkPreview.preview) !==
-      JSON.stringify(initialLinkPreview) ||
-    scheduledAt !== initialScheduledAt;
 
   const canSubmit =
     (allowEmptySubmit ||
@@ -193,56 +173,28 @@ export function useTweetComposer({
     mediaManager.addFiles(files);
   };
 
+  const resetComposer = () => {
+    setContent("");
+    removeLocation();
+    linkPreview.clear();
+    closeAllPopups();
+    poll.reset();
+  };
   const submit = async () => {
     if (!canSubmit) return;
-
     if (scheduledAt && allowScheduling) {
-      setIsScheduling(true);
-      try {
-        const payload = {
-          content: content.trim(),
-          mediaIds: mediaManager.media
-            .filter((item) => item.attachmentId)
-            .map((item) => item.attachmentId!),
-          linkPreview: linkPreview.preview,
-          scheduledAt,
-          mockMedia: mediaManager.media.flatMap((item) =>
-            item.attachmentId && item.file
-              ? [
-                  {
-                    attachmentId: item.attachmentId,
-                    file: item.file,
-                    type: item.type,
-                  },
-                ]
-              : [],
-          ),
-        };
-        const created = onScheduledSubmit
-          ? await onScheduledSubmit(payload)
-          : await scheduledPosts.create(payload);
-
-        setContent("");
-        mediaManager.clearMedia();
-        removeLocation();
-        linkPreview.clear();
-        closeAllPopups();
-        poll.reset();
-        setScheduledAt(null);
-        return created;
-      } finally {
-        setIsScheduling(false);
-      }
+      const created = await scheduleState.submit({
+        content,
+        media: mediaManager.media,
+        linkPreview: linkPreview.preview,
+      });
+      mediaManager.clearMedia();
+      resetComposer();
+      scheduleState.reset();
+      return created;
     }
-
     const created = await submitComposer();
-    if (created) {
-      setContent("");
-      removeLocation();
-      linkPreview.clear();
-      closeAllPopups();
-      poll.reset();
-    }
+    if (created) resetComposer();
     return created;
   };
 
@@ -360,46 +312,7 @@ export function useTweetComposer({
       ...(!canOpenSchedule ? (["schedule"] as const) : []),
       ...(scheduledAt ? (["poll", "location"] as const) : []),
     ],
-    scheduling: {
-      enabled: allowScheduling,
-      open: schedule.isOpen,
-      scheduledAt,
-      modalInitialAt: scheduleDraftAt ?? scheduledAt,
-      listOpen: isScheduleListOpen,
-      submitLabel: scheduleSubmitLabel,
-      showScheduledPostsLink,
-      canClear: canClearSchedule,
-      onOpenChange: (open: boolean) => {
-        if (open) schedule.open();
-        else {
-          schedule.close();
-          setScheduleDraftAt(null);
-        }
-      },
-      apply: (value: string) => {
-        setScheduledAt(value);
-        setScheduleDraftAt(null);
-        schedule.close();
-      },
-      clear: () => {
-        setScheduledAt(null);
-        setScheduleDraftAt(null);
-        schedule.close();
-      },
-      openList: (draftAt: string) => {
-        setScheduleDraftAt(draftAt);
-        schedule.close();
-        setIsScheduleListOpen(true);
-      },
-      backToSchedule: () => {
-        setIsScheduleListOpen(false);
-        schedule.open();
-      },
-      closeList: () => {
-        setIsScheduleListOpen(false);
-        setScheduleDraftAt(null);
-      },
-    },
+    scheduling: scheduleState.scheduling,
 
     pollPreview: {
       visible: poll.hasPoll,

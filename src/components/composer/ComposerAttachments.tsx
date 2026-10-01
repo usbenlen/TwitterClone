@@ -5,8 +5,8 @@ import {
   TweetComposerPollPreview,
   TweetComposerLocationPreview,
   TweetComposerLinkPreview,
-} from "@/components/tweet/TweetComposer";
-import { QuotedTweetCard } from "@/components/tweet/quote";
+} from "@/components/tweet/TweetComposer/index";
+import { QuotedTweetCard } from "@/components/tweet/quote/index";
 
 interface ComposerAttachmentsProps {
   composer: ReturnType<typeof useTweetComposer>;

@@ -1,4 +1,4 @@
-import { LinkPreviewCard } from "@/components/tweet/linkPreview";
+import { LinkPreviewCard } from "@/components/tweet/linkPreview/index";
 
 import type { LinkPreview } from "@/types/linkPreview";
 

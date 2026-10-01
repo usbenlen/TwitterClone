@@ -1,6 +1,6 @@
-import { useTweetComposer } from "@/hooks/composer";
+import { useTweetComposer } from "@/hooks";
 
-import { Composer } from "@/components/composer";
+import { Composer } from "@/components/composer/index";
 
 export default function TweetComposer() {
   const composer = useTweetComposer({

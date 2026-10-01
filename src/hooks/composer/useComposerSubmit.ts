@@ -1,3 +1,4 @@
+import { buildComposerPayload } from "@/utils/composer";
 import { useState } from "react";
 
 import { useCreatePostMutation } from "@/store/postsApi";
@@ -21,7 +22,7 @@ interface UseComposerSubmitProps {
   clearMedia: () => void;
   clearErrors: () => void;
 
-  onCreated: (tweet: Tweet) => void;
+  onCreated?: (tweet: Tweet) => void;
   onSubmit?: (data: ComposerSubmitData) => Promise<unknown>;
 }
 
@@ -43,25 +44,13 @@ export function useComposerSubmit({
     setIsPosting(true);
 
     try {
-      const pollData =
-        poll && poll.options.some((o) => o.text.trim())
-          ? {
-              options: poll.options.map((o) => o.text.trim()).filter(Boolean),
-              duration: poll.duration,
-            }
-          : poll === null
-            ? null
-            : undefined;
-
-      const payload = {
-        content: content.trim(),
-        mediaIds: media
-          .filter((item) => item.attachmentId)
-          .map((item) => item.attachmentId!),
-        poll: pollData,
+      const payload = buildComposerPayload({
+        content,
+        media,
+        poll,
         location,
         linkPreview,
-      };
+      });
 
       let result;
       if (onSubmit) result = await onSubmit(payload);
@@ -69,13 +58,13 @@ export function useComposerSubmit({
         result = await createPost({
           content: payload.content,
           mediaIds: payload.mediaIds,
-          poll: pollData || undefined,
+          poll: payload.poll || undefined,
           location: payload.location,
           linkPreview: payload.linkPreview,
         }).unwrap();
       }
 
-      if (result && typeof result === "object") onCreated(result as Tweet);
+      if (result && typeof result === "object") onCreated?.(result as Tweet);
 
       if (result !== false) {
         clearMedia();

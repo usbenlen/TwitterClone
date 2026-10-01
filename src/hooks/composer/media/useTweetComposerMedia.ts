@@ -1,8 +1,7 @@
+import { BYTES_PER_MEGABYTE, MEDIA } from "@/constants";
 import { useState } from "react";
 
-import { useMediaUpload } from "@/hooks/composer/media";
-
-import { MEDIA } from "@/constants/app";
+import { useMediaUpload } from "@/hooks/composer/media/useMediaUpload";
 
 import { prepareMedia } from "@/utils/media";
 
@@ -79,7 +78,7 @@ export function useTweetComposerMedia(initialMedia?: ComposerMedia[]) {
       type: blob.type || "image/gif",
     });
 
-    const maxSizeBytes = MEDIA.GIF.MAX_SIZE_MB * 1024 * 1024;
+    const maxSizeBytes = MEDIA.GIF.MAX_SIZE_MB * BYTES_PER_MEGABYTE;
 
     if (file.size > maxSizeBytes)
       throw new Error(`GIF exceeds ${MEDIA.GIF.MAX_SIZE_MB} MB.`);
