@@ -6,6 +6,7 @@ export { default as TwemojiText } from "@/ui/TwemojiText";
 export { VerifiedBadge } from "@/ui/VerifiedBadge";
 
 // Controls
+export { Modal } from "@/ui/Modal";
 export { Button } from "@/ui/Button";
 export type { ButtonProps } from "@/ui/Button";
 export { default as EmojiTextarea } from "@/ui/EmojiTextarea";
