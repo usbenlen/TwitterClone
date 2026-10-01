@@ -13,7 +13,11 @@ import { PageHeader } from "@/components/layout/pageHeader/index";
 
 import { cn } from "@/utils/cn";
 
-export default function SettingsPage() {
+export default function SettingsPage({
+  variant = "main",
+}: {
+  variant?: "main" | "admin";
+}) {
   const { user, updateUser: updateAuthUser } = useAuth();
   const { theme, setTheme } = useTheme();
 
@@ -28,7 +32,12 @@ export default function SettingsPage() {
 
   return (
     <>
-      <section className="w-full max-w-3xl border-r border-border bg-background">
+      <section
+        className={cn(
+          "w-full bg-background",
+          variant === "main" && "max-w-3xl border-r border-border",
+        )}
+      >
         <PageHeader title="Налаштування" />
 
         <div className="mx-auto w-full max-w-2xl px-4 py-6">

@@ -2,6 +2,7 @@ import type { ComponentType } from "react";
 import { createBrowserRouter } from "react-router";
 
 import MainLayout from "@/layouts/MainLayout";
+import AdminRoute from "@/admin/AdminRoute";
 import { ProtectedRoute, GuestRoute } from "@/components/routeGuards/index";
 import { APP_ROUTES } from "@/constants/routes";
 import { Spinner } from "@/ui/Spinner";
@@ -17,6 +18,41 @@ export const routes = createBrowserRouter([
     element: <ProtectedRoute />,
     hydrateFallbackElement: <Spinner className="size-8 text-primary" />,
     children: [
+      {
+        element: <AdminRoute />,
+        children: [
+          {
+            path: APP_ROUTES.ADMIN,
+            lazy: lazyPage(() => import("@/admin/AdminLayout")),
+            children: [
+              {
+                index: true,
+                lazy: lazyPage(() => import("@/admin/pages/DashboardPage")),
+              },
+              {
+                path: APP_ROUTES.ADMIN_USERS,
+                lazy: lazyPage(() => import("@/admin/pages/UsersPage")),
+              },
+              {
+                path: APP_ROUTES.ADMIN_USER,
+                lazy: lazyPage(() => import("@/admin/pages/UserPage")),
+              },
+              {
+                path: APP_ROUTES.ADMIN_MODERATION,
+                lazy: lazyPage(() => import("@/admin/pages/ModerationPage")),
+              },
+              {
+                path: APP_ROUTES.ADMIN_REPORT,
+                lazy: lazyPage(() => import("@/admin/pages/ReportPage")),
+              },
+              {
+                path: APP_ROUTES.ADMIN_SETTINGS,
+                lazy: lazyPage(() => import("@/admin/pages/SettingsPage")),
+              },
+            ],
+          },
+        ],
+      },
       {
         element: <MainLayout />,
         children: [
