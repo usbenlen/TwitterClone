@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { CheckCircle2 } from "lucide-react";
+import { Check } from "lucide-react";
 import { Modal } from "@/ui/Modal";
 import { Button } from "@/ui/Button";
 import { REPORT_REASONS } from "@/constants/report";
@@ -27,12 +27,32 @@ export default function ReportModal({ targetType, targetId, onClose }: Props) {
   };
 
   return (
-    <Modal open title="Поскаржитися" busy={result.isLoading} onClose={onClose}>
+    <Modal
+      open
+      title={result.isSuccess ? "Скаргу надіслано" : "Поскаржитися"}
+      busy={result.isLoading}
+      onClose={onClose}
+      className={result.isSuccess ? "max-w-sm" : undefined}
+    >
       {result.isSuccess ? (
-        <div role="status" className="space-y-4">
-          <CheckCircle2 className="size-8 text-primary" />
-          <p>Скаргу надіслано. Адміністратор перевірить її.</p>
-          <Button onClick={onClose}>Готово</Button>
+        <div className="space-y-6 pt-2">
+          <div
+            role="status"
+            className="flex flex-col items-center gap-4 text-center"
+          >
+            <div
+              className="flex size-12 items-center justify-center rounded-xl bg-muted text-foreground"
+              aria-hidden="true"
+            >
+              <Check className="size-6" />
+            </div>
+            <p className="text-sm text-muted-foreground">
+              Дякуємо за повідомлення. Адміністратор перевірить вашу скаргу.
+            </p>
+          </div>
+          <Button autoFocus fullWidth size="comfortable" onClick={onClose}>
+            Готово
+          </Button>
         </div>
       ) : (
         <>
