@@ -5,6 +5,19 @@ import type {
   ToggleRepostResponse,
 } from "@/types";
 
+function updateTweetInList(
+  items: Tweet[],
+  id: string,
+  update: (item: Tweet) => Tweet,
+) {
+  const index = items.findIndex((item) => item.id === id);
+  if (index < 0) throw new Error("Пост або коментар не знайдено.");
+  const next = [...items];
+  const item = update(next[index]);
+  next[index] = item;
+  return { items: next, item };
+}
+
 export function toggleLikeInList(
   items: Tweet[],
   id: string,
@@ -13,22 +26,15 @@ export function toggleLikeInList(
   items: Tweet[];
   response: ToggleLikeResponse;
 } {
-  const updatedItems = items.map((item) =>
-    item.id === id
-      ? {
-          ...item,
-          likedByMe: !likedByMe,
-          likesCount: likedByMe
-            ? Math.max(0, item.likesCount - 1)
-            : item.likesCount + 1,
-        }
-      : item,
+  const { items: updatedItems, item } = updateTweetInList(
+    items,
+    id,
+    (item) => ({
+      ...item,
+      likedByMe: !likedByMe,
+      likesCount: Math.max(0, item.likesCount + (likedByMe ? -1 : 1)),
+    }),
   );
-
-  const item = updatedItems.find((item) => item.id === id);
-
-  if (!item)
-    throw new Error("Пост або коментар не знайдено.");
 
   return {
     items: updatedItems,
@@ -47,22 +53,15 @@ export function toggleRepostInList(
   items: Tweet[];
   response: ToggleRepostResponse;
 } {
-  const updatedItems = items.map((item) =>
-    item.id === id
-      ? {
-          ...item,
-          repostedByMe: !repostedByMe,
-          retweetsCount: repostedByMe
-            ? Math.max(0, item.retweetsCount - 1)
-            : item.retweetsCount + 1,
-        }
-      : item,
+  const { items: updatedItems, item } = updateTweetInList(
+    items,
+    id,
+    (item) => ({
+      ...item,
+      repostedByMe: !repostedByMe,
+      retweetsCount: Math.max(0, item.retweetsCount + (repostedByMe ? -1 : 1)),
+    }),
   );
-
-  const item = updatedItems.find((item) => item.id === id);
-
-  if (!item)
-    throw new Error("Пост або коментар не знайдено.");
 
   return {
     items: updatedItems,
@@ -81,19 +80,11 @@ export function toggleBookmarkInList(
   items: Tweet[];
   response: ToggleBookmarkResponse;
 } {
-  const updatedItems = items.map((item) =>
-    item.id === id
-      ? {
-          ...item,
-          bookmarkedByMe: !bookmarkedByMe,
-        }
-      : item,
+  const { items: updatedItems, item } = updateTweetInList(
+    items,
+    id,
+    (item) => ({ ...item, bookmarkedByMe: !bookmarkedByMe }),
   );
-
-  const item = updatedItems.find((item) => item.id === id);
-
-  if (!item)
-    throw new Error("Пост або коментар не знайдено.");
 
   return {
     items: updatedItems,
@@ -104,17 +95,8 @@ export function toggleBookmarkInList(
 }
 
 export function incrementViewsInList(items: Tweet[], id: string): Tweet[] {
-  const updatedItems = items.map((item) =>
-    item.id === id
-      ? {
-          ...item,
-          viewsCount: item.viewsCount + 1,
-        }
-      : item,
-  );
-
-  if (!updatedItems.some((item) => item.id === id))
-    throw new Error("Пост або коментар не знайдено.");
-
-  return updatedItems;
+  return updateTweetInList(items, id, (item) => ({
+    ...item,
+    viewsCount: item.viewsCount + 1,
+  })).items;
 }

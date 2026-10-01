@@ -1,9 +1,8 @@
 import { apiClient } from "@/api/client";
 import { ENDPOINTS } from "@/api/config";
 import {
-  mapPostToTweet,
+  getMappedPosts,
   mapRepostToTweet,
-  type BackendPost,
   type BackendRepostItem,
 } from "@/api/mappers/post.mapper";
 
@@ -39,21 +38,11 @@ const realUserApi = {
   getByUsername: (username: string) =>
     apiClient.get<User>(ENDPOINTS.users.byUsername(username)),
 
-  getPosts: async (username: string) => {
-    const posts = await apiClient.get<BackendPost[]>(
-      ENDPOINTS.users.posts(username),
-    );
+  getPosts: (username: string) =>
+    getMappedPosts(ENDPOINTS.users.posts(username)),
 
-    return posts.map(mapPostToTweet);
-  },
-
-  getLikes: async (username: string) => {
-    const posts = await apiClient.get<BackendPost[]>(
-      ENDPOINTS.users.likes(username),
-    );
-
-    return posts.map(mapPostToTweet);
-  },
+  getLikes: (username: string) =>
+    getMappedPosts(ENDPOINTS.users.likes(username)),
 
   getReposts: async (username: string) => {
     const items = await apiClient.get<BackendRepostItem[]>(
@@ -63,13 +52,8 @@ const realUserApi = {
     return items.map(mapRepostToTweet);
   },
 
-  getReplies: async (username: string) => {
-    const posts = await apiClient.get<BackendPost[]>(
-      ENDPOINTS.users.replies(username),
-    );
-
-    return posts.map(mapPostToTweet);
-  },
+  getReplies: (username: string) =>
+    getMappedPosts(ENDPOINTS.users.replies(username)),
 
   updateProfile: async (data: UpdateProfileRequest) => {
     const formData = new FormData();

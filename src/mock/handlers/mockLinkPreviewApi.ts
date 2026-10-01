@@ -1,3 +1,4 @@
+import { MOCK_DELAYS } from "@/mock/constants";
 import type { LinkPreview } from "@/types/linkPreview";
 
 import { delay } from "@/mock/utils/delay";
@@ -17,7 +18,7 @@ function createPlaceholderImage(domain: string) {
 
 export const mockLinkPreviewApi = {
   async resolve(url: string, signal?: AbortSignal): Promise<LinkPreview> {
-    await delay(300);
+    await delay(MOCK_DELAYS.WRITE);
     if (signal?.aborted) throw new DOMException("Aborted", "AbortError");
 
     const parsed = new URL(url);

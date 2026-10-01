@@ -5,8 +5,8 @@ vi.mock("@/mock/utils/delay", () => ({ delay: async () => {} }));
 
 async function loadBackend() {
   const { currentUser } = await import("@/mock/data/users");
-  const { mockAuthApi } = await import("./mockAuthApi");
-  const { mockUserApi } = await import("./mockUserApi");
+  const { mockAuthApi } = await import("@/mock/handlers/mockAuthApi");
+  const { mockUserApi } = await import("@/mock/handlers/mockUserApi");
   return { currentUser, mockAuthApi, mockUserApi };
 }
 
@@ -17,7 +17,7 @@ beforeEach(() => {
 describe("mock profile saves with Redux auth state", () => {
   it("refreshes existing deep replies, ancestors and quotes on every profile save", async () => {
     const { currentUser, mockUserApi } = await loadBackend();
-    const { mockCommentApi } = await import("./mockCommentApi");
+    const { mockCommentApi } = await import("@/mock/handlers/mockCommentApi");
     const { tweets, setTweets } = await import("@/mock/data/tweets");
     const { commentsByPostId } = await import("@/mock/data/comments");
     const { editHistoryStore } = await import("@/mock/stores/editHistoryStore");

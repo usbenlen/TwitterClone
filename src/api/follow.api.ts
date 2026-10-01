@@ -1,6 +1,6 @@
 import { apiClient } from "@/api/client";
 import { ENDPOINTS } from "@/api/config";
-import { MOCK_ENABLED, mockFollowApi } from "@/mock/handlers";
+import { MOCK_ENABLED, mockFollowApi } from "@/mock/handlers/index";
 
 import type { FollowRequest, UserShort, RemoveFollower } from "@/types";
 

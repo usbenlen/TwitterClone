@@ -1,5 +1,5 @@
 import { useGetPostsQuery, errorMessage } from "@/store/postsApi";
-import type { Tweet } from "@/types";
+import type { Tweet } from "@/types/index";
 const EMPTY: Tweet[] = [];
 
 export function useBookmarks() {

@@ -7,9 +7,10 @@ import { mockLocationApi } from "@/mock/handlers";
 import type { Location } from "@/types/location";
 
 const realLocationApi = {
-  search: (query: string) =>
+  search: (query: string, signal?: AbortSignal) =>
     apiClient.get<Location[]>(
       `${ENDPOINTS.search.locations}?q=${encodeURIComponent(query)}`,
+      { signal },
     ),
 };
 

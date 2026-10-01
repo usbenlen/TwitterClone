@@ -1,3 +1,7 @@
+import {
+  SCHEDULE_CHECK_INTERVAL_MS,
+  SCHEDULE_MIN_CHECK_DELAY_MS,
+} from "@/constants/schedule";
 import { useEffect, useRef } from "react";
 import { authApi } from "@/api/auth.api";
 import { clearUnauthorizedHandler, setUnauthorizedHandler } from "@/api/client";
@@ -73,8 +77,11 @@ export function AppEffects() {
     const publishDue = () => publishScheduled(store, () => active);
     const nextTime = scheduled.data?.[0]
       ? Date.parse(scheduled.data[0].scheduledAt)
-      : Date.now() + 60_000;
-    const delay = Math.max(1_000, Math.min(60_000, nextTime - Date.now()));
+      : Date.now() + SCHEDULE_CHECK_INTERVAL_MS;
+    const delay = Math.max(
+      SCHEDULE_MIN_CHECK_DELAY_MS,
+      Math.min(SCHEDULE_CHECK_INTERVAL_MS, nextTime - Date.now()),
+    );
     const timer = window.setTimeout(() => void publishDue(), delay);
 
     if (lastStartedUserId.current !== user.id) {

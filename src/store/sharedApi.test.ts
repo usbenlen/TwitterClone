@@ -1,14 +1,14 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { followApi, scheduledPostApi, tweetApi, userApi } from "@/api";
 import type { ScheduledPost, Tweet, User, UserShort } from "@/types";
-import { createAppStore } from "./index";
-import { postsApi } from "./postsApi";
-import { publishScheduled } from "./publishScheduled";
-import { sessionChanged } from "./session";
-import { sharedApi } from "./sharedApi";
+import { createAppStore } from "@/store/index";
+import { postsApi } from "@/store/postsApi";
+import { publishScheduled } from "@/store/publishScheduled";
+import { sessionChanged } from "@/store/session";
+import { sharedApi } from "@/store/sharedApi";
 
 vi.mock("@/mock/config", () => ({ MOCK_ENABLED: true }));
-vi.mock("@/api", () => ({
+vi.mock("@/api/index", () => ({
   tweetApi: { getFeed: vi.fn() },
   commentApi: {},
   searchApi: {},

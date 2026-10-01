@@ -1,6 +1,6 @@
 import { renderToString } from "react-dom/server";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { useTweetComments } from "./useTweetComments";
+import { useTweetComments } from "@/hooks/useTweetComments";
 import type { ComposerSubmitData } from "@/types";
 
 const api = vi.hoisted(() => ({

@@ -1,0 +1,16 @@
+import { MILLISECONDS_PER_MINUTE } from "@/constants/date";
+
+export const MOCK_DELAYS = {
+  DEFAULT: 500,
+  VIEW: 100,
+  REACTION: 150,
+  HISTORY: 160,
+  COMMENT_READ: 180,
+  READ: 200,
+  COMMENT_CREATE: 220,
+  SEARCH: 250,
+  WRITE: 300,
+  RECOMMENDATIONS: 350,
+} as const;
+export const MOCK_UPLOAD = { INTERVAL_MS: 120, PROGRESS_STEP: 10 } as const;
+export const MOCK_TOKEN_LIFETIME_MS = 15 * MILLISECONDS_PER_MINUTE;

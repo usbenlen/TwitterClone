@@ -1,3 +1,5 @@
+import { toUserShort } from "@/utils/user";
+import { MOCK_DELAYS } from "@/mock/constants";
 import { SEARCH_NEARBY_RADIUS_KM } from "@/constants/search";
 import type {
   Location,
@@ -58,7 +60,7 @@ export const mockSearchApi = {
     criteria: SearchCriteria,
     viewer?: SearchViewerContext,
   ): Promise<UserShort[]> {
-    await delay(250);
+    await delay(MOCK_DELAYS.SEARCH);
 
     return sampleAuthors
       .filter((user) => {
@@ -78,22 +80,14 @@ export const mockSearchApi = {
           (criteria.location !== "near" || isNearViewer(user.location, viewer))
         );
       })
-      .map((user) => ({
-        id: user.id,
-        username: user.username,
-        displayName: user.displayName,
-        bio: user.bio,
-        location: user.location,
-        avatarUrl: user.avatarUrl ?? null,
-        isVerified: user.isVerified,
-      }));
+      .map(toUserShort);
   },
 
   async posts(
     criteria: SearchCriteria,
     viewer?: SearchViewerContext,
   ): Promise<Tweet[]> {
-    await delay(250);
+    await delay(MOCK_DELAYS.SEARCH);
 
     const from = criteria.from.toLowerCase().replace(/^@+/, "");
     const start = criteria.fromDate

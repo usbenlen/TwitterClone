@@ -1,7 +1,8 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import { THEMES, type Theme } from "@/types/theme";
+import { STORAGE_KEYS } from "@/constants/storage";
 
-const STORAGE_KEY = "tc_theme";
+const STORAGE_KEY = STORAGE_KEYS.THEME;
 
 function initialTheme(): Theme {
   if (typeof localStorage === "undefined") return "system";

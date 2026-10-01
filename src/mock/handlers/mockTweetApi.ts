@@ -1,3 +1,5 @@
+import { MOCK_DELAYS } from "@/mock/constants";
+import { createMockPoll, updateMockPoll } from "@/mock/utils/mockPoll";
 import {
   commentsByPostId,
   tweets,
@@ -10,7 +12,6 @@ import type {
   Tweet,
   CreateTweetRequest,
   UpdateTweetRequest,
-  TweetPoll,
   TweetQuote,
 } from "@/types";
 
@@ -108,26 +109,12 @@ export const mockTweetApi = {
   },
 
   async create(payload: CreateTweetRequest): Promise<Tweet> {
-    await delay(300);
+    await delay(MOCK_DELAYS.WRITE);
 
     const attachments = mediaStore.getMany(payload.mediaIds);
     const quote = resolveQuote(payload);
 
-    const poll: TweetPoll | undefined = payload.poll
-      ? {
-          id: crypto.randomUUID(),
-          totalVotes: 0,
-          isClosed: false,
-          expiresAt: new Date(
-            Date.now() + payload.poll.duration * 60 * 1000,
-          ).toISOString(),
-          options: payload.poll.options.map((text) => ({
-            id: crypto.randomUUID(),
-            text,
-            votesCount: 0,
-          })),
-        }
-      : undefined;
+    const poll = payload.poll ? createMockPoll(payload.poll) : undefined;
 
     const tweet: Tweet = {
       id: nextTweetId(),
@@ -163,7 +150,7 @@ export const mockTweetApi = {
   },
 
   async update(id: string, data: UpdateTweetRequest): Promise<Tweet> {
-    await delay(200);
+    await delay(MOCK_DELAYS.READ);
 
     const tweetIndex = tweets.findIndex((tweet) => tweet.id === id);
 
@@ -178,25 +165,7 @@ export const mockTweetApi = {
       ? mediaStore.getMany(data.mediaIds)
       : existing.attachments;
 
-    let poll = existing.poll;
-
-    if (data.poll === null) {
-      poll = undefined;
-    } else if (data.poll && data.poll.options.length > 0) {
-      poll = {
-        id: existing.poll?.id ?? crypto.randomUUID(),
-        totalVotes: existing.poll?.totalVotes ?? 0,
-        isClosed: existing.poll?.isClosed ?? false,
-        expiresAt: new Date(
-          Date.now() + (data.poll.duration || 1440) * 60 * 1000,
-        ).toISOString(),
-        options: data.poll.options.map((text, index) => ({
-          id: existing.poll?.options[index]?.id ?? crypto.randomUUID(),
-          text,
-          votesCount: existing.poll?.options[index]?.votesCount ?? 0,
-        })),
-      };
-    }
+    const poll = updateMockPoll(data.poll, existing.poll);
 
     const updated: Tweet = {
       ...existing,
@@ -223,7 +192,7 @@ export const mockTweetApi = {
   },
 
   async delete(id: string): Promise<void> {
-    await delay(180);
+    await delay(MOCK_DELAYS.COMMENT_READ);
 
     const tweet = tweets.find((item) => item.id === id);
 
@@ -243,7 +212,7 @@ export const mockTweetApi = {
   },
 
   async getEditHistory(id: string) {
-    await delay(160);
+    await delay(MOCK_DELAYS.HISTORY);
 
     const tweet = tweets.find((item) => item.id === id);
     if (!tweet) throw new Error("Пост не знайдено.");
@@ -252,7 +221,7 @@ export const mockTweetApi = {
   },
 
   async toggleLike(id: string, likedByMe: boolean) {
-    await delay(150);
+    await delay(MOCK_DELAYS.REACTION);
 
     const result = toggleLikeInList(tweets, id, likedByMe);
 
@@ -262,7 +231,7 @@ export const mockTweetApi = {
   },
 
   async toggleRepost(id: string, repostedByMe: boolean) {
-    await delay(150);
+    await delay(MOCK_DELAYS.REACTION);
 
     const result = toggleRepostInList(tweets, id, repostedByMe);
 
@@ -272,7 +241,7 @@ export const mockTweetApi = {
   },
 
   async toggleBookmark(id: string, bookmarkedByMe: boolean) {
-    await delay(150);
+    await delay(MOCK_DELAYS.REACTION);
 
     const result = toggleBookmarkInList(tweets, id, bookmarkedByMe);
 
@@ -282,7 +251,7 @@ export const mockTweetApi = {
   },
 
   async view(id: string): Promise<void> {
-    await delay(100);
+    await delay(MOCK_DELAYS.VIEW);
 
     const updated = incrementViewsInList(tweets, id);
 

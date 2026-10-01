@@ -1,3 +1,4 @@
+import { toUserShort } from "@/utils/user";
 import { currentUser, sampleAuthors } from "@/mock/data/users";
 import { mockFollowing, mockFollowers } from "@/mock/data/follow";
 
@@ -22,27 +23,13 @@ export const mockFollowApi = {
     );
     if (alreadyFollowing) return;
 
-    mockFollowing[currentUser.id].push({
-      id: targetUser.id,
-      username: targetUser.username,
-      displayName: targetUser.displayName ?? targetUser.username,
-      avatarUrl: targetUser.avatarUrl ?? undefined,
-      isVerified: targetUser.isVerified,
-    });
+    mockFollowing[currentUser.id].push(toUserShort(targetUser));
 
     const alreadyFollower = mockFollowers[targetUserId].some(
       (user) => user.id === currentUser.id,
     );
 
-    if (!alreadyFollower) {
-      mockFollowers[targetUserId].push({
-        id: currentUser.id,
-        username: currentUser.username,
-        displayName: currentUser.displayName ?? currentUser.username,
-        avatarUrl: currentUser.avatarUrl ?? undefined,
-        isVerified: targetUser.isVerified,
-      });
-    }
+    if (!alreadyFollower) mockFollowers[targetUserId].push(toUserShort(currentUser));
   },
 
   async unfollow({ targetUserId }: FollowRequest): Promise<void> {

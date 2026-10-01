@@ -1,3 +1,4 @@
+import { MOCK_UPLOAD } from "@/mock/constants";
 interface MockUploadOptions {
   onProgress?: (progress: number) => void;
   interval?: number;
@@ -11,8 +12,8 @@ export async function mockUpload(
   // Поки file не використовується, але буде потрібний коли замінимо mock на справжній upload(back-end).
   void file;
 
-  const interval = options?.interval ?? 120;
-  const step = options?.step ?? 10;
+  const interval = options?.interval ?? MOCK_UPLOAD.INTERVAL_MS;
+  const step = options?.step ?? MOCK_UPLOAD.PROGRESS_STEP;
 
   let progress = 0;
 

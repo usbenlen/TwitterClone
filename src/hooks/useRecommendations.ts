@@ -1,4 +1,5 @@
 import { useMemo } from "react";
+import { SIDEBAR } from "@/constants/layout";
 import { errorMessage } from "@/store/postsApi";
 import {
   useGetTrendsQuery,
@@ -13,7 +14,7 @@ import type {
 const EMPTY_TRENDS: TrendRecommendation[] = [];
 const EMPTY_USERS: UserShort[] = [];
 
-export function useTrends(limit = 4) {
+export function useTrends(limit: number = SIDEBAR.TRENDS_LIMIT) {
   const query = useGetTrendsQuery(limit);
   return {
     trends: query.data?.items ?? EMPTY_TRENDS,

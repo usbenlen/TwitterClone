@@ -1,4 +1,4 @@
-import { useTweetReaction } from "./useTweetReaction";
+import { useTweetReaction } from "@/hooks/useTweetReaction";
 import type { Tweet } from "@/types";
 
 export function useTweetRepost(tweet: Tweet) {

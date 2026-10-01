@@ -1,3 +1,4 @@
+import { apiClient } from "@/api/client";
 import type {
   EditHistoryResponse,
   QuoteTargetType,
@@ -234,4 +235,8 @@ export function mapRepostToTweet(item: BackendRepostItem): Tweet {
     ...item,
     isComment: item.isComment ?? Boolean(item.postId),
   };
+}
+
+export async function getMappedPosts(path: string): Promise<Tweet[]> {
+  return (await apiClient.get<BackendPost[]>(path)).map(mapPostToTweet);
 }

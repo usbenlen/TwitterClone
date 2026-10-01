@@ -2,6 +2,7 @@ import { apiClient } from "@/api/client";
 import { ENDPOINTS } from "@/api/config";
 import {
   mapEditHistoryResponse,
+  getMappedPosts,
   mapPostToTweet,
   type BackendEditHistoryResponse,
   type BackendPost,
@@ -19,45 +20,18 @@ import type {
 } from "@/types/tweet";
 
 const realTweetApi = {
-  getAll: async () => {
-    const posts = await apiClient.get<BackendPost[]>(ENDPOINTS.posts.all);
+  getAll: () => getMappedPosts(ENDPOINTS.posts.all),
 
-    return posts.map(mapPostToTweet);
-  },
+  getFeed: () => getMappedPosts(ENDPOINTS.posts.feed),
 
-  getFeed: async () => {
-    const posts = await apiClient.get<BackendPost[]>(ENDPOINTS.posts.feed);
+  getBookmarked: () => getMappedPosts(ENDPOINTS.posts.bookmarked),
 
-    return posts.map(mapPostToTweet);
-  },
+  getLiked: () => getMappedPosts(ENDPOINTS.posts.liked),
 
-  getBookmarked: async () => {
-    const posts = await apiClient.get<BackendPost[]>(
-      ENDPOINTS.posts.bookmarked,
-    );
+  getReposted: () => getMappedPosts(ENDPOINTS.posts.reposted),
 
-    return posts.map(mapPostToTweet);
-  },
-
-  getLiked: async () => {
-    const posts = await apiClient.get<BackendPost[]>(ENDPOINTS.posts.liked);
-
-    return posts.map(mapPostToTweet);
-  },
-
-  getReposted: async () => {
-    const posts = await apiClient.get<BackendPost[]>(ENDPOINTS.posts.reposted);
-
-    return posts.map(mapPostToTweet);
-  },
-
-  getByUsername: async (username: string) => {
-    const posts = await apiClient.get<BackendPost[]>(
-      ENDPOINTS.posts.byUser(username),
-    );
-
-    return posts.map(mapPostToTweet);
-  },
+  getByUsername: (username: string) =>
+    getMappedPosts(ENDPOINTS.posts.byUser(username)),
 
   getById: async (id: string) => {
     const post = await apiClient.get<BackendPost>(ENDPOINTS.posts.byId(id));

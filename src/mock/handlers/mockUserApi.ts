@@ -1,3 +1,4 @@
+import { MOCK_DELAYS } from "@/mock/constants";
 import type { User, Tweet } from "@/types";
 
 import type { UpdateProfileRequest } from "@/api";
@@ -9,8 +10,8 @@ import {
   commentsByPostId,
 } from "@/mock/data";
 
-import { withAncestors } from "@/utils/ancestors";
-import { updateTweetAuthors } from "@/utils/updateTweetAuthors";
+import { withAncestors, updateTweetAuthors } from "@/utils";
+
 import { delay } from "@/mock/utils/delay";
 
 const likedTweetsByUsername: Record<string, string[]> = {
@@ -135,7 +136,7 @@ export const mockUserApi = {
   },
 
   async updateProfile(data: UpdateProfileRequest): Promise<User> {
-    await delay(300);
+    await delay(MOCK_DELAYS.WRITE);
 
     const user = sampleAuthors.find((item) => item.id === currentUser.id);
     if (!user) throw new Error("Користувача не знайдено");
@@ -171,7 +172,7 @@ export const mockUserApi = {
   },
 
   async deleteMe(): Promise<void> {
-    await delay(300);
+    await delay(MOCK_DELAYS.WRITE);
 
     // Поки достатньо емуляції видалення. Якщо треба на далі то ось нижче працюючий варіант
 

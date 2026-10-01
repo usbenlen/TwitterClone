@@ -1,3 +1,10 @@
+import { MOCK_DELAYS } from "@/mock/constants";
+import {
+  toTweetAuthor,
+  getCommentAncestors,
+  withAncestors,
+} from "@/utils";
+import { createMockPoll, updateMockPoll } from "@/mock/utils/mockPoll";
 import type {
   CreateCommentRequest,
   Tweet,
@@ -6,9 +13,12 @@ import type {
 } from "@/types";
 
 import { tweets, setTweets } from "@/mock/data/tweets";
-import { commentsByPostId, nextCommentId, currentUser } from "@/mock/data";
+import {
+  commentsByPostId,
+  nextCommentId,
+  currentUser,
+} from "@/mock/data";
 
-import { getCommentAncestors, withAncestors } from "@/utils/ancestors";
 import { delay } from "@/mock/utils/delay";
 
 import { mediaStore } from "@/mock/stores/mediaStore";
@@ -24,16 +34,6 @@ import {
   markQuotedTargetUnavailable,
   markQuotedTargetEdited,
 } from "@/mock/utils/mockQuotes";
-
-function currentUserAuthor() {
-  return {
-    id: currentUser.id,
-    username: currentUser.username,
-    displayName: currentUser.displayName,
-    avatarUrl: currentUser.avatarUrl ?? null,
-    isVerified: currentUser.isVerified,
-  };
-}
 
 function findComment(id: string) {
   for (const [postId, comments] of Object.entries(commentsByPostId)) {
@@ -67,7 +67,7 @@ function updateCommentCount(postId: string, delta: number) {
 
 export const mockCommentApi = {
   async getByPostId(postId: string): Promise<Tweet[]> {
-    await delay(180);
+    await delay(MOCK_DELAYS.COMMENT_READ);
 
     const comments = commentsByPostId[postId] ?? [];
 
@@ -82,7 +82,7 @@ export const mockCommentApi = {
   },
 
   async getThread(id: string): Promise<ThreadResponse> {
-    await delay(180);
+    await delay(MOCK_DELAYS.COMMENT_READ);
 
     const tweet = tweets.find((item) => item.id === id);
 
@@ -143,7 +143,7 @@ export const mockCommentApi = {
   },
 
   async getBookmarked(): Promise<Tweet[]> {
-    await delay(150);
+    await delay(MOCK_DELAYS.REACTION);
 
     return Object.values(commentsByPostId)
       .flat()
@@ -158,25 +158,11 @@ export const mockCommentApi = {
   },
 
   async create(data: CreateCommentRequest): Promise<Tweet> {
-    await delay(220);
+    await delay(MOCK_DELAYS.COMMENT_CREATE);
 
     const attachments = data.mediaIds ? mediaStore.getMany(data.mediaIds) : [];
 
-    const poll = data.poll
-      ? {
-          id: crypto.randomUUID(),
-          totalVotes: 0,
-          isClosed: false,
-          expiresAt: new Date(
-            Date.now() + data.poll.duration * 60 * 1000,
-          ).toISOString(),
-          options: data.poll.options.map((text) => ({
-            id: crypto.randomUUID(),
-            text,
-            votesCount: 0,
-          })),
-        }
-      : undefined;
+    const poll = data.poll ? createMockPoll(data.poll) : undefined;
 
     const parent = data.parentCommentId
       ? findComment(data.parentCommentId)?.comment
@@ -189,7 +175,7 @@ export const mockCommentApi = {
       versionId: crypto.randomUUID(),
       content: data.content.trim(),
 
-      author: currentUserAuthor(),
+      author: toTweetAuthor(currentUser),
 
       attachments,
       poll,
@@ -230,7 +216,7 @@ export const mockCommentApi = {
   },
 
   async update(id: string, data: UpdateCommentRequest): Promise<Tweet> {
-    await delay(180);
+    await delay(MOCK_DELAYS.COMMENT_READ);
 
     const found = findComment(id);
 
@@ -245,31 +231,7 @@ export const mockCommentApi = {
       ? mediaStore.getMany(data.mediaIds)
       : existing.attachments;
 
-    let poll = existing.poll;
-
-    if (data.poll === null) {
-      poll = undefined;
-    } else if (data.poll && data.poll.options.length > 0) {
-      poll = {
-        id: existing.poll?.id ?? crypto.randomUUID(),
-
-        totalVotes: existing.poll?.totalVotes ?? 0,
-
-        isClosed: existing.poll?.isClosed ?? false,
-
-        expiresAt: new Date(
-          Date.now() + (data.poll.duration || 1440) * 60 * 1000,
-        ).toISOString(),
-
-        options: data.poll.options.map((text, index) => ({
-          id: existing.poll?.options[index]?.id ?? crypto.randomUUID(),
-
-          text,
-
-          votesCount: existing.poll?.options[index]?.votesCount ?? 0,
-        })),
-      };
-    }
+    const poll = updateMockPoll(data.poll, existing.poll);
 
     const updated: Tweet = {
       ...existing,
@@ -301,7 +263,7 @@ export const mockCommentApi = {
   },
 
   async delete(id: string): Promise<void> {
-    await delay(180);
+    await delay(MOCK_DELAYS.COMMENT_READ);
 
     const found = findComment(id);
 
@@ -319,7 +281,7 @@ export const mockCommentApi = {
   },
 
   async getEditHistory(id: string) {
-    await delay(160);
+    await delay(MOCK_DELAYS.HISTORY);
 
     const found = findComment(id);
     if (!found) throw new Error("Коментар не знайдено");
@@ -328,7 +290,7 @@ export const mockCommentApi = {
   },
 
   async toggleLike(id: string, likedByMe: boolean) {
-    await delay(150);
+    await delay(MOCK_DELAYS.REACTION);
 
     const found = findComment(id);
 
@@ -342,7 +304,7 @@ export const mockCommentApi = {
   },
 
   async toggleRepost(id: string, repostedByMe: boolean) {
-    await delay(150);
+    await delay(MOCK_DELAYS.REACTION);
 
     const found = findComment(id);
 
@@ -356,7 +318,7 @@ export const mockCommentApi = {
   },
 
   async toggleBookmark(id: string, bookmarkedByMe: boolean) {
-    await delay(150);
+    await delay(MOCK_DELAYS.REACTION);
 
     const found = findComment(id);
 
@@ -370,7 +332,7 @@ export const mockCommentApi = {
   },
 
   async view(id: string): Promise<void> {
-    await delay(100);
+    await delay(MOCK_DELAYS.VIEW);
 
     const found = findComment(id);
 

@@ -1,14 +1,14 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { tweetApi, commentApi, userApi, searchApi, pollApi } from "@/api";
-import { createAppStore, type AppStore } from "./index";
+import { createAppStore, type AppStore } from "@/store/index";
 import {
   postsApi,
   publishPosts,
   updateCachedProfileAuthors,
   type PostsQuery,
-} from "./postsApi";
-import { runReaction } from "./reactions";
-import { sessionChanged } from "./session";
+} from "@/store/postsApi";
+import { runReaction } from "@/store/reactions";
+import { sessionChanged } from "@/store/session";
 import type {
   Tweet,
   User,
@@ -20,7 +20,7 @@ import type {
 
 vi.mock("@/mock/config", () => ({ MOCK_ENABLED: true }));
 
-vi.mock("@/api", () => {
+vi.mock("@/api/index", () => {
   const api = () => ({
     getFeed: vi.fn(),
     getBookmarked: vi.fn(),

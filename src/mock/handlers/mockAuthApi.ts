@@ -1,3 +1,4 @@
+import { MOCK_DELAYS, MOCK_TOKEN_LIFETIME_MS } from "@/mock/constants";
 import type {
   AuthResponse,
   ChangePasswordRequest,
@@ -28,7 +29,9 @@ export const mockAuthApi = {
       username: currentUser.username,
       accessToken: "mock-access-token",
       refreshToken: "mock-refresh-token",
-      accessTokenExpiresAt: new Date(Date.now() + 15 * 60 * 1000).toISOString(),
+      accessTokenExpiresAt: new Date(
+        Date.now() + MOCK_TOKEN_LIFETIME_MS,
+      ).toISOString(),
     };
   },
 
@@ -52,7 +55,9 @@ export const mockAuthApi = {
       username: data.email.split("@")[0],
       accessToken: "mock-access-token",
       refreshToken: "mock-refresh-token",
-      accessTokenExpiresAt: new Date(Date.now() + 15 * 60 * 1000).toISOString(),
+      accessTokenExpiresAt: new Date(
+        Date.now() + MOCK_TOKEN_LIFETIME_MS,
+      ).toISOString(),
     };
   },
 
@@ -68,16 +73,16 @@ export const mockAuthApi = {
   },
 
   async logout(): Promise<void> {
-    await delay(150);
+    await delay(MOCK_DELAYS.REACTION);
   },
 
   async me(): Promise<User> {
-    await delay(200);
+    await delay(MOCK_DELAYS.READ);
     return structuredClone(currentUser);
   },
 
   async forgotPassword(_data: ForgotPasswordRequest): Promise<MessageResponse> {
-    await delay(150);
+    await delay(MOCK_DELAYS.REACTION);
     void _data;
     return {
       message: "If the email exists, a reset code has been sent.",
@@ -87,7 +92,7 @@ export const mockAuthApi = {
   async verifyResetCode(
     _data: VerifyResetCodeRequest,
   ): Promise<MessageResponse> {
-    await delay(150);
+    await delay(MOCK_DELAYS.REACTION);
     void _data;
     return {
       message: "Reset code is valid.",
@@ -95,7 +100,7 @@ export const mockAuthApi = {
   },
 
   async resetPassword(_data: ResetPasswordRequest): Promise<MessageResponse> {
-    await delay(150);
+    await delay(MOCK_DELAYS.REACTION);
     void _data;
     return {
       message: "Password reset successfully.",
@@ -105,7 +110,7 @@ export const mockAuthApi = {
   changePassword: async (
     data: ChangePasswordRequest,
   ): Promise<MessageResponse> => {
-    await delay(300);
+    await delay(MOCK_DELAYS.WRITE);
 
     if (data.code) {
       if (!pendingPasswordChange)

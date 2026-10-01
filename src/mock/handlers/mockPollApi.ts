@@ -1,10 +1,11 @@
+import { MOCK_DELAYS } from "@/mock/constants";
 import { delay } from "@/mock/utils/delay";
 
 import { tweets, setTweets } from "@/mock/data/tweets";
 
 export const mockPollApi = {
   async vote(tweetId: string, optionId: string) {
-    await delay(200);
+    await delay(MOCK_DELAYS.READ);
 
     const updatedTweets = tweets.map((tweet) => {
       if (tweet.id !== tweetId || !tweet.poll) return tweet;

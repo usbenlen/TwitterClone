@@ -1,5 +1,5 @@
 import type { Tweet } from "@/types/tweet";
-import { currentUser, sampleAuthors } from "./users";
+import { currentUser, sampleAuthors } from "@/mock/data/users";
 
 export let tweets: Tweet[] = [
   {

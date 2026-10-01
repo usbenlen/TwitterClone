@@ -1,3 +1,5 @@
+import { toUserShort } from "@/utils/user";
+import { MOCK_DELAYS } from "@/mock/constants";
 import { currentUser, mockTrends, sampleAuthors } from "@/mock/data";
 import { delay } from "@/mock/utils/delay";
 
@@ -6,7 +8,6 @@ import type {
   RecommendationCategory,
   TrendRecommendationsResponse,
   User,
-  UserShort,
 } from "@/types";
 
 const recommendedUsernames: Record<RecommendationCategory, string[]> = {
@@ -14,21 +15,9 @@ const recommendedUsernames: Record<RecommendationCategory, string[]> = {
   creators: ["ada", "grace", "katherine", "guido", "margaret", "josino"],
 };
 
-function toUserShort(user: User): UserShort {
-  return {
-    id: user.id,
-    username: user.username,
-    displayName: user.displayName,
-    bio: user.bio,
-    location: user.location,
-    avatarUrl: user.avatarUrl,
-    isVerified: user.isVerified,
-  };
-}
-
 export const mockRecommendationsApi = {
   async trends(limit: number): Promise<TrendRecommendationsResponse> {
-    await delay(300);
+    await delay(MOCK_DELAYS.WRITE);
     return { items: mockTrends.slice(0, limit) };
   },
 
@@ -37,7 +26,7 @@ export const mockRecommendationsApi = {
     limit: number,
     cursor?: string | null,
   ): Promise<PaginatedRecommendations> {
-    await delay(350);
+    await delay(MOCK_DELAYS.RECOMMENDATIONS);
 
     const start = Math.max(0, Number.parseInt(cursor ?? "0", 10) || 0);
     const usernames = recommendedUsernames[category];
