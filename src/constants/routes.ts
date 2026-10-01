@@ -1,5 +1,8 @@
 import type { SearchCriteria } from "@/types";
-import { DEFAULT_SEARCH_CRITERIA, serializeSearchCriteria } from "@/utils/search";
+import {
+  DEFAULT_SEARCH_CRITERIA,
+  serializeSearchCriteria,
+} from "@/utils/search";
 
 export const APP_ROUTES = {
   LANDING: "/",

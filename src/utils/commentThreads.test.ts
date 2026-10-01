@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { Tweet } from "@/types";
-import { buildThreadRows, getChildrenByParent } from "./commentThreads";
+import { buildThreadRows, getChildrenByParent } from "@/utils/commentThreads";
 
 function comment(
   id: string,

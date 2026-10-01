@@ -1,9 +1,13 @@
-export const APP_NAME = import.meta.env.VITE_APP_NAME;
-export const APP_LOCALE = import.meta.env.VITE_APP_LOCALE?.trim() || "uk-UA";
+import { readAppIdentity, readNumericEnv } from "@/config/env";
 
-export const MAX_TWEET_LENGTH = Number(import.meta.env.VITE_MAX_TWEET_LENGTH);
-export const MAX_NAME_LENGTH = Number(import.meta.env.VITE_MAX_NAME_LENGTH);
-export const MAX_BIO_LENGTH = Number(import.meta.env.VITE_MAX_BIO_LENGTH);
+const identity = readAppIdentity(import.meta.env);
+const numeric = readNumericEnv(import.meta.env);
+export const APP_NAME = identity.name;
+export const APP_LOCALE = identity.locale;
+
+export const MAX_TWEET_LENGTH = numeric.VITE_MAX_TWEET_LENGTH;
+export const MAX_NAME_LENGTH = numeric.VITE_MAX_NAME_LENGTH;
+export const MAX_BIO_LENGTH = numeric.VITE_MAX_BIO_LENGTH;
 
 export const SEARCH_DEBOUNCE_MS = 350;
 export const LOCATION_SEARCH_DEBOUNCE_MS = 200;
@@ -17,24 +21,24 @@ export const AUTH_LIMITS = {
 } as const;
 
 export const MEDIA = {
-  MAX_ATTACHMENTS: Number(import.meta.env.VITE_MAX_MEDIA_ATTACHMENTS),
+  MAX_ATTACHMENTS: numeric.VITE_MAX_MEDIA_ATTACHMENTS,
 
   IMAGE: {
-    MAX_SIZE_MB: Number(import.meta.env.VITE_MAX_IMAGE_SIZE_MB),
-    MAX_WIDTH: Number(import.meta.env.VITE_IMAGE_MAX_WIDTH),
-    QUALITY: Number(import.meta.env.VITE_IMAGE_QUALITY),
+    MAX_SIZE_MB: numeric.VITE_MAX_IMAGE_SIZE_MB,
+    MAX_WIDTH: numeric.VITE_IMAGE_MAX_WIDTH,
+    QUALITY: numeric.VITE_IMAGE_QUALITY,
 
     ALLOWED_TYPES: ["image/jpeg", "image/png", "image/webp"],
   },
 
   VIDEO: {
-    MAX_SIZE_MB: Number(import.meta.env.VITE_MAX_VIDEO_SIZE_MB),
+    MAX_SIZE_MB: numeric.VITE_MAX_VIDEO_SIZE_MB,
 
     ALLOWED_TYPES: ["video/mp4", "video/webm"],
   },
 
   GIF: {
-    MAX_SIZE_MB: Number(import.meta.env.VITE_MAX_GIF_SIZE_MB),
+    MAX_SIZE_MB: numeric.VITE_MAX_GIF_SIZE_MB,
   },
 };
 

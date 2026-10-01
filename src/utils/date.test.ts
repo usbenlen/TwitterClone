@@ -8,7 +8,7 @@ import {
   maximumScheduleDate,
   nextScheduledMinute,
   parseBirthDate,
-} from "./date";
+} from "@/utils/date";
 
 describe("birth dates", () => {
   const today = new Date(2026, 8, 30, 12);

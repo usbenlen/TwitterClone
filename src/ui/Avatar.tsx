@@ -1,10 +1,8 @@
 import { AVATAR_DEFAULT_NAME } from "@/constants/avatar";
-import { getAvatarGradient, getAvatarInitials } from "@/utils/avatar";
+import { getAvatarGradient, getAvatarInitials, cn } from "@/utils";
 import { useState } from "react";
 
 import { useImageCache } from "@/hooks/useImageCache";
-
-import { cn } from "@/utils/cn";
 
 interface AvatarProps {
   userId?: string;

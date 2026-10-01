@@ -1,3 +1,6 @@
+import { MILLISECONDS_PER_MINUTE } from "@/constants/date";
+
+export const POLL_COUNTDOWN_INTERVAL_MS = MILLISECONDS_PER_MINUTE;
 export const POLL = {
   MIN_OPTIONS: 2,
   MAX_OPTIONS: 4,

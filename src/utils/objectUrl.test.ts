@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { createObjectUrlOwner } from "./objectUrl";
+import { createObjectUrlOwner } from "@/utils/objectUrl";
 
 afterEach(() => vi.restoreAllMocks());
 

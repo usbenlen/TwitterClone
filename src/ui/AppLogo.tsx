@@ -1,6 +1,6 @@
+import { APP_NAME, APP_ROUTES } from "@/constants";
 import { NavLink } from "react-router";
 
-import { APP_ROUTES } from "@/constants/routes";
 import { cn } from "@/utils/cn";
 
 export interface AppLogoProps {
@@ -17,7 +17,7 @@ export function AppLogo({ className, to = APP_ROUTES.HOME }: AppLogoProps) {
         className,
       )}
     >
-      Chirp
+      {APP_NAME}
     </NavLink>
   );
 }

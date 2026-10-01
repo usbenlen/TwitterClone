@@ -1,4 +1,7 @@
-import type { User, TweetPoll, Location, LinkPreview } from "@/types";
+import type { User } from "@/types/user";
+import type { TweetPoll } from "@/types/poll";
+import type { Location } from "@/types/location";
+import type { LinkPreview } from "@/types/linkPreview";
 import type { MediaAttachment } from "@/types/media";
 
 export type QuoteTargetType = "post" | "comment";

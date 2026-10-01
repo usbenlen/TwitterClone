@@ -9,6 +9,7 @@ import {
 } from "@/constants/app";
 
 export const COMPOSER_POPOVER = { OFFSET: 8, VIEWPORT_PADDING: 12 } as const;
+export const LINK_PREVIEW_DEBOUNCE_MS = 450;
 
 export const COMPOSER_ACTIONS = [
   {

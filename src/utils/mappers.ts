@@ -1,4 +1,4 @@
-import { MEDIA_STATUS } from "@/constants/app";
+import { MEDIA_STATUS, POLL } from "@/constants";
 
 import type {
   ComposerMedia,
@@ -33,6 +33,6 @@ export function mapPollToComposerPoll(poll?: TweetPoll): ComposerPoll | null {
       id: option.id,
       text: option.text,
     })),
-    duration: 1440, // Default to 1 day
+    duration: POLL.DEFAULT_DURATION_MINUTES,
   };
 }

@@ -1,17 +1,24 @@
-import { APP_LOCALE } from "@/constants/app";
-import { SECONDS_PER_MINUTE } from "@/constants/date";
+import {
+  APP_LOCALE,
+  MILLISECONDS_PER_SECOND,
+  SECONDS_PER_MINUTE,
+  MINUTES_PER_HOUR,
+  HOURS_PER_DAY,
+} from "@/constants";
 
 // Відносний час "2 хв", "3 год", "5 дн".
 export function formatRelativeTime(iso: string): string {
   const date = new Date(iso);
-  const seconds = Math.floor((Date.now() - date.getTime()) / 1000);
+  const seconds = Math.floor(
+    (Date.now() - date.getTime()) / MILLISECONDS_PER_SECOND,
+  );
 
-  if (seconds < 60) return "щойно";
-  const minutes = Math.floor(seconds / 60);
-  if (minutes < 60) return `${minutes} хв`;
-  const hours = Math.floor(minutes / 60);
-  if (hours < 24) return `${hours} год`;
-  const days = Math.floor(hours / 24);
+  if (seconds < SECONDS_PER_MINUTE) return "щойно";
+  const minutes = Math.floor(seconds / SECONDS_PER_MINUTE);
+  if (minutes < MINUTES_PER_HOUR) return `${minutes} хв`;
+  const hours = Math.floor(minutes / MINUTES_PER_HOUR);
+  if (hours < HOURS_PER_DAY) return `${hours} год`;
+  const days = Math.floor(hours / HOURS_PER_DAY);
   if (days < 7) return `${days} дн`;
 
   return date.toLocaleDateString(APP_LOCALE, {

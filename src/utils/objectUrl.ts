@@ -6,6 +6,9 @@ export function createObjectUrlOwner() {
     url = null;
   };
   return {
+    get current() {
+      return url;
+    },
     release,
     replace(file: Blob): string {
       release();

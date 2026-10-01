@@ -31,29 +31,23 @@ export function RadioOption<T extends string>({
       )}
     >
       <span>{label}</span>
-      {checked ? (
-        <span
-          className={`relative flex size-5 items-center justify-center before:absolute before:-inset-2 before:rounded-full before:transition-colors ${
-            disabled
-              ? ""
-              : "group-hover:before:bg-primary/10 group-focus-visible:before:bg-primary/10"
-          }`}
-        >
+      <span
+        className={cn(
+          "relative flex size-5 items-center justify-center before:absolute before:-inset-2 before:rounded-full before:transition-colors",
+          !disabled &&
+            (checked
+              ? "group-hover:before:bg-primary/10 group-focus-visible:before:bg-primary/10"
+              : "group-hover:before:bg-muted group-focus-visible:before:bg-muted"),
+        )}
+      >
+        {checked ? (
           <span className="relative flex size-5 items-center justify-center rounded-full bg-primary text-primary-foreground">
             <Check className="size-3.5" />
           </span>
-        </span>
-      ) : (
-        <span
-          className={`relative flex size-5 items-center justify-center before:absolute before:-inset-2 before:rounded-full before:transition-colors ${
-            disabled
-              ? ""
-              : "group-hover:before:bg-muted group-focus-visible:before:bg-muted"
-          }`}
-        >
+        ) : (
           <Circle className="relative size-5 text-muted-foreground" />
-        </span>
-      )}
+        )}
+      </span>
     </button>
   );
 }

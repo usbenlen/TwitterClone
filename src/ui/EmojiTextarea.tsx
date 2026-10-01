@@ -1,3 +1,4 @@
+import { cn } from "@/utils/cn";
 import { forwardRef } from "react";
 
 type EmojiTextareaProps = React.TextareaHTMLAttributes<HTMLTextAreaElement>;
@@ -8,7 +9,10 @@ const EmojiTextarea = forwardRef<HTMLTextAreaElement, EmojiTextareaProps>(
       <textarea
         ref={ref}
         {...props}
-        className={`w-full resize-none overflow-y-auto bg-transparent outline-none ${className}`}
+        className={cn(
+          "w-full resize-none overflow-y-auto bg-transparent outline-none",
+          className,
+        )}
       />
     );
   },

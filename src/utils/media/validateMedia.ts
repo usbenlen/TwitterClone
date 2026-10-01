@@ -1,4 +1,4 @@
-import { MEDIA } from "@/constants/app";
+import { BYTES_PER_MEGABYTE, MEDIA } from "@/constants";
 
 export type MediaValidationResult =
   | {
@@ -22,8 +22,8 @@ export function validateMedia(file: File): MediaValidationResult {
   }
 
   const maxSize = isImage
-    ? MEDIA.IMAGE.MAX_SIZE_MB * 1024 * 1024
-    : MEDIA.VIDEO.MAX_SIZE_MB * 1024 * 1024;
+    ? MEDIA.IMAGE.MAX_SIZE_MB * BYTES_PER_MEGABYTE
+    : MEDIA.VIDEO.MAX_SIZE_MB * BYTES_PER_MEGABYTE;
 
   if (file.size > maxSize) {
     return {

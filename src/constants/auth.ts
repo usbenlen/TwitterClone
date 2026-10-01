@@ -1,0 +1,1 @@
+export const PASSWORD_SUCCESS_REDIRECT_MS = 2_000;

@@ -1,8 +1,9 @@
 import {
   CALENDAR_REFERENCE_YEAR,
   MILLISECONDS_PER_MINUTE,
-} from "@/constants/date";
-import { SCHEDULE, SCHEDULE_MIN_DELAY_MS } from "@/constants/schedule";
+  SCHEDULE,
+  SCHEDULE_MIN_DELAY_MS,
+} from "@/constants";
 
 export const padDatePart = (value: number) => String(value).padStart(2, "0");
 

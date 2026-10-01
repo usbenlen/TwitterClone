@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { lockBodyScroll } from "./bodyScrollLock";
+import { lockBodyScroll } from "@/utils/bodyScrollLock";
 
 describe("overlapping scroll locks", () => {
   it.each([true, false])(
