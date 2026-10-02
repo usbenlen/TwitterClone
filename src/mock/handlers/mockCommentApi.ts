@@ -14,7 +14,10 @@ import { commentsByPostId, nextCommentId, currentUser } from "@/mock/data";
 import { delay } from "@/mock/utils/delay";
 import { removeMockContent } from "@/mock/utils/removeMockContent";
 
-import { mediaStore } from "@/mock/stores/mediaStore";
+import {
+  resolveMockMedia,
+  validateMockPost,
+} from "@/mock/utils/validateMockPost";
 import { editHistoryStore } from "@/mock/stores/editHistoryStore";
 
 import {
@@ -150,7 +153,8 @@ export const mockCommentApi = {
   async create(data: CreateCommentRequest): Promise<Tweet> {
     await delay(MOCK_DELAYS.COMMENT_CREATE);
 
-    const attachments = data.mediaIds ? mediaStore.getMany(data.mediaIds) : [];
+    const attachments = data.mediaIds ? resolveMockMedia(data.mediaIds) : [];
+    validateMockPost(data.content, attachments, data.poll);
 
     const poll = data.poll ? createMockPoll(data.poll) : undefined;
 
@@ -218,9 +222,14 @@ export const mockCommentApi = {
       throw new Error("Ви не можете редагувати цей коментар.");
 
     const attachments = data.mediaIds
-      ? mediaStore.getMany(data.mediaIds)
+      ? resolveMockMedia(data.mediaIds)
       : existing.attachments;
 
+    validateMockPost(
+      data.content ?? existing.content,
+      attachments,
+      data.poll === undefined ? existing.poll : data.poll,
+    );
     const poll = updateMockPoll(data.poll, existing.poll);
 
     const updated: Tweet = {

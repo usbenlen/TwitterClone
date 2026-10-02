@@ -3,6 +3,8 @@ import { currentUser } from "@/mock/data";
 import { mockTweetApi } from "@/mock/handlers/mockTweetApi";
 import { mediaStore } from "@/mock/stores/mediaStore";
 import { scheduledMediaStore } from "@/mock/stores/scheduledMediaStore";
+import { validateMockPost } from "@/mock/utils/validateMockPost";
+import { getPostRulesError } from "@/utils/composerRules";
 
 import type {
   CreateScheduledPostRequest,
@@ -59,6 +61,46 @@ async function hydrate(post: StoredScheduledPost): Promise<ScheduledPost> {
   return { ...post, media: await resolveMedia(post.mediaIds) };
 }
 
+async function validateRequest(request: CreateScheduledPostRequest) {
+  // Validate uploaded and newly persisted media before changing scheduled storage.
+  const media = await Promise.all(
+    request.mediaIds.map(async (id) => {
+      const uploaded = mediaStore.get(id);
+      if (uploaded) return uploaded;
+
+      const pending = request.mockMedia?.find(
+        (item) => item.attachmentId === id,
+      );
+      if (pending) return { type: pending.type };
+
+      const stored = await scheduledMediaStore.get(id);
+      if (!stored) throw new Error("Медіавкладення не знайдено.");
+
+      return { type: stored.type };
+    }),
+  );
+
+  const extras = request as CreateScheduledPostRequest & {
+    poll?: unknown;
+    location?: unknown;
+    quotedPostId?: unknown;
+    quotedCommentId?: unknown;
+  };
+
+  if (
+    extras.poll ||
+    extras.location ||
+    extras.quotedPostId ||
+    extras.quotedCommentId
+  )
+    throw new Error(
+      "Запланований пост не може містити опитування, локацію чи цитату.",
+    );
+
+  const error = getPostRulesError({ content: request.content, media });
+  if (error) throw new Error(error);
+}
+
 export const mockScheduledPostApi = {
   async list(): Promise<ScheduledPost[]> {
     const posts = [...readPosts()].sort(
@@ -69,6 +111,7 @@ export const mockScheduledPostApi = {
   },
 
   async create(request: CreateScheduledPostRequest): Promise<ScheduledPost> {
+    await validateRequest(request);
     const stored: StoredScheduledPost = {
       id: crypto.randomUUID(),
       content: request.content,
@@ -101,6 +144,7 @@ export const mockScheduledPostApi = {
     if (index < 0) throw new Error("Запланований допис не знайдено.");
 
     const previous = posts[index];
+    await validateRequest(request);
     const newMedia = request.mockMedia ?? [];
     const removedMediaIds = previous.mediaIds.filter(
       (mediaId) => !request.mediaIds.includes(mediaId),
@@ -144,7 +188,10 @@ export const mockScheduledPostApi = {
     const published: Tweet[] = [];
 
     for (const post of due) {
-      await resolveMedia(post.mediaIds);
+      const media = await resolveMedia(post.mediaIds);
+      if (media.length !== post.mediaIds.length)
+        throw new Error("Медіавкладення не знайдено.");
+      validateMockPost(post.content, media);
       const tweet = await mockTweetApi.create({
         content: post.content,
         mediaIds: post.mediaIds,

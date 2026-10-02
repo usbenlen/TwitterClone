@@ -13,11 +13,14 @@ export function createMockPoll(
     expiresAt: new Date(
       Date.now() + input.duration * MILLISECONDS_PER_MINUTE,
     ).toISOString(),
-    options: input.options.map((text, index) => ({
-      id: existing?.options[index]?.id ?? crypto.randomUUID(),
-      text,
-      votesCount: existing?.options[index]?.votesCount ?? 0,
-    })),
+    options: input.options
+      .map((text) => text.trim())
+      .filter(Boolean)
+      .map((text, index) => ({
+        id: existing?.options[index]?.id ?? crypto.randomUUID(),
+        text,
+        votesCount: existing?.options[index]?.votesCount ?? 0,
+      })),
   };
 }
 

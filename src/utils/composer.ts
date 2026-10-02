@@ -1,4 +1,10 @@
-import { MEDIA, MEDIA_STATUS } from "@/constants/app";
+import { MEDIA_STATUS } from "@/constants/app";
+import {
+  getMediaError,
+  getPollError,
+  getPostRulesError,
+} from "@/utils/composerRules";
+
 import type {
   ComposerMedia,
   ComposerPoll,
@@ -17,6 +23,44 @@ export interface ComposerValues {
   scheduledAt?: string | null;
 }
 
+export function isComposerPollValid(poll: ComposerPoll): boolean {
+  return (
+    getPollError(
+      poll.options.map((option) => option.text),
+      poll.duration,
+    ) === null
+  );
+}
+
+export function getComposerRulesError(values: ComposerValues): string | null {
+  const error = getPostRulesError({
+    content: values.content,
+    media: values.media,
+    poll: values.poll
+      ? {
+          options: values.poll.options.map((option) => option.text),
+          duration: values.poll.duration,
+        }
+      : null,
+  });
+  if (error) return error;
+  if (values.scheduledAt && (values.poll || values.location))
+    return "Запланований пост не може містити опитування чи локацію.";
+  return null;
+}
+
+export function getComposerError(values: ComposerValues): string | null {
+  const error = getComposerRulesError(values);
+  if (error) return error;
+  if (
+    values.media.some(
+      (item) => item.status !== MEDIA_STATUS.UPLOADED || !item.attachmentId,
+    )
+  )
+    return "Дочекайтеся завантаження всіх вкладень або видаліть невдалі.";
+  return null;
+}
+
 export function getUploadedMediaIds(media: ComposerMedia[]): string[] {
   return media.flatMap((item) =>
     item.attachmentId ? [item.attachmentId] : [],
@@ -26,6 +70,8 @@ export function getUploadedMediaIds(media: ComposerMedia[]): string[] {
 export function buildComposerPayload(
   values: ComposerValues,
 ): ComposerSubmitData {
+  const error = getComposerError(values);
+  if (error) throw new Error(error);
   const poll = values.poll;
   return {
     content: values.content.trim(),
@@ -50,6 +96,8 @@ export function buildScheduledPostPayload(
   values: ComposerValues,
   scheduledAt: string,
 ): UpdateScheduledPostRequest {
+  const error = getComposerError({ ...values, scheduledAt });
+  if (error) throw new Error(error);
   return {
     content: values.content.trim(),
     mediaIds: getUploadedMediaIds(values.media),
@@ -102,8 +150,5 @@ export function canScheduleMedia(media: ComposerMedia[]): boolean {
     )
   )
     return false;
-  return media.every((item) => item.type === "image")
-    ? media.length <= MEDIA.MAX_ATTACHMENTS
-    : media.length === 1 &&
-        (media[0].type === "video" || media[0].type === "gif");
+  return getMediaError(media) === null;
 }

@@ -18,7 +18,10 @@ import type {
 import { delay } from "@/mock/utils/delay";
 import { removeMockContent } from "@/mock/utils/removeMockContent";
 
-import { mediaStore } from "@/mock/stores/mediaStore";
+import {
+  resolveMockMedia,
+  validateMockPost,
+} from "@/mock/utils/validateMockPost";
 import { editHistoryStore } from "@/mock/stores/editHistoryStore";
 
 import {
@@ -109,7 +112,8 @@ export const mockTweetApi = {
   async create(payload: CreateTweetRequest): Promise<Tweet> {
     await delay(MOCK_DELAYS.WRITE);
 
-    const attachments = mediaStore.getMany(payload.mediaIds);
+    const attachments = resolveMockMedia(payload.mediaIds);
+    validateMockPost(payload.content, attachments, payload.poll);
     const quote = resolveQuote(payload);
 
     const poll = payload.poll ? createMockPoll(payload.poll) : undefined;
@@ -160,9 +164,14 @@ export const mockTweetApi = {
       throw new Error("Ви не можете редагувати цей пост.");
 
     const attachments = data.mediaIds
-      ? mediaStore.getMany(data.mediaIds)
+      ? resolveMockMedia(data.mediaIds)
       : existing.attachments;
 
+    validateMockPost(
+      data.content ?? existing.content,
+      attachments,
+      data.poll === undefined ? existing.poll : data.poll,
+    );
     const poll = updateMockPoll(data.poll, existing.poll);
 
     const updated: Tweet = {

@@ -4,6 +4,7 @@ import {
   buildScheduledPostPayload,
   canScheduleMedia,
   hasComposerChanges,
+  isComposerPollValid,
 } from "@/utils/composer";
 import type { ComposerMedia } from "@/types";
 
@@ -18,24 +19,59 @@ const media: ComposerMedia = {
   progress: 100,
 };
 describe("composer data", () => {
-  it("trims submitted content and excludes files that have not been uploaded", () => {
+  it("trims submitted content and poll options", () => {
     expect(
       buildComposerPayload({
         content: " hello ",
-        media: [media, { ...media, attachmentId: undefined }],
+        media: [],
         poll: {
           options: [
             { id: "1", text: " Yes " },
-            { id: "2", text: " " },
+            { id: "2", text: " No " },
+            { id: "3", text: " " },
           ],
           duration: 30,
         },
       }),
     ).toMatchObject({
       content: "hello",
-      mediaIds: ["uploaded"],
-      poll: { options: ["Yes"], duration: 30 },
+      mediaIds: [],
+      poll: { options: ["Yes", "No"], duration: 30 },
     });
+  });
+  it.each([
+    [[], false],
+    [["", "   "], false],
+    [["Yes", " "], false],
+    [[" Yes ", "No"], true],
+    [["Yes", "No", "", "   "], true],
+    [["One", "Two", "Three", "Four"], true],
+    [["One", "Two", "Three", "Four", "Five"], false],
+  ] as const)("validates filled poll options %j", (texts, expected) => {
+    expect(
+      isComposerPollValid({
+        options: texts.map((text, index) => ({ id: String(index), text })),
+        duration: 1440,
+      }),
+    ).toBe(expected);
+  });
+  it("treats an added empty poll as a draft change", () => {
+    expect(
+      hasComposerChanges(
+        {
+          content: "",
+          media: [],
+          poll: {
+            duration: 1440,
+            options: [
+              { id: "1", text: "" },
+              { id: "2", text: "" },
+            ],
+          },
+        },
+        { content: "", media: [], poll: null },
+      ),
+    ).toBe(true);
   });
   it("keeps null for removing a poll and undefined for an untouched poll", () => {
     expect(
@@ -79,11 +115,33 @@ describe("composer data", () => {
       true,
     );
   });
-  it("only allows uploaded images or a single uploaded video/GIF for scheduling", () => {
+  it("allows uploaded mixed images/videos or a single uploaded GIF for scheduling", () => {
     expect(canScheduleMedia([])).toBe(true);
     expect(canScheduleMedia([media])).toBe(true);
     expect(canScheduleMedia([{ ...media, type: "gif" }])).toBe(true);
     expect(canScheduleMedia([{ ...media, status: "uploading" }])).toBe(false);
-    expect(canScheduleMedia([media, { ...media, type: "video" }])).toBe(false);
+    expect(canScheduleMedia([media, { ...media, type: "video" }])).toBe(true);
+    expect(canScheduleMedia([media, { ...media, type: "gif" }])).toBe(false);
+  });
+  it("rejects incompatible media/polls and incomplete uploads instead of silently dropping files", () => {
+    expect(() =>
+      buildComposerPayload({
+        content: "",
+        media: [{ ...media, attachmentId: undefined }],
+      }),
+    ).toThrow("завантаження");
+    expect(() =>
+      buildComposerPayload({
+        content: "",
+        media: [media],
+        poll: {
+          duration: 5,
+          options: [
+            { id: "1", text: "Yes" },
+            { id: "2", text: "No" },
+          ],
+        },
+      }),
+    ).toThrow("Медіа та опитування");
   });
 });
