@@ -47,7 +47,9 @@ export default function TweetContent({
 
       {tweet.linkPreview && <LinkPreviewCard preview={tweet.linkPreview} />}
 
-      {tweet.quote && <QuotedTweetCard quote={tweet.quote} />}
+      {tweet.quote && (
+        <QuotedTweetCard quote={tweet.quote} readOnly={readOnly} />
+      )}
 
       {tweet.location && <TweetLocation location={tweet.location} />}
     </div>

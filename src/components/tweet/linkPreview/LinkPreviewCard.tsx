@@ -10,6 +10,7 @@ interface LinkPreviewCardProps {
   onRemove?: () => void;
   className?: string;
   compact?: boolean;
+  disabled?: boolean;
 }
 
 export default function LinkPreviewCard({
@@ -17,6 +18,7 @@ export default function LinkPreviewCard({
   onRemove,
   className,
   compact = false,
+  disabled = false,
 }: LinkPreviewCardProps) {
   const [failedImageUrl, setFailedImageUrl] = useState<string | null>(null);
   const showImage = Boolean(
@@ -77,8 +79,9 @@ export default function LinkPreviewCard({
         <button
           type="button"
           onClick={onRemove}
+          disabled={disabled}
           aria-label="Видалити прев’ю посилання"
-          className="absolute right-2 top-2 flex size-8 items-center justify-center rounded-full bg-black/70 text-white shadow-sm transition hover:bg-black/85 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
+          className="absolute right-2 top-2 flex size-8 items-center justify-center rounded-full bg-black/70 text-white shadow-sm transition hover:bg-black/85 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white disabled:opacity-50"
         >
           <X size={17} aria-hidden="true" />
         </button>

@@ -12,15 +12,19 @@ import TweetPoll from "@/components/tweet/poll/TweetPoll";
 import { useClickOrDrag } from "@/hooks";
 
 import { APP_ROUTES } from "@/constants/routes";
-import { formatRelativeTime, removePreviewUrl } from "@/utils";
+import { cn, formatRelativeTime, removePreviewUrl } from "@/utils";
 
 import type { TweetQuote } from "@/types";
 
 interface QuotedTweetCardProps {
   quote: TweetQuote;
+  readOnly?: boolean;
 }
 
-export default function QuotedTweetCard({ quote }: QuotedTweetCardProps) {
+export default function QuotedTweetCard({
+  quote,
+  readOnly = false,
+}: QuotedTweetCardProps) {
   const navigate = useNavigate();
   const target = quote.target;
 
@@ -62,7 +66,12 @@ export default function QuotedTweetCard({ quote }: QuotedTweetCardProps) {
       className="mt-3 cursor-pointer overflow-hidden rounded-2xl border border-border transition-colors hover:bg-muted/40"
       aria-label={`Відкрити ${quote.targetType === "comment" ? "коментар" : "пост"} @${target.author.username}`}
     >
-      <div className="p-3">
+      <div
+        className={cn(
+          "p-3",
+          target.location && target.attachments.length === 0 && "pb-0",
+        )}
+      >
         <div className="flex min-w-0 items-center gap-2 text-[15px]">
           <Link
             to={APP_ROUTES.profile(target.author.username)}
@@ -122,14 +131,18 @@ export default function QuotedTweetCard({ quote }: QuotedTweetCardProps) {
 
         {target.poll && (
           <div data-quote-interactive="true">
-            <TweetPoll tweetId={target.id} poll={target.poll} />
+            <TweetPoll
+              tweetId={target.id}
+              poll={target.poll}
+              isComment={quote.targetType === "comment"}
+              readOnly={readOnly}
+            />
           </div>
         )}
 
         {target.linkPreview && (
           <LinkPreviewCard preview={target.linkPreview} compact />
         )}
-        {target.location && <TweetLocation location={target.location} />}
       </div>
 
       {target.attachments.length > 0 && (
@@ -139,6 +152,12 @@ export default function QuotedTweetCard({ quote }: QuotedTweetCardProps) {
             autoPlayVideos
             variant="quote"
           />
+        </div>
+      )}
+
+      {target.location && (
+        <div className="px-3 pb-3">
+          <TweetLocation location={target.location} />
         </div>
       )}
 

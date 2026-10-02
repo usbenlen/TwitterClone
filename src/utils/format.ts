@@ -65,7 +65,7 @@ export function formatCount(n: number): string {
   return `${(n / 1_000_000).toFixed(1).replace(".0", "")} млн`;
 }
 
-const postCountPluralRules = new Intl.PluralRules(APP_LOCALE);
+const countPluralRules = new Intl.PluralRules(APP_LOCALE);
 
 export function formatPostCount(count: number): string {
   const label = {
@@ -75,9 +75,22 @@ export function formatPostCount(count: number): string {
     other: "допису",
     zero: "дописів",
     two: "дописи",
-  }[postCountPluralRules.select(count)];
+  }[countPluralRules.select(count)];
 
   return `${formatCount(count)} ${label}`;
+}
+
+export function formatVoteCount(count: number): string {
+  const label = {
+    one: "голос",
+    few: "голоси",
+    many: "голосів",
+    other: "голосу",
+    zero: "голосів",
+    two: "голоси",
+  }[countPluralRules.select(count)];
+
+  return `${count} ${label}`;
 }
 
 export function formatDateTime(
