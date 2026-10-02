@@ -4,7 +4,7 @@ import type { ComposerMedia } from "@/types/composer";
 
 export function createPreview(
   file: File,
-  type: "image" | "video",
+  type: ComposerMedia["type"],
 ): ComposerMedia {
   return {
     id: crypto.randomUUID(),

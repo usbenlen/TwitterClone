@@ -9,6 +9,7 @@ interface UseMediaUploadProps {
   setProgress: (id: string, progress: number) => void;
   setAttachmentId: (id: string, attachmentId: string) => void;
   pushError: (message: string) => void;
+  isActive: (id: string) => boolean;
 }
 
 export function useMediaUpload({
@@ -16,8 +17,10 @@ export function useMediaUpload({
   setProgress,
   setAttachmentId,
   pushError,
+  isActive,
 }: UseMediaUploadProps) {
   const upload = async (item: ComposerMedia) => {
+    if (!isActive(item.id)) return null;
     if (!item.file) {
       setStatus(item.id, MEDIA_STATUS.ERROR);
       pushError(`Файл "${item.name}" відсутній.`);
@@ -29,9 +32,11 @@ export function useMediaUpload({
     try {
       const attachment = await mediaApi.upload(item.file, {
         onProgress(progress) {
-          setProgress(item.id, progress);
+          if (isActive(item.id)) setProgress(item.id, progress);
         },
       });
+
+      if (!isActive(item.id)) return null;
 
       setAttachmentId(item.id, attachment.id);
       setProgress(item.id, 100);
@@ -39,6 +44,7 @@ export function useMediaUpload({
 
       return attachment;
     } catch {
+      if (!isActive(item.id)) return null;
       setStatus(item.id, MEDIA_STATUS.ERROR);
 
       pushError(`Не вдалося завантажити "${item.name}".`);
