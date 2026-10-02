@@ -22,69 +22,38 @@
 - [✅] Bookmarks
 - [✅] Зробити функціональний toolbar в модальному вікні comment
 - [✅] Зробити функціональний search filters
-- [ ] Доробити алгоритми:
-  - [ ] Популярне
-  - [ ] Кого читати
+- [✅] Доробити алгоритми:
+  - [✅] Популярне
+  - [✅] Кого читати
 
-## Link preview API
+## Адмін-панель
 
-У live-режимі клієнт викликає `POST /api/link-previews/resolve` з тілом
-`{ "url": "https://example.com/article" }`. Endpoint має повернути:
+Панель доступна за `/admin` користувачам із серверною роллю `ADMIN`.
+Вона містить дашборд, керування користувачами та розгляд скарг; подання
+скарги доступне в меню додаткових дій чужого допису, коментаря чи профілю.
 
-```json
-{
-  "id": "preview-id",
-  "url": "https://example.com/article",
-  "domain": "example.com",
-  "title": "Article title",
-  "imageUrl": "https://example.com/article-cover.jpg"
-}
+Для mock-перевірки встановіть `VITE_USE_MOCK=true` і
+`VITE_MOCK_USER_ROLE=ADMIN` у `.env`, перезапустіть Vite та увійдіть.
+За замовчуванням mock використовує роль `USER`.
+
+## Тести
+
+Тести зберігаємо в локальній папці `__tests__` усередині модуля, поведінку
+якого вони переважно перевіряють. Наприклад, тест для `src/utils/composer.ts`
+лежить у `src/utils/__tests__/composer.test.ts`. Папку створюємо лише за
+появи тестів; назви файлів — `*.test.ts` або `*.test.tsx`.
+
+Наявні тести групуємо за модулем без додаткового поділу на `unit` та
+`integration`. Окрему папку для E2E-сценаріїв додамо, коли такі тести з'являться.
+
+Запустити всі тести:
+
+```sh
+npm run test
 ```
 
-Якщо сторінка не має придатного зображення, `imageUrl` може бути `null`.
+Запустити один тестовий файл:
 
-## Recommendations API
-
-Праві картки та сторінка `/follow` використовують два авторизовані endpoint-и.
-
-`GET /api/recommendations/trends?limit=4` повертає:
-
-```json
-{
-  "items": [
-    {
-      "id": "trend-id",
-      "title": "React 19",
-      "context": "Технології · Популярне",
-      "query": "React 19",
-      "postsCount": 12700
-    }
-  ]
-}
+```sh
+npm run test -- src/utils/__tests__/composer.test.ts
 ```
-
-`postsCount` необов'язковий. `query` використовується для переходу до пошуку.
-
-`GET /api/recommendations/users?category=people&limit=4&cursor=opaque-value`
-повертає:
-
-```json
-{
-  "items": [
-    {
-      "id": "user-id",
-      "username": "username",
-      "displayName": "Display name",
-      "bio": "Profile biography",
-      "avatarUrl": null,
-      "location": null,
-      "isVerified": false
-    }
-  ],
-  "nextCursor": "next-opaque-value"
-}
-```
-
-`category` приймає `people` або `creators`. Остання сторінка повертає
-`nextCursor: null`. Cursor вважається непрозорим для клієнта; персоналізацію,
-порядок і виключення поточного користувача визначає backend.
