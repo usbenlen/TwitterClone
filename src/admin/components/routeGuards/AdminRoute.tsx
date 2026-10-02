@@ -11,9 +11,8 @@ export default function AdminRoute() {
 
   if (!isAuthenticated) return <Navigate to={APP_ROUTES.LOGIN} replace />;
 
-  if (user?.role !== "ADMIN") {
+  if (user?.role !== "ADMIN" && user?.role !== "MODERATOR") {
     return <Navigate to={APP_ROUTES.HOME} replace />;
   }
-
   return <Outlet />;
 }

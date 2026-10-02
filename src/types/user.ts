@@ -6,7 +6,7 @@ export interface User {
   displayName?: string | null;
   email?: string | null;
 
-  role?: "USER" | "ADMIN";
+  role?: "USER" | "ADMIN" | "MODERATOR";
 
   bio?: string | null;
   location?: Location | null;
