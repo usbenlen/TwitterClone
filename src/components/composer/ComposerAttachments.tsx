@@ -2,11 +2,11 @@ import type { useTweetComposer } from "@/hooks/composer/useTweetComposer";
 import type { TweetQuote } from "@/types";
 import {
   TweetComposerMediaPreview,
-  TweetComposerPollPreview,
   TweetComposerLocationPreview,
   TweetComposerLinkPreview,
 } from "@/components/tweet/TweetComposer/index";
 import { QuotedTweetCard } from "@/components/tweet/quote/index";
+import PollComposer from "@/components/composer/poll/PollComposer";
 
 interface ComposerAttachmentsProps {
   composer: ReturnType<typeof useTweetComposer>;
@@ -19,35 +19,33 @@ export function ComposerAttachments({
 }: ComposerAttachmentsProps) {
   return (
     <>
+      {composer.pollEditor.visible && <PollComposer {...composer.pollEditor} />}
+
       <TweetComposerMediaPreview
         media={composer.media}
         onRemove={composer.removeMedia}
+        disabled={composer.isPosting}
       />
-
-      {composer.pollPreview.visible && (
-        <TweetComposerPollPreview
-          poll={composer.pollPreview.poll}
-          onRemove={composer.pollPreview.onRemove}
-        />
-      )}
-
-      {composer.locationPreview.visible &&
-        composer.locationPreview.location && (
-          <TweetComposerLocationPreview
-            location={composer.locationPreview.location}
-            onRemove={composer.locationPreview.onRemove}
-          />
-        )}
 
       {composer.linkPreview.visible && (
         <TweetComposerLinkPreview
           preview={composer.linkPreview.preview}
           loading={composer.linkPreview.loading}
           onRemove={composer.linkPreview.onRemove}
+          disabled={composer.isPosting}
         />
       )}
 
       {quotedTweet && <QuotedTweetCard quote={quotedTweet} />}
+
+      {composer.locationPreview.visible &&
+        composer.locationPreview.location && (
+          <TweetComposerLocationPreview
+            location={composer.locationPreview.location}
+            onRemove={composer.locationPreview.onRemove}
+            disabled={composer.isPosting}
+          />
+        )}
     </>
   );
 }

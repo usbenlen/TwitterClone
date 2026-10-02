@@ -1,10 +1,12 @@
 import { COMPOSER_ACTIONS } from "@/constants/composer";
 import type { ComposerAction } from "@/types/composer";
+import { cn } from "@/utils/cn";
 
 interface ComposerToolbarProps {
   onAction: (action: ComposerAction) => void;
   allowedActions?: ComposerAction[];
   disabledActions?: ComposerAction[];
+  activeActions?: ComposerAction[];
   hiddenActions?: ComposerAction[];
   buttonRefs?: Partial<
     Record<
@@ -22,6 +24,7 @@ export default function ComposerToolbar({
   onAction,
   allowedActions,
   disabledActions = [],
+  activeActions = [],
   hiddenActions = [],
   buttonRefs = {},
   disabled = false,
@@ -36,7 +39,7 @@ export default function ComposerToolbar({
   });
 
   return (
-    <div className={`flex items-center gap-1 ${className}`}>
+    <div className={cn("flex min-w-0 flex-wrap items-center gap-1", className)}>
       {filteredActions.map((action) => {
         const Icon = action.icon;
         return (
@@ -45,10 +48,19 @@ export default function ComposerToolbar({
             ref={buttonRefs[action.id]}
             type="button"
             aria-label={action.label}
-            aria-expanded={action.id === "emoji" ? showEmojiPicker : undefined}
+            aria-expanded={
+              action.id === "poll"
+                ? activeActions.includes("poll")
+                : action.id === "emoji"
+                  ? showEmojiPicker
+                  : undefined
+            }
             disabled={disabled || disabledActions.includes(action.id)}
             onClick={() => onAction(action.id)}
-            className="flex size-9 items-center justify-center rounded-full text-primary transition-colors hover:bg-primary/10 disabled:pointer-events-none disabled:opacity-50"
+            className={cn(
+              "flex size-9 items-center justify-center rounded-full text-primary transition-colors hover:bg-primary/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60 disabled:pointer-events-none disabled:opacity-50",
+              activeActions.includes(action.id) && "bg-primary/10",
+            )}
           >
             {Icon ? (
               <Icon size={20} />

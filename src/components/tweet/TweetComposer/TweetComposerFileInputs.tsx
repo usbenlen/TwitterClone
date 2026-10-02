@@ -18,7 +18,7 @@ export default function TweetComposerFileInputs({
         type="file"
         hidden
         multiple
-        accept={MEDIA.IMAGE.ALLOWED_TYPES.join(",")}
+        accept={[...MEDIA.IMAGE.ALLOWED_TYPES, "image/gif"].join(",")}
         onChange={(e) => {
           onFilesSelected(e.target.files);
           e.currentTarget.value = "";

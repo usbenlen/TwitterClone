@@ -12,7 +12,6 @@ export function ComposerInputsAndPopovers({
       <ComposerPopovers
         emoji={composer.popovers.emoji}
         gif={composer.popovers.gif}
-        poll={composer.popovers.poll}
         location={composer.popovers.location}
       />
 

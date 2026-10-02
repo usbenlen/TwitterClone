@@ -26,7 +26,6 @@ export function useComposerActions(initialPoll?: ComposerPoll | null) {
   const closeAllPopups = () => {
     emoji.close();
     gif.close();
-    poll.close();
     location.close();
     schedule.close();
   };
@@ -56,7 +55,8 @@ export function useComposerActions(initialPoll?: ComposerPoll | null) {
         break;
 
       case "poll":
-        poll.toggle();
+        closeAllPopups();
+        poll.activate();
         break;
 
       case "location":
@@ -66,7 +66,6 @@ export function useComposerActions(initialPoll?: ComposerPoll | null) {
       case "schedule":
         schedule.toggle();
         break;
-
     }
   };
 

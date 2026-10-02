@@ -115,6 +115,7 @@ export default function Composer({
                 <button
                   type="button"
                   onClick={composer.scheduling.clear}
+                  disabled={composer.isPosting}
                   className="flex size-7 items-center justify-center rounded-full hover:bg-muted"
                   aria-label="Прибрати запланований час"
                 >
@@ -126,11 +127,12 @@ export default function Composer({
 
           <TweetComposerErrors errors={composer.errors} />
 
-          <div className="flex shrink-0 items-center justify-between pt-3">
+          <div className="flex shrink-0 flex-wrap items-center justify-between gap-2 pt-3">
             <ComposerToolbar
               onAction={composer.handleAction}
               buttonRefs={composer.buttonRefs}
               disabledActions={composer.disabledActions}
+              activeActions={composer.pollEditor.visible ? ["poll"] : []}
               hiddenActions={composer.scheduling.enabled ? [] : ["schedule"]}
             />
 
@@ -246,11 +248,12 @@ export default function Composer({
             <TweetComposerErrors errors={composer.errors} />
 
             {/* Toolbar + Reply */}
-            <div className="flex shrink-0 items-center justify-between pt-3">
+            <div className="flex shrink-0 flex-wrap items-center justify-between gap-2 pt-3">
               <ComposerToolbar
                 onAction={composer.handleAction}
                 buttonRefs={composer.buttonRefs}
                 disabledActions={composer.disabledActions}
+                activeActions={composer.pollEditor.visible ? ["poll"] : []}
                 hiddenActions={["schedule"]}
               />
 
@@ -260,7 +263,6 @@ export default function Composer({
                 isPosting={composer.isPosting}
                 onSubmit={handleSubmit}
                 submitLabel={submitLabel}
-                disabled={!composer.content.trim() || composer.isPosting}
               />
             </div>
 

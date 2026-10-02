@@ -1,6 +1,16 @@
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { useComposerScheduling } from "@/hooks/composer/useComposerScheduling";
-import { canScheduleMedia, hasComposerChanges } from "@/utils/composer";
+import {
+  canScheduleMedia,
+  getComposerError,
+  getComposerRulesError,
+  hasComposerChanges,
+} from "@/utils/composer";
+import {
+  countCharacters,
+  getDisabledComposerActions,
+  getPollError,
+} from "@/utils/composerRules";
 
 import {
   useComposerActions,
@@ -10,7 +20,7 @@ import {
   useComposerLinkPreview,
 } from "@/hooks/composer";
 
-import { MAX_TWEET_LENGTH, MEDIA_STATUS } from "@/constants/app";
+import { MAX_TWEET_LENGTH } from "@/constants/app";
 
 import type {
   Gif,
@@ -21,6 +31,7 @@ import type {
   Tweet,
   ComposerSubmitData,
   UpdateScheduledPostRequest,
+  ComposerAction,
 } from "@/types";
 
 interface UseTweetComposerProps {
@@ -60,24 +71,26 @@ export function useTweetComposer({
   const [selectedLocation, setSelectedLocation] = useState<Location | null>(
     initialLocation,
   );
+  const locationRef = useRef<Location | null>(initialLocation);
+  const submittingRef = useRef(false);
   const cursor = useComposerEditor();
   const linkPreview = useComposerLinkPreview(content, initialLinkPreview);
 
-  const remaining = useMemo(() => MAX_TWEET_LENGTH - content.length, [content]);
+  const remaining = useMemo(
+    () => MAX_TWEET_LENGTH - countCharacters(content),
+    [content],
+  );
 
   const mediaManager = useTweetComposerMedia(initialMedia);
 
   const hasBlockedMedia = mediaManager.media.some(
-    (item) =>
-      item.status === MEDIA_STATUS.UPLOADING ||
-      item.status === MEDIA_STATUS.COMPRESSING ||
-      item.status === MEDIA_STATUS.ERROR,
+    (item) => item.status !== "uploaded" || !item.attachmentId,
   );
 
   const {
     imageInputRef,
     videoInputRef,
-    handleAction,
+    handleAction: performAction,
     closeAllPopups,
 
     buttonRefs,
@@ -104,7 +117,7 @@ export function useTweetComposer({
     {
       content,
       media: mediaManager.media,
-      poll: poll.hasPoll ? poll.poll : null,
+      poll: poll.isActive ? poll.poll : null,
       location: selectedLocation,
       linkPreview: linkPreview.preview,
 
@@ -117,6 +130,32 @@ export function useTweetComposer({
   );
 
   const isPosting = isPostingNow || isScheduling;
+
+  const getLiveValues = () => ({
+    content,
+    media: mediaManager.getMedia(),
+    poll: poll.getIsActive() ? poll.poll : null,
+    location: locationRef.current,
+    linkPreview: linkPreview.preview,
+    scheduledAt,
+  });
+
+  const getDisabledActions = () => {
+    const values = getLiveValues();
+    return getDisabledComposerActions({
+      media: values.media,
+      hasPoll: Boolean(values.poll),
+      hasLocation: Boolean(values.location),
+      scheduled: Boolean(scheduledAt),
+      canSchedule: canOpenSchedule && canScheduleMedia(values.media),
+      busy: isPosting || submittingRef.current,
+    });
+  };
+
+  const handleAction = (action: ComposerAction) => {
+    if (getDisabledActions().includes(action)) return;
+    performAction(action);
+  };
 
   const hasScheduleCompatibleMedia = canScheduleMedia(mediaManager.media);
 
@@ -132,7 +171,7 @@ export function useTweetComposer({
     remaining >= 0 &&
     !isPosting &&
     !hasBlockedMedia &&
-    !poll.hasPoll &&
+    !poll.isActive &&
     selectedLocation === null &&
     hasScheduleCompatibleMedia;
 
@@ -140,7 +179,7 @@ export function useTweetComposer({
     {
       content,
       media: mediaManager.media,
-      poll: poll.hasPoll ? poll.poll : null,
+      poll: poll.isActive ? poll.poll : null,
       location: selectedLocation,
       linkPreview: linkPreview.preview,
       scheduledAt,
@@ -155,22 +194,45 @@ export function useTweetComposer({
     },
   );
 
+  const values = {
+    content,
+    media: mediaManager.media,
+    poll: poll.isActive ? poll.poll : null,
+    location: selectedLocation,
+    scheduledAt,
+  };
+  const validationError = getComposerError(values);
+  const rulesError = getComposerRulesError(values);
+  const inlinePollError = poll.isActive
+    ? getPollError(
+        poll.poll.options.map((option) => option.text),
+        poll.poll.duration,
+      )
+    : null;
+
   const canSubmit =
     (allowEmptySubmit ||
       Boolean(
         content.trim().length > 0 ||
         mediaManager.media.length > 0 ||
-        poll.hasPoll ||
+        poll.isActive ||
         selectedLocation ||
         linkPreview.preview,
       )) &&
+    (!poll.isActive || poll.isValid) &&
+    validationError === null &&
     remaining >= 0 &&
     !isPosting &&
     !hasBlockedMedia &&
     (!scheduledAt || canOpenSchedule);
 
   const onFilesSelected = (files: FileList | null) => {
-    mediaManager.addFiles(files);
+    if (isPosting || submittingRef.current) return;
+    if (poll.getIsActive()) {
+      mediaManager.pushError("Медіа та опитування не можна поєднувати.");
+      return;
+    }
+    void mediaManager.addFiles(files);
   };
 
   const resetComposer = () => {
@@ -181,33 +243,52 @@ export function useTweetComposer({
     poll.reset();
   };
   const submit = async () => {
-    if (!canSubmit) return;
-    if (scheduledAt && allowScheduling) {
-      const created = await scheduleState.submit({
-        content,
-        media: mediaManager.media,
-        linkPreview: linkPreview.preview,
-      });
-      mediaManager.clearMedia();
-      resetComposer();
-      scheduleState.reset();
+    const values = getLiveValues();
+    if (!canSubmit || submittingRef.current || getComposerError(values)) return;
+    if (
+      !allowEmptySubmit &&
+      !values.content.trim() &&
+      !values.media.length &&
+      !values.poll &&
+      !values.location &&
+      !values.linkPreview
+    )
+      return;
+    submittingRef.current = true;
+    try {
+      if (scheduledAt && allowScheduling) {
+        const created = await scheduleState.submit({
+          ...getLiveValues(),
+          linkPreview: linkPreview.preview,
+        });
+        if (created === false || created === undefined) return created;
+        mediaManager.clearMedia();
+        resetComposer();
+        scheduleState.reset();
+        return created;
+      }
+      const created = await submitComposer(values);
+      if (created) resetComposer();
       return created;
+    } finally {
+      submittingRef.current = false;
     }
-    const created = await submitComposer();
-    if (created) resetComposer();
-    return created;
   };
 
   const removePoll = () => {
+    if (isPosting || submittingRef.current) return;
     poll.reset();
-    poll.close();
+    if (mediaManager.getMedia().length === 0) mediaManager.clearErrors();
+    buttonRefs.poll?.current?.focus();
   };
 
   const removeLocation = () => {
+    locationRef.current = null;
     setSelectedLocation(null);
   };
 
   const insertEmoji = (emojiValue: string) => {
+    if (getDisabledActions().includes("emoji")) return;
     cursor.insertAtCursor(emojiValue, content, setContent);
 
     closeAllPopups();
@@ -216,6 +297,7 @@ export function useTweetComposer({
   };
 
   const insertGif = (gifItem: Gif) => {
+    if (getDisabledActions().includes("gif")) return;
     void mediaManager.addGif(gifItem);
 
     closeAllPopups();
@@ -224,6 +306,8 @@ export function useTweetComposer({
   };
 
   const insertLocation = (location: Location) => {
+    if (getDisabledActions().includes("location")) return;
+    locationRef.current = location;
     setSelectedLocation(location);
 
     closeAllPopups();
@@ -231,18 +315,27 @@ export function useTweetComposer({
     cursor.editorRef.current?.focus();
   };
 
+  const changePopup = (
+    action: ComposerAction,
+    popup: { open: () => void; close: () => void },
+    open: boolean,
+  ) => {
+    if (!open) popup.close();
+    else if (!getDisabledActions().includes(action)) popup.open();
+  };
+
   const popovers = {
     emoji: {
       open: emoji.isOpen,
       reference: buttonRefs.emoji?.current ?? null,
-      onOpenChange: (open: boolean) => (open ? emoji.open() : emoji.close()),
+      onOpenChange: (open: boolean) => changePopup("emoji", emoji, open),
       onSelect: insertEmoji,
     },
 
     gif: {
       open: gif.isOpen,
       reference: buttonRefs.gif?.current ?? null,
-      onOpenChange: (open: boolean) => (open ? gif.open() : gif.close()),
+      onOpenChange: (open: boolean) => changePopup("gif", gif, open),
       gifs: gif.gifs,
       query: gif.query,
       loading: gif.loading,
@@ -251,22 +344,10 @@ export function useTweetComposer({
       onSelect: insertGif,
     },
 
-    poll: {
-      open: poll.isOpen,
-      reference: buttonRefs.poll?.current ?? null,
-      onOpenChange: (open: boolean) => (open ? poll.open() : poll.close()),
-      poll: poll.poll,
-      onOptionChange: poll.updateOption,
-      onAddOption: poll.addOption,
-      onRemoveOption: poll.removeOption,
-      onDurationChange: poll.setDuration,
-    },
-
     location: {
       open: location.isOpen,
       reference: buttonRefs.location?.current ?? null,
-      onOpenChange: (open: boolean) =>
-        open ? location.open() : location.close(),
+      onOpenChange: (open: boolean) => changePopup("location", location, open),
       locations: location.locations,
       query: location.query,
       loading: location.loading,
@@ -278,7 +359,9 @@ export function useTweetComposer({
 
   return {
     content,
-    setContent,
+    setContent: (value: string) => {
+      if (!isPosting && !submittingRef.current) setContent(value);
+    },
 
     remaining,
 
@@ -288,11 +371,20 @@ export function useTweetComposer({
     isPosting,
 
     media: mediaManager.media,
-    removeMedia: mediaManager.removeMedia,
-    clearMedia: mediaManager.clearMedia,
+    removeMedia: (id: string) => {
+      if (!isPosting && !submittingRef.current) mediaManager.removeMedia(id);
+    },
+    clearMedia: () => {
+      if (!isPosting && !submittingRef.current) mediaManager.clearMedia();
+    },
     onFilesSelected,
 
-    errors: mediaManager.errors,
+    errors: [
+      ...mediaManager.errors,
+      ...(rulesError && rulesError !== inlinePollError
+        ? [{ id: "composer-rules", message: rulesError }]
+        : []),
+    ],
     clearErrors: mediaManager.clearErrors,
 
     submit,
@@ -308,27 +400,64 @@ export function useTweetComposer({
 
     popovers,
 
-    disabledActions: [
-      ...(!canOpenSchedule ? (["schedule"] as const) : []),
-      ...(scheduledAt ? (["poll", "location"] as const) : []),
-    ],
-    scheduling: scheduleState.scheduling,
+    disabledActions: getDisabledComposerActions({
+      media: mediaManager.media,
+      hasPoll: poll.isActive,
+      hasLocation: selectedLocation !== null,
+      scheduled: Boolean(scheduledAt),
+      canSchedule: canOpenSchedule,
+      busy: isPosting,
+    }),
+    scheduling: {
+      ...scheduleState.scheduling,
+      onOpenChange: (open: boolean) => {
+        if (!open || !getDisabledActions().includes("schedule"))
+          scheduleState.scheduling.onOpenChange(open);
+      },
+      apply: (value: string) => {
+        if (!getDisabledActions().includes("schedule"))
+          scheduleState.scheduling.apply(value);
+      },
+      clear: () => {
+        if (!isPosting && !submittingRef.current)
+          scheduleState.scheduling.clear();
+      },
+    },
 
-    pollPreview: {
-      visible: poll.hasPoll,
+    pollEditor: {
+      visible: poll.isActive,
       poll: poll.poll,
+      isValid: poll.isValid,
+      disabled: isPosting,
+      firstOptionRef: poll.firstOptionRef,
+      onOptionChange: (id: string, text: string) => {
+        if (!isPosting && !submittingRef.current) poll.updateOption(id, text);
+      },
+      onAddOption: () => {
+        if (!isPosting && !submittingRef.current) poll.addOption();
+      },
+      onRemoveOption: (id: string) => {
+        if (!isPosting && !submittingRef.current) poll.removeOption(id);
+      },
+      onDurationChange: (minutes: number) => {
+        if (!isPosting && !submittingRef.current) poll.setDuration(minutes);
+      },
       onRemove: removePoll,
     },
     locationPreview: {
       visible: !!selectedLocation,
       location: selectedLocation,
-      onRemove: removeLocation,
+      onRemove: () => {
+        if (!isPosting && !submittingRef.current) removeLocation();
+      },
     },
     linkPreview: {
       visible: linkPreview.loading || !!linkPreview.preview,
       preview: linkPreview.preview,
       loading: linkPreview.loading,
-      onRemove: linkPreview.remove,
+      onRemove: () => {
+        if (!isPosting && !submittingRef.current) linkPreview.remove();
+      },
     },
   };
 }

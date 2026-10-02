@@ -11,12 +11,14 @@ interface ComposerMediaItemProps {
   media: ComposerMedia;
   className?: string;
   onRemove: (id: string) => void;
+  disabled?: boolean;
 }
 
 export default function ComposerMediaItem({
   media,
   className,
   onRemove,
+  disabled = false,
 }: ComposerMediaItemProps) {
   const isImage = media.type === "image" || media.type === "gif";
 
@@ -30,8 +32,10 @@ export default function ComposerMediaItem({
       <button
         type="button"
         onClick={() => onRemove(media.id)}
+        disabled={disabled}
+        aria-label={`Видалити ${media.name}`}
         className={cn(
-          "absolute right-3 top-3 z-content flex size-8 items-center justify-center rounded-full bg-black/70 text-white transition-opacity duration-200",
+          "absolute right-3 top-3 z-content flex size-8 items-center justify-center rounded-full bg-black/70 text-white transition-opacity duration-200 disabled:opacity-50",
           media.status === MEDIA_STATUS.UPLOADING ||
             media.status === MEDIA_STATUS.COMPRESSING
             ? "opacity-100"

@@ -18,7 +18,7 @@ export default function TweetComposerFooter({
   disabled,
 }: TweetComposerFooterProps) {
   return (
-    <div className="flex items-center justify-between gap-3">
+    <div className="ml-auto flex shrink-0 items-center justify-between gap-3">
       <span
         className={
           remaining < 0
@@ -32,7 +32,7 @@ export default function TweetComposerFooter({
       <Button
         className="h-9 cursor-pointer rounded-full px-5 py-2 text-[15px] font-bold"
         onClick={onSubmit}
-        disabled={disabled ?? !canSubmit}
+        disabled={disabled || !canSubmit || isPosting}
         isLoading={isPosting}
       >
         {submitLabel}

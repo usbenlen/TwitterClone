@@ -1,4 +1,4 @@
-import { buildComposerPayload } from "@/utils/composer";
+import { buildComposerPayload, type ComposerValues } from "@/utils/composer";
 import { useState } from "react";
 
 import { useCreatePostMutation } from "@/store/postsApi";
@@ -40,17 +40,19 @@ export function useComposerSubmit({
   const [isPosting, setIsPosting] = useState(false);
   const [createPost] = useCreatePostMutation();
 
-  const submit = async () => {
+  const submit = async (values?: ComposerValues) => {
     setIsPosting(true);
 
     try {
-      const payload = buildComposerPayload({
-        content,
-        media,
-        poll,
-        location,
-        linkPreview,
-      });
+      const payload = buildComposerPayload(
+        values ?? {
+          content,
+          media,
+          poll,
+          location,
+          linkPreview,
+        },
+      );
 
       let result;
       if (onSubmit) result = await onSubmit(payload);

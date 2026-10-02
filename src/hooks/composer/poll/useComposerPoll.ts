@@ -1,7 +1,6 @@
 import { POLL } from "@/constants/poll";
-import { useState } from "react";
-
-import { useComposerPopup } from "@/hooks/composer/useComposerPopup";
+import { useRef, useState } from "react";
+import { isComposerPollValid } from "@/utils/composer";
 
 import type { ComposerPoll } from "@/types/poll";
 
@@ -16,13 +15,19 @@ function createEmptyPoll(): ComposerPoll {
 }
 
 export function useComposerPoll(initialPoll?: ComposerPoll | null) {
-  const popup = useComposerPopup();
+  const [isActive, setIsActive] = useState(Boolean(initialPoll));
+  const activeRef = useRef(Boolean(initialPoll));
+  const firstOptionRef = useRef<HTMLInputElement>(null);
 
   const [poll, setPoll] = useState<ComposerPoll>(
     () => initialPoll ?? createEmptyPoll(),
   );
 
-  const hasPoll = poll.options.some((option) => option.text.trim().length > 0);
+  const activate = () => {
+    activeRef.current = true;
+    setIsActive(true);
+    firstOptionRef.current?.focus();
+  };
 
   const updateOption = (id: string, text: string) => {
     setPoll((current) => ({
@@ -32,7 +37,7 @@ export function useComposerPoll(initialPoll?: ComposerPoll | null) {
         option.id === id
           ? {
               ...option,
-              text,
+              text: Array.from(text).slice(0, POLL.MAX_OPTION_LENGTH).join(""),
             }
           : option,
       ),
@@ -77,14 +82,18 @@ export function useComposerPoll(initialPoll?: ComposerPoll | null) {
   };
 
   const reset = () => {
+    activeRef.current = false;
+    setIsActive(false);
     setPoll(createEmptyPoll());
   };
 
   return {
-    ...popup,
-
     poll,
-    hasPoll,
+    isActive,
+    getIsActive: () => activeRef.current,
+    isValid: isComposerPollValid(poll),
+    firstOptionRef,
+    activate,
 
     updateOption,
     addOption,

@@ -6,16 +6,23 @@ interface Props {
   preview: LinkPreview | null;
   loading: boolean;
   onRemove: () => void;
+  disabled?: boolean;
 }
 
 export default function TweetComposerLinkPreview({
   preview,
   loading,
   onRemove,
+  disabled = false,
 }: Props) {
   if (preview) {
     return (
-      <LinkPreviewCard preview={preview} onRemove={onRemove} className="mb-3" />
+      <LinkPreviewCard
+        preview={preview}
+        onRemove={onRemove}
+        disabled={disabled}
+        className="mb-3"
+      />
     );
   }
 

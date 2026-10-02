@@ -8,4 +8,3 @@ export { default as TweetComposerLinkPreview } from "@/components/tweet/TweetCom
 export { default as TweetComposerLocationPreview } from "@/components/tweet/TweetComposer/TweetComposerLocationPreview";
 export { default as TweetComposerMediaPreview } from "@/components/tweet/TweetComposer/TweetComposerMediaPreview";
 export { default as TweetComposerMediaStatus } from "@/components/tweet/TweetComposer/TweetComposerMediaStatus";
-export { default as TweetComposerPollPreview } from "@/components/tweet/TweetComposer/TweetComposerPollPreview";

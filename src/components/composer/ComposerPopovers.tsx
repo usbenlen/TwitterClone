@@ -1,10 +1,9 @@
 import ComposerPopover from "@/components/composer/ComposerPopover";
 import EmojiPicker from "@/components/composer/emoji/EmojiPicker";
 import GifPicker from "@/components/composer/gif/GifPicker";
-import PollComposer from "@/components/composer/poll/PollComposer";
 import LocationPicker from "@/components/composer/location/LocationPicker";
 
-import type { Gif, ComposerPoll, Location } from "@/types";
+import type { Gif, Location } from "@/types";
 
 type ComposerPopoverState = {
   open: boolean;
@@ -26,14 +25,6 @@ interface ComposerPopoversProps {
     onSelect: (gif: Gif) => void;
   };
 
-  poll: ComposerPopoverState & {
-    poll: ComposerPoll;
-    onOptionChange: (id: string, text: string) => void;
-    onAddOption: () => void;
-    onRemoveOption: (id: string) => void;
-    onDurationChange: (minutes: number) => void;
-  };
-
   location: ComposerPopoverState & {
     locations: Location[];
     query: string;
@@ -42,13 +33,11 @@ interface ComposerPopoversProps {
     onQueryChange: (value: string) => void;
     onSelect: (location: Location) => void;
   };
-
 }
 
 export default function ComposerPopovers({
   emoji,
   gif,
-  poll,
   location,
 }: ComposerPopoversProps) {
   return (
@@ -77,20 +66,6 @@ export default function ComposerPopovers({
       </ComposerPopover>
 
       <ComposerPopover
-        open={poll.open}
-        onOpenChange={poll.onOpenChange}
-        reference={poll.reference}
-      >
-        <PollComposer
-          poll={poll.poll}
-          onOptionChange={poll.onOptionChange}
-          onAddOption={poll.onAddOption}
-          onRemoveOption={poll.onRemoveOption}
-          onDurationChange={poll.onDurationChange}
-        />
-      </ComposerPopover>
-
-      <ComposerPopover
         open={location.open}
         onOpenChange={location.onOpenChange}
         reference={location.reference}
@@ -104,7 +79,6 @@ export default function ComposerPopovers({
           onSelect={location.onSelect}
         />
       </ComposerPopover>
-
     </>
   );
 }
