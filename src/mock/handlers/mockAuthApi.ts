@@ -1,7 +1,7 @@
 import { MOCK_DELAYS, MOCK_TOKEN_LIFETIME_MS } from "@/mock/constants";
 import type {
   AuthResponse,
-  ChangePasswordRequest,
+  ConfirmPasswordChangeRequest,
   ForgotPasswordRequest,
   LoginRequest,
   MessageResponse,
@@ -10,6 +10,7 @@ import type {
   VerifyResetCodeRequest,
   VerifyEmailRequest,
   ResendVerificationCodeRequest,
+  StartPasswordChangeRequest,
 } from "@/types/auth";
 import type { User } from "@/types/user";
 
@@ -107,29 +108,27 @@ export const mockAuthApi = {
     };
   },
 
-  changePassword: async (
-    data: ChangePasswordRequest,
+  startPasswordChange: async (
+    data: StartPasswordChangeRequest,
   ): Promise<MessageResponse> => {
     await delay(MOCK_DELAYS.WRITE);
-
-    if (data.code) {
-      if (!pendingPasswordChange)
-        throw new Error("There is no pending password change request.");
-
-      if (!data.code.trim())
-        throw new Error("Confirmation code is invalid or expired.");
-
-      pendingPasswordChange = false;
-
-      return {
-        message: "Password changed successfully.",
-      };
-    }
-
+    void data;
     pendingPasswordChange = true;
 
     return {
       message: "Password change confirmation code has been sent to your email.",
     };
+  },
+
+  confirmPasswordChange: async (
+    data: ConfirmPasswordChangeRequest,
+  ): Promise<MessageResponse> => {
+    await delay(MOCK_DELAYS.WRITE);
+    if (!pendingPasswordChange)
+      throw new Error("There is no pending password change request.");
+    if (!data.code.trim())
+      throw new Error("Confirmation code is invalid or expired.");
+    pendingPasswordChange = false;
+    return { message: "Password changed successfully." };
   },
 };

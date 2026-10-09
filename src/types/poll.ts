@@ -18,7 +18,7 @@ export interface TweetPoll {
   id: string;
   options: TweetPollOption[];
   totalVotes: number;
-  expiresAt: string;
+  expiresAt: string | null;
   votedOptionId?: string;
   isClosed: boolean;
 }

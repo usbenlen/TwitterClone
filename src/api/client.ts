@@ -1,16 +1,24 @@
 import { API_BASE_URL, ENDPOINTS } from "@/api/config";
 import { tokenStorage } from "@/utils/storage";
 import type { RefreshResponse } from "@/types/auth";
+import type { ProblemDetails } from "@/types/api";
 
 export class ApiError extends Error {
   status: number;
   data: unknown;
+  retryAfter: string | null;
 
-  constructor(status: number, message: string, data?: unknown) {
+  constructor(
+    status: number,
+    message: string,
+    data?: unknown,
+    retryAfter: string | null = null,
+  ) {
     super(message);
     this.name = "ApiError";
     this.status = status;
     this.data = data;
+    this.retryAfter = retryAfter;
   }
 }
 
@@ -104,18 +112,31 @@ async function rawRequest<T>(
   if (response.status === 204) return undefined as T;
 
   const contentType = response.headers.get("Content-Type") ?? "";
-  const payload = contentType.includes("application/json")
+  const payload = contentType.toLowerCase().includes("json")
     ? await response.json().catch(() => null)
     : await response.text().catch(() => null);
 
   if (!response.ok) {
+    const problem =
+      payload && typeof payload === "object"
+        ? (payload as ProblemDetails & { message?: unknown })
+        : null;
     const message =
-      (payload && typeof payload === "object" && "message" in payload
-        ? String((payload as { message: unknown }).message)
+      (problem?.detail
+        ? problem.detail
+        : problem?.title
+          ? problem.title
+          : problem?.message
+            ? String(problem.message)
         : typeof payload === "string" && payload
           ? payload
           : null) ?? `Помилка запиту (${response.status})`;
-    throw new ApiError(response.status, message, payload);
+    throw new ApiError(
+      response.status,
+      message,
+      payload,
+      response.headers.get("Retry-After"),
+    );
   }
 
   return payload as T;

@@ -29,7 +29,7 @@ const initial = structuredClone({
 });
 function reset() {
   Object.assign(currentUser, initial.users[0]);
-  currentUser.role = "ADMIN";
+  currentUser.role = "Admin";
   currentUser.isBlocked = false;
   sampleAuthors.splice(
     0,
@@ -74,7 +74,7 @@ describe("shared mock moderation", () => {
       expect(sampleAuthors).toContain(currentUser);
     },
   );
-  it.each(["USER", undefined] as const)(
+  it.each(["User", undefined] as const)(
     "denies administrative access for role %s",
     async (role) => {
       currentUser.role = role;

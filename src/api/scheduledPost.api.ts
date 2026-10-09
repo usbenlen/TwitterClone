@@ -2,6 +2,7 @@ import { apiClient } from "@/api/client";
 import { ENDPOINTS } from "@/api/config";
 import { MOCK_ENABLED } from "@/mock/config";
 import { mockScheduledPostApi } from "@/mock/handlers/mockScheduledPostApi";
+import { mapScheduledLinkPreview } from "@/api/mappers/request.mapper";
 
 import type {
   CreateScheduledPostRequest,
@@ -16,7 +17,10 @@ const realScheduledPostApi = {
   create: (request: CreateScheduledPostRequest) => {
     const { mockMedia: _mockMedia, ...payload } = request;
     void _mockMedia;
-    return apiClient.post<ScheduledPost>(ENDPOINTS.posts.scheduled, payload);
+    return apiClient.post<ScheduledPost>(ENDPOINTS.posts.scheduled, {
+      ...payload,
+      linkPreview: mapScheduledLinkPreview(payload.linkPreview),
+    });
   },
 
   update: (id: string, request: UpdateScheduledPostRequest) => {
@@ -24,7 +28,10 @@ const realScheduledPostApi = {
     void _mockMedia;
     return apiClient.patch<ScheduledPost>(
       ENDPOINTS.posts.scheduledById(id),
-      payload,
+      {
+        ...payload,
+        linkPreview: mapScheduledLinkPreview(payload.linkPreview),
+      },
     );
   },
 

@@ -10,19 +10,19 @@ describe("mock follow relationships", () => {
     const { mockFollowApi } = await import("@/mock/handlers/mockFollowApi");
     const target = sampleAuthors.find((user) => user.id !== currentUser.id)!;
     currentUser.isVerified = false;
-    currentUser.role = "ADMIN";
+    currentUser.role = "Admin";
     target.isVerified = true;
-    target.role = "USER";
+    target.role = "User";
     mockFollowing[currentUser.id] = [];
     mockFollowers[target.id] = [];
     await mockFollowApi.follow({ targetUserId: target.id });
     await mockFollowApi.follow({ targetUserId: target.id });
     expect(mockFollowing[currentUser.id]).toHaveLength(1);
     expect(mockFollowing[currentUser.id][0].isVerified).toBe(true);
-    expect(mockFollowing[currentUser.id][0].role).toBe("USER");
+    expect(mockFollowing[currentUser.id][0].role).toBe("User");
     expect(mockFollowers[target.id]).toHaveLength(1);
     expect(mockFollowers[target.id][0].isVerified).toBe(false);
-    expect(mockFollowers[target.id][0].role).toBe("ADMIN");
+    expect(mockFollowers[target.id][0].role).toBe("Admin");
     await mockFollowApi.unfollow({ targetUserId: target.id });
     expect(mockFollowing[currentUser.id]).toEqual([]);
     expect(mockFollowers[target.id]).toEqual([]);
@@ -36,10 +36,10 @@ describe("mock follow relationships", () => {
     const { commentsByPostId } = await import("@/mock/data/comments");
 
     const follower = mockFollowers.u2.find((entry) => entry.id === currentUser.id);
-    expect(follower).toMatchObject({ role: "ADMIN", isVerified: false });
+    expect(follower).toMatchObject({ role: "Admin", isVerified: false });
     const comment = Object.values(commentsByPostId)
       .flat()
       .find((entry) => entry.author.id === currentUser.id);
-    expect(comment?.author).toMatchObject({ role: "ADMIN", isVerified: false });
+    expect(comment?.author).toMatchObject({ role: "Admin", isVerified: false });
   });
 });

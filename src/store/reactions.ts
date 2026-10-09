@@ -14,7 +14,8 @@ export async function runReaction(
     arg.action === "vote" &&
     (arg.poll.votedOptionId ||
       arg.poll.isClosed ||
-      Date.parse(arg.poll.expiresAt) <= Date.now())
+      (arg.poll.expiresAt !== null &&
+        Date.parse(arg.poll.expiresAt) <= Date.now()))
   )
     return false;
   try {

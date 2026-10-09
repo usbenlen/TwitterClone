@@ -9,6 +9,7 @@ import { mockSearchApi } from "@/mock/handlers";
 import type {
   SearchCriteria,
   SearchViewerContext,
+  CursorPage,
   Tweet,
   UserShort,
 } from "@/types";
@@ -26,16 +27,16 @@ interface SearchApi {
 
 const realSearchApi: SearchApi = {
   users: (criteria: SearchCriteria) =>
-    apiClient.get<UserShort[]>(
+    apiClient.get<CursorPage<UserShort>>(
       `${ENDPOINTS.search.users}?${serializeSearchApiCriteria(criteria, "users")}`,
-    ),
+    ).then((page) => page.items),
 
   posts: (criteria: SearchCriteria) =>
     apiClient
-      .get<BackendPost[]>(
+      .get<CursorPage<BackendPost>>(
         `${ENDPOINTS.search.posts}?${serializeSearchApiCriteria(criteria, "posts")}`,
       )
-      .then((posts): Tweet[] => posts.map(mapPostToTweet)),
+      .then((page): Tweet[] => page.items.map(mapPostToTweet)),
 };
 
 export const searchApi: SearchApi = MOCK_ENABLED

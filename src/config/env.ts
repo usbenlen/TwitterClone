@@ -4,8 +4,8 @@ export const NUMERIC_ENV_DEFAULTS = {
   VITE_MAX_BIO_LENGTH: 160,
   VITE_MAX_MEDIA_ATTACHMENTS: 4,
   VITE_MAX_IMAGE_SIZE_MB: 10,
-  VITE_MAX_VIDEO_SIZE_MB: 512,
-  VITE_MAX_GIF_SIZE_MB: 20,
+  VITE_MAX_VIDEO_SIZE_MB: 100,
+  VITE_MAX_GIF_SIZE_MB: 10,
   VITE_IMAGE_MAX_WIDTH: 2048,
   VITE_IMAGE_QUALITY: 0.8,
 } as const;
@@ -48,10 +48,10 @@ export function readAppIdentity(env: Env) {
   };
 }
 
-export function readMockUserRole(env: Env): "USER" | "ADMIN" {
+export function readMockUserRole(env: Env): "User" | "Admin" {
   const role = env.VITE_MOCK_USER_ROLE ?? "USER";
   if (role !== "USER" && role !== "ADMIN") throw new Error("Invalid environment variable: VITE_MOCK_USER_ROLE");
-  return role;
+  return role === "ADMIN" ? "Admin" : "User";
 }
 
 export function escapeHtml(value: string): string {

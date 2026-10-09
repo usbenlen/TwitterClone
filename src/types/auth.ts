@@ -24,10 +24,13 @@ export interface RefreshResponse {
   accessTokenExpiresAt?: string;
 }
 
-export interface ChangePasswordRequest {
+export interface StartPasswordChangeRequest {
   currentPassword: string;
-  newPassword?: string;
-  code?: string;
+  newPassword: string;
+}
+
+export interface ConfirmPasswordChangeRequest {
+  code: string;
 }
 
 export interface MessageResponse {

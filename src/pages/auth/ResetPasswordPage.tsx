@@ -10,9 +10,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import {
   resetPasswordSchema,
   type ResetPasswordFormValues,
-  type ChangePasswordFormValues,
 } from "@/schemas/auth.schema";
-import { PASSWORD_SUCCESS_REDIRECT_MS, APP_ROUTES } from "@/constants";
+import { APP_ROUTES } from "@/constants";
 
 import { Input, Button } from "@/ui";
 
@@ -35,11 +34,9 @@ export default function ResetPasswordPage({
   const location = useLocation();
 
   const isSettings = variant === "settings";
-  const { email, code, currentPassword } =
-    (location.state as LocationState) ?? {};
+  const { email, code } = (location.state as LocationState) ?? {};
 
   const [serverError, setServerError] = useState<string | null>(null);
-  const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   const {
     register,
@@ -53,47 +50,28 @@ export default function ResetPasswordPage({
     },
   });
 
-  const missingState = !email || !code || (isSettings && !currentPassword);
+  const missingState = !email || !code;
   useEffect(() => {
-    if (missingState)
+    if (isSettings)
+      navigate(APP_ROUTES.SETTINGS_CHANGE_PASSWORD, { replace: true });
+    else if (missingState)
       navigate(isSettings ? APP_ROUTES.SETTINGS : APP_ROUTES.FORGOT_PASSWORD, {
         replace: true,
       });
   }, [missingState, isSettings, navigate]);
-  useEffect(() => {
-    if (!successMessage || !isSettings) return;
-    const timer = window.setTimeout(
-      () => navigate(APP_ROUTES.SETTINGS, { replace: true }),
-      PASSWORD_SUCCESS_REDIRECT_MS,
-    );
-    return () => window.clearTimeout(timer);
-  }, [successMessage, isSettings, navigate]);
-  if (missingState) return null;
+  if (isSettings || missingState) return null;
 
   const onSubmit = async (values: ResetPasswordFormValues) => {
     setServerError(null);
 
     try {
-      if (isSettings) {
-        const payload: ChangePasswordFormValues = {
-          currentPassword: currentPassword!,
-          code: code!,
-          newPassword: values.password,
-          confirmPassword: values.confirmPassword,
-        };
-        const response = await authApi.changePassword(payload);
-        setSuccessMessage(response.message || "Пароль успішно змінено.");
-      } else {
-        await authApi.resetPassword({
-          email: email!,
-          code: code!,
-          newPassword: values.password,
-        });
+      await authApi.resetPassword({
+        email: email!,
+        code: code!,
+        newPassword: values.password,
+      });
 
-        navigate(APP_ROUTES.LOGIN, {
-          replace: true,
-        });
-      }
+      navigate(APP_ROUTES.LOGIN, { replace: true });
     } catch (error) {
       setServerError(
         error instanceof ApiError
@@ -137,12 +115,6 @@ export default function ResetPasswordPage({
         </p>
       )}
 
-      {successMessage && (
-        <p className="rounded-md bg-green-500/10 p-3 text-sm text-green-600">
-          {successMessage}
-        </p>
-      )}
-
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         <Input
           label="Новий пароль"
@@ -151,7 +123,7 @@ export default function ResetPasswordPage({
           placeholder="••••••••"
           error={errors.password?.message}
           {...register("password")}
-          disabled={isSubmitting || !!successMessage}
+          disabled={isSubmitting}
         />
 
         <Input
@@ -161,7 +133,7 @@ export default function ResetPasswordPage({
           placeholder="••••••••"
           error={errors.confirmPassword?.message}
           {...register("confirmPassword")}
-          disabled={isSubmitting || !!successMessage}
+          disabled={isSubmitting}
         />
 
         <Button
@@ -169,7 +141,6 @@ export default function ResetPasswordPage({
           size="lg"
           fullWidth
           isLoading={isSubmitting}
-          disabled={!!successMessage}
         >
           Змінити пароль
         </Button>

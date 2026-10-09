@@ -18,7 +18,7 @@ function formatRemaining(ms: number) {
   return `${days} дн`;
 }
 
-export function usePollCountdown(expiresAt: string) {
+export function usePollCountdown(expiresAt: string | null) {
   // eslint-disable-next-line react-hooks/purity
   const [now, setNow] = useState(Date.now());
 
@@ -31,13 +31,14 @@ export function usePollCountdown(expiresAt: string) {
   }, []);
 
   const remaining = useMemo(() => {
-    return new Date(expiresAt).getTime() - now;
+    return expiresAt ? new Date(expiresAt).getTime() - now : Infinity;
   }, [expiresAt, now]);
 
   const expired = remaining <= 0;
 
   return {
     expired,
+    hasDeadline: Boolean(expiresAt),
     text: expired ? "Опитування завершене" : formatRemaining(remaining),
   };
 }

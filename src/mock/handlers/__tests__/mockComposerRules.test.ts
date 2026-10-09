@@ -181,12 +181,16 @@ describe("mock composer validation", () => {
       location,
     });
     await expect(
-      mockCommentApi.update(created.id, { mediaIds: ["image"] }),
+      mockCommentApi.update(created.id, {
+        content: created.content,
+        mediaIds: ["image"],
+      }),
     ).rejects.toThrow("Медіа та опитування");
     expect((await mockCommentApi.getThread(created.id)).target.poll?.id).toBe(
       created.poll?.id,
     );
     const updated = await mockCommentApi.update(created.id, {
+      content: created.content,
       mediaIds: ["image"],
       poll: null,
     });

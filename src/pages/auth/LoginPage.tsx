@@ -12,7 +12,7 @@ import { useAuth } from "@/hooks/useAuth";
 
 import { Input, Button } from "@/ui";
 
-import { AuthShell, GoogleAuthButton } from "@/components/auth";
+import { AuthShell } from "@/components/auth";
 
 interface LocationState {
   from?: { pathname: string };
@@ -65,16 +65,6 @@ export default function LoginPage() {
         </span>
       }
     >
-      <GoogleAuthButton />
-
-      <div className="my-6 flex items-center gap-3" aria-hidden="true">
-        <div className="h-px flex-1 bg-border" />
-        <span className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
-          або
-        </span>
-        <div className="h-px flex-1 bg-border" />
-      </div>
-
       <form
         onSubmit={handleSubmit(onSubmit)}
         className="flex flex-col gap-4"

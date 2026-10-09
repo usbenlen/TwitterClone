@@ -7,13 +7,7 @@ export async function fetchPosts(arg: PostsQuery): Promise<Tweet[]> {
     case "feed":
       return tweetApi.getFeed();
     case "bookmarks": {
-      const [posts, comments] = await Promise.all([
-        tweetApi.getBookmarked(),
-        commentApi.getBookmarked(),
-      ]);
-      return [...posts, ...comments].sort(
-        (a, b) => Date.parse(b.createdAt) - Date.parse(a.createdAt),
-      );
+      return tweetApi.getBookmarked();
     }
     case "comments":
       return commentApi.getByPostId(arg.postId);
@@ -52,6 +46,6 @@ export async function sendReaction(arg: Reaction): Promise<Partial<Tweet>> {
       return { bookmarkedByMe: value ?? !arg.active };
     }
     case "vote":
-      return { poll: await pollApi.vote(arg.id, arg.optionId) };
+      return { poll: await pollApi.vote(arg.type, arg.id, arg.optionId) };
   }
 }

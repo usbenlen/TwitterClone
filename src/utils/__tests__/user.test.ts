@@ -6,7 +6,7 @@ import { updateTweetAuthors } from "@/utils/updateTweetAuthors";
 const user: User = {
   id: "admin",
   username: "admin",
-  role: "ADMIN",
+  role: "Admin",
   isVerified: false,
   followersCount: 0,
   followingCount: 0,
@@ -35,11 +35,11 @@ function tweet(id: string, author = toTweetAuthor(user)): Tweet {
 
 describe("user roles in author data", () => {
   it("preserves admin role without marking the user as ordinarily verified", () => {
-    expect(toTweetAuthor(user)).toMatchObject({ role: "ADMIN", isVerified: false });
-    expect(toUserShort(user)).toMatchObject({ role: "ADMIN", isVerified: false });
+    expect(toTweetAuthor(user)).toMatchObject({ role: "Admin", isVerified: false });
+    expect(toUserShort(user)).toMatchObject({ role: "Admin", isVerified: false });
   });
 
-  it.each(["ADMIN", "USER", undefined] satisfies User["role"][])(
+  it.each(["Admin", "User", undefined] satisfies User["role"][])(
     "updates role to %s in cached posts, ancestors, and quotes",
     (role) => {
       const post = tweet("post");
@@ -48,7 +48,7 @@ describe("user roles in author data", () => {
       const other = tweet("other", {
         id: "reader",
         username: "reader",
-        role: "USER",
+        role: "User",
         isVerified: true,
       });
       post.ancestors = [ancestor, other];

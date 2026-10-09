@@ -9,7 +9,7 @@ import type { MediaAttachment } from "@/types/media";
 const realMediaApi = {
   async upload(file: File): Promise<MediaAttachment> {
     const formData = new FormData();
-    formData.append("file", file);
+    formData.append("File", file);
 
     return apiClient.post<MediaAttachment>(ENDPOINTS.media.upload, formData);
   },

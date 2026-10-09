@@ -8,7 +8,7 @@ export function useNavigation() {
   const { user } = useAuth();
 
   const navigation: NavigationItem[] =
-    user?.role === "ADMIN"
+    user?.role === "Admin"
       ? [
           ...MAIN_NAVIGATION,
           {

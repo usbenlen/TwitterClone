@@ -10,7 +10,6 @@ import {
   UsersRound,
 } from "lucide-react";
 
-import { GoogleAuthButton } from "@/components/auth";
 import { RightSidebarFooterLinks } from "@/components/layout/desktop/rightSidebar/index";
 
 import { HeartIcon } from "@/shared/icons";
@@ -175,7 +174,6 @@ export default function LandingPage() {
                   Створити акаунт
                   <ArrowRight className="size-5" />
                 </Link>
-                <GoogleAuthButton className="bg-card" />
               </div>
             </div>
 

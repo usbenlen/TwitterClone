@@ -6,6 +6,7 @@ import { MOCK_ENABLED } from "@/mock/config";
 export interface QueryError {
   message: string;
   status?: number;
+  retryAfter?: string | null;
 }
 
 export function errorMessage(
@@ -27,7 +28,9 @@ export async function request<T>(
     return {
       error: {
         message: errorMessage(error),
-        ...(error instanceof ApiError ? { status: error.status } : {}),
+        ...(error instanceof ApiError
+          ? { status: error.status, retryAfter: error.retryAfter }
+          : {}),
       },
     };
   }

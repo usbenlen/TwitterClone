@@ -94,13 +94,16 @@ export function formatVoteCount(count: number): string {
 }
 
 export function formatDateTime(
-  value: string | Date,
+  value: string | Date | null | undefined,
   dateStyle: "medium" | "full" = "medium",
 ): string {
+  const date = value instanceof Date ? value : new Date(value ?? "");
+  if (!Number.isFinite(date.getTime())) return "Дата невідома";
+
   return new Intl.DateTimeFormat(APP_LOCALE, {
     dateStyle,
     timeStyle: "short",
-  }).format(new Date(value));
+  }).format(date);
 }
 
 const compactCountFormatter = new Intl.NumberFormat(APP_LOCALE, {

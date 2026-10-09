@@ -5,6 +5,7 @@ import { MOCK_ENABLED } from "@/mock/config";
 import { mockRecommendationsApi } from "@/mock/handlers";
 
 import type {
+  CursorPage,
   PaginatedRecommendations,
   RecommendationCategory,
   TrendRecommendationsResponse,
@@ -20,23 +21,18 @@ interface RecommendationsApi {
 }
 
 const realRecommendationsApi: RecommendationsApi = {
-  trends: (limit) => {
-    const params = new URLSearchParams({ limit: String(limit) });
-    return apiClient.get<TrendRecommendationsResponse>(
-      `${ENDPOINTS.recommendations.trends}?${params}`,
-    );
-  },
+  trends: async (_limit) => ({ items: [] }),
 
-  users: (category, limit, cursor) => {
+  users: async (_category, limit, cursor) => {
     const params = new URLSearchParams({
-      category,
       limit: String(limit),
     });
     if (cursor) params.set("cursor", cursor);
 
-    return apiClient.get<PaginatedRecommendations>(
-      `${ENDPOINTS.recommendations.users}?${params}`,
+    const page = await apiClient.get<CursorPage<PaginatedRecommendations["items"][number]>>(
+      `${ENDPOINTS.search.users}?${params}`,
     );
+    return { items: page.items, nextCursor: page.nextCursor };
   },
 };
 

@@ -2,11 +2,17 @@ import { apiClient } from "@/api/client";
 import { ENDPOINTS } from "@/api/config";
 import {
   mapEditHistoryResponse,
+  getMappedInteractionPage,
+  getMappedPostPage,
   getMappedPosts,
   mapPostToTweet,
   type BackendEditHistoryResponse,
   type BackendPost,
 } from "@/api/mappers/post.mapper";
+import {
+  mapCreatePostRequest,
+  mapUpdateRequest,
+} from "@/api/mappers/request.mapper";
 
 import { MOCK_ENABLED } from "@/mock/config";
 import { mockTweetApi } from "@/mock/handlers";
@@ -20,18 +26,19 @@ import type {
 } from "@/types/tweet";
 
 const realTweetApi = {
-  getAll: () => getMappedPosts(ENDPOINTS.posts.all),
-
   getFeed: () => getMappedPosts(ENDPOINTS.posts.feed),
 
-  getBookmarked: () => getMappedPosts(ENDPOINTS.posts.bookmarked),
+  getBookmarked: async () =>
+    (await getMappedInteractionPage(ENDPOINTS.posts.bookmarked)).items,
 
-  getLiked: () => getMappedPosts(ENDPOINTS.posts.liked),
+  getLiked: async () =>
+    (await getMappedInteractionPage(ENDPOINTS.posts.liked)).items,
 
-  getReposted: () => getMappedPosts(ENDPOINTS.posts.reposted),
+  getReposted: async () =>
+    (await getMappedInteractionPage(ENDPOINTS.posts.reposted)).items,
 
-  getByUsername: (username: string) =>
-    getMappedPosts(ENDPOINTS.posts.byUser(username)),
+  getByUsername: async (username: string) =>
+    (await getMappedPostPage(ENDPOINTS.posts.byUser(username))).items,
 
   getById: async (id: string) => {
     const post = await apiClient.get<BackendPost>(ENDPOINTS.posts.byId(id));
@@ -50,7 +57,7 @@ const realTweetApi = {
   create: async (data: CreateTweetRequest) => {
     const post = await apiClient.post<BackendPost>(
       ENDPOINTS.posts.create,
-      data,
+      mapCreatePostRequest(data),
     );
 
     return mapPostToTweet(post);
@@ -59,7 +66,7 @@ const realTweetApi = {
   update: async (id: string, data: UpdateTweetRequest) => {
     const post = await apiClient.put<BackendPost>(
       ENDPOINTS.posts.update(id),
-      data,
+      mapUpdateRequest(data),
     );
 
     return mapPostToTweet(post);

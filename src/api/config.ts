@@ -21,7 +21,8 @@ export const ENDPOINTS = {
   admin: {
     dashboard: {
       metrics: "admin/dashboard/metrics",
-      charts: (period: string) => `admin/dashboard/charts?period=${encodeURIComponent(period)}`,
+      charts: (period: string) =>
+        `admin/dashboard/charts?period=${encodeURIComponent(period)}`,
       tables: (limit: number) => `admin/dashboard/tables?limit=${limit}`,
     },
     users: {
@@ -38,7 +39,6 @@ export const ENDPOINTS = {
     },
   },
   auth: {
-    google: "auth/google",
     login: "auth/login",
     register: "auth/register",
     refresh: "auth/refresh",
@@ -49,67 +49,76 @@ export const ENDPOINTS = {
     verifyResetCode: "auth/verify-reset-code",
     resetPassword: "auth/reset-password",
 
-    changePassword: "me/change-password",
+    changePasswordStart: "me/change-password/start",
+    changePasswordConfirm: "me/change-password/confirm",
     verifyEmail: "auth/verify-email",
     resendVerificationCode: "auth/resend-verification-code",
   },
   users: {
     report: (id: string) => `users/${encodeURIComponent(id)}/report`,
-    all: "users",
-    byId: (id: string) => `users/by-id/${id}`,
-    byUsername: (username: string) => `users/by-username/${username}`,
-    posts: (username: string) => `users/${username}/posts`,
-    replies: (username: string) => `users/${username}/replies`,
-    likes: (username: string) => `users/${username}/likes`,
-    reposts: (username: string) => `users/${username}/reposts`,
+    byId: (id: string) => `users/by-id/${encodeURIComponent(id)}`,
+    byUsername: (username: string) =>
+      `users/by-username/${encodeURIComponent(username)}`,
+    posts: (username: string) =>
+      `users/${encodeURIComponent(username)}/posts`,
+    replies: (username: string) =>
+      `users/${encodeURIComponent(username)}/replies`,
+    likes: (username: string) =>
+      `users/${encodeURIComponent(username)}/likes`,
+    reposts: (username: string) =>
+      `users/${encodeURIComponent(username)}/reposts`,
     updateProfile: "me",
     deleteMe: "me",
   },
   posts: {
     report: (id: string) => `posts/${encodeURIComponent(id)}/report`,
-    all: "posts",
     feed: "posts/feed",
     myPosts: "me/posts",
     liked: "me/likes",
     bookmarked: "me/bookmarks",
     reposted: "me/reposts",
-    byUser: (username: string) => `users/${username}/posts`,
-    byId: (id: string) => `posts/${id}`,
-    editHistory: (id: string) => `posts/${id}/edit-history`,
+    byUser: (username: string) =>
+      `users/${encodeURIComponent(username)}/posts`,
+    byId: (id: string) => `posts/${encodeURIComponent(id)}`,
+    editHistory: (id: string) =>
+      `posts/${encodeURIComponent(id)}/edit-history`,
     create: "posts",
-    update: (id: string) => `posts/${id}`,
-    delete: (id: string) => `posts/${id}`,
+    update: (id: string) => `posts/${encodeURIComponent(id)}`,
+    delete: (id: string) => `posts/${encodeURIComponent(id)}`,
 
-    view: (id: string) => `posts/${id}/view`,
-    like: (id: string) => `posts/${id}/like`,
-    unlike: (id: string) => `posts/${id}/like`,
-    repost: (id: string) => `posts/${id}/repost`,
-    unrepost: (id: string) => `posts/${id}/repost`,
-    bookmark: (id: string) => `posts/${id}/bookmark`,
-    unbookmark: (id: string) => `posts/${id}/bookmark`,
+    view: (id: string) => `posts/${encodeURIComponent(id)}/view`,
+    like: (id: string) => `posts/${encodeURIComponent(id)}/like`,
+    unlike: (id: string) => `posts/${encodeURIComponent(id)}/like`,
+    repost: (id: string) => `posts/${encodeURIComponent(id)}/repost`,
+    unrepost: (id: string) => `posts/${encodeURIComponent(id)}/repost`,
+    bookmark: (id: string) => `posts/${encodeURIComponent(id)}/bookmark`,
+    unbookmark: (id: string) => `posts/${encodeURIComponent(id)}/bookmark`,
     scheduled: "posts/scheduled",
-    scheduledById: (id: string) => `posts/scheduled/${id}`,
+    scheduledById: (id: string) =>
+      `posts/scheduled/${encodeURIComponent(id)}`,
   },
   comments: {
     report: (id: string) => `comments/${encodeURIComponent(id)}/report`,
-    byPost: (postId: string) => `comments/post/${postId}`,
-    thread: (id: string) => `comments/${id}/thread`,
-    editHistory: (id: string) => `comments/${id}/edit-history`,
-    bookmarked: "comments/bookmarked",
+    byPost: (postId: string) =>
+      `comments/post/${encodeURIComponent(postId)}`,
+    thread: (id: string) => `comments/${encodeURIComponent(id)}/thread`,
+    editHistory: (id: string) =>
+      `comments/${encodeURIComponent(id)}/edit-history`,
     create: "comments",
-    update: (id: string) => `comments/${id}`,
-    delete: (id: string) => `comments/${id}`,
+    update: (id: string) => `comments/${encodeURIComponent(id)}`,
+    delete: (id: string) => `comments/${encodeURIComponent(id)}`,
 
-    view: (id: string) => `comments/${id}/view`,
-    like: (id: string) => `comments/${id}/like`,
-    unlike: (id: string) => `comments/${id}/like`,
-    repost: (id: string) => `comments/${id}/repost`,
-    unrepost: (id: string) => `comments/${id}/repost`,
-    bookmark: (id: string) => `comments/${id}/bookmark`,
-    unbookmark: (id: string) => `comments/${id}/bookmark`,
+    view: (id: string) => `comments/${encodeURIComponent(id)}/view`,
+    like: (id: string) => `comments/${encodeURIComponent(id)}/like`,
+    unlike: (id: string) => `comments/${encodeURIComponent(id)}/like`,
+    repost: (id: string) => `comments/${encodeURIComponent(id)}/repost`,
+    unrepost: (id: string) => `comments/${encodeURIComponent(id)}/repost`,
+    bookmark: (id: string) => `comments/${encodeURIComponent(id)}/bookmark`,
+    unbookmark: (id: string) => `comments/${encodeURIComponent(id)}/bookmark`,
   },
   poll: {
-    vote: (postId: string) => `posts/${postId}/poll/vote`,
+    vote: (targetType: "post" | "comment", id: string) =>
+      `${targetType === "post" ? "posts" : "comments"}/${encodeURIComponent(id)}/poll/vote`,
   },
   search: {
     users: "search/users",
@@ -117,23 +126,21 @@ export const ENDPOINTS = {
     gifs: "search/gifs",
     locations: "search/locations",
   },
-  recommendations: {
-    trends: "recommendations/trends",
-    users: "recommendations/users",
-  },
   follows: {
-    follow: (userId: string) => `follows/${userId}`,
-    unfollow: (userId: string) => `follows/${userId}`,
-    followers: (userId: string) => `follows/${userId}/followers`,
-    following: (userId: string) => `follows/${userId}/following`,
+    follow: (userId: string) => `follows/${encodeURIComponent(userId)}`,
+    unfollow: (userId: string) => `follows/${encodeURIComponent(userId)}`,
+    followers: (userId: string) =>
+      `follows/${encodeURIComponent(userId)}/followers`,
+    following: (userId: string) =>
+      `follows/${encodeURIComponent(userId)}/following`,
     removeFollower: (userId: string, followId: string) =>
-      `follows/${userId}/followers/${followId}`,
+      `follows/${encodeURIComponent(userId)}/followers/${encodeURIComponent(followId)}`,
   },
   media: {
     upload: "media/upload",
-    byId: (id: string) => `media/${id}`,
+    byId: (id: string) => `media/${encodeURIComponent(id)}`,
   },
   linkPreviews: {
-    resolve: "link-previews/resolve",
+    resolve: "linkpreviews/resolve",
   },
 } as const;

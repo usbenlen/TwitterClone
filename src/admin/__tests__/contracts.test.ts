@@ -36,9 +36,9 @@ describe("admin list contracts", () => {
       false,
     );
   });
-  it("defaults mock access to USER and rejects unrecognized roles", () => {
-    expect(readMockUserRole({})).toBe("USER");
-    expect(readMockUserRole({ VITE_MOCK_USER_ROLE: "ADMIN" })).toBe("ADMIN");
+  it("maps mock roles to the backend role format and rejects unrecognized roles", () => {
+    expect(readMockUserRole({})).toBe("User");
+    expect(readMockUserRole({ VITE_MOCK_USER_ROLE: "ADMIN" })).toBe("Admin");
     expect(() => readMockUserRole({ VITE_MOCK_USER_ROLE: "admin" })).toThrow();
   });
 });

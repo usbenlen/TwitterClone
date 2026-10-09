@@ -4,7 +4,17 @@ export interface ApiResponse<T> {
   data: T;
 }
 
-export interface ApiError {
-  success: false;
-  message: string;
+export interface ProblemDetails {
+  type?: string;
+  title?: string;
+  status?: number;
+  detail?: string;
+  instance?: string;
+  errors?: Record<string, string[]>;
+}
+
+export interface CursorPage<T> {
+  items: T[];
+  nextCursor: string | null;
+  hasMore: boolean;
 }

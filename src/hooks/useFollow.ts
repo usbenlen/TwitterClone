@@ -18,10 +18,16 @@ export function useFollow() {
     [currentUser?.id],
   );
   const following = useAppSelector(
-    (state) => followingSelector(state).data ?? EMPTY,
+    (state) => {
+      const data = followingSelector(state).data;
+      return Array.isArray(data) ? data : EMPTY;
+    },
   );
   const followers = useAppSelector(
-    (state) => followersSelector(state).data ?? EMPTY,
+    (state) => {
+      const data = followersSelector(state).data;
+      return Array.isArray(data) ? data : EMPTY;
+    },
   );
 
   const follow = useCallback(

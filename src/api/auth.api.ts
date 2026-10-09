@@ -2,7 +2,7 @@ import { apiClient } from "@/api/client";
 import { ENDPOINTS } from "@/api/config";
 import type {
   AuthResponse,
-  ChangePasswordRequest,
+  ConfirmPasswordChangeRequest,
   ForgotPasswordRequest,
   LoginRequest,
   MessageResponse,
@@ -11,10 +11,12 @@ import type {
   VerifyResetCodeRequest,
   VerifyEmailRequest,
   ResendVerificationCodeRequest,
+  StartPasswordChangeRequest,
 } from "@/types/auth";
 import type { User } from "@/types/user";
 import { MOCK_ENABLED } from "@/mock/config";
 import { mockAuthApi } from "@/mock/handlers";
+import { tokenStorage } from "@/utils/storage";
 
 const realAuthApi = {
   login: (data: LoginRequest) =>
@@ -41,7 +43,16 @@ const realAuthApi = {
       },
     ),
 
-  logout: () => apiClient.post<void>(ENDPOINTS.auth.logout),
+  logout: async () => {
+    const refreshToken = tokenStorage.getRefreshToken();
+    if (!refreshToken) return;
+
+    await apiClient.post<void>(
+      ENDPOINTS.auth.logout,
+      { refreshToken },
+      { skipAuth: true },
+    );
+  },
 
   // Отримання поточного користувача за збереженим токеном
   me: () => apiClient.get<User>(ENDPOINTS.auth.me),
@@ -61,8 +72,11 @@ const realAuthApi = {
       skipAuth: true,
     }),
 
-  changePassword: (data: ChangePasswordRequest) =>
-    apiClient.post<MessageResponse>(ENDPOINTS.auth.changePassword, data),
+  startPasswordChange: (data: StartPasswordChangeRequest) =>
+    apiClient.post<MessageResponse>(ENDPOINTS.auth.changePasswordStart, data),
+
+  confirmPasswordChange: (data: ConfirmPasswordChangeRequest) =>
+    apiClient.post<MessageResponse>(ENDPOINTS.auth.changePasswordConfirm, data),
 };
 
 export const authApi = MOCK_ENABLED ? mockAuthApi : realAuthApi;

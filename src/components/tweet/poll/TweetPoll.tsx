@@ -87,7 +87,9 @@ export default function TweetPoll({
               <Clock3 size={13} className="shrink-0" aria-hidden="true" />
               {expired
                 ? "Опитування завершене"
-                : `Залишилось ${countdown.text}`}
+                : countdown.hasDeadline
+                  ? `Залишилось ${countdown.text}`
+                  : "Без обмеження часу"}
             </span>
           </div>
           {voteError && !showResults && (

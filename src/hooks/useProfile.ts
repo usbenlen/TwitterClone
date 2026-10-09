@@ -15,19 +15,20 @@ export function useProfile(
   activeTab: ProfileTab,
 ) {
   const profile = useGetProfileQuery(username ?? skipToken);
-  const user =
-    profile.currentData?.username === username ? profile.currentData : null;
+  const user = profile.currentData ?? null;
   const query = useGetPostsQuery(
     user
       ? { kind: "profile", username: user.username, tab: activeTab }
       : skipToken,
   );
+  const isLoading = Boolean(username) && !user && profile.isFetching;
+
   return {
     user,
     tweets: query.currentData ?? EMPTY,
-    isLoading: Boolean(username) && !user && !profile.error,
+    isLoading,
     isTabLoading: query.isFetching && !query.currentData,
-    notFound: !username || Boolean(profile.error),
+    notFound: !username || (!user && !isLoading && Boolean(profile.error)),
     tabError: query.error ? errorMessage(query.error) : null,
   };
 }

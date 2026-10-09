@@ -5,7 +5,7 @@ import { APP_ROUTES } from "@/constants/routes";
 export default function AdminRoute() {
   const { user } = useAuth();
 
-  return user?.role === "ADMIN" && !user.isBlocked ? (
+  return user?.role === "Admin" && !user.isBlocked ? (
     <Outlet />
   ) : (
     <Navigate to={APP_ROUTES.HOME} replace />

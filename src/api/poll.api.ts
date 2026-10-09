@@ -11,9 +11,13 @@ import { mockPollApi } from "@/mock/handlers";
 import type { TweetPoll } from "@/types/poll";
 
 const realPollApi = {
-  async vote(tweetId: string, optionId: string): Promise<TweetPoll> {
+  async vote(
+    targetType: "post" | "comment",
+    targetId: string,
+    optionId: string,
+  ): Promise<TweetPoll> {
     const poll = await apiClient.post<BackendPollResponse>(
-      ENDPOINTS.poll.vote(tweetId),
+      ENDPOINTS.poll.vote(targetType, targetId),
       {
         optionId,
       },

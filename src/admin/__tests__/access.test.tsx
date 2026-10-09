@@ -44,12 +44,12 @@ describe("administrative route access", () => {
     state.isLoading = true;
     expect(renderToStaticMarkup(<ProtectedRoute />)).not.toContain("/login");
   });
-  it.each([undefined, "USER", "unknown"])("denies role %s", (role) => {
+  it.each([undefined, "User", "unknown"])("denies role %s", (role) => {
     state.user = { ...user, role: role as User["role"] };
     expect(renderToStaticMarkup(<AdminRoute />)).toContain("/home");
   });
   it("allows an administrator and denies a blocked administrator", () => {
-    state.user = { ...user, role: "ADMIN" };
+    state.user = { ...user, role: "Admin" };
     expect(renderToStaticMarkup(<AdminRoute />)).toContain("allowed");
     state.user.isBlocked = true;
     expect(renderToStaticMarkup(<AdminRoute />)).toContain("/home");

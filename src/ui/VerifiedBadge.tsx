@@ -8,7 +8,7 @@ type VerifiedBadgeProps = LucideProps & {
 };
 
 export function VerifiedBadge({ user, className, ...props }: VerifiedBadgeProps) {
-  const isAdmin = user.role === "ADMIN";
+  const isAdmin = user.role === "Admin";
   if (!isAdmin && !user.isVerified) return null;
 
   return (

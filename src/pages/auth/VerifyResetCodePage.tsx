@@ -6,7 +6,7 @@ import { useLocation, useNavigate } from "react-router";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import {
-  changePasswordBaseSchema,
+  changePasswordSchema,
   type ChangePasswordFormValues,
   verificationCodeSchema,
   type VerificationCodeFormValues,
@@ -21,17 +21,8 @@ import { Button, Input } from "@/ui";
 
 import { AuthShell, CodeInput } from "@/components/auth/index";
 
-const currentPasswordSchema = changePasswordBaseSchema.pick({
-  currentPassword: true,
-});
-type CurrentPasswordFormValues = Pick<
-  ChangePasswordFormValues,
-  "currentPassword"
->;
-
 interface LocationState {
   email?: string;
-  currentPassword?: string;
 }
 
 interface VerifyResetCodePageProps {
@@ -50,9 +41,8 @@ export default function VerifyResetCodePage({
     ? user?.email
     : (location.state as LocationState)?.email;
 
-  const [currentPasswordVal, setCurrentPasswordVal] =
-    useState<ChangePasswordFormValues["currentPassword"]>("");
   const [codeSent, setCodeSent] = useState(false);
+  const [passwordChanged, setPasswordChanged] = useState(false);
   const [code, setCode] = useState("");
   const [serverError, setServerError] = useState<string | null>(null);
   const [infoMessage, setInfoMessage] = useState<string | null>(null);
@@ -72,10 +62,12 @@ export default function VerifyResetCodePage({
     register: registerCurrent,
     handleSubmit: handleSubmitCurrent,
     formState: { errors: currentErrors, isSubmitting: isCurrentSubmitting },
-  } = useForm<CurrentPasswordFormValues>({
-    resolver: zodResolver(currentPasswordSchema),
+  } = useForm<ChangePasswordFormValues>({
+    resolver: zodResolver(changePasswordSchema),
     defaultValues: {
       currentPassword: "",
+      newPassword: "",
+      confirmPassword: "",
     },
   });
 
@@ -84,17 +76,26 @@ export default function VerifyResetCodePage({
       navigate(APP_ROUTES.FORGOT_PASSWORD, { replace: true });
   }, [email, navigate, isSettings]);
 
+  useEffect(() => {
+    if (!passwordChanged) return;
+    const timer = window.setTimeout(
+      () => navigate(APP_ROUTES.SETTINGS, { replace: true }),
+      1500,
+    );
+    return () => window.clearTimeout(timer);
+  }, [navigate, passwordChanged]);
+
   if (!email && !isSettings) return null;
 
-  const handleSendCode = async (values: CurrentPasswordFormValues) => {
+  const handleSendCode = async (values: ChangePasswordFormValues) => {
     setServerError(null);
     setInfoMessage(null);
 
     try {
-      const response = await authApi.changePassword({
+      const response = await authApi.startPasswordChange({
         currentPassword: values.currentPassword,
+        newPassword: values.newPassword,
       });
-      setCurrentPasswordVal(values.currentPassword);
       setCodeSent(true);
       setInfoMessage(
         response.message || "Код підтвердження надіслано на email.",
@@ -112,10 +113,17 @@ export default function VerifyResetCodePage({
     setServerError(null);
 
     if (isSettings) {
-      // In settings, we pass currentPassword and code to the next step
-      navigate(APP_ROUTES.SETTINGS_CHANGE_PASSWORD_RESET, {
-        state: { email, currentPassword: currentPasswordVal, code },
-      });
+      try {
+        const response = await authApi.confirmPasswordChange({ code });
+        setInfoMessage(response.message || "Пароль успішно змінено.");
+        setPasswordChanged(true);
+      } catch (error) {
+        setServerError(
+          error instanceof ApiError
+            ? error.message
+            : "Не вдалося змінити пароль. Спробуйте ще раз.",
+        );
+      }
     } else {
       try {
         await authApi.verifyResetCode({
@@ -139,7 +147,7 @@ export default function VerifyResetCodePage({
   const title = isSettings ? "Зміна пароля" : "Підтвердження коду";
   const subtitle = isSettings
     ? !codeSent
-      ? "Введіть ваш поточний пароль, щоб отримати код підтвердження на email"
+      ? "Введіть поточний і новий пароль, щоб отримати код підтвердження"
       : `Введіть ${AUTH_LIMITS.VERIFICATION_CODE_LENGTH}-значний код, який ми надіслали на ${email}`
     : `Введіть ${AUTH_LIMITS.VERIFICATION_CODE_LENGTH}-значний код, який ми надіслали на ${email}`;
 
@@ -192,6 +200,22 @@ export default function VerifyResetCodePage({
             error={currentErrors.currentPassword?.message}
             {...registerCurrent("currentPassword")}
           />
+          <Input
+            label="Новий пароль"
+            type="password"
+            autoComplete="new-password"
+            placeholder="Введіть новий пароль"
+            error={currentErrors.newPassword?.message}
+            {...registerCurrent("newPassword")}
+          />
+          <Input
+            label="Підтвердження нового пароля"
+            type="password"
+            autoComplete="new-password"
+            placeholder="Повторіть новий пароль"
+            error={currentErrors.confirmPassword?.message}
+            {...registerCurrent("confirmPassword")}
+          />
           <Button
             type="submit"
             size="lg"
@@ -219,7 +243,10 @@ export default function VerifyResetCodePage({
             size="lg"
             fullWidth
             isLoading={isSubmitting}
-            disabled={code.length !== AUTH_LIMITS.VERIFICATION_CODE_LENGTH}
+            disabled={
+              passwordChanged ||
+              code.length !== AUTH_LIMITS.VERIFICATION_CODE_LENGTH
+            }
           >
             Підтвердити код
           </Button>

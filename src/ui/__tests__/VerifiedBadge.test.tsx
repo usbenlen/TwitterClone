@@ -9,7 +9,7 @@ describe("verification badges", () => {
     (isVerified) => {
       const html = renderToStaticMarkup(
         <VerifiedBadge
-          user={{ role: "ADMIN", isVerified }}
+          user={{ role: "Admin", isVerified }}
           aria-label="Верифікований профіль"
           size={18}
         />,
@@ -24,7 +24,7 @@ describe("verification badges", () => {
     },
   );
 
-  it.each(["USER", undefined] satisfies User["role"][])(
+  it.each(["User", undefined] satisfies User["role"][])(
     "keeps ordinary verification blue when role=%s",
     (role) => {
       const html = renderToStaticMarkup(
@@ -35,7 +35,7 @@ describe("verification badges", () => {
     },
   );
 
-  it.each(["USER", undefined] satisfies User["role"][])(
+  it.each(["User", undefined] satisfies User["role"][])(
     "does not show a badge for an unverified user when role=%s",
     (role) => {
       expect(

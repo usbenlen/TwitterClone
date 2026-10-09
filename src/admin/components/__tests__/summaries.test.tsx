@@ -149,4 +149,10 @@ describe("moderation report presentation", () => {
       "Невідомий користувач",
     );
   });
+
+  it("renders an unavailable report date without crashing", () => {
+    expect(renderReport({ ...report, createdAt: "" })).toContain(
+      "Дата невідома",
+    );
+  });
 });

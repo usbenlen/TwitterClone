@@ -1,5 +1,6 @@
 import { apiClient } from "@/api/client";
 import type {
+  CursorPage,
   EditHistoryResponse,
   QuoteTargetType,
   Tweet,
@@ -11,6 +12,8 @@ export interface BackendEditHistoryResponse {
   targetType: QuoteTargetType;
   targetId: string;
   versions: BackendPost[];
+  nextCursor?: string | null;
+  hasMore?: boolean;
 }
 
 export interface BackendPostMedia {
@@ -40,7 +43,7 @@ export interface BackendPollOption {
 export interface BackendPollResponse {
   id: string;
   postId: string;
-  endsAt: string;
+  endsAt?: string | null;
   totalVotes: number;
   hasVotedByCurrentUser: boolean;
   selectedOptionId?: string | null;
@@ -55,6 +58,7 @@ export interface BackendPost {
   author: Tweet["author"];
 
   media?: BackendPostMedia[];
+  attachments?: BackendPostMedia[];
   mediaUrls?: string[];
 
   poll?: BackendPollResponse | null;
@@ -70,7 +74,8 @@ export interface BackendPost {
   } | null;
 
   likesCount: number;
-  commentsCount: number;
+  commentsCount?: number;
+  repliesCount?: number;
   repostsCount: number;
   viewsCount: number;
 
@@ -81,6 +86,7 @@ export interface BackendPost {
 
   createdAt: string;
   updatedAt?: string | null;
+  actionAt?: string | null;
 
   isComment?: boolean;
   postId?: string;
@@ -102,8 +108,10 @@ function normalizeMediaType(
 }
 
 function mapMedia(post: BackendPost): MediaAttachment[] {
-  if (Array.isArray(post.media) && post.media.length > 0) {
-    return [...post.media]
+  const mediaItems = post.media ?? post.attachments;
+
+  if (Array.isArray(mediaItems) && mediaItems.length > 0) {
+    return [...mediaItems]
       .sort((a, b) => a.sortOrder - b.sortOrder)
       .map((media) => ({
         id: media.id,
@@ -144,9 +152,11 @@ export function mapBackendPollToTweetPoll(
         votesCount: option.votesCount,
       })),
     totalVotes: poll.totalVotes,
-    expiresAt: poll.endsAt,
+    expiresAt: poll.endsAt ?? null,
     votedOptionId: poll.selectedOptionId ?? undefined,
-    isClosed: new Date(poll.endsAt).getTime() <= Date.now(),
+    isClosed: poll.endsAt
+      ? new Date(poll.endsAt).getTime() <= Date.now()
+      : false,
   };
 }
 
@@ -191,7 +201,7 @@ function mapPostToTweetInternal(
         : null,
 
     likesCount: post.likesCount,
-    repliesCount: post.commentsCount,
+    repliesCount: post.commentsCount ?? post.repliesCount ?? 0,
     retweetsCount: post.repostsCount,
     viewsCount: post.viewsCount,
 
@@ -202,6 +212,7 @@ function mapPostToTweetInternal(
 
     createdAt: post.createdAt,
     updatedAt: post.updatedAt ?? null,
+    actionAt: post.actionAt ?? null,
 
     isComment: post.isComment ?? Boolean(post.postId),
     postId: post.postId,
@@ -239,4 +250,40 @@ export function mapRepostToTweet(item: BackendRepostItem): Tweet {
 
 export async function getMappedPosts(path: string): Promise<Tweet[]> {
   return (await apiClient.get<BackendPost[]>(path)).map(mapPostToTweet);
+}
+
+export async function getMappedPostPage(path: string): Promise<CursorPage<Tweet>> {
+  const page = await apiClient.get<CursorPage<BackendPost>>(path);
+
+  return {
+    ...page,
+    items: page.items.map(mapPostToTweet),
+  };
+}
+
+export interface BackendInteractionPage {
+  posts: BackendPost[];
+  comments: BackendPost[];
+  nextCursor: string | null;
+  hasMore: boolean;
+}
+
+export async function getMappedInteractionPage(
+  path: string,
+): Promise<CursorPage<Tweet>> {
+  const page = await apiClient.get<BackendInteractionPage>(path);
+  const items = [...page.posts, ...page.comments]
+    .sort((left, right) => {
+      const timeDifference =
+        Date.parse(right.actionAt ?? right.createdAt) -
+        Date.parse(left.actionAt ?? left.createdAt);
+      return timeDifference || right.id.localeCompare(left.id);
+    })
+    .map(mapPostToTweet);
+
+  return {
+    items,
+    nextCursor: page.nextCursor,
+    hasMore: page.hasMore,
+  };
 }

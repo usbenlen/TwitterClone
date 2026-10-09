@@ -43,6 +43,7 @@ export interface TweetBase {
 
   createdAt: string;
   updatedAt?: string | null;
+  actionAt?: string | null;
 
   isComment?: boolean;
   postId?: string;
@@ -103,6 +104,9 @@ export interface UpdateTweetRequest {
     duration: number;
   } | null;
   location?: Location | null;
+  removePoll?: boolean;
+  removeLocation?: boolean;
+  removeLinkPreview?: boolean;
 }
 
 export interface CreateCommentRequest {
@@ -122,7 +126,7 @@ export interface CreateCommentRequest {
 }
 
 export interface UpdateCommentRequest {
-  content?: string;
+  content: string;
   mediaIds?: string[];
 
   poll?: {
@@ -132,6 +136,9 @@ export interface UpdateCommentRequest {
 
   location?: Location | null;
   linkPreview?: LinkPreview | null;
+  removePoll?: boolean;
+  removeLocation?: boolean;
+  removeLinkPreview?: boolean;
 }
 
 export interface ToggleLikeResponse {

@@ -2,8 +2,14 @@ import { apiClient } from "@/api/client";
 import { ENDPOINTS } from "@/api/config";
 import {
   mapEditHistoryResponse,
+  mapPostToTweet,
+  type BackendPost,
   type BackendEditHistoryResponse,
 } from "@/api/mappers/post.mapper";
+import {
+  mapCreatePostRequest,
+  mapUpdateRequest,
+} from "@/api/mappers/request.mapper";
 import { MOCK_ENABLED } from "@/mock/config";
 import { mockCommentApi } from "@/mock/handlers";
 
@@ -17,42 +23,78 @@ import type {
   ThreadResponse,
 } from "@/types/tweet";
 
-function normalizeComment(comment: Tweet): Tweet {
+import type { ApiError } from "@/api/client";
+import type { CursorPage } from "@/types";
+
+interface BackendThreadResponse {
+  post: BackendPost;
+  ancestors: BackendPost[];
+  target: BackendPost;
+  replies: CursorPage<BackendPost>;
+}
+
+function normalizeComment(comment: BackendPost): Tweet {
+  const mapped = mapPostToTweet(comment);
   return {
-    ...comment,
-    versionId: comment.versionId ?? comment.updatedAt ?? comment.createdAt,
+    ...mapped,
     isComment: true,
   };
 }
 
-function normalizeThread(thread: ThreadResponse): ThreadResponse {
+function normalizeCommentThread(thread: BackendThreadResponse): ThreadResponse {
+  const post = mapPostToTweet(thread.post);
+  const ancestors = [post, ...thread.ancestors.map(normalizeComment)];
+  const target = normalizeComment(thread.target);
+
   return {
-    ...thread,
-    ancestors: thread.ancestors.map((ancestor) =>
-      ancestor.postId ? normalizeComment(ancestor) : ancestor,
-    ),
-    target: thread.target.isComment || thread.target.postId
-      ? normalizeComment(thread.target)
-      : thread.target,
-    replies: thread.replies.map(normalizeComment),
+    ancestors,
+    target,
+    replies: thread.replies.items.map((reply) => ({
+      ...normalizeComment(reply),
+      ancestors: [...ancestors, target],
+    })),
   };
 }
 
 const realCommentApi = {
   getByPostId: async (postId: string) => {
-    const comments = await apiClient.get<Tweet[]>(
+    const page = await apiClient.get<CursorPage<BackendPost>>(
       ENDPOINTS.comments.byPost(postId),
     );
 
-    return comments.map(normalizeComment);
+    return page.items.map(normalizeComment);
   },
 
   getThread: async (id: string) => {
-    const thread = await apiClient.get<ThreadResponse>(
+    try {
+      const post = await apiClient.get<BackendPost>(ENDPOINTS.posts.byId(id));
+      const replies = await apiClient.get<CursorPage<BackendPost>>(
+        ENDPOINTS.comments.byPost(id),
+      );
+      const target = mapPostToTweet(post);
+
+      return {
+        ancestors: [],
+        target,
+        replies: replies.items.map((reply) => ({
+          ...normalizeComment(reply),
+          ancestors: [target],
+        })),
+      };
+    } catch (error) {
+      if (
+        !(error instanceof Error) ||
+        !("status" in error) ||
+        (error as ApiError).status !== 404
+      )
+        throw error;
+    }
+
+    const thread = await apiClient.get<BackendThreadResponse>(
       ENDPOINTS.comments.thread(id),
     );
 
-    return normalizeThread(thread);
+    return normalizeCommentThread(thread);
   },
 
   getEditHistory: async (id: string) => {
@@ -64,26 +106,27 @@ const realCommentApi = {
   },
 
   getBookmarked: async () => {
-    const comments = await apiClient.get<Tweet[]>(
-      ENDPOINTS.comments.bookmarked,
-    );
+    const page = await apiClient.get<{
+      posts: BackendPost[];
+      comments: BackendPost[];
+    }>(ENDPOINTS.posts.bookmarked);
 
-    return comments.map(normalizeComment);
+    return page.comments.map(normalizeComment);
   },
 
   create: async (data: CreateCommentRequest) => {
-    const comment = await apiClient.post<Tweet>(
+    const comment = await apiClient.post<BackendPost>(
       ENDPOINTS.comments.create,
-      data,
+      mapCreatePostRequest(data),
     );
 
     return normalizeComment(comment);
   },
 
   update: async (id: string, data: UpdateCommentRequest) => {
-    const comment = await apiClient.put<Tweet>(
+    const comment = await apiClient.put<BackendPost>(
       ENDPOINTS.comments.update(id),
-      data,
+      mapUpdateRequest(data),
     );
 
     return normalizeComment(comment);

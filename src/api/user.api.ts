@@ -1,9 +1,8 @@
 import { apiClient } from "@/api/client";
 import { ENDPOINTS } from "@/api/config";
 import {
-  getMappedPosts,
-  mapRepostToTweet,
-  type BackendRepostItem,
+  getMappedInteractionPage,
+  getMappedPostPage,
 } from "@/api/mappers/post.mapper";
 
 import { MOCK_ENABLED } from "@/mock/config";
@@ -31,29 +30,22 @@ export interface UpdateProfileRequest {
 }
 
 const realUserApi = {
-  getAll: () => apiClient.get<User[]>(ENDPOINTS.users.all),
-
   getById: (id: string) => apiClient.get<User>(ENDPOINTS.users.byId(id)),
 
   getByUsername: (username: string) =>
     apiClient.get<User>(ENDPOINTS.users.byUsername(username)),
 
-  getPosts: (username: string) =>
-    getMappedPosts(ENDPOINTS.users.posts(username)),
+  getPosts: async (username: string) =>
+    (await getMappedPostPage(ENDPOINTS.users.posts(username))).items,
 
-  getLikes: (username: string) =>
-    getMappedPosts(ENDPOINTS.users.likes(username)),
+  getLikes: async (username: string) =>
+    (await getMappedInteractionPage(ENDPOINTS.users.likes(username))).items,
 
-  getReposts: async (username: string) => {
-    const items = await apiClient.get<BackendRepostItem[]>(
-      ENDPOINTS.users.reposts(username),
-    );
+  getReposts: async (username: string) =>
+    (await getMappedInteractionPage(ENDPOINTS.users.reposts(username))).items,
 
-    return items.map(mapRepostToTweet);
-  },
-
-  getReplies: (username: string) =>
-    getMappedPosts(ENDPOINTS.users.replies(username)),
+  getReplies: async (username: string) =>
+    (await getMappedPostPage(ENDPOINTS.users.replies(username))).items,
 
   updateProfile: async (data: UpdateProfileRequest) => {
     const formData = new FormData();
@@ -63,22 +55,17 @@ const realUserApi = {
 
     if (data.bio !== undefined) formData.append("Bio", data.bio ?? "");
 
-    formData.append("RemoveLocation", String(data.removeLocation ?? false));
+    if (data.removeLocation) formData.append("RemoveLocation", "true");
 
     if (data.location && !data.removeLocation) {
-      formData.append(
-        "Location",
-        JSON.stringify({
-          id: data.location.id,
-          name: data.location.name,
-          country: data.location.country,
-          latitude: data.location.latitude,
-          longitude: data.location.longitude,
-        }),
-      );
+      formData.append("Location.Id", data.location.id);
+      formData.append("Location.Name", data.location.name);
+      formData.append("Location.Country", data.location.country);
+      formData.append("Location.Latitude", String(data.location.latitude));
+      formData.append("Location.Longitude", String(data.location.longitude));
     }
 
-    formData.append("RemoveBirthDate", String(data.removeBirthDate ?? false));
+    if (data.removeBirthDate) formData.append("RemoveBirthDate", "true");
 
     if (data.birthDate !== undefined && !data.removeBirthDate)
       formData.append("BirthDate", data.birthDate ?? "");
@@ -89,8 +76,8 @@ const realUserApi = {
     if (data.birthYearVisibility !== undefined)
       formData.append("BirthYearVisibility", data.birthYearVisibility);
 
-    formData.append("RemoveAvatar", String(data.removeAvatar ?? false));
-    formData.append("RemoveBanner", String(data.removeBanner ?? false));
+    if (data.removeAvatar) formData.append("RemoveAvatar", "true");
+    if (data.removeBanner) formData.append("RemoveBanner", "true");
 
     if (data.avatar) formData.append("Avatar", data.avatar);
     if (data.banner) formData.append("Banner", data.banner);

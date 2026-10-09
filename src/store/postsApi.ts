@@ -10,6 +10,7 @@ import type {
   CreateTweetRequest,
   CreateCommentRequest,
   UpdateTweetRequest,
+  UpdateCommentRequest,
   SearchCriteria,
   SearchViewerContext,
 } from "@/types";
@@ -109,13 +110,16 @@ export const postsApi = appApi.injectEndpoints({
             ]
           : [],
     }),
-    updatePost: build.mutation<Tweet, Target & { data: UpdateTweetRequest }>({
+    updatePost: build.mutation<
+      Tweet,
+      | ({ type: "post"; id: string } & { data: UpdateTweetRequest })
+      | ({ type: "comment"; id: string } & { data: UpdateCommentRequest })
+    >({
       queryFn: (arg) =>
         request(() =>
-          (arg.type === "post" ? tweetApi : commentApi).update(
-            arg.id,
-            arg.data,
-          ),
+          arg.type === "post"
+            ? tweetApi.update(arg.id, arg.data)
+            : commentApi.update(arg.id, arg.data),
         ),
       async onQueryStarted(arg, lifecycle) {
         const generation = sessionGeneration(lifecycle.getState());

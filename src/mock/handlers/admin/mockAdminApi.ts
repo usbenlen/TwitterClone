@@ -39,7 +39,7 @@ export const moderationSignals: StoredReport[] = [];
 const missing = () => new ApiError(404, "Об’єкт не знайдено.");
 
 function assertAdmin() {
-  if (currentUser.role !== "ADMIN" || currentUser.isBlocked)
+  if (currentUser.role !== "Admin" || currentUser.isBlocked)
     throw new ApiError(403, "Доступ лише для адміністратора.");
 }
 
