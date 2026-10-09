@@ -59,7 +59,7 @@ export interface DashboardTables {
     targetType: ReportTargetType;
     targetId: string;
     count: number;
-    latestSignal: ReportSignal;
+    latestSignal: string;
     target: ReportSignal["target"];
   }[];
 }

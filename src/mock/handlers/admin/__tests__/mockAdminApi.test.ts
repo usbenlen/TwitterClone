@@ -269,6 +269,34 @@ describe("shared mock moderation", () => {
       ).items.map((item) => item.id),
     ).toEqual([report.id]);
   });
+  it("groups dashboard reports by target and exposes the latest ISO timestamp", async () => {
+    const { user, report: older } = await reportUser();
+    older.createdAt = "2026-10-01T10:00:00Z";
+    const { report: newer } = await reportUser();
+    newer.createdAt = "2026-10-09T10:00:00Z";
+    const groups = (await mockAdminApi.tables(10)).latestReports;
+    expect(groups.filter((row) => row.targetId === user.id)).toEqual([
+      expect.objectContaining({
+        targetType: "users",
+        count: 2,
+        latestSignal: newer.createdAt,
+        target: {
+          type: "users",
+          data: expect.objectContaining({ id: user.id }),
+        },
+      }),
+    ]);
+    await mockAdminApi.actOnUser(user.id, "delete");
+    expect((await mockAdminApi.tables(10)).latestReports).toContainEqual(
+      expect.objectContaining({
+        targetId: user.id,
+        count: 2,
+        latestSignal: newer.createdAt,
+        target: null,
+      }),
+    );
+  });
+
   it("updates dashboard counters, honors limits and anchors charts to today", async () => {
     const before = (await mockAdminApi.metrics()).find(
       (item) => item.id === "reports",

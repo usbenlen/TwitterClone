@@ -93,7 +93,8 @@ function ordered<T extends { createdAt: string }>(
 }
 
 function changeUser(id: string, action: UserAction) {
-  if (id === currentUser.id) throw new ApiError(400, "Керуйте власним акаунтом у налаштуваннях.");
+  if (id === currentUser.id)
+    throw new ApiError(400, "Керуйте власним акаунтом у налаштуваннях.");
 
   const user = sampleAuthors.find((item) => item.id === id);
   if (!user) throw missing();
@@ -239,13 +240,16 @@ export const mockAdminApi = {
     await delay(MOCK_DELAYS.WRITE);
 
     if (currentUser.isBlocked) throw new ApiError(403, "Акаунт заблоковано.");
-    if (!Object.hasOwn(REPORT_REASONS, data.reason)) throw new ApiError(400, "Оберіть причину скарги.");
+    if (!Object.hasOwn(REPORT_REASONS, data.reason))
+      throw new ApiError(400, "Оберіть причину скарги.");
 
     const target = targetFor(data.targetType, data.targetId);
     if (!target) throw missing();
 
-    const owner = target.type === "users" ? target.data.id : target.data.author.id;
-    if (owner === currentUser.id) throw new ApiError(400, "Не можна скаржитися на власний матеріал.");
+    const owner =
+      target.type === "users" ? target.data.id : target.data.author.id;
+    if (owner === currentUser.id)
+      throw new ApiError(400, "Не можна скаржитися на власний матеріал.");
 
     moderationSignals.push({
       ...data,
@@ -349,7 +353,7 @@ export const mockAdminApi = {
           targetType: report.targetType,
           targetId: report.targetId,
           count: 1,
-          latestSignal: hydrate(report),
+          latestSignal: report.createdAt,
           target: targetFor(report.targetType, report.targetId),
         });
     }

@@ -1,10 +1,16 @@
 import { renderToStaticMarkup } from "react-dom/server";
 import { MemoryRouter } from "react-router";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { ReportPreview, ReportSummary } from "@/admin/components/Summaries";
+import {
+  DashboardReportSummary,
+  ReportPreview,
+  ReportSummary,
+} from "@/admin/components/Summaries";
 import { ReportActions } from "@/admin/components/ReportActions";
 import type { ReportSignal } from "@/types/report";
 import type { Tweet } from "@/types/tweet";
+import type { DashboardTables } from "@/admin/types";
+import { formatDateTime } from "@/utils/format";
 
 const content = vi.hoisted(() => ({ render: vi.fn() }));
 vi.mock("@/components/tweet/TweetContent", () => ({
@@ -51,6 +57,76 @@ function renderReport(value: ReportSignal, compact = false) {
 }
 
 beforeEach(() => content.render.mockClear());
+
+describe("dashboard report groups", () => {
+  const row: DashboardTables["latestReports"][number] = {
+    targetType: "posts",
+    targetId: "post/1&2",
+    count: 3,
+    latestSignal: "2026-10-09T10:00:00Z",
+    target: { type: "posts", data: post },
+  };
+
+  function renderGroup(value = row) {
+    return renderToStaticMarkup(
+      <MemoryRouter>
+        <DashboardReportSummary row={value} />
+      </MemoryRouter>,
+    );
+  }
+
+  it.each(["posts", "comments"] as const)(
+    "shows a %s target's author, count and timestamp",
+    (type) => {
+      const html = renderGroup({
+        ...row,
+        targetType: type,
+        target: { type, data: post },
+      });
+      expect(html).toContain("@author");
+      expect(html).toContain("Скарг на об’єкт: 3");
+      expect(html).toContain(`dateTime="${row.latestSignal}"`);
+      expect(html).toContain(formatDateTime(row.latestSignal));
+      expect(html).toContain(
+        `/admin/moderation?type=${type}&amp;search=post%2F1%262`,
+      );
+      expect(html).not.toContain("невідомий");
+      expect(html).not.toContain("Дата невідома");
+      expect(html).not.toContain("На перевірці");
+      expect(content.render).not.toHaveBeenCalled();
+    },
+  );
+
+  it("shows the reported account for a user target", () => {
+    const html = renderGroup({
+      ...row,
+      targetType: "users",
+      target: {
+        type: "users",
+        data: {
+          ...post.author,
+          followersCount: 0,
+          followingCount: 0,
+          postsCount: 0,
+          isFollowedByCurrentUser: false,
+          createdAt: post.createdAt,
+        },
+      },
+    });
+    expect(html).toContain("Користувачі");
+    expect(html).toContain("@author");
+    expect(html).toContain("type=users&amp;search=post%2F1%262");
+  });
+
+  it("preserves the count, date and moderation link when a target has been removed", () => {
+    const html = renderGroup({ ...row, target: null });
+    expect(html).toContain("Об’єкт недоступний");
+    expect(html).toContain("Скарг на об’єкт: 3");
+    expect(html).toContain(formatDateTime(row.latestSignal));
+    expect(html).toContain("search=post%2F1%262");
+    expect(html).not.toContain("@author");
+  });
+});
 
 describe("moderation report presentation", () => {
   it.each(["posts", "comments"] as const)(

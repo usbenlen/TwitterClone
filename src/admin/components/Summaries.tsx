@@ -14,6 +14,43 @@ import { formatCount, formatDateTime } from "@/utils/format";
 
 import type { User } from "@/types/user";
 import type { ReportSignal } from "@/types/report";
+import type { DashboardTables } from "@/admin/types";
+
+export function DashboardReportSummary({
+  row,
+}: {
+  row: DashboardTables["latestReports"][number];
+}) {
+  const subject = row.target
+    ? row.target.type === "users"
+      ? row.target.data
+      : row.target.data.author
+    : null;
+
+  return (
+    <div className="min-w-0 space-y-2 py-3">
+      <Link
+        to={APP_ROUTES.adminModerationForTarget(row.targetType, row.targetId)}
+        className="block rounded-sm font-semibold break-words hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+      >
+        {REPORT_TARGETS[row.targetType]}
+        {subject && ` · @${subject.username}`}
+      </Link>
+      {!row.target && (
+        <p className="text-sm text-muted-foreground">Об’єкт недоступний</p>
+      )}
+      <p className="text-sm text-muted-foreground">
+        Остання скарга:{" "}
+        <time dateTime={row.latestSignal}>
+          {formatDateTime(row.latestSignal)}
+        </time>
+      </p>
+      <p className="text-xs text-muted-foreground">
+        Скарг на об’єкт: {formatCount(row.count)}
+      </p>
+    </div>
+  );
+}
 
 export function UserSummary({
   user,

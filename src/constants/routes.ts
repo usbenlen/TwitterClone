@@ -1,4 +1,5 @@
 import type { SearchCriteria } from "@/types";
+import type { ReportTargetType } from "@/types/report";
 import {
   DEFAULT_SEARCH_CRITERIA,
   serializeSearchCriteria,
@@ -13,6 +14,8 @@ export const APP_ROUTES = {
   ADMIN_SETTINGS: "/admin/settings",
   adminUser: (id: string) => `/admin/users/${encodeURIComponent(id)}`,
   adminReport: (id: string) => `/admin/moderation/${encodeURIComponent(id)}`,
+  adminModerationForTarget: (type: ReportTargetType, id: string) =>
+    `/admin/moderation?${new URLSearchParams({ type, search: id })}`,
 
   LANDING: "/",
   HOME: "/home",

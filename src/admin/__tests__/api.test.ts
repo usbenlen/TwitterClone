@@ -43,6 +43,58 @@ beforeEach(() => {
   vi.resetAllMocks();
 });
 describe("HTTP administrative adapters", () => {
+  it("reads dashboard timestamps and maps targets independently of latestSignal", async () => {
+    const timestamp = "2026-10-09T10:00:00Z";
+    client.get.mockResolvedValue({
+      latestUsers: [{ id: "admin", username: "admin", role: "ADMIN" }],
+      latestReports: [
+        {
+          targetType: report.targetType,
+          targetId: report.targetId,
+          count: 2,
+          latestSignal: timestamp,
+          target: report.target,
+        },
+        {
+          targetType: "users",
+          targetId: "admin",
+          count: 1,
+          latestSignal: timestamp,
+          target: {
+            type: "users",
+            data: { id: "admin", username: "admin", role: "ADMIN" },
+          },
+        },
+        {
+          targetType: "posts",
+          targetId: "removed",
+          count: 1,
+          latestSignal: timestamp,
+          target: null,
+        },
+      ],
+    });
+    const result = await realAdminApi.tables(5);
+    expect(client.get).toHaveBeenCalledExactlyOnceWith(
+      "admin/dashboard/tables?limit=5",
+    );
+    expect(result.latestReports.map((row) => row.latestSignal)).toEqual([
+      timestamp,
+      timestamp,
+      timestamp,
+    ]);
+    expect(result.latestReports[0].target).toMatchObject({
+      type: "comments",
+      data: { isComment: true, repliesCount: 3, attachments: [] },
+    });
+    expect(result.latestReports[1].target).toMatchObject({
+      type: "users",
+      data: { role: "Admin" },
+    });
+    expect(result.latestReports[2].target).toBeNull();
+    expect(result.latestUsers[0].role).toBe("Admin");
+  });
+
   it("maps moderation content through the existing backend post mapper", async () => {
     client.get.mockResolvedValue(report);
     const result = await realAdminApi.report("r/1");

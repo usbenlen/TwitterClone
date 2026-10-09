@@ -1,6 +1,7 @@
 import { apiClient } from "@/api/client";
 import { ENDPOINTS } from "@/api/config";
 import { mapPostToTweet, type BackendPost } from "@/api/mappers/post.mapper";
+import { mapUserRole, type BackendUser } from "@/api/mappers/user.mapper";
 import { MOCK_ENABLED } from "@/mock/config";
 import { mockAdminApi } from "@/mock/handlers/admin/mockAdminApi";
 
@@ -22,45 +23,55 @@ export function listQuery(params: UsersParams | ModerationParams): string {
   const query = new URLSearchParams();
 
   for (const [key, value] of Object.entries(params))
-    if (value !== "all" && String(value).trim()) query.set(key, String(value).trim());
+    if (value !== "all" && String(value).trim())
+      query.set(key, String(value).trim());
 
   return query.toString();
 }
 
 export type BackendReport = Omit<ReportSignal, "target"> & {
   target:
-    | { type: "users"; data: AdminUser }
+    | { type: "users"; data: BackendUser<AdminUser> }
     | { type: "posts" | "comments"; data: BackendPost }
     | null;
 };
 
-export function mapReport(report: BackendReport): ReportSignal {
+function mapReportTarget(
+  target: BackendReport["target"],
+): ReportSignal["target"] {
+  if (!target) return null;
+  if (target.type === "users")
+    return { type: target.type, data: mapUserRole(target.data) };
+
   return {
-    ...report,
-    target: report.target
-      ? report.target.type === "users"
-        ? report.target
-        : {
-            type: report.target.type,
-            data: {
-              ...mapPostToTweet(report.target.data),
-              isComment: report.target.type === "comments",
-            },
-          }
-      : null,
+    type: target.type,
+    data: {
+      ...mapPostToTweet(target.data),
+      isComment: target.type === "comments",
+    },
   };
 }
 
-export const realAdminApi = {
-  users: (params: UsersParams) =>
-    apiClient.get<Paginated<AdminUser>>(
-      `${ENDPOINTS.admin.users.all}?${listQuery(params)}`,
-    ),
+export function mapReport(report: BackendReport): ReportSignal {
+  return { ...report, target: mapReportTarget(report.target) };
+}
 
-  user: (id: string) => apiClient.get<AdminUser>(ENDPOINTS.admin.users.byId(id)),
+export const realAdminApi = {
+  users: async (params: UsersParams): Promise<Paginated<AdminUser>> => {
+    const result = await apiClient.get<Paginated<BackendUser<AdminUser>>>(
+      `${ENDPOINTS.admin.users.all}?${listQuery(params)}`,
+    );
+    return { ...result, items: result.items.map(mapUserRole) };
+  },
+
+  user: (id: string) =>
+    apiClient
+      .get<BackendUser<AdminUser>>(ENDPOINTS.admin.users.byId(id))
+      .then(mapUserRole),
 
   actOnUser: async (id: string, action: UserAction): Promise<void> => {
-    if (action === "delete") await apiClient.delete(ENDPOINTS.admin.users.delete(id));
+    if (action === "delete")
+      await apiClient.delete(ENDPOINTS.admin.users.delete(id));
     else await apiClient.put(ENDPOINTS.admin.users[action](id));
   },
 
@@ -86,23 +97,26 @@ export const realAdminApi = {
       ),
     ),
 
-  metrics: () => apiClient.get<DashboardMetric[]>(ENDPOINTS.admin.dashboard.metrics),
-  analytics: (period: AnalyticsPeriod) => apiClient.get<DashboardAnalytics>(ENDPOINTS.admin.dashboard.charts(period)),
+  metrics: () =>
+    apiClient.get<DashboardMetric[]>(ENDPOINTS.admin.dashboard.metrics),
+  analytics: (period: AnalyticsPeriod) =>
+    apiClient.get<DashboardAnalytics>(ENDPOINTS.admin.dashboard.charts(period)),
   tables: async (limit: number): Promise<DashboardTables> => {
     const result = await apiClient.get<
-      Omit<DashboardTables, "latestReports"> & {
+      Omit<DashboardTables, "latestUsers" | "latestReports"> & {
+        latestUsers: BackendUser<AdminUser>[];
         latestReports: (Omit<
           DashboardTables["latestReports"][number],
-          "latestSignal" | "target"
-        > & { latestSignal: BackendReport; target: BackendReport["target"] })[];
+          "target"
+        > & { target: BackendReport["target"] })[];
       }
     >(ENDPOINTS.admin.dashboard.tables(limit));
     return {
       ...result,
+      latestUsers: result.latestUsers.map(mapUserRole),
       latestReports: result.latestReports.map((row) => ({
         ...row,
-        latestSignal: mapReport(row.latestSignal),
-        target: mapReport({ ...row.latestSignal, target: row.target }).target,
+        target: mapReportTarget(row.target),
       })),
     };
   },

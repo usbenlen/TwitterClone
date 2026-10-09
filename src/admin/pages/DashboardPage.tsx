@@ -10,7 +10,10 @@ import { DASHBOARD_TABLE_LIMIT } from "@/admin/constants";
 import { activitySeries } from "@/admin/analytics";
 import { AnalyticsChart } from "@/admin/components/AnalyticsChart";
 import { QueryState, Select } from "@/admin/components/ListControls";
-import { ReportSummary, UserSummary } from "@/admin/components/Summaries";
+import {
+  DashboardReportSummary,
+  UserSummary,
+} from "@/admin/components/Summaries";
 
 import { APP_ROUTES } from "@/constants/routes";
 import { formatCompactCount } from "@/utils/format";
@@ -113,15 +116,10 @@ export default function DashboardPage() {
             </div>
             <div className="divide-y divide-border">
               {tables.currentData?.latestReports.map((row) => (
-                <div
+                <DashboardReportSummary
                   key={`${row.targetType}:${row.targetId}`}
-                  className="space-y-1 py-3"
-                >
-                  <ReportSummary report={row.latestSignal} />
-                  <p className="text-xs text-muted-foreground">
-                    Скарг на об’єкт: {row.count}
-                  </p>
-                </div>
+                  row={row}
+                />
               ))}
               {tables.currentData?.latestReports.length === 0 && (
                 <p className="text-sm text-muted-foreground">
