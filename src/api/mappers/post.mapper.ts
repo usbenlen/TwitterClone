@@ -1,4 +1,5 @@
 import { apiClient } from "@/api/client";
+import { mapUserRole, type BackendUser } from "@/api/mappers/user.mapper";
 import type {
   CursorPage,
   EditHistoryResponse,
@@ -55,7 +56,7 @@ export interface BackendPost {
   versionId: string;
   content: string;
 
-  author: Tweet["author"];
+  author: BackendUser<Tweet["author"]>;
 
   media?: BackendPostMedia[];
   attachments?: BackendPostMedia[];
@@ -102,7 +103,8 @@ function normalizeMediaType(
 ): MediaAttachment["type"] {
   const normalizedType = type.toLowerCase();
 
-  if (normalizedType === "video" || mimeType?.startsWith("video/")) return "video";
+  if (normalizedType === "video" || mimeType?.startsWith("video/"))
+    return "video";
   if (normalizedType === "gif" || mimeType === "image/gif") return "gif";
   return "image";
 }
@@ -181,7 +183,7 @@ function mapPostToTweetInternal(
     versionId: post.versionId ?? post.updatedAt ?? post.createdAt,
     content: post.content,
 
-    author: post.author,
+    author: mapUserRole(post.author),
 
     attachments: mapMedia(post),
 
@@ -193,7 +195,8 @@ function mapPostToTweetInternal(
         ? {
             targetType: post.quote.targetType,
             targetId: post.quote.targetId,
-            targetVersionId: post.quote.targetVersionId ?? quoteTarget?.versionId ?? "",
+            targetVersionId:
+              post.quote.targetVersionId ?? quoteTarget?.versionId ?? "",
             hasNewVersion: post.quote.hasNewVersion ?? false,
             replyingToUsernames,
             target: quoteTarget,
@@ -221,7 +224,8 @@ function mapPostToTweetInternal(
   };
 }
 
-export const mapPostToTweet = (post: BackendPost): Tweet => mapPostToTweetInternal(post, true);
+export const mapPostToTweet = (post: BackendPost): Tweet =>
+  mapPostToTweetInternal(post, true);
 
 export function mapEditHistoryResponse(
   response: BackendEditHistoryResponse,
@@ -244,6 +248,15 @@ export function mapRepostToTweet(item: BackendRepostItem): Tweet {
 
   return {
     ...item,
+    author: mapUserRole(item.author),
+    ...(item.ancestors
+      ? { ancestors: item.ancestors.map(mapRepostToTweet) }
+      : {}),
+    ...(item.quote?.target
+      ? {
+          quote: { ...item.quote, target: mapRepostToTweet(item.quote.target) },
+        }
+      : {}),
     isComment: item.isComment ?? Boolean(item.postId),
   };
 }
@@ -252,7 +265,9 @@ export async function getMappedPosts(path: string): Promise<Tweet[]> {
   return (await apiClient.get<BackendPost[]>(path)).map(mapPostToTweet);
 }
 
-export async function getMappedPostPage(path: string): Promise<CursorPage<Tweet>> {
+export async function getMappedPostPage(
+  path: string,
+): Promise<CursorPage<Tweet>> {
   const page = await apiClient.get<CursorPage<BackendPost>>(path);
 
   return {

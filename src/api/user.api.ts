@@ -1,5 +1,6 @@
 import { apiClient } from "@/api/client";
 import { ENDPOINTS } from "@/api/config";
+import { mapUserRole, type BackendUser } from "@/api/mappers/user.mapper";
 import {
   getMappedInteractionPage,
   getMappedPostPage,
@@ -30,10 +31,15 @@ export interface UpdateProfileRequest {
 }
 
 const realUserApi = {
-  getById: (id: string) => apiClient.get<User>(ENDPOINTS.users.byId(id)),
+  getById: (id: string) =>
+    apiClient
+      .get<BackendUser<User>>(ENDPOINTS.users.byId(id))
+      .then(mapUserRole),
 
   getByUsername: (username: string) =>
-    apiClient.get<User>(ENDPOINTS.users.byUsername(username)),
+    apiClient
+      .get<BackendUser<User>>(ENDPOINTS.users.byUsername(username))
+      .then(mapUserRole),
 
   getPosts: async (username: string) =>
     (await getMappedPostPage(ENDPOINTS.users.posts(username))).items,
@@ -82,9 +88,11 @@ const realUserApi = {
     if (data.avatar) formData.append("Avatar", data.avatar);
     if (data.banner) formData.append("Banner", data.banner);
 
-    const updatedUser = await apiClient.put<User>(
-      ENDPOINTS.users.updateProfile,
-      formData,
+    const updatedUser = mapUserRole(
+      await apiClient.put<BackendUser<User>>(
+        ENDPOINTS.users.updateProfile,
+        formData,
+      ),
     );
 
     const birthDateChanged =

@@ -1,5 +1,6 @@
 import { apiClient } from "@/api/client";
 import { ENDPOINTS } from "@/api/config";
+import { mapUserRole, type BackendUser } from "@/api/mappers/user.mapper";
 import type {
   AuthResponse,
   ConfirmPasswordChangeRequest,
@@ -55,7 +56,8 @@ const realAuthApi = {
   },
 
   // Отримання поточного користувача за збереженим токеном
-  me: () => apiClient.get<User>(ENDPOINTS.auth.me),
+  me: () =>
+    apiClient.get<BackendUser<User>>(ENDPOINTS.auth.me).then(mapUserRole),
 
   forgotPassword: (data: ForgotPasswordRequest) =>
     apiClient.post<MessageResponse>(ENDPOINTS.auth.forgotPassword, data, {

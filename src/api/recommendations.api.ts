@@ -1,5 +1,6 @@
 import { apiClient } from "@/api/client";
 import { ENDPOINTS } from "@/api/config";
+import { mapUserRole, type BackendUser } from "@/api/mappers/user.mapper";
 
 import { MOCK_ENABLED } from "@/mock/config";
 import { mockRecommendationsApi } from "@/mock/handlers";
@@ -21,7 +22,7 @@ interface RecommendationsApi {
 }
 
 const realRecommendationsApi: RecommendationsApi = {
-  trends: async (_limit) => ({ items: [] }),
+  trends: async () => ({ items: [] }),
 
   users: async (_category, limit, cursor) => {
     const params = new URLSearchParams({
@@ -29,10 +30,10 @@ const realRecommendationsApi: RecommendationsApi = {
     });
     if (cursor) params.set("cursor", cursor);
 
-    const page = await apiClient.get<CursorPage<PaginatedRecommendations["items"][number]>>(
-      `${ENDPOINTS.search.users}?${params}`,
-    );
-    return { items: page.items, nextCursor: page.nextCursor };
+    const page = await apiClient.get<
+      CursorPage<BackendUser<PaginatedRecommendations["items"][number]>>
+    >(`${ENDPOINTS.search.users}?${params}`);
+    return { items: page.items.map(mapUserRole), nextCursor: page.nextCursor };
   },
 };
 

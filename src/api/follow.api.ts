@@ -1,5 +1,6 @@
 import { apiClient } from "@/api/client";
 import { ENDPOINTS } from "@/api/config";
+import { mapUserRole, type BackendUser } from "@/api/mappers/user.mapper";
 import { MOCK_ENABLED, mockFollowApi } from "@/mock/handlers/index";
 
 import type {
@@ -10,7 +11,8 @@ import type {
 } from "@/types";
 
 function readUsers(response: unknown): UserShort[] {
-  if (Array.isArray(response)) return response as UserShort[];
+  if (Array.isArray(response))
+    return (response as BackendUser<UserShort>[]).map(mapUserRole);
 
   if (
     response &&
@@ -18,7 +20,7 @@ function readUsers(response: unknown): UserShort[] {
     "items" in response &&
     Array.isArray(response.items)
   )
-    return response.items as UserShort[];
+    return (response.items as BackendUser<UserShort>[]).map(mapUserRole);
 
   throw new Error("Некоректна відповідь списку підписок.");
 }
@@ -32,14 +34,14 @@ export const realFollowApi = {
 
   followers: async (userId: string) =>
     readUsers(
-      await apiClient.get<CursorPage<UserShort>>(
+      await apiClient.get<CursorPage<BackendUser<UserShort>>>(
         ENDPOINTS.follows.followers(userId),
       ),
     ),
 
   following: async (userId: string) =>
     readUsers(
-      await apiClient.get<CursorPage<UserShort>>(
+      await apiClient.get<CursorPage<BackendUser<UserShort>>>(
         ENDPOINTS.follows.following(userId),
       ),
     ),

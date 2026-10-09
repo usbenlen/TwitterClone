@@ -2,6 +2,7 @@ import { serializeSearchApiCriteria } from "@/utils/search";
 import { ENDPOINTS } from "@/api/config";
 import { apiClient } from "@/api/client";
 import { mapPostToTweet, type BackendPost } from "@/api/mappers/post.mapper";
+import { mapUserRole, type BackendUser } from "@/api/mappers/user.mapper";
 
 import { MOCK_ENABLED } from "@/mock/config";
 import { mockSearchApi } from "@/mock/handlers";
@@ -27,9 +28,11 @@ interface SearchApi {
 
 const realSearchApi: SearchApi = {
   users: (criteria: SearchCriteria) =>
-    apiClient.get<CursorPage<UserShort>>(
-      `${ENDPOINTS.search.users}?${serializeSearchApiCriteria(criteria, "users")}`,
-    ).then((page) => page.items),
+    apiClient
+      .get<CursorPage<BackendUser<UserShort>>>(
+        `${ENDPOINTS.search.users}?${serializeSearchApiCriteria(criteria, "users")}`,
+      )
+      .then((page) => page.items.map(mapUserRole)),
 
   posts: (criteria: SearchCriteria) =>
     apiClient
