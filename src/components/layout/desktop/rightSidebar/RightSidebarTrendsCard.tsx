@@ -10,8 +10,6 @@ import { useTrends } from "@/hooks";
 export default function RightSidebarTrendsCard() {
   const { trends, isLoading, error, reload } = useTrends(SIDEBAR.TRENDS_LIMIT);
 
-  if (!isLoading && !error && trends.length === 0) return null;
-
   return (
     <RightSidebarCard title="Популярне">
       {isLoading ? (
@@ -29,6 +27,8 @@ export default function RightSidebarTrendsCard() {
             Спробувати ще раз
           </button>
         </div>
+      ) : trends.length === 0 ? (
+        <p className="py-3 text-sm text-muted-foreground">Ще немає</p>
       ) : (
         <div className="-mx-4 -mb-4">
           {trends.map((trend) => (

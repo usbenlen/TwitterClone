@@ -13,8 +13,6 @@ export default function RightSidebarSuggestedUsers() {
     SIDEBAR.RECOMMENDED_USERS_LIMIT,
   );
 
-  if (!isLoading && !error && users.length === 0) return null;
-
   return (
     <RightSidebarCard title="Кого читати">
       {isLoading ? (
@@ -35,6 +33,8 @@ export default function RightSidebarSuggestedUsers() {
             Спробувати ще раз
           </button>
         </div>
+      ) : users.length === 0 ? (
+        <p className="py-3 text-sm text-muted-foreground">Ще немає</p>
       ) : (
         <>
           <div>
