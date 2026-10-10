@@ -1,5 +1,4 @@
-import type { Tweet } from "@/types/tweet";
-import type { User } from "@/types/user";
+import type { Tweet, User } from "@/types";
 
 export type ReportTargetType = "posts" | "comments" | "users";
 export type ReportReason = "spam" | "harassment" | "misinformation" | "violence" | "hate" | "other";

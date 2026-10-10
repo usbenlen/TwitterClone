@@ -1,7 +1,8 @@
+import { Shield } from "lucide-react";
+
 import { useAuth } from "@/hooks/useAuth";
 
 import { MAIN_NAVIGATION, type NavigationItem } from "@/constants/navigation";
-import { Shield } from "lucide-react";
 import { APP_ROUTES } from "@/constants/routes";
 
 export function useNavigation() {

@@ -12,7 +12,7 @@ export interface CreateScheduledPostRequest {
   mediaIds: string[];
   linkPreview?: LinkPreview | null;
   scheduledAt: string;
-  /** Використовується тільки моком. Коли не мок це поле не використовується. */
+  /** Використовується тільки моком. Коли не мок це поле не використовується */
   mockMedia?: ScheduledMediaInput[];
 }
 

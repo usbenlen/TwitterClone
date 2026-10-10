@@ -1,7 +1,8 @@
-import { VerifiedBadge } from "@/ui/VerifiedBadge";
 import { Link } from "react-router";
 
-import ActionsMenu from "@/components/tweet/ActionsMenu";
+import { ActionsMenu } from "@/components/tweet";
+
+import { VerifiedBadge } from "@/ui/VerifiedBadge";
 
 import { APP_ROUTES } from "@/constants/routes";
 

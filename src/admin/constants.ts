@@ -8,7 +8,9 @@ import {
   Trash2,
   UsersRound,
 } from "lucide-react";
+
 import { APP_ROUTES } from "@/constants/routes";
+
 import type { ModerationParams, UsersParams } from "@/admin/types";
 import type { ReportDecision } from "@/types/report";
 
@@ -20,12 +22,14 @@ export const ADMIN_NAVIGATION = [
   { label: "Модерація", to: APP_ROUTES.ADMIN_MODERATION, icon: Flag },
   { label: "Налаштування", to: APP_ROUTES.ADMIN_SETTINGS, icon: Settings },
 ];
+
 export const USERS_DEFAULTS: UsersParams = {
   page: 1,
   search: "",
   sort: "newest",
   status: "all",
 };
+
 export const MODERATION_DEFAULTS: ModerationParams = {
   page: 1,
   search: "",
@@ -35,21 +39,25 @@ export const MODERATION_DEFAULTS: ModerationParams = {
   status: "all",
   decision: "all",
 };
+
 export const USER_ACTION_LABELS = {
   block: "Заблокувати",
   unblock: "Розблокувати",
   delete: "Видалити",
 } as const;
+
 export const USER_ACTION_ICONS = {
   block: Lock,
   unblock: Unlock,
   delete: Trash2,
 } as const;
+
 export const REPORT_ACTION_LABELS: Record<ReportDecision, string> = {
   kept: "Залишити",
   deleted: "Видалити",
   blocked: "Заблокувати",
 };
+
 export const REPORT_ACTION_ICONS = {
   kept: Check,
   deleted: Trash2,

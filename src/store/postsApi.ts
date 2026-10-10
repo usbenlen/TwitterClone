@@ -1,6 +1,7 @@
 import { current } from "@reduxjs/toolkit";
+
 import { tweetApi, commentApi, searchApi } from "@/api";
-import { appApi, request } from "@/store/api";
+
 import type {
   User,
   UserShort,
@@ -14,6 +15,9 @@ import type {
   SearchCriteria,
   SearchViewerContext,
 } from "@/types";
+
+import { appApi, request } from "@/store/api";
+export { errorMessage } from "@/store/api";
 import type { AppDispatch, RootState } from "@/store/index";
 import { sessionGeneration } from "@/store/session";
 import { fetchPosts, sendReaction } from "@/store/posts/operations";
@@ -29,7 +33,6 @@ import {
   type Reaction,
 } from "@/store/posts/types";
 import * as cache from "@/store/posts/cache";
-export { errorMessage } from "@/store/api";
 export { targetOf, targetKey, reactionKey } from "@/store/posts/types";
 export type {
   ProfileTab,
@@ -57,6 +60,7 @@ export const postsApi = appApi.injectEndpoints({
         ...tagsFor(data ?? []),
       ],
     }),
+
     getSearchUsers: build.query<
       UserShort[],
       { criteria: SearchCriteria; viewer: SearchViewerContext }
@@ -64,11 +68,13 @@ export const postsApi = appApi.injectEndpoints({
       queryFn: ({ criteria, viewer }) =>
         request(() => searchApi.users(criteria, viewer)),
     }),
+
     getThread: build.query<ThreadResponse, string>({
       queryFn: (id) => request(() => commentApi.getThread(id)),
       providesTags: (data) =>
         data ? tagsFor([data.target, ...data.ancestors, ...data.replies]) : [],
     }),
+
     getHistory: build.query<EditHistoryResponse, Target>({
       queryFn: (arg) =>
         request(() =>
@@ -78,6 +84,7 @@ export const postsApi = appApi.injectEndpoints({
         { type: "History", id: targetKey(arg) },
       ],
     }),
+
     createPost: build.mutation<Tweet, CreateTweetRequest>({
       queryFn: (arg) => request(() => tweetApi.create(arg)),
       async onQueryStarted(_arg, lifecycle) {
@@ -96,6 +103,7 @@ export const postsApi = appApi.injectEndpoints({
         }
       },
     }),
+
     createComment: build.mutation<Tweet, CreateCommentRequest>({
       queryFn: (arg) => request(() => commentApi.create(arg)),
       invalidatesTags: (data, _error, arg) =>
@@ -110,6 +118,7 @@ export const postsApi = appApi.injectEndpoints({
             ]
           : [],
     }),
+
     updatePost: build.mutation<
       Tweet,
       | ({ type: "post"; id: string } & { data: UpdateTweetRequest })
@@ -139,7 +148,7 @@ export const postsApi = appApi.injectEndpoints({
             },
           );
         } catch {
-          /* Caller displays the error. */
+          /* Caller displays the error */
         }
       },
       invalidatesTags: (data, _error, arg) =>
@@ -151,6 +160,7 @@ export const postsApi = appApi.injectEndpoints({
             ]
           : [],
     }),
+
     deletePost: build.mutation<null, Target>({
       queryFn: (arg) =>
         request(async () => {
@@ -180,6 +190,7 @@ export const postsApi = appApi.injectEndpoints({
               listTag("search"),
             ],
     }),
+
     react: build.mutation<Partial<Tweet>, Reaction>({
       queryFn: (arg) => request(() => sendReaction(arg)),
       async onQueryStarted(arg, lifecycle) {
@@ -279,6 +290,7 @@ export const postsApi = appApi.injectEndpoints({
         }
       },
     }),
+
     viewPost: build.mutation<null, string>({
       queryFn: (id) =>
         request(async () => {
@@ -312,6 +324,7 @@ function patchTweets(
 ): void {
   cache.patchTweets(postsApi, dispatch, state, update);
 }
+
 export function removeCachedTweet(
   target: Target,
   dispatch: AppDispatch,
@@ -319,6 +332,7 @@ export function removeCachedTweet(
 ): void {
   cache.removeCachedTweet(postsApi, target, dispatch, state);
 }
+
 export function updateCachedProfileAuthors(
   user: User,
   dispatch: AppDispatch,
@@ -326,6 +340,7 @@ export function updateCachedProfileAuthors(
 ): void {
   cache.updateCachedProfileAuthors(postsApi, user, dispatch, state);
 }
+
 export function publishPosts(
   tweets: Tweet[],
   dispatch: AppDispatch,

@@ -1,5 +1,4 @@
 import { NavLink } from "react-router";
-
 import { LogOut } from "lucide-react";
 
 import { Avatar } from "@/ui";

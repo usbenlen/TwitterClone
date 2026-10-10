@@ -1,15 +1,18 @@
 import { useEffect, useRef, useMemo } from "react";
 import { skipToken } from "@reduxjs/toolkit/query/react";
-import { useGetThreadQuery, useViewPostMutation } from "@/store/postsApi";
 import { useParams } from "react-router";
 
+import { useGetThreadQuery, useViewPostMutation } from "@/store/postsApi";
+
 import { Spinner } from "@/ui";
+
 import { PageHeader } from "@/components/layout/pageHeader/index";
 import { TweetCard } from "@/components/tweet/index";
 
 import { APP_ROUTES } from "@/constants/routes";
 
 import { withAncestorContext } from "@/utils/ancestors";
+
 export default function PostPage() {
   const { postId } = useParams<{ postId: string }>();
   const query = useGetThreadQuery(postId ?? skipToken);

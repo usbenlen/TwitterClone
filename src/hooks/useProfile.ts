@@ -1,13 +1,15 @@
 import { skipToken } from "@reduxjs/toolkit/query/react";
+
 import {
   useGetPostsQuery,
   errorMessage,
   type ProfileTab,
 } from "@/store/postsApi";
 import { useGetProfileQuery } from "@/store/sharedApi";
+export type { ProfileTab } from "@/store/postsApi";
+
 import type { Tweet } from "@/types";
 
-export type { ProfileTab } from "@/store/postsApi";
 const EMPTY: Tweet[] = [];
 
 export function useProfile(

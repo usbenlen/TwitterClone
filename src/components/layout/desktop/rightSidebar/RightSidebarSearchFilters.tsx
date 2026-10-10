@@ -2,10 +2,13 @@ import { RadioOption } from "@/ui/RadioOption";
 import { useState } from "react";
 import { useNavigate, useSearchParams } from "react-router";
 
-import RightSidebarCard from "@/components/layout/desktop/rightSidebar/RightSidebarCard";
+import { RightSidebarCard } from "@/components/layout/desktop/rightSidebar";
 import { AdvancedSearchModal } from "@/components/search/index";
+
 import { useAuth } from "@/hooks";
+
 import { APP_ROUTES } from "@/constants/routes";
+
 import { parseSearchCriteria } from "@/utils/search";
 
 import type {

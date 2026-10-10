@@ -1,5 +1,6 @@
-import { formatMediaTime } from "@/utils/format";
 import { useEffect, useRef, useState } from "react";
+
+import { formatMediaTime } from "@/utils/format";
 
 import type { MediaAttachment } from "@/types/media";
 
@@ -155,7 +156,6 @@ export default function MediaItem({
         </div>
       );
 
-    default:
-      return null;
+    default:return null;
   }
 }

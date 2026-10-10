@@ -1,4 +1,3 @@
-import { APP_NAME, APP_ROUTES } from "@/constants";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router";
@@ -10,6 +9,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { registerSchema, type RegisterFormValues } from "@/schemas/auth.schema";
 
 import { Input, Button } from "@/ui";
+
+import { APP_NAME, APP_ROUTES } from "@/constants";
 
 import { AuthShell } from "@/components/auth/AuthShell";
 

@@ -1,7 +1,9 @@
-import { toUserShort } from "@/utils/user";
 import { MOCK_DELAYS } from "@/mock/constants";
+
 import { currentUser, mockTrends, sampleAuthors } from "@/mock/data";
+
 import { delay } from "@/mock/utils/delay";
+import { toUserShort } from "@/utils/user";
 
 import type {
   PaginatedRecommendations,
@@ -30,6 +32,7 @@ export const mockRecommendationsApi = {
 
     const start = Math.max(0, Number.parseInt(cursor ?? "0", 10) || 0);
     const usernames = recommendedUsernames[category];
+
     const users = usernames
       .map((username) =>
         sampleAuthors.find((user) => user.username === username),
@@ -37,6 +40,7 @@ export const mockRecommendationsApi = {
       .filter((user): user is User =>
         Boolean(user && user.id !== currentUser.id),
       );
+
     const page = users.slice(start, start + limit);
     const nextOffset = start + page.length;
 

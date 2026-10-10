@@ -3,10 +3,13 @@ import { useSearchParams } from "react-router";
 
 import { PageHeader } from "@/components/layout/pageHeader/index";
 import { RecommendationUserItem } from "@/components/user/index";
+
 import { useRecommendedUsers } from "@/hooks";
+
 import { Button, Tab } from "@/ui/index";
 
 import type { RecommendationCategory } from "@/types";
+
 import {
   APP_ROUTES,
   RECOMMENDATIONS_PAGE_LIMIT,

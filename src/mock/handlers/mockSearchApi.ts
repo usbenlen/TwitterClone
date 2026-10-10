@@ -1,6 +1,6 @@
-import { toUserShort } from "@/utils/user";
 import { MOCK_DELAYS } from "@/mock/constants";
 import { SEARCH_NEARBY_RADIUS_KM } from "@/constants/search";
+
 import type {
   Location,
   SearchCriteria,
@@ -10,7 +10,9 @@ import type {
 } from "@/types";
 
 import { sampleAuthors, tweets } from "@/mock/data";
+
 import { delay } from "@/mock/utils/delay";
+import { toUserShort } from "@/utils/user";
 
 function words(value: string) {
   return value
@@ -40,6 +42,7 @@ function distanceInKm(first: Location, second: Location) {
   const longitudeDelta = toRadians(second.longitude - first.longitude);
   const startLatitude = toRadians(first.latitude);
   const endLatitude = toRadians(second.latitude);
+
   const haversine =
     Math.sin(latitudeDelta / 2) ** 2 + Math.cos(startLatitude) *
       Math.cos(endLatitude) * Math.sin(longitudeDelta / 2) ** 2;

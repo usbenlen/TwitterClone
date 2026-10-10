@@ -4,6 +4,7 @@ import { gifApi } from "@/api/gif.api";
 
 import { useComposerPopup } from "@/hooks/composer/useComposerPopup";
 import { useDebouncedValue } from "@/hooks/useDebouncedValue";
+
 import { SEARCH_DEBOUNCE_MS } from "@/constants/app";
 
 import type { Gif } from "@/types/gif";

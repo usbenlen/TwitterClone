@@ -1,4 +1,5 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
+
 import { sessionChanged } from "@/store/session";
 
 const scheduledStatusSlice = createSlice({
@@ -18,6 +19,5 @@ const scheduledStatusSlice = createSlice({
     }),
 });
 
-export const { scheduledErrorSet, scheduledErrorCleared } =
-  scheduledStatusSlice.actions;
+export const { scheduledErrorSet, scheduledErrorCleared } = scheduledStatusSlice.actions;
 export const scheduledStatusReducer = scheduledStatusSlice.reducer;

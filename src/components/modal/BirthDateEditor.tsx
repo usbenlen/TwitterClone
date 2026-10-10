@@ -1,3 +1,5 @@
+import type { ReactNode } from "react";
+
 import {
   MONTH_OPTIONS,
   BIRTH_DATE_MIN_YEAR,
@@ -5,8 +7,8 @@ import {
 } from "@/constants";
 
 import { maxBirthDay } from "@/utils/date";
+
 import type { BirthDateVisibility } from "@/types";
-import type { ReactNode } from "react";
 
 interface BirthDateEditorProps {
   month: string;

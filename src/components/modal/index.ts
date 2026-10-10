@@ -5,3 +5,4 @@ export { default as EditHistoryModal } from "@/components/modal/EditHistoryModal
 export { default as EditModal } from "@/components/modal/EditModal";
 export { default as EditProfileModal } from "@/components/modal/EditProfileModal";
 export { default as QuoteModal } from "@/components/modal/QuoteModal";
+export { default as ReportModal } from "@/components/modal/ReportModal"

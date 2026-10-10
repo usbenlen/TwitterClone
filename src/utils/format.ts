@@ -9,15 +9,18 @@ import {
 // Відносний час "2 хв", "3 год", "5 дн".
 export function formatRelativeTime(iso: string): string {
   const date = new Date(iso);
+
   const seconds = Math.floor(
     (Date.now() - date.getTime()) / MILLISECONDS_PER_SECOND,
   );
-
   if (seconds < SECONDS_PER_MINUTE) return "щойно";
+
   const minutes = Math.floor(seconds / SECONDS_PER_MINUTE);
   if (minutes < MINUTES_PER_HOUR) return `${minutes} хв`;
+
   const hours = Math.floor(minutes / MINUTES_PER_HOUR);
   if (hours < HOURS_PER_DAY) return `${hours} год`;
+
   const days = Math.floor(hours / HOURS_PER_DAY);
   if (days < 7) return `${days} дн`;
 
@@ -117,6 +120,8 @@ export function formatCompactCount(value: number): string {
 
 export function formatMediaTime(seconds: number): string {
   if (!Number.isFinite(seconds) || seconds < 0) return "0:00";
+
   const total = Math.ceil(seconds);
+
   return `${Math.floor(total / SECONDS_PER_MINUTE)}:${String(total % SECONDS_PER_MINUTE).padStart(2, "0")}`;
 }

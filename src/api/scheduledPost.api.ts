@@ -1,8 +1,10 @@
 import { apiClient } from "@/api/client";
 import { ENDPOINTS } from "@/api/config";
-import { MOCK_ENABLED } from "@/mock/config";
-import { mockScheduledPostApi } from "@/mock/handlers/mockScheduledPostApi";
 import { mapScheduledLinkPreview } from "@/api/mappers/request.mapper";
+
+import { MOCK_ENABLED } from "@/mock/config";
+
+import { mockScheduledPostApi } from "@/mock/handlers/mockScheduledPostApi";
 
 import type {
   CreateScheduledPostRequest,

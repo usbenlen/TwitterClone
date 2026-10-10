@@ -1,5 +1,6 @@
 import { useMemo, useRef, useState } from "react";
-import { useComposerScheduling } from "@/hooks/composer/useComposerScheduling";
+
+import {  } from "@/hooks/composer/useComposerScheduling";
 import {
   canScheduleMedia,
   getComposerError,
@@ -18,6 +19,7 @@ import {
   useComposerEditor,
   useTweetComposerMedia,
   useComposerLinkPreview,
+  useComposerScheduling,
 } from "@/hooks/composer";
 
 import { MAX_TWEET_LENGTH } from "@/constants/app";
@@ -242,6 +244,7 @@ export function useTweetComposer({
     closeAllPopups();
     poll.reset();
   };
+
   const submit = async () => {
     const values = getLiveValues();
     if (!canSubmit || submittingRef.current || getComposerError(values)) return;
@@ -262,6 +265,7 @@ export function useTweetComposer({
           linkPreview: linkPreview.preview,
         });
         if (created === false || created === undefined) return created;
+
         mediaManager.clearMedia();
         resetComposer();
         scheduleState.reset();
@@ -269,6 +273,7 @@ export function useTweetComposer({
       }
       const created = await submitComposer(values);
       if (created) resetComposer();
+
       return created;
     } finally {
       submittingRef.current = false;
@@ -278,6 +283,7 @@ export function useTweetComposer({
   const removePoll = () => {
     if (isPosting || submittingRef.current) return;
     poll.reset();
+
     if (mediaManager.getMedia().length === 0) mediaManager.clearErrors();
     buttonRefs.poll?.current?.focus();
   };
@@ -408,6 +414,7 @@ export function useTweetComposer({
       canSchedule: canOpenSchedule,
       busy: isPosting,
     }),
+
     scheduling: {
       ...scheduleState.scheduling,
       onOpenChange: (open: boolean) => {
@@ -444,6 +451,7 @@ export function useTweetComposer({
       },
       onRemove: removePoll,
     },
+
     locationPreview: {
       visible: !!selectedLocation,
       location: selectedLocation,
@@ -451,6 +459,7 @@ export function useTweetComposer({
         if (!isPosting && !submittingRef.current) removeLocation();
       },
     },
+
     linkPreview: {
       visible: linkPreview.loading || !!linkPreview.preview,
       preview: linkPreview.preview,

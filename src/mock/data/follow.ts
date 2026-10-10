@@ -1,4 +1,5 @@
 import type { UserShort } from "@/types";
+
 import { sampleAuthors } from "@/mock/data/users";
 
 export const mockFollowing: Record<string, UserShort[]> = {

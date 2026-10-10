@@ -1,6 +1,7 @@
 import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react";
 
 import { ApiError } from "@/api/client";
+
 import { MOCK_ENABLED } from "@/mock/config";
 
 export interface QueryError {
@@ -23,6 +24,7 @@ export async function request<T>(
 ): Promise<{ data: T } | { error: QueryError }> {
   try {
     const data = await run();
+
     return { data: MOCK_ENABLED ? structuredClone(data) : data };
   } catch (error) {
     return {

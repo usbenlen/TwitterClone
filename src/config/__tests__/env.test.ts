@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+
 import {
   escapeHtml,
   NUMERIC_ENV_DEFAULTS,
@@ -11,6 +12,7 @@ describe("environment settings", () => {
     expect(readNumericEnv({})).toEqual(NUMERIC_ENV_DEFAULTS);
     expect(readAppIdentity({})).toEqual({ name: "Chirp", locale: "uk-UA" });
   });
+
   it("accepts positive integers, fractional sizes and boundary quality", () => {
     expect(
       readNumericEnv({
@@ -24,6 +26,7 @@ describe("environment settings", () => {
       VITE_IMAGE_QUALITY: 1,
     });
   });
+
   it.each(["abc", "", " ", "0", "-1", "Infinity", "NaN", "1.5"])(
     "rejects invalid integer %s and identifies its key",
     (value) => {
@@ -32,11 +35,13 @@ describe("environment settings", () => {
       ).toThrow("VITE_MAX_MEDIA_ATTACHMENTS");
     },
   );
+
   it.each(["0", "-0.1", "1.01", "Infinity"])("rejects quality %s", (value) => {
     expect(() => readNumericEnv({ VITE_IMAGE_QUALITY: value })).toThrow(
       "VITE_IMAGE_QUALITY",
     );
   });
+
   it("rejects booleans and unsafe integer settings", () => {
     expect(() => readNumericEnv({ VITE_MAX_NAME_LENGTH: true })).toThrow(
       "VITE_MAX_NAME_LENGTH",
@@ -47,6 +52,7 @@ describe("environment settings", () => {
       }),
     ).toThrow("VITE_IMAGE_MAX_WIDTH");
   });
+
   it("trims identity settings and escapes interpolated HTML", () => {
     expect(
       readAppIdentity({

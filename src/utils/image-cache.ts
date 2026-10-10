@@ -5,10 +5,12 @@ const transaction = createIndexedDbStore({
   store: "images",
   version: 1,
 });
+
 interface PendingImage {
   promise: Promise<Blob | null>;
   invalidated: boolean;
 }
+
 const pending = new Map<string, PendingImage>();
 
 export const imageCache = {
@@ -34,18 +36,23 @@ export const imageCache = {
   fetchAndCache(url: string): Promise<Blob | null> {
     const existing = pending.get(url);
     if (existing) return existing.promise;
+
     const task: PendingImage = {
       promise: Promise.resolve(null),
       invalidated: false,
     };
+
     task.promise = (async () => {
       try {
         const cached = await imageCache.get(url);
         if (cached) return cached;
+
         const response = await fetch(url);
         if (!response.ok) return null;
+
         const blob = await response.blob();
         if (!task.invalidated) await imageCache.set(url, blob);
+
         return blob;
       } catch {
         return null;
@@ -53,6 +60,7 @@ export const imageCache = {
         if (pending.get(url) === task) pending.delete(url);
       }
     })();
+
     pending.set(url, task);
     return task.promise;
   },

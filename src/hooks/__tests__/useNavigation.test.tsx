@@ -1,6 +1,8 @@
 import { renderToStaticMarkup } from "react-dom/server";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+
 import { useNavigation } from "@/hooks/useNavigation";
+
 import type { User } from "@/types/user";
 
 const state = vi.hoisted(() => ({ user: null as User | null }));

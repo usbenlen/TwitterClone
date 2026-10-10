@@ -1,14 +1,21 @@
 import { useNavigate, useParams } from "react-router";
+
 import { BackButton } from "@/components/layout/pageHeader";
+
 import { skipToken } from "@reduxjs/toolkit/query/react";
+
 import { useAdminUserQuery, useAdminUserActionMutation } from "@/admin/store";
-import { USER_ACTION_LABELS } from "@/admin/constants";
+
 import { useActionConfirmation } from "@/admin/components/ActionConfirmation";
 import { UserSummary } from "@/admin/components/Summaries";
 import { QueryState } from "@/admin/components/ListControls";
-import { APP_ROUTES } from "@/constants/routes";
 import { UserActions } from "@/admin/components/UserActions";
+
+import { APP_ROUTES } from "@/constants/routes";
+import { USER_ACTION_LABELS } from "@/admin/constants";
+
 import { formatCount, formatDateTime } from "@/utils/format";
+
 import type { UserAction } from "@/admin/types";
 
 export default function UserPage() {
@@ -27,8 +34,7 @@ export default function UserPage() {
         { id: user.id, run: () => mutate({ id: user.id, action }).unwrap() },
       ],
       onDone: (failed) => {
-        if (!failed.length && action === "delete")
-          navigate(APP_ROUTES.ADMIN_USERS, { replace: true });
+        if (!failed.length && action === "delete") navigate(APP_ROUTES.ADMIN_USERS, { replace: true });
       },
     });
   };
@@ -52,13 +58,13 @@ export default function UserPage() {
         {user && (
           <section className="space-y-5 overflow-hidden rounded-2xl border border-border p-5">
             <UserSummary user={user} linkName={false} />
-            <p className="break-words whitespace-pre-wrap">
+            <p className="wrap-break-word whitespace-pre-wrap">
               {user.bio || "Опис відсутній."}
             </p>
             <dl className="grid grid-cols-1 gap-3 text-sm sm:grid-cols-2">
               <div>
                 <dt className="text-muted-foreground">Email</dt>
-                <dd className="break-words">{user.email || "—"}</dd>
+                <dd className="wrap-break-word">{user.email || "—"}</dd>
               </div>
               <div>
                 <dt className="text-muted-foreground">Приєднався</dt>

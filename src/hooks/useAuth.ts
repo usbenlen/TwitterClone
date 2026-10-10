@@ -1,11 +1,15 @@
 import { useCallback } from "react";
+
 import { authApi } from "@/api/auth.api";
+
 import { authCleared, authReady, authUserUpdated } from "@/store/auth";
 import { useAppDispatch, useAppSelector, useAppStore } from "@/store/hooks";
 import { sessionChanged, sessionGeneration } from "@/store/session";
 import { sharedApi } from "@/store/sharedApi";
 import { updateCachedProfileAuthors } from "@/store/postsApi";
+
 import { MOCK_ENABLED } from "@/mock/config";
+
 import type {
   AuthResponse,
   LoginRequest,
@@ -13,6 +17,7 @@ import type {
   VerifyEmailRequest,
 } from "@/types/auth";
 import type { User } from "@/types/user";
+
 import { tokenStorage } from "@/utils/storage";
 
 export function useAuth() {
@@ -28,8 +33,7 @@ export function useAuth() {
       tokenStorage.setTokens(response.accessToken, response.refreshToken);
       try {
         const currentUser = await authApi.me();
-        if (generation === sessionGeneration(store.getState()))
-          dispatch(authReady(currentUser));
+        if (generation === sessionGeneration(store.getState())) dispatch(authReady(currentUser));
       } catch (error) {
         if (generation === sessionGeneration(store.getState())) {
           tokenStorage.clear();
@@ -73,8 +77,7 @@ export function useAuth() {
   const updateUser = useCallback(
     (updatedUser: User) => {
       dispatch(authUserUpdated(updatedUser));
-      if (MOCK_ENABLED)
-        updateCachedProfileAuthors(updatedUser, dispatch, store.getState());
+      if (MOCK_ENABLED) updateCachedProfileAuthors(updatedUser, dispatch, store.getState());
       dispatch(
         sharedApi.util.upsertQueryData(
           "getProfile",

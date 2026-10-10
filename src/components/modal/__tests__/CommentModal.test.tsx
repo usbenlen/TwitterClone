@@ -1,7 +1,10 @@
 import { renderToString } from "react-dom/server";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+
 import CommentModal from "@/components/modal/CommentModal";
+
 import { useTweetComposer } from "@/hooks";
+
 import type { Tweet, ComposerSubmitData } from "@/types";
 
 vi.mock("@/hooks/index", () => ({

@@ -29,6 +29,7 @@ export function updateMockPoll(
   existing?: TweetPoll,
 ): TweetPoll | undefined {
   if (input === null) return undefined;
+
   return input?.options.length
     ? createMockPoll(
         { ...input, duration: input.duration || POLL.DEFAULT_DURATION_MINUTES },

@@ -1,6 +1,7 @@
-import { POLL } from "@/constants/poll";
 import { useRef, useState } from "react";
 import { isComposerPollValid } from "@/utils/composer";
+
+import { POLL } from "@/constants/poll";
 
 import type { ComposerPoll } from "@/types/poll";
 

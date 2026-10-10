@@ -1,4 +1,3 @@
-import { AUTH_LIMITS, APP_ROUTES } from "@/constants";
 import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useLocation, useNavigate } from "react-router";
@@ -11,6 +10,8 @@ import { ApiError } from "@/api/client";
 import { useAuth } from "@/hooks";
 
 import { Button } from "@/ui";
+
+import { AUTH_LIMITS, APP_ROUTES } from "@/constants";
 
 import { AuthShell, CodeInput } from "@/components/auth/index";
 

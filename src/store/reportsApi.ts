@@ -1,5 +1,7 @@
 import { appApi, request } from "@/store/api";
+
 import { reportApi } from "@/api/report.api";
+
 import type { CreateReportRequest } from "@/types/report";
 
 export const reportsApi = appApi.injectEndpoints({
@@ -17,4 +19,5 @@ export const reportsApi = appApi.injectEndpoints({
     }),
   }),
 });
+
 export const { useCreateReportMutation } = reportsApi;

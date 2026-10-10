@@ -1,6 +1,7 @@
 import { apiClient } from "@/api/client";
 import { ENDPOINTS } from "@/api/config";
 import { mapUserRole, type BackendUser } from "@/api/mappers/user.mapper";
+
 import type {
   AuthResponse,
   ConfirmPasswordChangeRequest,
@@ -15,8 +16,10 @@ import type {
   StartPasswordChangeRequest,
 } from "@/types/auth";
 import type { User } from "@/types/user";
+
 import { MOCK_ENABLED } from "@/mock/config";
 import { mockAuthApi } from "@/mock/handlers";
+
 import { tokenStorage } from "@/utils/storage";
 
 const realAuthApi = {

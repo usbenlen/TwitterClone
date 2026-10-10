@@ -1,4 +1,5 @@
-import type { SearchCriteria, SearchType } from "@/types/index";
+import type { SearchCriteria, SearchType } from "@/types";
+
 import { DEFAULT_SEARCH_CRITERIA } from "@/constants/search";
 
 export { DEFAULT_SEARCH_CRITERIA };

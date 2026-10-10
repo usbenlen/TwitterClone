@@ -43,7 +43,7 @@
   --radius-full: 9999px;
 }
 
-/* Темна тема (за замовчуванням, у стилі X) */
+/* Темна тема (за замовчуванням) */
 [data-theme="dark"] {
   color-scheme: dark;
   --background: #000000;

@@ -1,6 +1,7 @@
 import { useAppSelector, useAppStore } from "@/store/hooks";
 import { postsApi, reactionKey } from "@/store/postsApi";
 import { runReaction } from "@/store/reactions";
+
 import type { TweetPoll } from "@/types/poll";
 
 export function usePollVote(

@@ -1,16 +1,20 @@
 import { useMemo } from "react";
-import { useDebouncedValue } from "@/hooks/useDebouncedValue";
 import { skipToken } from "@reduxjs/toolkit/query/react";
+
 import { SEARCH_DEBOUNCE_MS } from "@/constants/app";
-import { useAuth } from "@/hooks/useAuth";
-import { useFollow } from "@/hooks/useFollow";
+
+import { useAuth, useDebouncedValue, useFollow } from "@/hooks";
+
 import { hasActiveSearchCriteria } from "@/utils/search";
+
 import {
   useGetPostsQuery,
   useGetSearchUsersQuery,
   errorMessage,
 } from "@/store/postsApi";
+
 import type { SearchCriteria, Tweet, UserShort } from "@/types";
+
 const EMPTY_POSTS: Tweet[] = [];
 const EMPTY_USERS: UserShort[] = [];
 

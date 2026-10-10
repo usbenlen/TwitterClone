@@ -13,8 +13,7 @@ export function useAutosizeTextarea(
     const styles = window.getComputedStyle(textarea);
 
     const lineHeight = parseFloat(styles.lineHeight);
-    const padding =
-      parseFloat(styles.paddingTop) + parseFloat(styles.paddingBottom);
+    const padding = parseFloat(styles.paddingTop) + parseFloat(styles.paddingBottom);
 
     const rowsHeight = lineHeight * rows + padding;
     const maxHeight = parseFloat(styles.maxHeight);

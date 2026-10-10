@@ -12,9 +12,11 @@ function updateTweetInList(
 ) {
   const index = items.findIndex((item) => item.id === id);
   if (index < 0) throw new Error("Пост або коментар не знайдено.");
+
   const next = [...items];
   const item = update(next[index]);
   next[index] = item;
+
   return { items: next, item };
 }
 

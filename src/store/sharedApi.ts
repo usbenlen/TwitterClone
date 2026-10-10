@@ -4,6 +4,7 @@ import {
   scheduledPostApi,
   userApi,
 } from "@/api";
+
 import type {
   CreateScheduledPostRequest,
   PaginatedRecommendations,
@@ -14,6 +15,7 @@ import type {
   User,
   UserShort,
 } from "@/types";
+
 import { request } from "@/store/api";
 import { postsApi } from "@/store/postsApi";
 import { sessionGeneration } from "@/store/session";
@@ -31,18 +33,21 @@ export const sharedApi = postsApi.injectEndpoints({
         { type: "Profile", id: username },
       ],
     }),
+
     getFollowing: build.query<UserShort[], string>({
       queryFn: (userId) => request(() => followApi.following(userId)),
       providesTags: (_data, _error, userId) => [
         { type: "Following", id: userId },
       ],
     }),
+
     getFollowers: build.query<UserShort[], string>({
       queryFn: (userId) => request(() => followApi.followers(userId)),
       providesTags: (_data, _error, userId) => [
         { type: "Followers", id: userId },
       ],
     }),
+
     followUser: build.mutation<void, { viewerId: string; user: UserShort }>({
       queryFn: ({ user }) =>
         request(() => followApi.follow({ targetUserId: user.id })),
@@ -60,7 +65,7 @@ export const sharedApi = postsApi.injectEndpoints({
             ),
           );
         } catch {
-          /* The caller handles the error. */
+          /* The caller handles the error */
         }
       },
       invalidatesTags: (_data, error, { viewerId, user }) =>
@@ -73,6 +78,7 @@ export const sharedApi = postsApi.injectEndpoints({
               { type: "Recommendation", id: "USERS" },
             ],
     }),
+
     unfollowUser: build.mutation<void, { viewerId: string; user: UserShort }>({
       queryFn: ({ user }) =>
         request(() => followApi.unfollow({ targetUserId: user.id })),
@@ -85,7 +91,7 @@ export const sharedApi = postsApi.injectEndpoints({
             ),
           );
         } catch {
-          /* The caller handles the error. */
+          /* The caller handles the error */
         }
       },
       invalidatesTags: (_data, error, { viewerId, user }) =>
@@ -98,6 +104,7 @@ export const sharedApi = postsApi.injectEndpoints({
               { type: "Recommendation", id: "USERS" },
             ],
     }),
+
     removeFollower: build.mutation<
       void,
       { user: UserShort; follower: UserShort }
@@ -116,10 +123,12 @@ export const sharedApi = postsApi.injectEndpoints({
               { type: "Profile", id: follower.username },
             ],
     }),
+
     getTrends: build.query<TrendRecommendationsResponse, number>({
       queryFn: (limit) => request(() => recommendationsApi.trends(limit)),
       providesTags: [{ type: "Recommendation", id: "TRENDS" }],
     }),
+
     getRecommendedUsers: build.infiniteQuery<
       PaginatedRecommendations,
       { category: RecommendationCategory; limit: number },
@@ -139,10 +148,12 @@ export const sharedApi = postsApi.injectEndpoints({
         ),
       providesTags: [{ type: "Recommendation", id: "USERS" }],
     }),
+
     getScheduledPosts: build.query<ScheduledPost[], void>({
       queryFn: () => request(async () => sorted(await scheduledPostApi.list())),
       providesTags: [{ type: "Scheduled", id: "LIST" }],
     }),
+
     createScheduledPost: build.mutation<
       ScheduledPost,
       CreateScheduledPostRequest
@@ -168,11 +179,12 @@ export const sharedApi = postsApi.injectEndpoints({
             ),
           );
         } catch {
-          /* The caller handles the error. */
+          /* The caller handles the error */
         }
       },
       invalidatesTags: [{ type: "Scheduled", id: "LIST" }],
     }),
+
     updateScheduledPost: build.mutation<
       ScheduledPost,
       { id: string; data: UpdateScheduledPostRequest }
@@ -199,11 +211,12 @@ export const sharedApi = postsApi.injectEndpoints({
             ),
           );
         } catch {
-          /* The caller handles the error. */
+          /* The caller handles the error */
         }
       },
       invalidatesTags: [{ type: "Scheduled", id: "LIST" }],
     }),
+
     deleteScheduledPost: build.mutation<void, string>({
       queryFn: (id) => request(() => scheduledPostApi.delete(id)),
       async onQueryStarted(id, lifecycle) {
@@ -219,7 +232,7 @@ export const sharedApi = postsApi.injectEndpoints({
             ),
           );
         } catch {
-          /* The caller handles the error. */
+          /* The caller handles the error */
         }
       },
       invalidatesTags: [{ type: "Scheduled", id: "LIST" }],

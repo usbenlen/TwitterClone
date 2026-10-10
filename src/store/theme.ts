@@ -1,5 +1,7 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
+
 import { THEMES, type Theme } from "@/types/theme";
+
 import { STORAGE_KEYS } from "@/constants/storage";
 
 const STORAGE_KEY = STORAGE_KEYS.THEME;

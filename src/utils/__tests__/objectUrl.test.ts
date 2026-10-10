@@ -1,4 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
+
 import { createObjectUrlOwner } from "@/utils/objectUrl";
 
 afterEach(() => vi.restoreAllMocks());
@@ -9,17 +10,22 @@ describe("image preview URL ownership", () => {
       .spyOn(URL, "createObjectURL")
       .mockReturnValueOnce("blob:first")
       .mockReturnValueOnce("blob:second");
+
     const revoke = vi
       .spyOn(URL, "revokeObjectURL")
       .mockImplementation(() => {});
+
     const owner = createObjectUrlOwner();
     owner.release();
+
     expect(revoke).not.toHaveBeenCalled();
     expect(owner.replace(new Blob())).toBe("blob:first");
     expect(owner.replace(new Blob())).toBe("blob:second");
     expect(revoke.mock.calls).toEqual([["blob:first"]]);
+
     owner.release();
     owner.release();
+
     expect(revoke.mock.calls).toEqual([["blob:first"], ["blob:second"]]);
     expect(create).toHaveBeenCalledTimes(2);
   });
@@ -28,6 +34,7 @@ describe("image preview URL ownership", () => {
     vi.spyOn(URL, "createObjectURL")
       .mockReturnValueOnce("blob:avatar")
       .mockReturnValueOnce("blob:banner");
+
     const revoke = vi
       .spyOn(URL, "revokeObjectURL")
       .mockImplementation(() => {});
@@ -37,6 +44,7 @@ describe("image preview URL ownership", () => {
     banner.replace(new Blob());
     avatar.release();
     expect(revoke.mock.calls).toEqual([["blob:avatar"]]);
+
     banner.release();
     expect(revoke.mock.calls).toEqual([["blob:avatar"], ["blob:banner"]]);
   });

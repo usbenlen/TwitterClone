@@ -1,10 +1,13 @@
 import { useMemo } from "react";
+
 import { SIDEBAR } from "@/constants/layout";
+
 import { errorMessage } from "@/store/postsApi";
 import {
   useGetTrendsQuery,
   useGetRecommendedUsersInfiniteQuery,
 } from "@/store/sharedApi";
+
 import type {
   RecommendationCategory,
   TrendRecommendation,

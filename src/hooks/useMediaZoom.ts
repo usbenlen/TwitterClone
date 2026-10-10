@@ -180,8 +180,7 @@ export function useMediaZoom(open: boolean) {
 
     stopPanning();
 
-    if (event.currentTarget.hasPointerCapture(event.pointerId))
-      event.currentTarget.releasePointerCapture(event.pointerId);
+    if (event.currentTarget.hasPointerCapture(event.pointerId)) event.currentTarget.releasePointerCapture(event.pointerId);
   };
 
   const handlePointerCancel = () => {

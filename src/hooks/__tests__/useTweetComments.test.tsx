@@ -1,6 +1,8 @@
 import { renderToString } from "react-dom/server";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+
 import { useTweetComments } from "@/hooks/useTweetComments";
+
 import type { ComposerSubmitData } from "@/types";
 
 const api = vi.hoisted(() => ({
@@ -8,6 +10,7 @@ const api = vi.hoisted(() => ({
   unwrap: vi.fn(),
   reset: vi.fn(),
 }));
+
 vi.mock("@/store/postsApi", () => ({
   errorMessage: () => "Request failed",
   useGetPostsQuery: () => ({ isLoading: false }),
@@ -32,6 +35,7 @@ function renderComments(parentCommentId: string | null) {
   renderToString(<Probe />);
   return result;
 }
+
 const data: ComposerSubmitData = { content: "A reply", mediaIds: [] };
 beforeEach(() => {
   api.unwrap.mockReset().mockResolvedValue({ id: "new-comment" });

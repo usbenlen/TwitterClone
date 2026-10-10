@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
+
 import { authReady, authReducer, authUserUpdated } from "@/store/auth";
 
 vi.mock("@/mock/utils/delay", () => ({ delay: async () => {} }));
@@ -21,6 +22,7 @@ describe("mock profile saves with Redux auth state", () => {
     const { tweets, setTweets } = await import("@/mock/data/tweets");
     const { commentsByPostId } = await import("@/mock/data/comments");
     const { editHistoryStore } = await import("@/mock/stores/editHistoryStore");
+
     let parentCommentId = "c1";
     for (let level = 0; level < 3; level++) {
       const reply = await mockCommentApi.create({
@@ -30,12 +32,15 @@ describe("mock profile saves with Redux auth state", () => {
       });
       parentCommentId = reply.id;
     }
+
     const before = structuredClone(
       await mockCommentApi.getThread(parentCommentId),
     );
+
     const otherAuthor = structuredClone(commentsByPostId.t1[0].author);
     const history = editHistoryStore.getHistory("comment", before.target);
     const quotedComment = structuredClone(before.target);
+
     setTweets([
       ...tweets,
       {
@@ -51,32 +56,40 @@ describe("mock profile saves with Redux auth state", () => {
         },
       },
     ]);
+
     const createObjectURL = vi
       .spyOn(URL, "createObjectURL")
       .mockReturnValue("blob:profile-avatar");
+
     try {
       await mockUserApi.updateProfile({
         displayName: "Updated deep author",
         avatar: new File(["avatar"], "avatar.png", { type: "image/png" }),
       });
+
       const updated = await mockCommentApi.getThread(parentCommentId);
       const ownNodes = [updated.target, ...updated.ancestors].filter(
         (item) => item.author.id === currentUser.id,
       );
+
       expect(ownNodes.length).toBeGreaterThanOrEqual(3);
+
       for (const item of ownNodes) {
         expect(item.author).toMatchObject({
           displayName: "Updated deep author",
           avatarUrl: "blob:profile-avatar",
         });
       }
+
       expect(updated.ancestors.map((item) => item.id)).toEqual(
         before.ancestors.map((item) => item.id),
       );
       expect(updated.target.content).toBe(before.target.content);
       expect(updated.target.repliesCount).toBe(before.target.repliesCount);
       expect(commentsByPostId.t1[0].author).toEqual(otherAuthor);
+
       const { tweets: refreshedTweets } = await import("@/mock/data/tweets");
+
       expect(refreshedTweets.at(-1)?.quote?.target?.author.displayName).toBe(
         "Updated deep author",
       );
@@ -88,16 +101,21 @@ describe("mock profile saves with Redux auth state", () => {
         displayName: "Next name",
         removeAvatar: true,
       });
+
       const list = await mockCommentApi.getByPostId("t1");
       const replies = await mockUserApi.getReplies(currentUser.username);
+
       for (const items of [list, replies]) {
         const own = items.filter((item) => item.author.id === currentUser.id);
+
         expect(own.length).toBeGreaterThanOrEqual(3);
+
         for (const item of own) {
           expect(item.author).toMatchObject({
             displayName: "Next name",
             avatarUrl: null,
           });
+
           for (const ancestor of item.ancestors ?? []) {
             if (ancestor.author.id === currentUser.id)
               expect(ancestor.author).toMatchObject({
@@ -160,11 +178,13 @@ describe("mock profile saves with Redux auth state", () => {
 
     expect(Object.isFrozen(currentUser.location)).toBe(false);
     expect(first.location).not.toBe(currentUser.location);
+
     const second = await mockUserApi.updateProfile({
       displayName: "Second name",
       bio: "Second bio",
       removeLocation: true,
     });
+
     const secondState = authReducer(firstState, authUserUpdated(second));
 
     expect(secondState.user).toMatchObject({
@@ -172,11 +192,13 @@ describe("mock profile saves with Redux auth state", () => {
       bio: "Second bio",
       location: null,
     });
+
     expect(firstState.user).toMatchObject({
       displayName: "First name",
       bio: "First bio",
       location: { name: "Lviv" },
     });
+
     expect(await mockAuthApi.me()).toEqual(second);
     expect(await mockUserApi.getByUsername(currentUser.username)).toEqual(
       second,

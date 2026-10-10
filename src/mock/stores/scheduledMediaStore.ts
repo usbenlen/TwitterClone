@@ -1,4 +1,5 @@
 import { createIndexedDbStore } from "@/utils/indexedDb";
+
 import type { MediaAttachment, ScheduledMediaInput } from "@/types";
 
 const runTransaction = createIndexedDbStore({

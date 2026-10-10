@@ -1,9 +1,8 @@
-import { VerifiedBadge } from "@/ui/VerifiedBadge";
 import { Link } from "react-router";
 
 import { useAuth, useFollow } from "@/hooks";
 
-import { Avatar, Button } from "@/ui";
+import { Avatar, Button, VerifiedBadge } from "@/ui";
 
 import { APP_ROUTES } from "@/constants/routes";
 

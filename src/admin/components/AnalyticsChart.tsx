@@ -1,7 +1,11 @@
 import { useState } from "react";
+
 import { chartGeometry } from "@/admin/analytics";
+
 import { formatCompactCount } from "@/utils/format";
+
 import { APP_LOCALE } from "@/constants/app";
+
 import type { AnalyticsPoint } from "@/admin/types";
 
 export function AnalyticsChart({

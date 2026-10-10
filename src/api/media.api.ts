@@ -14,8 +14,7 @@ const realMediaApi = {
     return apiClient.post<MediaAttachment>(ENDPOINTS.media.upload, formData);
   },
 
-  getById: (id: string) =>
-    apiClient.get<MediaAttachment>(ENDPOINTS.media.byId(id)),
+  getById: (id: string) => apiClient.get<MediaAttachment>(ENDPOINTS.media.byId(id)),
 };
 
 export const mediaApi = MOCK_ENABLED ? mockMediaApi : realMediaApi;

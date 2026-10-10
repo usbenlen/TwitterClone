@@ -1,5 +1,3 @@
-import { THEME_OPTIONS, APP_NAME, APP_ROUTES } from "@/constants";
-
 import { useState } from "react";
 import { Link } from "react-router";
 import { LockKeyhole, Palette, UserRound, ArrowRight } from "lucide-react";
@@ -10,6 +8,8 @@ import { useAuth, useTheme } from "@/hooks";
 
 import { EditProfileModal } from "@/components/modal/index";
 import { PageHeader } from "@/components/layout/pageHeader/index";
+
+import { THEME_OPTIONS, APP_NAME, APP_ROUTES } from "@/constants";
 
 import { cn } from "@/utils/cn";
 

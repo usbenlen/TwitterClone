@@ -1,4 +1,5 @@
 import { MOCK_DELAYS } from "@/mock/constants";
+
 import { locations } from "@/mock/data/locations";
 
 import type { Location } from "@/types/location";

@@ -2,9 +2,11 @@
 import { act, useState } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+
 import { useTweetComposer } from "@/hooks/composer/useTweetComposer";
-import PollComposer from "@/components/composer/poll/PollComposer";
-import ComposerToolbar from "@/components/composer/ComposerToolbar";
+
+import { PollComposer, ComposerToolbar } from "@/components/composer";
+
 import type { ComposerMedia, Location } from "@/types";
 
 const mocks = vi.hoisted(() => ({
@@ -17,9 +19,11 @@ vi.mock("@/api/gif.api", () => ({ gifApi: { search: async () => [] } }));
 vi.mock("@/api/location.api", () => ({
   locationApi: { search: async () => [] },
 }));
+
 vi.mock("@/hooks/useScheduledPosts", () => ({
   useScheduledPosts: () => ({ create: mocks.schedule }),
 }));
+
 vi.mock("@/hooks/composer/linkPreview/useComposerLinkPreview", () => ({
   useComposerLinkPreview: () => ({
     preview: null,
@@ -28,6 +32,7 @@ vi.mock("@/hooks/composer/linkPreview/useComposerLinkPreview", () => ({
     remove: vi.fn(),
   }),
 }));
+
 vi.mock("@/hooks/composer/useComposerSubmit", () => ({
   useComposerSubmit: () => {
     const [isPosting, setPosting] = useState(false);
@@ -49,6 +54,7 @@ let root: Root;
 let host: HTMLDivElement;
 function mount(options: Parameters<typeof useTweetComposer>[0] = {}) {
   let result!: ReturnType<typeof useTweetComposer>;
+
   function Probe() {
     result = useTweetComposer(options);
     return (
@@ -67,6 +73,7 @@ function mount(options: Parameters<typeof useTweetComposer>[0] = {}) {
   act(() => root.render(<Probe />));
   return () => result;
 }
+
 const location: Location = {
   id: "kyiv",
   name: "Київ",
@@ -74,6 +81,7 @@ const location: Location = {
   latitude: 50.45,
   longitude: 30.52,
 };
+
 const uploaded: ComposerMedia = {
   id: "image",
   attachmentId: "image",
@@ -84,6 +92,7 @@ const uploaded: ComposerMedia = {
   size: 1,
   progress: 100,
 };
+
 const selection = () =>
   [
     new File(["video"], "video.mp4", { type: "video/mp4" }),
@@ -99,6 +108,7 @@ beforeEach(() => {
   mocks.schedule.mockReset().mockResolvedValue({ id: "scheduled" });
   mocks.upload.mockReset().mockResolvedValue({ id: "video" });
 });
+
 afterEach(() => {
   act(() => root?.unmount());
   host?.remove();
@@ -133,6 +143,7 @@ describe("composer interactions", () => {
     act(() => read().handleAction("poll"));
     expect(read().pollEditor.visible).toBe(false);
   });
+
   it("guards poll activation while media is reserved and restores it after removal", async () => {
     const read = mount();
     await act(async () => {
@@ -150,6 +161,7 @@ describe("composer interactions", () => {
       read().pollEditor.firstOptionRef.current,
     );
   });
+
   it("permits one location with a poll, then re-enables location after removal", () => {
     const read = mount();
     act(() => {
@@ -163,6 +175,7 @@ describe("composer interactions", () => {
     act(() => read().locationPreview.onRemove());
     expect(read().disabledActions).not.toContain("location");
   });
+
   it("limits Unicode poll options and exposes duration controls with boundary errors", () => {
     const read = mount();
     act(() => read().handleAction("poll"));
@@ -199,6 +212,7 @@ describe("composer interactions", () => {
     });
     expect(read().pollEditor.poll.options).toHaveLength(4);
   });
+
   it("validates Unicode body length and invalid initial attachment combinations", () => {
     const read = mount({ initialContent: "😀".repeat(280) });
     expect(read().remaining).toBe(0);
@@ -207,6 +221,7 @@ describe("composer interactions", () => {
     expect(read().remaining).toBe(-1);
     expect(read().canSubmit).toBe(false);
   });
+
   it("blocks an initial media/poll conflict instead of silently fixing it", async () => {
     const read = mount({
       initialMedia: [uploaded],
@@ -218,14 +233,18 @@ describe("composer interactions", () => {
         ],
       },
     });
+
     expect(read().canSubmit).toBe(false);
+
     await act(async () => {
       await read().submit();
     });
+
     expect(mocks.submit).not.toHaveBeenCalled();
     act(() => read().pollEditor.onRemove());
     expect(read().canSubmit).toBe(true);
   });
+
   it("schedules mixed media and preserves the draft on a false result", async () => {
     const read = mount({
       initialContent: "Later",
@@ -255,6 +274,7 @@ describe("composer interactions", () => {
     expect(read().media).toEqual([]);
     expect(read().scheduling.scheduledAt).toBeNull();
   });
+
   it("keeps scheduled state after a network error", async () => {
     const read = mount({ initialContent: "Later", allowScheduling: true });
     act(() => read().scheduling.apply("2099-01-01T00:00:00Z"));
@@ -266,6 +286,7 @@ describe("composer interactions", () => {
     expect(read().scheduling.scheduledAt).toBe("2099-01-01T00:00:00Z");
     expect(read().canSubmit).toBe(true);
   });
+
   it("treats repeated popup-open notifications as idempotent", async () => {
     const read = mount();
     await act(async () => {
@@ -282,6 +303,7 @@ describe("composer interactions", () => {
     });
     expect(read().popovers.gif.open).toBe(false);
   });
+
   it("blocks duplicate submission and attachment edits while posting and retains the draft on failure", async () => {
     let resolve!: (value: boolean) => void;
     mocks.submit.mockImplementation(
@@ -317,6 +339,7 @@ describe("composer interactions", () => {
     expect(read().media).toHaveLength(1);
     expect(read().canSubmit).toBe(true);
   });
+
   it("submits current attachments when removal and submission share a render", async () => {
     const read = mount({ initialContent: "Hello", initialMedia: [uploaded] });
     await act(async () => {

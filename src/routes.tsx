@@ -2,9 +2,13 @@ import type { ComponentType } from "react";
 import { createBrowserRouter } from "react-router";
 
 import MainLayout from "@/layouts/MainLayout";
+
 import AdminRoute from "@/admin/AdminRoute";
+
 import { ProtectedRoute, GuestRoute } from "@/components/routeGuards/index";
+
 import { APP_ROUTES } from "@/constants/routes";
+
 import { Spinner } from "@/ui/Spinner";
 
 type PageModule = { default: ComponentType };

@@ -1,5 +1,7 @@
 import { useState } from "react";
+
 import { ConfirmModal } from "@/components/modal/ConfirmModal";
+
 import { errorMessage } from "@/store/api";
 import { useAppStore } from "@/store/hooks";
 import { sessionGeneration } from "@/store/session";
@@ -15,10 +17,7 @@ interface Action {
   onDone?: (failedIds: string[]) => void;
 }
 
-export async function runActionTasks(
-  tasks: ActionTask[],
-  active: () => boolean = () => true,
-) {
+export async function runActionTasks(tasks: ActionTask[], active: () => boolean = () => true) {
   const failed: ActionTask[] = [];
   const errors: string[] = [];
 

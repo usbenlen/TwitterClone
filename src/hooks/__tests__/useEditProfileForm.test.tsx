@@ -1,6 +1,8 @@
 import { renderToString } from "react-dom/server";
 import { describe, expect, it, vi } from "vitest";
+
 import type { User } from "@/types";
+
 import { useEditProfileForm } from "@/hooks/useEditProfileForm";
 
 vi.mock("@/hooks/index", () => ({
@@ -9,6 +11,7 @@ vi.mock("@/hooks/index", () => ({
   invalidateImageCache: vi.fn(),
   useImageSelection: () => ({ file: null, removed: false }),
 }));
+
 describe("profile update payload", () => {
   it("sends an empty biography explicitly so the API can clear it", async () => {
     const onSave = vi.fn().mockResolvedValue(undefined);

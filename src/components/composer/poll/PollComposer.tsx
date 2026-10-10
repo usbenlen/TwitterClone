@@ -1,9 +1,13 @@
 import { useEffect, useId, type RefObject } from "react";
 import { Clock3, Plus, X } from "lucide-react";
+
 import { POLL } from "@/constants/poll";
-import { countCharacters, getPollError } from "@/utils/composerRules";
+
 import PollCard, { pollRowClassName } from "@/components/tweet/poll/PollCard";
+
+import { countCharacters, getPollError } from "@/utils/composerRules";
 import { cn } from "@/utils/cn";
+
 import type { ComposerPoll } from "@/types/poll";
 
 interface PollComposerProps {

@@ -1,7 +1,9 @@
 import { renderToString } from "react-dom/server";
 import { createElement } from "react";
 import { describe, expect, it } from "vitest";
+
 import { Avatar } from "@/ui/Avatar";
+
 import { getAvatarGradient, getAvatarInitials } from "@/utils/avatar";
 
 describe("avatar fallbacks", () => {
@@ -30,12 +32,15 @@ describe("avatar fallbacks", () => {
         userId: "user-1",
       }),
     );
+
     expect(named).toContain('aria-label="Ada Lovelace"');
     expect(named).toContain(">AL</span>");
     expect(named).toContain(getAvatarGradient("user-1"));
+
     const fallback = renderToString(
       createElement(Avatar, { name: "  ", fallbackName: "  alice " }),
     );
+
     expect(fallback).toContain('aria-label="alice"');
     expect(renderToString(createElement(Avatar))).toContain(
       'aria-label="User"',

@@ -1,11 +1,11 @@
+import { useEffect, useMemo, useState } from "react";
+
 import {
   MILLISECONDS_PER_MINUTE,
   MINUTES_PER_HOUR,
   HOURS_PER_DAY,
   POLL_COUNTDOWN_INTERVAL_MS,
 } from "@/constants";
-
-import { useEffect, useMemo, useState } from "react";
 
 function formatRemaining(ms: number) {
   const minutes = Math.floor(ms / MILLISECONDS_PER_MINUTE);

@@ -1,4 +1,5 @@
 import { Modal, Button, type ButtonProps } from "@/ui";
+
 interface ConfirmModalProps {
   open: boolean;
   title: string;

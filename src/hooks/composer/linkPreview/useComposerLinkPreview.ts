@@ -1,10 +1,12 @@
 import { useEffect, useRef, useState } from "react";
 
 import { linkPreviewApi } from "@/api/linkPreview.api";
+
 import {
   ENABLE_LINK_PREVIEWS,
   LINK_PREVIEW_DEBOUNCE_MS,
 } from "@/constants";
+
 import { findFirstHttpUrl } from "@/utils/linkPreview";
 
 import type { LinkPreview } from "@/types/linkPreview";

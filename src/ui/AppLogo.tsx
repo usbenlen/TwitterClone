@@ -1,5 +1,6 @@
-import { APP_NAME, APP_ROUTES } from "@/constants";
 import { NavLink } from "react-router";
+
+import { APP_NAME, APP_ROUTES } from "@/constants";
 
 import { cn } from "@/utils/cn";
 

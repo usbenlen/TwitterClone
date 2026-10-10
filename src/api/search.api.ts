@@ -1,4 +1,5 @@
 import { serializeSearchApiCriteria } from "@/utils/search";
+
 import { ENDPOINTS } from "@/api/config";
 import { apiClient } from "@/api/client";
 import { mapPostToTweet, type BackendPost } from "@/api/mappers/post.mapper";

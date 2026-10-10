@@ -1,4 +1,5 @@
 import { MOCK_DELAYS } from "@/mock/constants";
+
 import type { User, Tweet } from "@/types";
 
 import type { UpdateProfileRequest } from "@/api";
@@ -11,7 +12,6 @@ import {
 } from "@/mock/data";
 
 import { withAncestors, updateTweetAuthors } from "@/utils";
-
 import { delay } from "@/mock/utils/delay";
 
 const likedTweetsByUsername: Record<string, string[]> = {
@@ -151,11 +151,9 @@ export const mockUserApi = {
     if (data.removeBirthDate) user.birthDate = null;
     else if (data.birthDate !== undefined) user.birthDate = data.birthDate;
 
-    if (data.birthDateVisibility !== undefined)
-      user.birthDateVisibility = data.birthDateVisibility;
+    if (data.birthDateVisibility !== undefined) user.birthDateVisibility = data.birthDateVisibility;
 
-    if (data.birthYearVisibility !== undefined)
-      user.birthYearVisibility = data.birthYearVisibility;
+    if (data.birthYearVisibility !== undefined) user.birthYearVisibility = data.birthYearVisibility;
 
     if (data.removeAvatar) user.avatarUrl = null;
     else if (data.avatar) user.avatarUrl = URL.createObjectURL(data.avatar);

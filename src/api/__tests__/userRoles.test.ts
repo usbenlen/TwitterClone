@@ -1,5 +1,18 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
+import { authApi, userApi, realFollowApi, searchApi, recommendationsApi, commentApi } from "@/api";
+import { normalizeUserRole, mapUserRole } from "@/api/mappers/user.mapper";
+import {
+  mapPostToTweet,
+  mapEditHistoryResponse,
+  mapRepostToTweet,
+  type BackendPost,
+} from "@/api/mappers/post.mapper";
+
+import { DEFAULT_SEARCH_CRITERIA } from "@/utils/search";
+
+import type { User } from "@/types";
+
 const client = vi.hoisted(() => ({ get: vi.fn(), put: vi.fn() }));
 vi.mock("@/api/client", () => ({ apiClient: client }));
 vi.mock("@/mock/config", () => ({ MOCK_ENABLED: false }));
@@ -12,22 +25,6 @@ vi.mock("@/mock/handlers", () => ({
   mockRecommendationsApi: {},
   mockCommentApi: {},
 }));
-
-import { authApi } from "@/api/auth.api";
-import { userApi } from "@/api/user.api";
-import { realFollowApi } from "@/api/follow.api";
-import { searchApi } from "@/api/search.api";
-import { recommendationsApi } from "@/api/recommendations.api";
-import { commentApi } from "@/api/comment.api";
-import { normalizeUserRole, mapUserRole } from "@/api/mappers/user.mapper";
-import {
-  mapPostToTweet,
-  mapEditHistoryResponse,
-  mapRepostToTweet,
-  type BackendPost,
-} from "@/api/mappers/post.mapper";
-import { DEFAULT_SEARCH_CRITERIA } from "@/utils/search";
-import type { User } from "@/types";
 
 const user = { id: "u1", username: "admin", role: "ADMIN", isVerified: false };
 const post: BackendPost = {

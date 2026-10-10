@@ -1,5 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
+
 import { runActionTasks } from "@/admin/components/ActionConfirmation";
+
 describe("administrative batches", () => {
   it("retains failed tasks for retry without repeating successful actions", async () => {
     const first = vi.fn().mockResolvedValue(undefined);
@@ -13,6 +15,7 @@ describe("administrative batches", () => {
       { id: "second", run: second },
       { id: "third", run: third },
     ];
+
     const result = await runActionTasks(tasks);
     expect(result.failed.map((task) => task.id)).toEqual(["second"]);
     expect(result.errors).toEqual(["failed"]);
@@ -21,6 +24,7 @@ describe("administrative batches", () => {
     expect(second).toHaveBeenCalledTimes(2);
     expect(third).toHaveBeenCalledTimes(1);
   });
+
   it("stops issuing actions after the session changes", async () => {
     let active = true;
     const second = vi.fn();

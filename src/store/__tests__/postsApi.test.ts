@@ -1,6 +1,8 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+
 import { tweetApi, commentApi, userApi, searchApi, pollApi } from "@/api";
-import { createAppStore, type AppStore } from "@/store/index";
+
+import { createAppStore, type AppStore } from "@/store";
 import {
   postsApi,
   publishPosts,
@@ -9,6 +11,7 @@ import {
 } from "@/store/postsApi";
 import { runReaction } from "@/store/reactions";
 import { sessionChanged } from "@/store/session";
+
 import type {
   Tweet,
   User,
@@ -35,6 +38,7 @@ vi.mock("@/api/index", () => {
     toggleBookmark: vi.fn(),
     view: vi.fn(),
   });
+
   return {
     tweetApi: api(),
     commentApi: api(),
@@ -82,11 +86,14 @@ function deferred<T>() {
   });
   return { promise, resolve, reject };
 }
+
 const feed: PostsQuery = { kind: "feed" };
 const bookmarks: PostsQuery = { kind: "bookmarks" };
+
 let store: AppStore;
 let posts: Tweet[];
 let comments: Tweet[];
+
 const clone = <T>(value: T): T => structuredClone(value);
 const read = (arg: PostsQuery = feed) =>
   postsApi.endpoints.getPosts.select(arg)(store.getState()).data;
@@ -102,12 +109,15 @@ beforeEach(() => {
   vi.mocked(tweetApi.getBookmarked).mockImplementation(async () =>
     clone(posts.filter((item) => item.bookmarkedByMe)),
   );
+
   vi.mocked(commentApi.getBookmarked).mockImplementation(async () =>
     clone(comments.filter((item) => item.bookmarkedByMe)),
   );
+
   vi.mocked(commentApi.getByPostId).mockImplementation(async () =>
     clone(comments),
   );
+
   vi.mocked(commentApi.getThread).mockImplementation(async (id) => {
     const target = [...posts, ...comments].find((item) => item.id === id);
     if (!target) throw new Error("Not found");
@@ -117,13 +127,16 @@ beforeEach(() => {
       replies: comments,
     } as ThreadResponse);
   });
+
   vi.mocked(userApi.getPosts).mockImplementation(async () => clone(posts));
   vi.mocked(userApi.getLikes).mockImplementation(async () =>
     clone(posts.filter((item) => item.likedByMe)),
   );
+
   vi.mocked(userApi.getReposts).mockImplementation(async () =>
     clone(posts.filter((item) => item.repostedByMe)),
   );
+
   vi.mocked(userApi.getReplies).mockImplementation(async () => clone(comments));
   vi.mocked(searchApi.posts).mockImplementation(async () => clone(posts));
 });
@@ -136,6 +149,7 @@ describe("post queries and mutations", () => {
   it("updates profile authors in cached lists and deep threads without a refetch", async () => {
     const root = tweet();
     const parent = tweet({ id: "parent", isComment: true, postId: root.id });
+
     const target = tweet({
       id: "deep",
       isComment: true,
@@ -143,15 +157,18 @@ describe("post queries and mutations", () => {
       parentCommentId: parent.id,
       ancestors: [root, parent],
     });
+
     const reply = tweet({
       id: "reply",
       parentCommentId: target.id,
       ancestors: [root, parent, target],
     });
+
     const other = tweet({
       id: "other",
       author: { ...root.author, id: "other-user" },
     });
+
     const quote = tweet({
       id: "quote",
       quote: {
@@ -163,21 +180,27 @@ describe("post queries and mutations", () => {
         target,
       },
     });
+
     posts = [target, quote, other];
     comments = [target, reply];
+
     vi.mocked(commentApi.getThread).mockImplementation(async () =>
       clone({ target, ancestors: [root, parent], replies: [reply, other] }),
     );
+
     const args: PostsQuery[] = [
       feed,
       { kind: "comments", postId: root.id },
       { kind: "profile", username: "alice", tab: "replies" },
     ];
+
     await Promise.all([
       ...args.map(load),
       store.dispatch(postsApi.endpoints.getThread.initiate(target.id)),
     ]);
+
     const before = read()!;
+
     const profile: User = {
       ...root.author,
       displayName: "Updated author",
@@ -189,26 +212,30 @@ describe("post queries and mutations", () => {
       isFollowedByCurrentUser: false,
       createdAt: root.createdAt,
     };
+
     const calls = vi.mocked(commentApi.getThread).mock.calls.length;
     updateCachedProfileAuthors(profile, store.dispatch, store.getState());
+
     const expected = {
       displayName: profile.displayName,
       avatarUrl: profile.avatarUrl,
       isVerified: true,
     };
+
     for (const arg of args) {
       const item = read(arg)![0];
       expect(item.author).toMatchObject(expected);
-      for (const ancestor of item.ancestors ?? [])
-        expect(ancestor.author).toMatchObject(expected);
+
+      for (const ancestor of item.ancestors ?? []) expect(ancestor.author).toMatchObject(expected);
+
       expect(item.content).toBe(target.content);
       expect(item.repliesCount).toBe(target.repliesCount);
     }
     const thread = postsApi.endpoints.getThread.select(target.id)(
       store.getState(),
     ).data!;
-    for (const item of [thread.target, ...thread.ancestors, thread.replies[0]])
-      expect(item.author).toMatchObject(expected);
+    for (const item of [thread.target, ...thread.ancestors, thread.replies[0]]) expect(item.author).toMatchObject(expected);
+
     expect(thread.replies[0].ancestors?.at(-1)?.author).toMatchObject(expected);
     expect(read()![1].quote?.target?.author).toMatchObject(expected);
     expect(read()![2]).toBe(before[2]);
@@ -221,37 +248,52 @@ describe("post queries and mutations", () => {
       store.dispatch,
       store.getState(),
     );
+
     expect(read()![1].quote?.target?.author).toMatchObject({
       displayName: "Next name",
       avatarUrl: null,
     });
+
     expect(
       postsApi.endpoints.getThread.select(target.id)(store.getState()).data
         ?.target.author,
     ).toMatchObject({ displayName: "Next name", avatarUrl: null });
+
     expect(thread.target.author).toMatchObject(expected);
   });
 
   it("does not freeze objects owned by the mock backend", async () => {
     vi.mocked(tweetApi.getFeed).mockResolvedValueOnce(posts);
+
     await load();
+
     expect(Object.isFrozen(posts[0].author)).toBe(false);
+
     posts[0].author.displayName = "Updated profile";
+
     expect(read()?.[0].author.displayName).toBe("Alice");
   });
 
   it("shares an in-flight feed request and preserves unchanged references", async () => {
     const response = deferred<Tweet[]>();
+
     vi.mocked(tweetApi.getFeed).mockReturnValueOnce(response.promise);
+
     const first = load();
     const second = load();
+
     expect(tweetApi.getFeed).toHaveBeenCalledTimes(1);
+
     response.resolve(clone(posts));
+
     await Promise.all([first, second]);
+
     const before = read();
+
     await store.dispatch(
       postsApi.endpoints.getHistory.initiate({ type: "post", id: "missing" }),
     );
+
     expect(read()).toBe(before);
   });
 
@@ -261,25 +303,32 @@ describe("post queries and mutations", () => {
       username: "alice",
       tab: "posts",
     };
+
     await Promise.all([
       load(),
       load(profile),
       store.dispatch(postsApi.endpoints.getThread.initiate("p1")),
     ]);
+
     const response = deferred<ToggleLikeResponse>();
+
     vi.mocked(tweetApi.toggleLike).mockReturnValueOnce(response.promise);
+
     const reaction = runReaction(store, {
       id: "p1",
       type: "post",
       action: "like",
       active: false,
     });
+
     expect(read()?.[0].likesCount).toBe(1);
     expect(read(profile)?.[0].likedByMe).toBe(true);
+
     expect(
       postsApi.endpoints.getThread.select("p1")(store.getState()).data?.target
         .likedByMe,
     ).toBe(true);
+
     expect(
       await runReaction(store, {
         id: "p1",
@@ -288,26 +337,38 @@ describe("post queries and mutations", () => {
         active: false,
       }),
     ).toBe(false);
+
     expect(tweetApi.toggleLike).toHaveBeenCalledTimes(1);
+
     posts[0] = { ...posts[0], likedByMe: true, likesCount: 8 };
+
     response.resolve({ likedByMe: true, likesCount: 8 });
+
     expect(await reaction).toBe(true);
+
     await vi.waitFor(() => expect(read()?.[0].likesCount).toBe(8));
   });
 
   it("rolls back a failed unbookmark without losing the bookmarked row", async () => {
     posts[0].bookmarkedByMe = true;
+
     await Promise.all([load(), load(bookmarks)]);
+
     const response = deferred<{ bookmarkedByMe: boolean }>();
+
     vi.mocked(tweetApi.toggleBookmark).mockReturnValueOnce(response.promise);
+
     const reaction = runReaction(store, {
       id: "p1",
       type: "post",
       action: "bookmark",
       active: true,
     });
+
     expect(read(bookmarks)?.[0].bookmarkedByMe).toBe(false);
+
     response.reject(new Error("offline"));
+
     expect(await reaction).toBe(false);
     expect(read(bookmarks)?.[0].bookmarkedByMe).toBe(true);
     expect(read()?.[0].bookmarkedByMe).toBe(true);
@@ -315,26 +376,37 @@ describe("post queries and mutations", () => {
 
   it("rolls back by identity when another post is inserted during a reaction", async () => {
     posts[0].likesCount = 5;
+
     await load();
+
     const response = deferred<ToggleLikeResponse>();
+
     vi.mocked(tweetApi.toggleLike).mockReturnValueOnce(response.promise);
+
     const reaction = runReaction(store, {
       id: "p1",
       type: "post",
       action: "like",
       active: false,
     });
+
     const created = tweet({ id: "new", likesCount: 77 });
+
     posts.unshift(created);
+
     publishPosts([clone(created)], store.dispatch, store.getState());
+
     response.reject(new Error("offline"));
+
     await reaction;
+
     expect(read()?.find((item) => item.id === "new")?.likesCount).toBe(77);
     expect(read()?.find((item) => item.id === "p1")?.likesCount).toBe(5);
   });
 
   it("supports empty bookmark responses and refreshes membership", async () => {
     await Promise.all([load(), load(bookmarks)]);
+
     vi.mocked(
       tweetApi.toggleBookmark as (
         id: string,
@@ -344,35 +416,46 @@ describe("post queries and mutations", () => {
       posts[0].bookmarkedByMe = true;
       return undefined;
     });
+
     await runReaction(store, {
       id: "p1",
       type: "post",
       action: "bookmark",
       active: false,
     });
-    await vi.waitFor(() =>
-      expect(read(bookmarks)?.map((item) => item.id)).toEqual(["p1"]),
+
+    await vi.waitFor(() => expect(read(bookmarks)?.map((item) => item.id)).toEqual(["p1"]),
     );
   });
 
   it("keeps post and comment IDs separate", async () => {
     comments = [tweet({ id: "p1", isComment: true, postId: "root" })];
+
     const arg: PostsQuery = { kind: "comments", postId: "root" };
+
     await Promise.all([load(), load(arg)]);
+
     const response = deferred<ToggleLikeResponse>();
+
     vi.mocked(commentApi.toggleLike).mockReturnValueOnce(response.promise);
+
     const reaction = runReaction(store, {
       id: "p1",
       type: "comment",
       action: "like",
       active: false,
     });
+
     expect(read()?.[0].likedByMe).toBe(false);
     expect(read(arg)?.[0].likedByMe).toBe(true);
+
     comments[0].likedByMe = true;
     comments[0].likesCount = 1;
+
     response.resolve({ likedByMe: true, likesCount: 1 });
+
     await reaction;
+
     expect(tweetApi.toggleLike).not.toHaveBeenCalled();
   });
 
@@ -388,9 +471,13 @@ describe("post queries and mutations", () => {
       isClosed: false,
       expiresAt: "2099-01-01T00:00:00Z",
     };
+
     await load();
+
     const response = deferred<NonNullable<Tweet["poll"]>>();
+
     vi.mocked(pollApi.vote).mockReturnValueOnce(response.promise);
+
     const arg = {
       id: "p1",
       type: "post" as const,
@@ -398,44 +485,59 @@ describe("post queries and mutations", () => {
       optionId: "a",
       poll: clone(posts[0].poll!),
     };
+
     const vote = runReaction(store, arg);
+
     expect(read()?.[0].poll?.totalVotes).toBe(1);
     expect(await runReaction(store, arg)).toBe(false);
+
     response.reject(new Error("offline"));
+
     await vote;
+
     expect(read()?.[0].poll?.votedOptionId).toBeUndefined();
+
     expect(
       await runReaction(store, {
         ...arg,
         poll: { ...arg.poll, isClosed: true },
       }),
     ).toBe(false);
+
     expect(pollApi.vote).toHaveBeenCalledTimes(1);
   });
 
   it("revalidates a query that was in flight while a reaction completed", async () => {
     await load();
+
     const late = deferred<Tweet[]>();
+
     vi.mocked(userApi.getPosts).mockReturnValueOnce(late.promise);
+
     const profile: PostsQuery = {
       kind: "profile",
       username: "alice",
       tab: "posts",
     };
+
     const loading = load(profile);
     vi.mocked(tweetApi.toggleLike).mockImplementation(async () => {
       posts[0].likedByMe = true;
       posts[0].likesCount = 1;
       return { likedByMe: true, likesCount: 1 };
     });
+
     await runReaction(store, {
       id: "p1",
       type: "post",
       action: "like",
       active: false,
     });
+
     late.resolve([tweet()]);
+
     await loading;
+
     await vi.waitFor(() => expect(read(profile)?.[0].likedByMe).toBe(true));
   });
 
@@ -445,12 +547,16 @@ describe("post queries and mutations", () => {
       username: "alice",
       tab: "posts",
     };
+
     posts = [];
+
     await Promise.all([load(), load(profile)]);
+
     vi.mocked(tweetApi.create).mockImplementation(async () => {
       posts = [tweet()];
       return clone(posts[0]);
     });
+
     await store
       .dispatch(
         postsApi.endpoints.createPost.initiate({
@@ -459,21 +565,26 @@ describe("post queries and mutations", () => {
         }),
       )
       .unwrap();
+
     await vi.waitFor(() =>
       expect(read(profile)?.map((item) => item.id)).toEqual(["p1"]),
     );
+
     publishPosts(clone(posts), store.dispatch, store.getState());
+
     expect(read()?.map((item) => item.id)).toEqual(["p1"]);
   });
 
   it("refreshes replies and parent counters after creating a comment", async () => {
     const arg: PostsQuery = { kind: "comments", postId: "p1" };
     await Promise.all([load(), load(arg)]);
+
     vi.mocked(commentApi.create).mockImplementation(async () => {
       comments = [tweet({ id: "c1", isComment: true, postId: "p1" })];
       posts[0].repliesCount = 1;
       return clone(comments[0]);
     });
+
     await store
       .dispatch(
         postsApi.endpoints.createComment.initiate({
@@ -482,6 +593,7 @@ describe("post queries and mutations", () => {
         }),
       )
       .unwrap();
+
     await vi.waitFor(() => {
       expect(read(arg)).toHaveLength(1);
       expect(read()?.[0].repliesCount).toBe(1);
@@ -499,6 +611,7 @@ describe("post queries and mutations", () => {
         bookmarkedByMe: true,
       }),
     ];
+
     posts.push(
       tweet({
         id: "quote",
@@ -512,21 +625,26 @@ describe("post queries and mutations", () => {
         },
       }),
     );
+
     await Promise.all([
       load(),
       load(bookmarks),
       load({ kind: "comments", postId: "p1" }),
     ]);
+
     vi.mocked(commentApi.delete).mockImplementation(async () => {
       comments = [];
       posts[1].quote!.target = null;
     });
+
     await store
       .dispatch(
         postsApi.endpoints.deletePost.initiate({ id: "c1", type: "comment" }),
       )
       .unwrap();
+
     await vi.waitFor(() => expect(read(bookmarks)).toHaveLength(0));
+
     expect(read()?.[1].quote?.target).toBeNull();
   });
 
@@ -544,12 +662,15 @@ describe("post queries and mutations", () => {
         },
       }),
     );
+
     await load();
+
     vi.mocked(tweetApi.update).mockImplementation(async () => {
       posts[0] = { ...posts[0], content: "edited", versionId: "v2" };
       posts[1].quote!.hasNewVersion = true;
       return clone(posts[0]);
     });
+
     await store
       .dispatch(
         postsApi.endpoints.updatePost.initiate({
@@ -559,6 +680,7 @@ describe("post queries and mutations", () => {
         }),
       )
       .unwrap();
+
     expect(read()?.[0].content).toBe("edited");
     expect(read()?.[1].quote?.hasNewVersion).toBe(true);
     expect(read()?.[1].quote?.target?.content).toBe("hello");
@@ -566,53 +688,76 @@ describe("post queries and mutations", () => {
 
   it("keeps query arguments separate and exposes retryable serializable errors", async () => {
     vi.mocked(commentApi.getThread).mockRejectedValueOnce(new Error("offline"));
+
     const failed = await store.dispatch(
       postsApi.endpoints.getThread.initiate("p1"),
     );
+
     expect(failed.error).toEqual({ message: "offline" });
+
     await store.dispatch(
       postsApi.endpoints.getThread.initiate("p1", { forceRefetch: true }),
     );
+
     expect(
       postsApi.endpoints.getThread.select("p1")(store.getState()).data?.target
         .id,
     ).toBe("p1");
+
     const criteria = { query: "a" } as SearchCriteria;
+
     await load({ kind: "search", criteria, viewer: { followingIds: [] } });
     await load({
       kind: "search",
       criteria: { ...criteria, query: "b" },
       viewer: { followingIds: [] },
     });
+
     expect(searchApi.posts).toHaveBeenCalledTimes(2);
   });
 
   it("does not restore old query data after a session change", async () => {
     const old = deferred<Tweet[]>();
+
     vi.mocked(tweetApi.getFeed).mockReturnValueOnce(old.promise);
+
     const loading = load();
+
     store.dispatch(sessionChanged());
+
     posts = [tweet({ id: "new-account" })];
+
     await load();
+
     old.resolve([tweet({ id: "old-account" })]);
+
     await loading;
+
     expect(read()?.[0].id).toBe("new-account");
   });
 
   it("does not apply old mutation patches to a new session", async () => {
     await load();
+
     const old = deferred<ToggleLikeResponse>();
+
     vi.mocked(tweetApi.toggleLike).mockReturnValueOnce(old.promise);
+
     const reaction = runReaction(store, {
       id: "p1",
       type: "post",
       action: "like",
       active: false,
     });
+
     store.dispatch(sessionChanged());
+
     await load();
+
     old.resolve({ likedByMe: true, likesCount: 99 });
+
     await reaction;
+
     expect(read()?.[0].likesCount).toBe(0);
   });
 });

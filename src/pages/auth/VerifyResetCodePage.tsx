@@ -1,9 +1,10 @@
-import { AUTH_LIMITS, APP_ROUTES } from "@/constants";
 import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useLocation, useNavigate } from "react-router";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+
+import { AUTH_LIMITS, APP_ROUTES } from "@/constants";
 
 import {
   changePasswordSchema,
@@ -72,8 +73,7 @@ export default function VerifyResetCodePage({
   });
 
   useEffect(() => {
-    if (!isSettings && !email)
-      navigate(APP_ROUTES.FORGOT_PASSWORD, { replace: true });
+    if (!isSettings && !email) navigate(APP_ROUTES.FORGOT_PASSWORD, { replace: true });
   }, [email, navigate, isSettings]);
 
   useEffect(() => {

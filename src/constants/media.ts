@@ -1,4 +1,4 @@
-// The grid has four visible cells, independently of the upload limit.
+// The grid has four visible cells, independently of the upload limit
 export const MEDIA_GRID_VISIBLE_LIMIT = 4;
 export const MEDIA_UPLOAD_SUCCESS_VISIBLE_MS = 800;
 export const BYTES_PER_MEGABYTE = 1024 ** 2;

@@ -1,7 +1,9 @@
-import { formatCompactCount } from "@/utils/format";
-import { SIDEBAR, APP_ROUTES } from "@/constants";
 import { Loader2 } from "lucide-react";
 import { Link } from "react-router";
+
+import { formatCompactCount } from "@/utils/format";
+
+import { SIDEBAR, APP_ROUTES } from "@/constants";
 
 import RightSidebarCard from "@/components/layout/desktop/rightSidebar/RightSidebarCard";
 

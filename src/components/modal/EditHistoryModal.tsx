@@ -1,13 +1,16 @@
-import { useBodyScrollLock } from "@/hooks/useBodyScrollLock";
-import { formatDateTime } from "@/utils/format";
-import { VerifiedBadge } from "@/ui/VerifiedBadge";
 import { useEffect } from "react";
 import { createPortal } from "react-dom";
 import { X } from "lucide-react";
 
+import { useBodyScrollLock } from "@/hooks/useBodyScrollLock";
+
+import { formatDateTime } from "@/utils/format";
+
+import { Avatar, Button, Spinner, VerifiedBadge } from "@/ui";
+
 import { useGetHistoryQuery, targetOf, errorMessage } from "@/store/postsApi";
+
 import TweetContent from "@/components/tweet/TweetContent";
-import { Avatar, Button, Spinner } from "@/ui";
 
 import type { Tweet } from "@/types";
 

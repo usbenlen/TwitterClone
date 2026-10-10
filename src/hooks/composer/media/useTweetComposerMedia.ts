@@ -1,7 +1,8 @@
-import { BYTES_PER_MEGABYTE, MEDIA } from "@/constants";
 import { useRef, useState } from "react";
 
 import { useMediaUpload } from "@/hooks/composer/media/useMediaUpload";
+
+import { BYTES_PER_MEGABYTE, MEDIA } from "@/constants";
 
 import { prepareMedia, createPreview, validateMedia } from "@/utils/media";
 import { getMediaAdditionError } from "@/utils/composerRules";

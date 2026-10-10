@@ -1,15 +1,18 @@
 import { renderToStaticMarkup } from "react-dom/server";
 import { MemoryRouter } from "react-router";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+
 import {
   DashboardReportSummary,
   ReportPreview,
   ReportSummary,
 } from "@/admin/components/Summaries";
 import { ReportActions } from "@/admin/components/ReportActions";
+
 import type { ReportSignal } from "@/types/report";
 import type { Tweet } from "@/types/tweet";
 import type { DashboardTables } from "@/admin/types";
+
 import { formatDateTime } from "@/utils/format";
 
 const content = vi.hoisted(() => ({ render: vi.fn() }));
@@ -35,6 +38,7 @@ const post: Tweet = {
   bookmarkedByMe: false,
   createdAt: "2026-10-01T12:00:00Z",
 };
+
 const report: ReportSignal = {
   id: "report-1",
   targetType: "posts",
@@ -140,6 +144,7 @@ describe("moderation report presentation", () => {
         },
         true,
       );
+
       expect(content.render).not.toHaveBeenCalled();
       expect(html).not.toContain(post.content);
       expect(html).toContain(type === "comments" ? "коментар" : "допис");

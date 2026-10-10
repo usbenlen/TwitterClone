@@ -1,7 +1,11 @@
 import { useState } from "react";
+
 import type { UpdateProfileRequest } from "@/api/user.api";
+
 import type { Location, User } from "@/types";
+
 import { DEFAULT_BIRTH_DATE_VISIBILITY } from "@/constants/profile";
+
 import {
   buildBirthDate,
   parseBirthDate,
@@ -101,13 +105,14 @@ export function useEditProfileForm({
     updateUi({ isLocationOpen: false });
     locationSearch.reset();
   };
-  const handleRemoveLocation = () =>
-    updateValues({ location: null, removeLocation: Boolean(user.location) });
+
+  const handleRemoveLocation = () => updateValues({ location: null, removeLocation: Boolean(user.location) });
 
   const updateBirthDate = (patch: Partial<typeof values>) => {
     updateValues(patch);
     updateUi({ error: null });
   };
+
   const handleBirthMonthChange = (birthMonth: string) => {
     const maxDay = maxBirthDay(values.birthYear, birthMonth);
     updateBirthDate({
@@ -116,6 +121,7 @@ export function useEditProfileForm({
       removeBirthDate: false,
     });
   };
+
   const handleBirthYearChange = (birthYear: string) => {
     const today = new Date();
     const month = Number(values.birthMonth);

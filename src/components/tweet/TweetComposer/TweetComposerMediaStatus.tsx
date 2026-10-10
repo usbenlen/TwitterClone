@@ -1,9 +1,10 @@
+import { useEffect, useState } from "react";
+import { Loader2, AlertCircle, CheckCircle2 } from "lucide-react";
+
 import {
   MEDIA_UPLOAD_SUCCESS_VISIBLE_MS,
   MEDIA_STATUS,
 } from "@/constants";
-import { useEffect, useState } from "react";
-import { Loader2, AlertCircle, CheckCircle2 } from "lucide-react";
 
 import type { ComposerMediaStatus } from "@/types/composer";
 

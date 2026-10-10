@@ -1,6 +1,5 @@
 import { MOCK_DELAYS } from "@/mock/constants";
-import { toTweetAuthor, getCommentAncestors, withAncestors } from "@/utils";
-import { createMockPoll, updateMockPoll } from "@/mock/utils/mockPoll";
+
 import type {
   CreateCommentRequest,
   Tweet,
@@ -13,11 +12,13 @@ import { commentsByPostId, nextCommentId, currentUser } from "@/mock/data";
 
 import { delay } from "@/mock/utils/delay";
 import { removeMockContent } from "@/mock/utils/removeMockContent";
-
+import { createMockPoll, updateMockPoll } from "@/mock/utils/mockPoll";
 import {
   resolveMockMedia,
   validateMockPost,
 } from "@/mock/utils/validateMockPost";
+import { toTweetAuthor, getCommentAncestors, withAncestors } from "@/utils";
+
 import { editHistoryStore } from "@/mock/stores/editHistoryStore";
 
 import {
@@ -100,9 +101,7 @@ export const mockCommentApi = {
     // Comment
     const found = findComment(id);
 
-    if (!found) {
-      throw new Error("Пост або коментар не знайдено.");
-    }
+    if (!found) throw new Error("Пост або коментар не знайдено.");
 
     const targetComment = found.comment;
 

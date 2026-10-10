@@ -8,8 +8,7 @@ interface PollCardProps {
   busy?: boolean;
 }
 
-export const pollRowClassName =
-  "min-h-11 min-w-0 rounded-xl border border-border bg-background px-3 py-2.5 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60";
+export const pollRowClassName = "min-h-11 min-w-0 rounded-xl border border-border bg-background px-3 py-2.5 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60";
 
 export default function PollCard({
   children,

@@ -9,6 +9,7 @@ import { Spinner } from "@/ui";
 
 import { Profile } from "@/components/profile/index";
 import { PageHeader } from "@/components/layout/pageHeader/index";
+
 import { APP_ROUTES } from "@/constants/routes";
 
 export default function ProfilePage() {

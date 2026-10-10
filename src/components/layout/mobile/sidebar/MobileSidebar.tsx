@@ -1,6 +1,7 @@
-import { useBodyScrollLock } from "@/hooks/useBodyScrollLock";
 import type { ReactNode } from "react";
 import { X } from "lucide-react";
+
+import { useBodyScrollLock } from "@/hooks/useBodyScrollLock";
 
 import { Button, AppLogo } from "@/ui";
 

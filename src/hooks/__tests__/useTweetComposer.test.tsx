@@ -1,6 +1,8 @@
 import { renderToString } from "react-dom/server";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+
 import { useTweetComposer } from "@/hooks/composer/useTweetComposer";
+
 import type { ComposerPoll } from "@/types";
 
 const mocks = vi.hoisted(() => ({
@@ -17,6 +19,7 @@ const mocks = vi.hoisted(() => ({
   reset: vi.fn(),
   closeAllPopups: vi.fn(),
 }));
+
 vi.mock("@/hooks/composer", () => ({
   useComposerEditor: () => ({ editorRef: { current: null } }),
   useTweetComposerMedia: () => ({
@@ -45,6 +48,7 @@ vi.mock("@/hooks/composer", () => ({
     },
   }),
 }));
+
 vi.mock("@/hooks/composer/useComposerScheduling", () => ({
   useComposerScheduling: () => ({
     scheduledAt: null,

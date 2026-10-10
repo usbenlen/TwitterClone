@@ -1,4 +1,5 @@
 import { scheduledPostApi } from "@/api";
+
 import type { AppStore } from "@/store/index";
 import { postsApi, publishPosts } from "@/store/postsApi";
 import {
@@ -16,8 +17,10 @@ export async function publishScheduled(
     const published = await scheduledPostApi.publishDue();
     if (!isActive() || generation !== sessionGeneration(store.getState()))
       return;
+
     if (published.length)
       publishPosts(published, store.dispatch, store.getState());
+
     store.dispatch(scheduledErrorCleared());
     store.dispatch(
       postsApi.util.invalidateTags([{ type: "Scheduled", id: "LIST" }]),

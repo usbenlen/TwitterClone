@@ -1,4 +1,5 @@
 import { MOCK_UPLOAD } from "@/mock/constants";
+
 interface MockUploadOptions {
   onProgress?: (progress: number) => void;
   interval?: number;

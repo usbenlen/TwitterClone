@@ -1,5 +1,7 @@
 import { MEDIA_STATUS } from "@/constants/app";
+
 import type { Location } from "@/types/location";
+
 import type { LinkPreview } from "@/types/linkPreview";
 
 export type ComposerAction =

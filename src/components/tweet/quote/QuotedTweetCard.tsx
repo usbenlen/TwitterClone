@@ -1,8 +1,7 @@
-import { VerifiedBadge } from "@/ui/VerifiedBadge";
 import { PenLine } from "lucide-react";
 import { Link, useNavigate } from "react-router";
 
-import { Avatar, TwemojiText } from "@/ui/index";
+import { Avatar, TwemojiText, VerifiedBadge } from "@/ui/index";
 
 import { LinkPreviewCard } from "@/components/tweet/linkPreview/index";
 import TweetLocation from "@/components/tweet/location/TweetLocation";
@@ -12,6 +11,7 @@ import TweetPoll from "@/components/tweet/poll/TweetPoll";
 import { useClickOrDrag } from "@/hooks";
 
 import { APP_ROUTES } from "@/constants/routes";
+
 import { cn, formatRelativeTime, removePreviewUrl } from "@/utils";
 
 import type { TweetQuote } from "@/types";

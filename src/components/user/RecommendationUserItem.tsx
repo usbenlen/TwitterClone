@@ -1,12 +1,13 @@
-import { VerifiedBadge } from "@/ui/VerifiedBadge";
 import { useState } from "react";
 import { Loader2 } from "lucide-react";
 import { Link } from "react-router";
 
 import { useFollow } from "@/hooks";
-import { Avatar, Button } from "@/ui";
+
+import { Avatar, Button, VerifiedBadge } from "@/ui";
 
 import { APP_ROUTES } from "@/constants/routes";
+
 import { cn } from "@/utils/cn";
 
 import type { UserShort } from "@/types";

@@ -1,10 +1,14 @@
+import { useEffect, useRef } from "react";
+import { skipToken } from "@reduxjs/toolkit/query/react";
+
 import {
   SCHEDULE_CHECK_INTERVAL_MS,
   SCHEDULE_MIN_CHECK_DELAY_MS,
 } from "@/constants/schedule";
-import { useEffect, useRef } from "react";
+
 import { authApi } from "@/api/auth.api";
 import { clearUnauthorizedHandler, setUnauthorizedHandler } from "@/api/client";
+
 import { useAppDispatch, useAppSelector, useAppStore } from "@/store/hooks";
 import { authCleared, authReady } from "@/store/auth";
 import { postsApi } from "@/store/postsApi";
@@ -15,8 +19,8 @@ import {
   useGetFollowingQuery,
   useGetFollowersQuery,
 } from "@/store/sharedApi";
-import { skipToken } from "@reduxjs/toolkit/query/react";
 import { systemTheme, THEME_STORAGE_KEY } from "@/store/theme";
+
 import { tokenStorage } from "@/utils/storage";
 
 export function AppEffects() {

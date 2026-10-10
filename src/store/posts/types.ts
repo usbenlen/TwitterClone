@@ -6,6 +6,7 @@ import type {
 } from "@/types";
 
 export type ProfileTab = "posts" | "replies" | "likes" | "reposts";
+
 export type PostsQuery =
   | { kind: "feed" | "bookmarks" }
   | { kind: "comments"; postId: string }
@@ -21,13 +22,16 @@ export const targetOf = (tweet: Pick<Tweet, "id" | "isComment">): Target => ({
   id: tweet.id,
   type: tweet.isComment ? "comment" : "post",
 });
+
 export const targetKey = (target: Target) => `${target.type}:${target.id}`;
-export const matches = (tweet: TweetBase, target: Target) =>
-  targetKey(targetOf(tweet)) === targetKey(target);
+
+export const matches = (tweet: TweetBase, target: Target) => targetKey(targetOf(tweet)) === targetKey(target);
+
 export const entityTag = (target: Target) => ({
   type: "Post" as const,
   id: targetKey(target),
 });
+
 export const listTag = (id: string) => ({ type: "List" as const, id });
 export const listId = (arg: PostsQuery) =>
   arg.kind === "profile"

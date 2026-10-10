@@ -1,8 +1,11 @@
 import { ArrowRight, ArrowUpRight } from "lucide-react";
 import { Link, useNavigate } from "react-router";
+
 import { Avatar } from "@/ui/Avatar";
 import { Button } from "@/ui/Button";
+
 import TweetContent from "@/components/tweet/TweetContent";
+
 import { APP_ROUTES } from "@/constants/routes";
 import {
   REPORT_DECISIONS,
@@ -10,6 +13,7 @@ import {
   REPORT_STATUSES,
   REPORT_TARGETS,
 } from "@/constants/report";
+
 import { formatCount, formatDateTime } from "@/utils/format";
 
 import type { User } from "@/types/user";
@@ -31,7 +35,7 @@ export function DashboardReportSummary({
     <div className="min-w-0 space-y-2 py-3">
       <Link
         to={APP_ROUTES.adminModerationForTarget(row.targetType, row.targetId)}
-        className="block rounded-sm font-semibold break-words hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+        className="block rounded-sm font-semibold wrap-break-word hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
       >
         {REPORT_TARGETS[row.targetType]}
         {subject && ` · @${subject.username}`}
@@ -160,7 +164,7 @@ export function ReportSummary({
       <div className="flex flex-wrap items-center justify-between gap-2">
         <Link
           to={APP_ROUTES.adminReport(report.id)}
-          className="min-w-0 rounded-sm font-semibold break-words hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          className="min-w-0 rounded-sm font-semibold wrap-break-word hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
         >
           {REPORT_TARGETS[report.targetType]} · {REPORT_REASONS[report.reason]}
         </Link>
@@ -170,7 +174,7 @@ export function ReportSummary({
         </span>
       </div>
       {!isCompact && (
-        <p className="text-sm break-words text-muted-foreground">
+        <p className="text-sm wrap-break-word text-muted-foreground">
           {report.source === "system"
             ? report.system?.label || "Системний сигнал"
             : `Скарга від @${report.reporter?.username ?? "невідомий"}`}{" "}
@@ -214,7 +218,7 @@ export function ReportPreview({
     return (
       <div className="min-w-0 space-y-3 rounded-xl bg-muted/40 p-4">
         <UserSummary user={target.data} />
-        <p className="text-sm break-words whitespace-pre-wrap">
+        <p className="text-sm wrap-break-word whitespace-pre-wrap">
           {target.data.bio}
         </p>
         <p className="text-sm text-muted-foreground">

@@ -34,28 +34,19 @@ export default function ProfileStats({
     if (isOwnProfile) return true;
 
     switch (visibility ?? "only_me") {
-      case "public":
-        return true;
-      case "followers":
-        return viewerFollowsProfile;
-      case "following":
-        return profileFollowsViewer;
-      case "mutual":
-        return viewerFollowsProfile && profileFollowsViewer;
+      case "public": return true;
+      case "followers": return viewerFollowsProfile;
+      case "following": return profileFollowsViewer;
+      case "mutual": return viewerFollowsProfile && profileFollowsViewer;
       case "only_me":
-      default:
-        return false;
+      default: return false;
     }
   };
 
-  const birthMonthDay = user.birthDate
-    ? formatBirthMonthDay(user.birthDate)
-    : null;
+  const birthMonthDay = user.birthDate ? formatBirthMonthDay(user.birthDate) : null;
   const birthYear = user.birthDate ? getBirthYear(user.birthDate) : null;
-  const showBirthMonthDay =
-    Boolean(birthMonthDay) && canView(user.birthDateVisibility);
-  const showBirthYear =
-    Boolean(birthYear) && canView(user.birthYearVisibility);
+  const showBirthMonthDay = Boolean(birthMonthDay) && canView(user.birthDateVisibility);
+  const showBirthYear = Boolean(birthYear) && canView(user.birthYearVisibility);
 
   const birthDateLabel = showBirthMonthDay
     ? `${birthMonthDay}${showBirthYear ? ` ${birthYear} р.` : ""}`

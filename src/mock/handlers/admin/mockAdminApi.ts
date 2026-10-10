@@ -1,6 +1,7 @@
 import { ApiError } from "@/api/client";
 
 import { ADMIN_PAGE_SIZE } from "@/admin/constants";
+import { REPORT_REASONS } from "@/constants/report";
 
 import type {
   AdminUser,
@@ -21,8 +22,6 @@ import type {
   ReportTarget,
   ReportTargetType,
 } from "@/types/report";
-
-import { REPORT_REASONS } from "@/constants/report";
 
 import { currentUser, sampleAuthors } from "@/mock/data/users";
 import { tweets } from "@/mock/data/tweets";
@@ -48,9 +47,11 @@ function targetFor(type: ReportTargetType, id: string): ReportTarget | null {
     const data = sampleAuthors.find((user) => user.id === id);
     return data ? { type, data } : null;
   }
+
   const data = (
     type === "posts" ? tweets : Object.values(commentsByPostId).flat()
   ).find((item) => item.id === id);
+
   return data ? { type, data } : null;
 }
 
@@ -75,6 +76,7 @@ export function paginate<T>(
     totalPages,
     Math.max(1, Number.isSafeInteger(requestedPage) ? requestedPage : 1),
   );
+
   return {
     items: structuredClone(items.slice((page - 1) * limit, page * limit)),
     pagination: { page, total: items.length, totalPages },
@@ -114,6 +116,7 @@ function changeUser(id: string, action: UserAction) {
   sampleAuthors.splice(sampleAuthors.indexOf(user), 1);
   for (const collection of [mockFollowers, mockFollowing]) {
     delete collection[id];
+
     for (const key of Object.keys(collection))
       collection[key] = collection[key].filter((item) => item.id !== id);
   }
@@ -236,6 +239,7 @@ export const mockAdminApi = {
     report.resolvedBy = { id: currentUser.id, username: currentUser.username };
     return hydrate(report);
   },
+
   async createReport(data: CreateReportRequest): Promise<void> {
     await delay(MOCK_DELAYS.WRITE);
 
@@ -246,8 +250,7 @@ export const mockAdminApi = {
     const target = targetFor(data.targetType, data.targetId);
     if (!target) throw missing();
 
-    const owner =
-      target.type === "users" ? target.data.id : target.data.author.id;
+    const owner = target.type === "users" ? target.data.id : target.data.author.id;
     if (owner === currentUser.id)
       throw new ApiError(400, "Не можна скаржитися на власний матеріал.");
 

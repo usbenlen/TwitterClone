@@ -1,5 +1,7 @@
 import { describe, expect, it } from "vitest";
+
 import { SCHEDULE_MIN_DELAY_MS } from "@/constants/schedule";
+
 import {
   buildBirthDate,
   daysInMonth,

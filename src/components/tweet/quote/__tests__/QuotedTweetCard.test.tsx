@@ -1,7 +1,9 @@
 import { renderToString } from "react-dom/server";
 import { MemoryRouter } from "react-router";
 import { describe, expect, it, vi } from "vitest";
-import TweetContent from "@/components/tweet/TweetContent";
+
+import { TweetContent } from "@/components/tweet";
+
 import type { Tweet } from "@/types";
 
 const pollProps = vi.hoisted(() => vi.fn());
@@ -31,6 +33,7 @@ describe("quoted polls", () => {
         isClosed: false,
       },
     } as unknown as Tweet;
+
     const tweet = {
       ...target,
       id: "quote",
@@ -42,11 +45,13 @@ describe("quoted polls", () => {
         hasNewVersion: false,
       },
     } as Tweet;
+
     renderToString(
       <MemoryRouter>
         <TweetContent tweet={tweet} readOnly />
       </MemoryRouter>,
     );
+
     expect(pollProps).toHaveBeenCalledWith(
       expect.objectContaining({
         tweetId: target.id,

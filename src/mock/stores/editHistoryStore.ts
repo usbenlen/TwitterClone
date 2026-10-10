@@ -7,8 +7,7 @@ import type {
 
 const histories = new Map<string, TweetBase[]>();
 
-const keyFor = (targetType: QuoteTargetType, targetId: string) =>
-  `${targetType}:${targetId}`;
+const keyFor = (targetType: QuoteTargetType, targetId: string) => `${targetType}:${targetId}`;
 
 function cloneSnapshot<T extends TweetBase>(tweet: T): T {
   return structuredClone(tweet);

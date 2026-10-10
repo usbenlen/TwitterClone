@@ -1,4 +1,7 @@
+import { useEffect } from "react";
+
 import { COMPOSER_POPOVER } from "@/constants/composer";
+
 import {
   autoUpdate,
   flip,
@@ -9,8 +12,6 @@ import {
   useFloating,
   useInteractions,
 } from "@floating-ui/react";
-
-import { useEffect } from "react";
 
 interface ComposerPopoverProps {
   open: boolean;

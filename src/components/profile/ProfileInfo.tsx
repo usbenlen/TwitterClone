@@ -1,4 +1,5 @@
 import { MapPin } from "lucide-react";
+
 import { VerifiedBadge } from "@/ui/VerifiedBadge";
 
 import type { User } from "@/types/user";

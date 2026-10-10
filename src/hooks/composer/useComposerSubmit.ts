@@ -1,5 +1,6 @@
-import { buildComposerPayload, type ComposerValues } from "@/utils/composer";
 import { useState } from "react";
+
+import { buildComposerPayload, type ComposerValues } from "@/utils/composer";
 
 import { useCreatePostMutation } from "@/store/postsApi";
 

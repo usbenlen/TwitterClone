@@ -1,7 +1,10 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
+
 import { followApi, scheduledPostApi, tweetApi, userApi } from "@/api";
+
 import type { ScheduledPost, Tweet, User, UserShort } from "@/types";
-import { createAppStore } from "@/store/index";
+
+import { createAppStore } from "@/store";
 import { postsApi } from "@/store/postsApi";
 import { publishScheduled } from "@/store/publishScheduled";
 import { sessionChanged } from "@/store/session";
@@ -37,6 +40,7 @@ const ada: UserShort = {
   displayName: "Ada",
   isVerified: false,
 };
+
 const profile: User = {
   ...ada,
   followersCount: 0,
@@ -45,6 +49,7 @@ const profile: User = {
   isFollowedByCurrentUser: false,
   createdAt: "2026-01-01T00:00:00Z",
 };
+
 const post: ScheduledPost = {
   id: "s1",
   content: "hello",
@@ -53,6 +58,7 @@ const post: ScheduledPost = {
   scheduledAt: "2026-10-01T10:00:00Z",
   createdAt: "2026-09-30T10:00:00Z",
 };
+
 const tweet: Tweet = {
   id: "p1",
   versionId: "v1",
@@ -76,6 +82,7 @@ beforeEach(() => {
 describe("shared RTK Query data", () => {
   it("shares follow data and refreshes it after follow and unfollow", async () => {
     const store = createAppStore();
+
     let following: UserShort[] = [];
     vi.mocked(followApi.following).mockImplementation(async () => [
       ...following,
@@ -87,6 +94,7 @@ describe("shared RTK Query data", () => {
       following = [];
     });
     vi.mocked(userApi.getByUsername).mockResolvedValue(profile);
+
     const first = store.dispatch(
       sharedApi.endpoints.getFollowing.initiate("me"),
     );
@@ -96,7 +104,9 @@ describe("shared RTK Query data", () => {
     const profileQuery = store.dispatch(
       sharedApi.endpoints.getProfile.initiate(ada.username),
     );
+
     await Promise.all([first, second, profileQuery]);
+
     expect(followApi.following).toHaveBeenCalledTimes(1);
 
     await store
@@ -104,14 +114,17 @@ describe("shared RTK Query data", () => {
         sharedApi.endpoints.followUser.initiate({ viewerId: "me", user: ada }),
       )
       .unwrap();
+
     await vi.waitFor(() =>
       expect(
         sharedApi.endpoints.getFollowing.select("me")(store.getState()).data,
       ).toEqual([ada]),
     );
+
     await vi.waitFor(() =>
       expect(userApi.getByUsername).toHaveBeenCalledTimes(2),
     );
+
     await store
       .dispatch(
         sharedApi.endpoints.unfollowUser.initiate({
@@ -120,14 +133,17 @@ describe("shared RTK Query data", () => {
         }),
       )
       .unwrap();
+
     await vi.waitFor(() =>
       expect(
         sharedApi.endpoints.getFollowing.select("me")(store.getState()).data,
       ).toEqual([]),
     );
+
     await vi.waitFor(() =>
       expect(userApi.getByUsername).toHaveBeenCalledTimes(3),
     );
+
     first.unsubscribe();
     second.unsubscribe();
     profileQuery.unsubscribe();
@@ -148,12 +164,15 @@ describe("shared RTK Query data", () => {
     vi.mocked(scheduledPostApi.delete).mockImplementation(async () => {
       posts = [];
     });
+
     const query = store.dispatch(
       sharedApi.endpoints.getScheduledPosts.initiate(),
     );
+
     await query;
-    const read = () =>
-      sharedApi.endpoints.getScheduledPosts.select()(store.getState()).data;
+
+    const read = () => sharedApi.endpoints.getScheduledPosts.select()(store.getState()).data;
+
     await store
       .dispatch(
         sharedApi.endpoints.createScheduledPost.initiate({
@@ -163,7 +182,9 @@ describe("shared RTK Query data", () => {
         }),
       )
       .unwrap();
+
     await vi.waitFor(() => expect(read()?.[0]?.id).toBe("s1"));
+
     await store
       .dispatch(
         sharedApi.endpoints.updateScheduledPost.initiate({
@@ -176,11 +197,15 @@ describe("shared RTK Query data", () => {
         }),
       )
       .unwrap();
+
     await vi.waitFor(() => expect(read()?.[0]?.content).toBe("updated"));
+
     await store
       .dispatch(sharedApi.endpoints.deleteScheduledPost.initiate("s1"))
       .unwrap();
+
     await vi.waitFor(() => expect(read()).toEqual([]));
+
     query.unsubscribe();
   });
 
@@ -206,6 +231,7 @@ describe("shared RTK Query data", () => {
       store.dispatch(sharedApi.endpoints.getFollowers.initiate(currentUser.id)),
       store.dispatch(sharedApi.endpoints.getFollowing.initiate(ada.id)),
     ];
+
     await Promise.all(subscriptions);
 
     await store
@@ -227,12 +253,17 @@ describe("shared RTK Query data", () => {
 
   it("drops profile data when the session changes", async () => {
     const store = createAppStore();
+
     vi.mocked(userApi.getByUsername).mockResolvedValue(profile);
+
     await store.dispatch(sharedApi.endpoints.getProfile.initiate("ada"));
+
     expect(
       sharedApi.endpoints.getProfile.select("ada")(store.getState()).data?.id,
     ).toBe("u2");
+
     store.dispatch(sessionChanged());
+
     await vi.waitFor(() =>
       expect(
         sharedApi.endpoints.getProfile.select("ada")(store.getState()).data,
@@ -242,16 +273,22 @@ describe("shared RTK Query data", () => {
 
   it("publishes due posts into the feed and ignores the previous session", async () => {
     const store = createAppStore();
+
     let feed: Tweet[] = [];
+
     vi.mocked(tweetApi.getFeed).mockImplementation(async () => [...feed]);
+
     await store.dispatch(
       postsApi.endpoints.getPosts.initiate({ kind: "feed" }),
     );
+
     vi.mocked(scheduledPostApi.publishDue).mockImplementationOnce(async () => {
       feed = [tweet];
       return [tweet];
     });
+
     await publishScheduled(store);
+
     expect(
       postsApi.endpoints.getPosts.select({ kind: "feed" })(store.getState())
         .data?.[0]?.id,
@@ -263,10 +300,15 @@ describe("shared RTK Query data", () => {
         resolve = done;
       }),
     );
+
     const pending = publishScheduled(store);
+
     store.dispatch(sessionChanged());
+
     resolve([tweet]);
+
     await pending;
+
     expect(
       postsApi.endpoints.getPosts.select({ kind: "feed" })(store.getState())
         .data,
@@ -275,12 +317,17 @@ describe("shared RTK Query data", () => {
 
   it("shows and clears background publishing errors", async () => {
     const store = createAppStore();
+
     vi.mocked(scheduledPostApi.publishDue)
       .mockRejectedValueOnce(new Error("offline"))
       .mockResolvedValueOnce([]);
+
     await publishScheduled(store);
+
     expect(store.getState().scheduledStatus.error).toBeTruthy();
+
     await publishScheduled(store);
+
     expect(store.getState().scheduledStatus.error).toBeNull();
   });
 });

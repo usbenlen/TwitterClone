@@ -1,6 +1,8 @@
 import { renderToString } from "react-dom/server";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+
 import TweetPoll from "@/components/tweet/poll/TweetPoll";
+
 import type { TweetPoll as Poll } from "@/types/poll";
 
 const hooks = vi.hoisted(() => ({
@@ -27,6 +29,7 @@ const poll: Poll = {
     { id: "no", text: "Ні", votesCount: 0 },
   ],
 };
+
 beforeEach(() => {
   hooks.loading = false;
   hooks.expired = false;
@@ -51,12 +54,14 @@ describe("poll display states", () => {
     );
     expect(html).toContain(label);
   });
+
   it("shows buttons and hides results before voting", () => {
     const html = renderToString(<TweetPoll tweetId="post" poll={poll} />);
     expect(html).toContain("Голосувати за Так");
     expect(html).not.toContain("disabled=");
     expect(html).not.toContain("width:");
   });
+
   it("renders zero and full-width results and identifies the selected option", () => {
     const html = renderToString(
       <TweetPoll tweetId="post" poll={{ ...poll, votedOptionId: "yes" }} />,
@@ -67,12 +72,14 @@ describe("poll display states", () => {
     expect(html).toContain('aria-pressed="true"');
     expect(html.match(/disabled=""/g)).toHaveLength(2);
   });
+
   it("shows 0% for every option when there are no votes", () => {
     const html = renderToString(
       <TweetPoll tweetId="post" poll={{ ...poll, totalVotes: 0 }} readOnly />,
     );
     expect(html.match(/width:0%/g)).toHaveLength(2);
   });
+
   it.each(["server", "countdown"])(
     "shows a finished state when closed by %s",
     (source) => {
@@ -88,6 +95,7 @@ describe("poll display states", () => {
       expect(html.match(/disabled=""/g)).toHaveLength(2);
     },
   );
+
   it("disables repeated voting while pending and targets comments correctly", () => {
     hooks.loading = true;
     const html = renderToString(

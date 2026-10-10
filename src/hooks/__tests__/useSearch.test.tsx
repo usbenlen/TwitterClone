@@ -1,8 +1,11 @@
 import { renderToString } from "react-dom/server";
 import { skipToken } from "@reduxjs/toolkit/query/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+
 import { DEFAULT_SEARCH_CRITERIA } from "@/constants/search";
+
 import type { SearchCriteria } from "@/types";
+
 import { useSearch } from "@/hooks/useSearch";
 
 const api = vi.hoisted(() => ({ posts: vi.fn(), users: vi.fn() }));
@@ -26,10 +29,12 @@ function renderSearch(criteria: SearchCriteria) {
   renderToString(<Probe />);
   return result;
 }
+
 beforeEach(() => {
   api.posts.mockReset().mockReturnValue({ currentData: [], isFetching: false });
   api.users.mockReset().mockReturnValue({ currentData: [], isFetching: false });
 });
+
 describe("active search requests", () => {
   it.each(["posts", "users"] as const)("requests only %s", (type) => {
     renderSearch({ ...DEFAULT_SEARCH_CRITERIA, query: "React", type });
@@ -40,6 +45,7 @@ describe("active search requests", () => {
       (type === "posts" ? api.posts : api.users).mock.calls[0][0],
     ).toMatchObject({ criteria: { query: "React", type } });
   });
+
   it("ignores loading and errors from the inactive request", () => {
     api.users.mockReturnValue({
       isFetching: true,
@@ -49,6 +55,7 @@ describe("active search requests", () => {
       renderSearch({ ...DEFAULT_SEARCH_CRITERIA, query: "React" }),
     ).toMatchObject({ isLoading: false, error: null });
   });
+
   it("does not request an empty search", () => {
     expect(renderSearch(DEFAULT_SEARCH_CRITERIA).isLoading).toBe(false);
     expect(api.posts.mock.calls[0][0]).toBe(skipToken);

@@ -210,8 +210,7 @@ function mapPostToTweetInternal(
 
     likedByMe: post.isLikedByCurrentUser,
     repostedByMe: post.isRepostedByCurrentUser ?? false,
-    bookmarkedByMe:
-      post.isBookmarkedByCurrentUser ?? post.bookmarkedByMe ?? false,
+    bookmarkedByMe: post.isBookmarkedByCurrentUser ?? post.bookmarkedByMe ?? false,
 
     createdAt: post.createdAt,
     updatedAt: post.updatedAt ?? null,

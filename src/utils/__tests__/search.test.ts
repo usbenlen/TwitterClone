@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+
 import { DEFAULT_SEARCH_CRITERIA } from "@/constants/search";
 import {
   criteriaForType,
@@ -6,6 +7,7 @@ import {
   serializeSearchCriteria,
   serializeSearchApiCriteria,
 } from "@/utils/search";
+
 import type { SearchCriteria } from "@/types";
 
 describe("search API serialization", () => {
@@ -19,6 +21,7 @@ describe("search API serialization", () => {
     minLikes: 0,
     hasMedia: true,
   };
+
   it("keeps post filters and zero thresholds without the route discriminator", () => {
     expect(
       Object.fromEntries(serializeSearchApiCriteria(criteria, "posts")),
@@ -32,6 +35,7 @@ describe("search API serialization", () => {
       hasMedia: "true",
     });
   });
+
   it("only sends common filters for user search", () => {
     expect(
       Object.fromEntries(serializeSearchApiCriteria(criteria, "users")),

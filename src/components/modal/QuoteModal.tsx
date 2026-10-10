@@ -1,10 +1,9 @@
-import { useBodyScrollLock } from "@/hooks/useBodyScrollLock";
 import { createPortal } from "react-dom";
 import { X } from "lucide-react";
 
 import { useCreatePostMutation } from "@/store/postsApi";
 
-import { useTweetComposer, useUnsavedChangesGuard } from "@/hooks";
+import { useTweetComposer, useUnsavedChangesGuard, useBodyScrollLock } from "@/hooks";
 
 import { Composer } from "@/components/composer/index";
 import { ConfirmModal } from "@/components/modal/ConfirmModal";

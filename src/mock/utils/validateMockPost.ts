@@ -1,11 +1,13 @@
 import { mediaStore } from "@/mock/stores/mediaStore";
+
 import { getPostRulesError } from "@/utils/composerRules";
+
 import type { CreateTweetRequest, MediaAttachment, TweetPoll } from "@/types";
 
 export function resolveMockMedia(ids: string[]): MediaAttachment[] {
   const media = mediaStore.getMany(ids);
-  if (media.length !== ids.length)
-    throw new Error("Медіавкладення не знайдено.");
+  if (media.length !== ids.length) throw new Error("Медіавкладення не знайдено.");
+
   return media;
 }
 

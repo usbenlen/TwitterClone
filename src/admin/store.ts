@@ -1,5 +1,6 @@
 import { appApi, request } from "@/store/api";
 import { adminApi } from "@/admin/api";
+
 import { removeCachedTweet } from "@/store/postsApi";
 import { sessionGeneration } from "@/store/session";
 
@@ -10,6 +11,7 @@ import type {
   UserAction,
   UsersParams,
 } from "@/admin/types";
+
 import type { ReportDecision, ReportSignal } from "@/types/report";
 
 const changedTags = [
@@ -31,32 +33,39 @@ export const adminQueries = appApi.injectEndpoints({
       queryFn: (params: UsersParams) => request(() => adminApi.users(params)),
       providesTags: ["AdminUser"],
     }),
+
     adminUser: build.query({
       queryFn: (id: string) => request(() => adminApi.user(id)),
       providesTags: (_data, _error, id) => [{ type: "AdminUser", id }],
     }),
+
     adminReports: build.query({
       queryFn: (params: ModerationParams) =>
         request(() => adminApi.reports(params)),
       providesTags: ["Report"],
     }),
+
     adminReport: build.query({
       queryFn: (id: string) => request(() => adminApi.report(id)),
       providesTags: (_data, _error, id) => [{ type: "Report", id }],
     }),
+
     adminMetrics: build.query({
       queryFn: () => request(() => adminApi.metrics()),
       providesTags: [{ type: "Dashboard", id: "METRICS" }],
     }),
+
     adminAnalytics: build.query({
       queryFn: (period: AnalyticsPeriod) =>
         request(() => adminApi.analytics(period)),
       providesTags: [{ type: "Dashboard", id: "ANALYTICS" }],
     }),
+
     adminTables: build.query({
       queryFn: (limit: number) => request(() => adminApi.tables(limit)),
       providesTags: [{ type: "Dashboard", id: "TABLES" }],
     }),
+
     adminUserAction: build.mutation<void, { id: string; action: UserAction }>({
       queryFn: ({ id, action }) =>
         request(() => adminApi.actOnUser(id, action)),
@@ -97,7 +106,7 @@ export const adminQueries = appApi.injectEndpoints({
               getState() as RootState,
             );
         } catch {
-          /* Mutation errors are displayed by the caller. */
+          /* Mutation errors are displayed by the caller */
         }
       },
 

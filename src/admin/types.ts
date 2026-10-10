@@ -63,4 +63,5 @@ export interface DashboardTables {
     target: ReportSignal["target"];
   }[];
 }
+
 export type UserAction = "block" | "unblock" | "delete";

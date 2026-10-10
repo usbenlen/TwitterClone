@@ -1,10 +1,12 @@
-import { VerifiedBadge } from "@/ui/VerifiedBadge";
 import { Search } from "lucide-react";
 import { useNavigate } from "react-router";
 
 import { PageHeader } from "@/components/layout/pageHeader/index";
+
 import { APP_ROUTES } from "@/constants/routes";
-import { Button } from "@/ui";
+
+import { Button, VerifiedBadge } from "@/ui";
+
 import { formatPostCount } from "@/utils/format";
 
 import type { User } from "@/types";

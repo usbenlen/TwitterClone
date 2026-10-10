@@ -1,4 +1,3 @@
-import { APP_NAME, APP_ROUTES } from "@/constants";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router";
 import {
@@ -13,8 +12,12 @@ import {
 import { RightSidebarFooterLinks } from "@/components/layout/desktop/rightSidebar/index";
 
 import { HeartIcon } from "@/shared/icons";
+
 import { AppLogo, Avatar } from "@/ui";
+
 import { cn } from "@/utils/cn";
+
+import { APP_NAME, APP_ROUTES } from "@/constants";
 
 interface PreviewPostProps {
   name: string;

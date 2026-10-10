@@ -1,6 +1,9 @@
 import { Button } from "@/ui/Button";
+
 import { useAuth } from "@/hooks/useAuth";
+
 import { USER_ACTION_ICONS, USER_ACTION_LABELS } from "@/admin/constants";
+
 import type { AdminUser, UserAction } from "@/admin/types";
 
 export function UserActions({

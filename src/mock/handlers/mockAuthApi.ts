@@ -1,4 +1,5 @@
 import { MOCK_DELAYS, MOCK_TOKEN_LIFETIME_MS } from "@/mock/constants";
+
 import type {
   AuthResponse,
   ConfirmPasswordChangeRequest,
@@ -124,11 +125,15 @@ export const mockAuthApi = {
     data: ConfirmPasswordChangeRequest,
   ): Promise<MessageResponse> => {
     await delay(MOCK_DELAYS.WRITE);
+
     if (!pendingPasswordChange)
       throw new Error("There is no pending password change request.");
+
     if (!data.code.trim())
       throw new Error("Confirmation code is invalid or expired.");
+
     pendingPasswordChange = false;
+
     return { message: "Password changed successfully." };
   },
 };

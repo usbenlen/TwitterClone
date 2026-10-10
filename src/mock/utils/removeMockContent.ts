@@ -1,8 +1,10 @@
 import { tweets, setTweets } from "@/mock/data/tweets";
 import { commentsByPostId } from "@/mock/data/comments";
-import { markQuotedTargetUnavailable } from "@/mock/utils/mockQuotes";
-import { editHistoryStore } from "@/mock/stores/editHistoryStore";
 import { sampleAuthors } from "@/mock/data/users";
+
+import { markQuotedTargetUnavailable } from "@/mock/utils/mockQuotes";
+
+import { editHistoryStore } from "@/mock/stores/editHistoryStore";
 
 // Shared by owner deletion and moderation so threads and quotes stay consistent.
 export function removeMockContent(type: "post" | "comment", id: string) {
@@ -15,8 +17,8 @@ export function removeMockContent(type: "post" | "comment", id: string) {
     const author = sampleAuthors.find((user) => user.id === post.author.id);
     if (author) author.postsCount = Math.max(0, author.postsCount - 1);
 
-    for (const comment of commentsByPostId[id] ?? [])
-      removedComments.add(comment.id);
+    for (const comment of commentsByPostId[id] ?? []) removedComments.add(comment.id);
+
     delete commentsByPostId[id];
 
     setTweets(tweets.filter((post) => post.id !== id));
@@ -32,9 +34,11 @@ export function removeMockContent(type: "post" | "comment", id: string) {
     let previousSize;
     do {
       previousSize = removedComments.size;
+
       for (const comment of comments)
         if (comment.parentCommentId && removedComments.has(comment.parentCommentId))
           removedComments.add(comment.id);
+
     } while (previousSize !== removedComments.size);
     commentsByPostId[postId] = comments.filter(
       (comment) => !removedComments.has(comment.id),
@@ -65,12 +69,14 @@ export function removeMockContent(type: "post" | "comment", id: string) {
     targetId: string,
   ) => {
     setTweets(markQuotedTargetUnavailable(tweets, targetType, targetId));
+
     for (const [postId, comments] of Object.entries(commentsByPostId))
       commentsByPostId[postId] = markQuotedTargetUnavailable(
         comments,
         targetType,
         targetId,
       );
+
     editHistoryStore.remove(targetType, targetId);
   };
 

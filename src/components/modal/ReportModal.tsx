@@ -1,10 +1,13 @@
 import { useState } from "react";
 import { Check } from "lucide-react";
-import { Modal } from "@/ui/Modal";
-import { Button } from "@/ui/Button";
+
+import { Modal, Button } from "@/ui";
+
 import { REPORT_REASONS } from "@/constants/report";
+
 import { useCreateReportMutation } from "@/store/reportsApi";
 import { errorMessage } from "@/store/api";
+
 import type { CreateReportRequest, ReportReason } from "@/types/report";
 
 interface Props {
@@ -12,7 +15,7 @@ interface Props {
   targetId: string;
   onClose: () => void;
 }
-// Mounted only while open so every target starts with fresh form and mutation state.
+// Mounted only while open, so every target starts with fresh form and mutation state
 export default function ReportModal({ targetType, targetId, onClose }: Props) {
   const [reason, setReason] = useState<ReportReason | null>(null);
   const [createReport, result] = useCreateReportMutation();
@@ -22,7 +25,7 @@ export default function ReportModal({ targetType, targetId, onClose }: Props) {
     try {
       await createReport({ targetType, targetId, reason }).unwrap();
     } catch {
-      /* Retain the form for retry. */
+      /* Retain the form for retry */
     }
   };
 

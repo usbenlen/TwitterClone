@@ -1,6 +1,8 @@
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
+
 import { VerifiedBadge } from "@/ui/VerifiedBadge";
+
 import type { User } from "@/types/user";
 
 describe("verification badges", () => {

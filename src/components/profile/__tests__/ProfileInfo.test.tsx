@@ -1,6 +1,8 @@
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
+
 import ProfileInfo from "@/components/profile/ProfileInfo";
+
 import type { User } from "@/types";
 
 const user: User = {

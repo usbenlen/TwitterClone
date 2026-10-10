@@ -1,15 +1,19 @@
 import { useAdminUsersQuery, useAdminUserActionMutation } from "@/admin/store";
+
 import { ListX } from "lucide-react";
+
 import {
   USERS_DEFAULTS,
   USER_ACTION_ICONS,
   USER_ACTION_LABELS,
 } from "@/admin/constants";
+
 import {
   useCorrectPage,
   useListParams,
   usePageSelection,
 } from "@/admin/listState";
+
 import { useActionConfirmation } from "@/admin/components/ActionConfirmation";
 import {
   Pagination,
@@ -18,9 +22,12 @@ import {
 } from "@/admin/components/ListControls";
 import { UserSummary } from "@/admin/components/Summaries";
 import { UserActions } from "@/admin/components/UserActions";
+
 import { useAuth } from "@/hooks/useAuth";
+
 import SearchBox from "@/ui/SearchBox";
 import { Button } from "@/ui/Button";
+
 import type { UserAction } from "@/admin/types";
 
 const choices = {

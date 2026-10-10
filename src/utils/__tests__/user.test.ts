@@ -1,5 +1,7 @@
 import { describe, expect, it } from "vitest";
+
 import type { Tweet, User } from "@/types";
+
 import { toTweetAuthor, toUserShort } from "@/utils/user";
 import { updateTweetAuthors } from "@/utils/updateTweetAuthors";
 

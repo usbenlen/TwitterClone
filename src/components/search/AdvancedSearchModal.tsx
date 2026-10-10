@@ -1,10 +1,11 @@
-import { RadioOption } from "@/ui/RadioOption";
-import { useBodyScrollLock } from "@/hooks/useBodyScrollLock";
 import { useEffect, useState, type FormEvent } from "react";
 import { createPortal } from "react-dom";
 import { X } from "lucide-react";
 
-import { Button, Input } from "@/ui";
+import { useBodyScrollLock } from "@/hooks/useBodyScrollLock";
+
+import { Button, Input, RadioOption } from "@/ui";
+
 import {
   DEFAULT_SEARCH_CRITERIA,
   SEARCH_NEARBY_RADIUS_KM,

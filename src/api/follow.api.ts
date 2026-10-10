@@ -1,6 +1,7 @@
 import { apiClient } from "@/api/client";
 import { ENDPOINTS } from "@/api/config";
 import { mapUserRole, type BackendUser } from "@/api/mappers/user.mapper";
+
 import { MOCK_ENABLED, mockFollowApi } from "@/mock/handlers/index";
 
 import type {
@@ -11,8 +12,7 @@ import type {
 } from "@/types";
 
 function readUsers(response: unknown): UserShort[] {
-  if (Array.isArray(response))
-    return (response as BackendUser<UserShort>[]).map(mapUserRole);
+  if (Array.isArray(response)) return (response as BackendUser<UserShort>[]).map(mapUserRole);
 
   if (
     response &&

@@ -1,14 +1,20 @@
 import { useParams } from "react-router";
-import { BackButton } from "@/components/layout/pageHeader";
-import { REPORT_ACTION_LABELS } from "@/admin/constants";
+
 import { skipToken } from "@reduxjs/toolkit/query/react";
+
 import { useAdminReportQuery, useResolveReportMutation } from "@/admin/store";
+
+import { BackButton } from "@/components/layout/pageHeader";
 import { useActionConfirmation } from "@/admin/components/ActionConfirmation";
 import { QueryState } from "@/admin/components/ListControls";
 import { ReportSummary, ReportPreview } from "@/admin/components/Summaries";
 import { ReportActions } from "@/admin/components/ReportActions";
+
 import { APP_ROUTES } from "@/constants/routes";
+import { REPORT_ACTION_LABELS } from "@/admin/constants";
+
 import { formatDateTime } from "@/utils/format";
+
 import type { ReportDecision } from "@/types/report";
 
 export default function ReportPage() {
@@ -51,7 +57,7 @@ export default function ReportPage() {
             <ReportSummary report={report} />
             <ReportPreview report={report} />
             {report.resolvedAt && (
-              <p className="text-sm break-words text-muted-foreground">
+              <p className="text-sm wrap-break-word text-muted-foreground">
                 Розглянуто {formatDateTime(report.resolvedAt)}
                 {report.resolvedBy ? ` · @${report.resolvedBy.username}` : ""}
               </p>

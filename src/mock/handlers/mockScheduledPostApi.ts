@@ -1,8 +1,12 @@
 import { STORAGE_KEYS } from "@/constants/storage";
+
 import { currentUser } from "@/mock/data";
+
 import { mockTweetApi } from "@/mock/handlers/mockTweetApi";
+
 import { mediaStore } from "@/mock/stores/mediaStore";
 import { scheduledMediaStore } from "@/mock/stores/scheduledMediaStore";
+
 import { validateMockPost } from "@/mock/utils/validateMockPost";
 import { getPostRulesError } from "@/utils/composerRules";
 
@@ -22,6 +26,7 @@ function readPosts(): StoredScheduledPost[] {
   try {
     const value = localStorage.getItem(storageKey());
     if (!value) return [];
+
     const parsed = JSON.parse(value) as StoredScheduledPost[];
     return Array.isArray(parsed) ? parsed : [];
   } catch {
@@ -140,6 +145,7 @@ export const mockScheduledPostApi = {
     request: UpdateScheduledPostRequest,
   ): Promise<ScheduledPost> {
     const posts = readPosts();
+
     const index = posts.findIndex((post) => post.id === id);
     if (index < 0) throw new Error("Запланований допис не знайдено.");
 
@@ -189,9 +195,10 @@ export const mockScheduledPostApi = {
 
     for (const post of due) {
       const media = await resolveMedia(post.mediaIds);
-      if (media.length !== post.mediaIds.length)
-        throw new Error("Медіавкладення не знайдено.");
+      if (media.length !== post.mediaIds.length) throw new Error("Медіавкладення не знайдено.");
+
       validateMockPost(post.content, media);
+
       const tweet = await mockTweetApi.create({
         content: post.content,
         mediaIds: post.mediaIds,

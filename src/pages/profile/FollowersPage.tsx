@@ -3,6 +3,7 @@ import { skipToken } from "@reduxjs/toolkit/query/react";
 import { useParams } from "react-router";
 
 import { useAuth, useFollow } from "@/hooks";
+
 import { useGetProfileQuery, useGetFollowersQuery } from "@/store/sharedApi";
 
 import { Spinner } from "@/ui";

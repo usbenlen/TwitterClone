@@ -1,4 +1,3 @@
-import { APP_NAME, APP_ROUTES } from "@/constants";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Link, useLocation, useNavigate } from "react-router";
@@ -11,6 +10,8 @@ import { loginSchema, type LoginFormValues } from "@/schemas/auth.schema";
 import { useAuth } from "@/hooks/useAuth";
 
 import { Input, Button } from "@/ui";
+
+import { APP_NAME, APP_ROUTES } from "@/constants";
 
 import { AuthShell } from "@/components/auth";
 

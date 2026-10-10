@@ -2,6 +2,7 @@
 import { act } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+
 import { useTweetComposerMedia } from "@/hooks/composer/media/useTweetComposerMedia";
 
 const mocks = vi.hoisted(() => ({ compress: vi.fn(), upload: vi.fn() }));
@@ -12,6 +13,7 @@ vi.mock("@/api", () => ({ mediaApi: { upload: mocks.upload } }));
 
 let root: Root;
 let host: HTMLDivElement;
+
 function mount() {
   let result!: ReturnType<typeof useTweetComposerMedia>;
   function Probe() {
@@ -24,12 +26,14 @@ function mount() {
   act(() => root.render(<Probe />));
   return () => result;
 }
+
 function files(...types: string[]): FileList {
   return types.map(
     (type, index) =>
       new File(["media"], `${index}.${type.split("/")[1]}`, { type }),
   ) as unknown as FileList;
 }
+
 function deferred<T>() {
   let resolve!: (value: T) => void;
   let reject!: (reason: Error) => void;
@@ -51,6 +55,7 @@ beforeEach(() => {
     .mockReset()
     .mockImplementation(async () => ({ id: crypto.randomUUID() }));
 });
+
 afterEach(() => {
   act(() => root?.unmount());
   host?.remove();
@@ -84,6 +89,7 @@ describe("media reservations and preparation", () => {
     expect(read().media.every((item) => item.status === "uploaded")).toBe(true);
     expect(mocks.upload).toHaveBeenCalledTimes(4);
   });
+
   it("does not resurrect cleared or removed media after preparation", async () => {
     const pending = deferred<File>();
     mocks.compress.mockImplementation(() => pending.promise);
@@ -104,6 +110,7 @@ describe("media reservations and preparation", () => {
     expect(mocks.upload).not.toHaveBeenCalled();
     expect(URL.revokeObjectURL).toHaveBeenCalledTimes(4);
   });
+
   it("keeps animated local GIFs intact and rejects other files in the same batch", async () => {
     const read = mount();
     const selection = files("image/gif", "image/png", "video/mp4", "image/gif");
@@ -121,6 +128,7 @@ describe("media reservations and preparation", () => {
     });
     expect(read().media.map((item) => item.type)).toEqual(["video", "image"]);
   });
+
   it("reserves a GIF before download and prevents repeated GIF selection", async () => {
     const response = deferred<Response>();
     vi.stubGlobal(
@@ -154,6 +162,7 @@ describe("media reservations and preparation", () => {
     expect(read().media).toEqual([]);
     expect(mocks.upload).not.toHaveBeenCalled();
   });
+
   it("ignores upload completion and failures for removed items", async () => {
     const pending = deferred<{ id: string }>();
     mocks.upload.mockImplementation(() => pending.promise);
@@ -172,6 +181,7 @@ describe("media reservations and preparation", () => {
     expect(read().media).toEqual([]);
     expect(read().errors).toEqual([]);
   });
+
   it("marks preparation failures and permits recovery by removing the item", async () => {
     mocks.compress.mockRejectedValue(new Error("compression failed"));
     const read = mount();

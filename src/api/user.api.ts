@@ -56,8 +56,7 @@ const realUserApi = {
   updateProfile: async (data: UpdateProfileRequest) => {
     const formData = new FormData();
 
-    if (data.displayName !== undefined)
-      formData.append("DisplayName", data.displayName ?? "");
+    if (data.displayName !== undefined) formData.append("DisplayName", data.displayName ?? "");
 
     if (data.bio !== undefined) formData.append("Bio", data.bio ?? "");
 

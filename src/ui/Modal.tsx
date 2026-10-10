@@ -9,7 +9,9 @@ import {
 } from "@floating-ui/react";
 import { useId, type ReactNode } from "react";
 import { X } from "lucide-react";
+
 import { useBodyScrollLock } from "@/hooks/useBodyScrollLock";
+
 import { cn } from "@/utils/cn";
 
 interface ModalProps {

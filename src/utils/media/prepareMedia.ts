@@ -22,8 +22,7 @@ export async function prepareMedia(file: File): Promise<PrepareMediaResult> {
     };
   }
 
-  const processedFile =
-    validation.type === "image" ? await compressImage(file) : file;
+  const processedFile = validation.type === "image" ? await compressImage(file) : file;
 
   return {
     success: true,

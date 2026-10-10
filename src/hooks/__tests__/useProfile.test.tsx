@@ -3,6 +3,7 @@ import { skipToken } from "@reduxjs/toolkit/query/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { useProfile } from "@/hooks/useProfile";
+
 import type { User } from "@/types";
 
 const api = vi.hoisted(() => ({ posts: vi.fn(), profile: vi.fn() }));

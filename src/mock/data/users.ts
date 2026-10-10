@@ -1,6 +1,7 @@
 import type { User } from "@/types/user";
 
 import { locations } from "@/mock/data/locations";
+
 import { readMockUserRole } from "@/config/env";
 
 export const currentUser: User = {

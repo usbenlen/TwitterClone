@@ -6,10 +6,9 @@ export async function runReaction(
   arg: Reaction,
 ): Promise<boolean> {
   const fixedCacheKey = reactionKey(arg);
-  if (
-    postsApi.endpoints.react.select(fixedCacheKey)(store.getState()).isLoading
-  )
+  if (postsApi.endpoints.react.select(fixedCacheKey)(store.getState()).isLoading)
     return false;
+
   if (
     arg.action === "vote" &&
     (arg.poll.votedOptionId ||

@@ -1,6 +1,9 @@
 import type { ReactNode } from "react";
+
 import { Button } from "@/ui/Button";
+
 import { REPORT_ACTION_ICONS, REPORT_ACTION_LABELS } from "@/admin/constants";
+
 import type { ReportDecision, ReportSignal } from "@/types/report";
 
 export function ReportActions({
@@ -15,8 +18,9 @@ export function ReportActions({
   leading?: ReactNode;
 }) {
   if (report.status === "resolved" && !leading) return null;
-  const decisions: ReportDecision[] =
-    report.status === "resolved" ? [] : ["kept"];
+
+  const decisions: ReportDecision[] = report.status === "resolved" ? [] : ["kept"];
+
   if (report.status !== "resolved" && report.target) {
     decisions.push("deleted");
     if (report.targetType === "users") decisions.push("blocked");

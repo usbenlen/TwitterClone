@@ -1,4 +1,3 @@
-import { useEditProfileForm, useBodyScrollLock } from "@/hooks";
 import { Balloon, Pencil, X } from "lucide-react";
 import { useRef } from "react";
 
@@ -6,9 +5,10 @@ import type { UpdateProfileRequest } from "@/api/user.api";
 
 import { Avatar, Button, Input } from "@/ui";
 
+import { useEditProfileForm, useBodyScrollLock } from "@/hooks";
+
 import { LocationPicker } from "@/components/composer/index";
-import { ConfirmModal } from "@/components/modal/ConfirmModal";
-import BirthDateEditor from "@/components/modal/BirthDateEditor";
+import { ConfirmModal, BirthDateEditor } from "@/components/modal";
 
 import { MAX_BIO_LENGTH, MAX_NAME_LENGTH, MEDIA } from "@/constants/app";
 

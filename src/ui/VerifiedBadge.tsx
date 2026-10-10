@@ -1,6 +1,9 @@
 import { BadgeCheck, type LucideProps } from "lucide-react";
+
 import { ADMIN_BADGE_COLOR, VERIFIED_BADGE_COLOR } from "@/constants/profile";
+
 import { cn } from "@/utils/cn";
+
 import type { User } from "@/types/user";
 
 type VerifiedBadgeProps = LucideProps & {

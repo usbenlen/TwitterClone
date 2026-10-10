@@ -30,8 +30,8 @@ export { invalidateImageCache, useImageCache } from "@/hooks/useImageCache";
 export { useImageSelection } from "@/hooks/useImageSelection";
 export { useMediaZoom } from "@/hooks/useMediaZoom";
 export { useUnsavedChangesGuard } from "@/hooks/useUnsavedChangesGuard";
+export { useLocationSearch } from "@/hooks/location/useLocationSearch";
 
 // Feature hooks
 export * from "@/hooks/composer/index";
-export { useLocationSearch } from "@/hooks/location/useLocationSearch";
 export * from "@/hooks/poll/index";

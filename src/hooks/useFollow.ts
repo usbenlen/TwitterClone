@@ -1,7 +1,9 @@
 import { useCallback, useMemo } from "react";
 import { skipToken } from "@reduxjs/toolkit/query/react";
+
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { sharedApi } from "@/store/sharedApi";
+
 import type { UserShort } from "@/types";
 
 const EMPTY: UserShort[] = [];
@@ -9,20 +11,24 @@ const EMPTY: UserShort[] = [];
 export function useFollow() {
   const currentUser = useAppSelector((state) => state.auth.user);
   const dispatch = useAppDispatch();
+
   const followingSelector = useMemo(
     () => sharedApi.endpoints.getFollowing.select(currentUser?.id ?? skipToken),
     [currentUser?.id],
   );
+
   const followersSelector = useMemo(
     () => sharedApi.endpoints.getFollowers.select(currentUser?.id ?? skipToken),
     [currentUser?.id],
   );
+
   const following = useAppSelector(
     (state) => {
       const data = followingSelector(state).data;
       return Array.isArray(data) ? data : EMPTY;
     },
   );
+
   const followers = useAppSelector(
     (state) => {
       const data = followersSelector(state).data;

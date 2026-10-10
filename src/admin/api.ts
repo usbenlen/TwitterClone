@@ -1,7 +1,9 @@
 import { apiClient } from "@/api/client";
 import { ENDPOINTS } from "@/api/config";
+
 import { mapPostToTweet, type BackendPost } from "@/api/mappers/post.mapper";
 import { mapUserRole, type BackendUser } from "@/api/mappers/user.mapper";
+
 import { MOCK_ENABLED } from "@/mock/config";
 import { mockAdminApi } from "@/mock/handlers/admin/mockAdminApi";
 
@@ -23,8 +25,7 @@ export function listQuery(params: UsersParams | ModerationParams): string {
   const query = new URLSearchParams();
 
   for (const [key, value] of Object.entries(params))
-    if (value !== "all" && String(value).trim())
-      query.set(key, String(value).trim());
+    if (value !== "all" && String(value).trim()) query.set(key, String(value).trim());
 
   return query.toString();
 }
@@ -40,8 +41,7 @@ function mapReportTarget(
   target: BackendReport["target"],
 ): ReportSignal["target"] {
   if (!target) return null;
-  if (target.type === "users")
-    return { type: target.type, data: mapUserRole(target.data) };
+  if (target.type === "users") return { type: target.type, data: mapUserRole(target.data) };
 
   return {
     type: target.type,
@@ -70,8 +70,7 @@ export const realAdminApi = {
       .then(mapUserRole),
 
   actOnUser: async (id: string, action: UserAction): Promise<void> => {
-    if (action === "delete")
-      await apiClient.delete(ENDPOINTS.admin.users.delete(id));
+    if (action === "delete") await apiClient.delete(ENDPOINTS.admin.users.delete(id));
     else await apiClient.put(ENDPOINTS.admin.users[action](id));
   },
 
@@ -97,10 +96,8 @@ export const realAdminApi = {
       ),
     ),
 
-  metrics: () =>
-    apiClient.get<DashboardMetric[]>(ENDPOINTS.admin.dashboard.metrics),
-  analytics: (period: AnalyticsPeriod) =>
-    apiClient.get<DashboardAnalytics>(ENDPOINTS.admin.dashboard.charts(period)),
+  metrics: () => apiClient.get<DashboardMetric[]>(ENDPOINTS.admin.dashboard.metrics),
+  analytics: (period: AnalyticsPeriod) => apiClient.get<DashboardAnalytics>(ENDPOINTS.admin.dashboard.charts(period)),
   tables: async (limit: number): Promise<DashboardTables> => {
     const result = await apiClient.get<
       Omit<DashboardTables, "latestUsers" | "latestReports"> & {

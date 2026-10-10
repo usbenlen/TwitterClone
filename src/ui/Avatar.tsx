@@ -1,6 +1,8 @@
-import { AVATAR_DEFAULT_NAME } from "@/constants/avatar";
-import { getAvatarGradient, getAvatarInitials, cn } from "@/utils";
 import { useState } from "react";
+
+import { AVATAR_DEFAULT_NAME } from "@/constants/avatar";
+
+import { getAvatarGradient, getAvatarInitials, cn } from "@/utils";
 
 import { useImageCache } from "@/hooks/useImageCache";
 
@@ -13,7 +15,7 @@ interface AvatarProps {
 }
 
 // Remount for each original URL so cached images and failures cannot leak
-// into a newly uploaded photo or another user's avatar.
+// into a newly uploaded photo or another user's avatar
 function AvatarImage({ src }: { src: string }) {
   const { src: cachedSrc } = useImageCache(src);
   const [failedSrc, setFailedSrc] = useState<string | null>(null);
@@ -30,7 +32,7 @@ function AvatarImage({ src }: { src: string }) {
   );
 }
 
-/** Аватар користувача. Якщо немає картинки - показує ініціали. */
+/** Аватар користувача. Якщо немає картинки - показує ініціали */
 export function Avatar({
   userId,
   src,

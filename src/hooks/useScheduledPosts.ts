@@ -1,4 +1,5 @@
 import { useCallback } from "react";
+
 import {
   useGetScheduledPostsQuery,
   useCreateScheduledPostMutation,
@@ -8,6 +9,7 @@ import {
 import { errorMessage } from "@/store/postsApi";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { scheduledErrorCleared } from "@/store/scheduledStatus";
+
 import type {
   CreateScheduledPostRequest,
   ScheduledPost,
@@ -29,25 +31,30 @@ export function useScheduledPosts() {
   const [createMutation] = useCreateScheduledPostMutation();
   const [updateMutation] = useUpdateScheduledPostMutation();
   const [deleteMutation] = useDeleteScheduledPostMutation();
+
   const create = useCallback(
     (request: CreateScheduledPostRequest) => createMutation(request).unwrap(),
     [createMutation],
   );
+
   const update = useCallback(
     (id: string, request: UpdateScheduledPostRequest) =>
       updateMutation({ id, data: request }).unwrap(),
     [updateMutation],
   );
+
   const remove = useCallback(
     async (id: string) => {
       await deleteMutation(id).unwrap();
     },
     [deleteMutation],
   );
+
   const refresh = useCallback(async () => {
     dispatch(scheduledErrorCleared());
     if (user) await refetch();
   }, [dispatch, refetch, user]);
+
   return {
     posts: data ?? EMPTY,
     isLoading,

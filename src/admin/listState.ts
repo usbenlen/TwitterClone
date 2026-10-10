@@ -25,8 +25,7 @@ export function readListParams<T extends ListParams>(
       result[key] = (
         Number.isSafeInteger(page) && page > 0 ? page : 1
       ) as T[keyof T];
-    } else if (key === "search" || choices[key]?.includes(value))
-      result[key] = value as T[keyof T];
+    } else if (key === "search" || choices[key]?.includes(value)) result[key] = value as T[keyof T];
   }
 
   return result;

@@ -1,4 +1,5 @@
 import { MOCK_DELAYS } from "@/mock/constants";
+
 import { delay } from "@/mock/utils/delay";
 
 import { tweets, setTweets } from "@/mock/data/tweets";

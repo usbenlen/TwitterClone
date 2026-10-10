@@ -1,18 +1,15 @@
 import { tweetApi, commentApi, userApi, searchApi, pollApi } from "@/api";
+
 import type { Tweet } from "@/types";
+
 import type { PostsQuery, Reaction } from "@/store/posts/types";
 
 export async function fetchPosts(arg: PostsQuery): Promise<Tweet[]> {
   switch (arg.kind) {
-    case "feed":
-      return tweetApi.getFeed();
-    case "bookmarks": {
-      return tweetApi.getBookmarked();
-    }
-    case "comments":
-      return commentApi.getByPostId(arg.postId);
-    case "search":
-      return searchApi.posts(arg.criteria, arg.viewer);
+    case "feed": return tweetApi.getFeed();
+    case "bookmarks": return tweetApi.getBookmarked();
+    case "comments": return commentApi.getByPostId(arg.postId);
+    case "search": return searchApi.posts(arg.criteria, arg.viewer);
     case "profile": {
       const loaders = {
         posts: userApi.getPosts,
@@ -20,6 +17,7 @@ export async function fetchPosts(arg: PostsQuery): Promise<Tweet[]> {
         likes: userApi.getLikes,
         reposts: userApi.getReposts,
       };
+
       return loaders[arg.tab](arg.username);
     }
   }
@@ -27,11 +25,12 @@ export async function fetchPosts(arg: PostsQuery): Promise<Tweet[]> {
 
 export async function sendReaction(arg: Reaction): Promise<Partial<Tweet>> {
   const api = arg.type === "comment" ? commentApi : tweetApi;
+
   switch (arg.action) {
-    case "like":
-      return api.toggleLike(arg.id, arg.active);
+    case "like": return api.toggleLike(arg.id, arg.active);
     case "repost": {
       const result = await api.toggleRepost(arg.id, arg.active);
+
       return {
         repostedByMe: result.repostedByMe,
         retweetsCount: result.repostsCount,
@@ -43,9 +42,9 @@ export async function sendReaction(arg: Reaction): Promise<Partial<Tweet>> {
         result && "isBookmarkedByCurrentUser" in result
           ? Boolean(result.isBookmarkedByCurrentUser)
           : result?.bookmarkedByMe;
+
       return { bookmarkedByMe: value ?? !arg.active };
     }
-    case "vote":
-      return { poll: await pollApi.vote(arg.type, arg.id, arg.optionId) };
+    case "vote": return { poll: await pollApi.vote(arg.type, arg.id, arg.optionId) };
   }
 }

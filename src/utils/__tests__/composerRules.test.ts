@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+
 import {
   countCharacters,
   getDisabledComposerActions,
@@ -31,6 +32,7 @@ describe("composer rules", () => {
       getPostRulesError({ content: "ї".repeat(281), media: [] }),
     ).toContain("280");
   });
+
   it("accepts four mixed files and one standalone GIF", () => {
     expect(getMediaError([image, video, image, video])).toBeNull();
     expect(getMediaError([video, video, video, video])).toBeNull();
@@ -42,15 +44,18 @@ describe("composer rules", () => {
     expect(getMediaAdditionError([image], "gif")).toContain("GIF");
     expect(getMediaAdditionError([gif], "video")).toContain("GIF");
   });
+
   it.each([4, 0, 10081, 1.5, NaN, Infinity])(
     "rejects poll duration %s",
     (duration) => {
       expect(getPollError(["Yes", "No"], duration)).not.toBeNull();
     },
   );
+
   it.each([5, 1440, 10080])("accepts poll duration %s", (duration) => {
     expect(getPollError(["Yes", "No"], duration)).toBeNull();
   });
+
   it("validates filled options, Unicode length and maximum number of rows", () => {
     expect(getPollError([" Yes ", "No", "", " "], 1440)).toBeNull();
     expect(getPollError(["😀".repeat(25), "No"], 5)).toBeNull();
@@ -66,6 +71,7 @@ describe("composer rules", () => {
       }),
     ).toContain("Медіа та опитування");
   });
+
   it("disables only conflicting actions and restores them when attachments are removed", () => {
     expect(getDisabledComposerActions(state)).toEqual([]);
     expect(getDisabledComposerActions({ ...state, hasPoll: true })).toEqual([

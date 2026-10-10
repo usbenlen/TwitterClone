@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+
 import { imageCache, createObjectUrlOwner } from "@/utils";
 
 export async function invalidateImageCache(url: string | null | undefined) {
@@ -17,12 +18,14 @@ export function useImageCache(url?: string | null) {
   useEffect(() => {
     if (bypass || !original) return;
     let active = true;
+
     const owner = createObjectUrlOwner();
     void imageCache.fetchAndCache(original).then((blob) => {
       if (!active) return;
       if (blob) owner.replace(blob);
       setLoaded({ original, owner, isActive: () => active });
     });
+
     return () => {
       active = false;
       owner.release();

@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+
 import {
   buildComposerPayload,
   buildScheduledPostPayload,
@@ -6,6 +7,7 @@ import {
   hasComposerChanges,
   isComposerPollValid,
 } from "@/utils/composer";
+
 import type { ComposerMedia } from "@/types";
 
 const media: ComposerMedia = {
@@ -18,6 +20,7 @@ const media: ComposerMedia = {
   size: 5,
   progress: 100,
 };
+
 describe("composer data", () => {
   it("trims submitted content and poll options", () => {
     expect(
@@ -39,6 +42,7 @@ describe("composer data", () => {
       poll: { options: ["Yes", "No"], duration: 30 },
     });
   });
+
   it.each([
     [[], false],
     [["", "   "], false],
@@ -55,6 +59,7 @@ describe("composer data", () => {
       }),
     ).toBe(expected);
   });
+
   it("treats an added empty poll as a draft change", () => {
     expect(
       hasComposerChanges(
@@ -73,6 +78,7 @@ describe("composer data", () => {
       ),
     ).toBe(true);
   });
+
   it("keeps null for removing a poll and undefined for an untouched poll", () => {
     expect(
       buildComposerPayload({ content: "", media: [], poll: null }).poll,
@@ -81,6 +87,7 @@ describe("composer data", () => {
       buildComposerPayload({ content: "", media: [] }).poll,
     ).toBeUndefined();
   });
+
   it("builds scheduled data without poll/location and preserves mock files", () => {
     const file = new File(["photo"], "photo.png");
     const payload = buildScheduledPostPayload(
@@ -100,6 +107,7 @@ describe("composer data", () => {
     expect(payload).not.toHaveProperty("poll");
     expect(payload).not.toHaveProperty("location");
   });
+
   it("compares attachment identities while retaining raw text changes", () => {
     const initial = { content: "hello", media: [media] };
     expect(
@@ -115,6 +123,7 @@ describe("composer data", () => {
       true,
     );
   });
+
   it("allows uploaded mixed images/videos or a single uploaded GIF for scheduling", () => {
     expect(canScheduleMedia([])).toBe(true);
     expect(canScheduleMedia([media])).toBe(true);
@@ -123,6 +132,7 @@ describe("composer data", () => {
     expect(canScheduleMedia([media, { ...media, type: "video" }])).toBe(true);
     expect(canScheduleMedia([media, { ...media, type: "gif" }])).toBe(false);
   });
+
   it("rejects incompatible media/polls and incomplete uploads instead of silently dropping files", () => {
     expect(() =>
       buildComposerPayload({

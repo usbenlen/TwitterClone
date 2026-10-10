@@ -27,7 +27,9 @@ export function buildBirthDate(
   today = new Date(),
 ): string | null {
   if (!year || !month || !day) return null;
+
   const date = new Date(Number(year), Number(month) - 1, Number(day));
+
   if (
     date.getFullYear() !== Number(year) ||
     date.getMonth() !== Number(month) - 1 ||
@@ -35,6 +37,7 @@ export function buildBirthDate(
     date > today
   )
     return null;
+
   return `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
 }
 
@@ -47,6 +50,7 @@ export function maxBirthDay(
     Number(year) || CALENDAR_REFERENCE_YEAR,
     Number(month) || 1,
   );
+
   return Number(year) === today.getFullYear() &&
     Number(month) === today.getMonth() + 1
     ? Math.min(days, today.getDate())

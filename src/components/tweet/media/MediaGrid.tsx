@@ -1,4 +1,5 @@
 import { MEDIA_GRID_VISIBLE_LIMIT } from "@/constants/media";
+
 interface MediaGridProps<T extends { id: string }> {
   items: T[];
   renderItem: (item: T, index: number) => React.ReactNode;
@@ -17,8 +18,7 @@ export default function MediaGrid<T extends { id: string }>({
     : `mt-3 rounded-2xl ${bordered ? "border border-border" : ""}`;
 
   switch (items.length) {
-    case 0:
-      return null;
+    case 0: return null;
 
     case 1:
       return (

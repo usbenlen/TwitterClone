@@ -1,5 +1,6 @@
 import { apiClient } from "@/api/client";
 import { ENDPOINTS } from "@/api/config";
+
 import { MOCK_ENABLED } from "@/mock/config";
 import { mockLinkPreviewApi } from "@/mock/handlers/mockLinkPreviewApi";
 

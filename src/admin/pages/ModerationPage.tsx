@@ -1,15 +1,19 @@
 import { useAdminReportsQuery, useResolveReportMutation } from "@/admin/store";
+
 import { ListX } from "lucide-react";
+
 import {
   MODERATION_DEFAULTS,
   REPORT_ACTION_ICONS,
   REPORT_ACTION_LABELS,
 } from "@/admin/constants";
+
 import {
   useCorrectPage,
   useListParams,
   usePageSelection,
 } from "@/admin/listState";
+
 import { useActionConfirmation } from "@/admin/components/ActionConfirmation";
 import {
   Pagination,
@@ -18,13 +22,16 @@ import {
 } from "@/admin/components/ListControls";
 import { ReportSummary, ReportPreview } from "@/admin/components/Summaries";
 import { ReportActions } from "@/admin/components/ReportActions";
+
 import {
   REPORT_TARGETS,
   REPORT_STATUSES,
   REPORT_DECISIONS,
 } from "@/constants/report";
+
 import SearchBox from "@/ui/SearchBox";
 import { Button } from "@/ui/Button";
+
 import type { ReportDecision, ReportSignal } from "@/types/report";
 
 const choices = {

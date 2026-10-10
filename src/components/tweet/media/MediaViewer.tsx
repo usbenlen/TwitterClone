@@ -1,7 +1,9 @@
-import { useMediaZoom, useBodyScrollLock } from "@/hooks";
-import { MEDIA_VIEWER } from "@/constants/media";
 import { useEffect } from "react";
 import { ChevronLeft, ChevronRight, Minus, Plus, X } from "lucide-react";
+
+import { useMediaZoom, useBodyScrollLock } from "@/hooks";
+
+import { MEDIA_VIEWER } from "@/constants/media";
 
 import type { MediaAttachment } from "@/types/media";
 

@@ -57,16 +57,11 @@ export const ENDPOINTS = {
   users: {
     report: (id: string) => `users/${encodeURIComponent(id)}/report`,
     byId: (id: string) => `users/by-id/${encodeURIComponent(id)}`,
-    byUsername: (username: string) =>
-      `users/by-username/${encodeURIComponent(username)}`,
-    posts: (username: string) =>
-      `users/${encodeURIComponent(username)}/posts`,
-    replies: (username: string) =>
-      `users/${encodeURIComponent(username)}/replies`,
-    likes: (username: string) =>
-      `users/${encodeURIComponent(username)}/likes`,
-    reposts: (username: string) =>
-      `users/${encodeURIComponent(username)}/reposts`,
+    byUsername: (username: string) => `users/by-username/${encodeURIComponent(username)}`,
+    posts: (username: string) => `users/${encodeURIComponent(username)}/posts`,
+    replies: (username: string) => `users/${encodeURIComponent(username)}/replies`,
+    likes: (username: string) => `users/${encodeURIComponent(username)}/likes`,
+    reposts: (username: string) => `users/${encodeURIComponent(username)}/reposts`,
     updateProfile: "me",
     deleteMe: "me",
   },
@@ -77,11 +72,9 @@ export const ENDPOINTS = {
     liked: "me/likes",
     bookmarked: "me/bookmarks",
     reposted: "me/reposts",
-    byUser: (username: string) =>
-      `users/${encodeURIComponent(username)}/posts`,
+    byUser: (username: string) => `users/${encodeURIComponent(username)}/posts`,
     byId: (id: string) => `posts/${encodeURIComponent(id)}`,
-    editHistory: (id: string) =>
-      `posts/${encodeURIComponent(id)}/edit-history`,
+    editHistory: (id: string) => `posts/${encodeURIComponent(id)}/edit-history`,
     create: "posts",
     update: (id: string) => `posts/${encodeURIComponent(id)}`,
     delete: (id: string) => `posts/${encodeURIComponent(id)}`,
@@ -99,11 +92,9 @@ export const ENDPOINTS = {
   },
   comments: {
     report: (id: string) => `comments/${encodeURIComponent(id)}/report`,
-    byPost: (postId: string) =>
-      `comments/post/${encodeURIComponent(postId)}`,
+    byPost: (postId: string) => `comments/post/${encodeURIComponent(postId)}`,
     thread: (id: string) => `comments/${encodeURIComponent(id)}/thread`,
-    editHistory: (id: string) =>
-      `comments/${encodeURIComponent(id)}/edit-history`,
+    editHistory: (id: string) => `comments/${encodeURIComponent(id)}/edit-history`,
     create: "comments",
     update: (id: string) => `comments/${encodeURIComponent(id)}`,
     delete: (id: string) => `comments/${encodeURIComponent(id)}`,
@@ -129,12 +120,9 @@ export const ENDPOINTS = {
   follows: {
     follow: (userId: string) => `follows/${encodeURIComponent(userId)}`,
     unfollow: (userId: string) => `follows/${encodeURIComponent(userId)}`,
-    followers: (userId: string) =>
-      `follows/${encodeURIComponent(userId)}/followers`,
-    following: (userId: string) =>
-      `follows/${encodeURIComponent(userId)}/following`,
-    removeFollower: (userId: string, followId: string) =>
-      `follows/${encodeURIComponent(userId)}/followers/${encodeURIComponent(followId)}`,
+    followers: (userId: string) => `follows/${encodeURIComponent(userId)}/followers`,
+    following: (userId: string) => `follows/${encodeURIComponent(userId)}/following`,
+    removeFollower: (userId: string, followId: string) => `follows/${encodeURIComponent(userId)}/followers/${encodeURIComponent(followId)}`,
   },
   media: {
     upload: "media/upload",

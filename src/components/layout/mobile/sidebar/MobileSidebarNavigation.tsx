@@ -1,6 +1,6 @@
 import { useNavigation } from "@/hooks/useNavigation";
 
-import MobileSidebarItem from "@/components/layout/mobile/sidebar/MobileSidebarItem";
+import { MobileSidebarItem } from "@/components/layout/mobile/sidebar";
 
 interface MobileSidebarNavigationProps {
   onNavigate?: () => void;

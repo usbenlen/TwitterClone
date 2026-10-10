@@ -1,6 +1,7 @@
 import type { Tweet } from "@/types";
 
 import { currentUser, sampleAuthors } from "@/mock/data/users";
+
 import { toTweetAuthor } from "@/utils/user";
 
 const author = toTweetAuthor;
