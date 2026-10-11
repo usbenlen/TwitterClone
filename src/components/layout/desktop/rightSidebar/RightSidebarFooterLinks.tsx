@@ -1,3 +1,5 @@
+import { Link } from "react-router";
+
 import { APP_NAME, FOOTER_LINKS, FOOTER_TECHNOLOGIES } from "@/constants";
 
 import { cn } from "@/utils/cn";
@@ -12,14 +14,14 @@ export default function RightSidebarFooterLinks({
   return (
     <div className={cn("px-2 text-xs text-muted-foreground", className)}>
       <div className="flex flex-wrap gap-x-3 gap-y-1">
-        {FOOTER_LINKS.map((link) => (
-          <button
-            key={link}
-            type="button"
-            className="cursor-pointer hover:underline"
+        {FOOTER_LINKS.map(({ label, to }) => (
+          <Link
+            key={to}
+            to={to}
+            className="hover:underline"
           >
-            {link}
-          </button>
+            {label}
+          </Link>
         ))}
       </div>
 

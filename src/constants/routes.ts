@@ -19,6 +19,10 @@ export const APP_ROUTES = {
 
   LANDING: "/",
   HOME: "/home",
+  ABOUT: "/about",
+  PRIVACY: "/privacy",
+  TERMS: "/terms",
+  HELP: "/help",
 
   LOGIN: "/login",
   REGISTER: "/register",

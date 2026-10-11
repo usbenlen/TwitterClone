@@ -19,6 +19,28 @@ const lazyPage = (load: () => Promise<PageModule>) => async () => ({
 
 export const routes = createBrowserRouter([
   {
+    lazy: lazyPage(() => import("@/layouts/InformationLayout")),
+    hydrateFallbackElement: <Spinner className="size-8 text-primary" />,
+    children: [
+      {
+        path: APP_ROUTES.ABOUT,
+        lazy: lazyPage(() => import("@/pages/information/AboutPage")),
+      },
+      {
+        path: APP_ROUTES.PRIVACY,
+        lazy: lazyPage(() => import("@/pages/information/PrivacyPage")),
+      },
+      {
+        path: APP_ROUTES.TERMS,
+        lazy: lazyPage(() => import("@/pages/information/TermsPage")),
+      },
+      {
+        path: APP_ROUTES.HELP,
+        lazy: lazyPage(() => import("@/pages/information/HelpPage")),
+      },
+    ],
+  },
+  {
     element: <ProtectedRoute />,
     hydrateFallbackElement: <Spinner className="size-8 text-primary" />,
     children: [
