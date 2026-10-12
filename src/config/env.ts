@@ -48,6 +48,12 @@ export function readAppIdentity(env: Env) {
   };
 }
 
+export function readGoogleClientId(env: Env): string {
+  return typeof env.VITE_GOOGLE_CLIENT_ID === "string"
+    ? env.VITE_GOOGLE_CLIENT_ID.trim()
+    : "";
+}
+
 export function readMockUserRole(env: Env): "User" | "Admin" {
   const role = env.VITE_MOCK_USER_ROLE ?? "USER";
   if (role !== "USER" && role !== "ADMIN") throw new Error("Invalid environment variable: VITE_MOCK_USER_ROLE");

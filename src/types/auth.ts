@@ -3,6 +3,21 @@ export interface LoginRequest {
   password: string;
 }
 
+export interface GoogleLoginRequest {
+  idToken: string;
+}
+
+export type GoogleAuthMode = "signin" | "signup" | "link";
+
+export interface GoogleRedirectContext {
+  state: string;
+  nonce: string;
+  mode: GoogleAuthMode;
+  createdAt: number;
+  userId: string | null;
+  returnTo: string;
+}
+
 export interface RegisterRequest {
   username: string;
   displayName: string;

@@ -6,6 +6,7 @@ import type {
   AuthResponse,
   ConfirmPasswordChangeRequest,
   ForgotPasswordRequest,
+  GoogleLoginRequest,
   LoginRequest,
   MessageResponse,
   ResetPasswordRequest,
@@ -23,6 +24,15 @@ import { mockAuthApi } from "@/mock/handlers";
 import { tokenStorage } from "@/utils/storage";
 
 const realAuthApi = {
+  loginWithGoogle: (data: GoogleLoginRequest, signal?: AbortSignal) =>
+    apiClient.post<AuthResponse>(ENDPOINTS.auth.google, data, {
+      skipAuth: true,
+      signal,
+    }),
+
+  linkGoogle: (data: GoogleLoginRequest, signal?: AbortSignal) =>
+    apiClient.post<void>(ENDPOINTS.auth.googleLink, data, { signal }),
+
   login: (data: LoginRequest) =>
     apiClient.post<AuthResponse>(ENDPOINTS.auth.login, data, {
       skipAuth: true,
@@ -59,8 +69,8 @@ const realAuthApi = {
   },
 
   // Отримання поточного користувача за збереженим токеном
-  me: () =>
-    apiClient.get<BackendUser<User>>(ENDPOINTS.auth.me).then(mapUserRole),
+  me: (signal?: AbortSignal) =>
+    apiClient.get<BackendUser<User>>(ENDPOINTS.auth.me, { signal }).then(mapUserRole),
 
   forgotPassword: (data: ForgotPasswordRequest) =>
     apiClient.post<MessageResponse>(ENDPOINTS.auth.forgotPassword, data, {

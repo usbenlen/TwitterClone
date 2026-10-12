@@ -1,9 +1,11 @@
 import { MOCK_DELAYS, MOCK_TOKEN_LIFETIME_MS } from "@/mock/constants";
+import { GOOGLE_ID_TOKEN_MAX_LENGTH } from "@/constants/auth";
 
 import type {
   AuthResponse,
   ConfirmPasswordChangeRequest,
   ForgotPasswordRequest,
+  GoogleLoginRequest,
   LoginRequest,
   MessageResponse,
   ResetPasswordRequest,
@@ -21,7 +23,29 @@ import { delay } from "@/mock/utils/delay";
 
 let pendingPasswordChange = false;
 
+function validateGoogleRequest(data: GoogleLoginRequest, signal?: AbortSignal) {
+  signal?.throwIfAborted();
+  if (!data.idToken.trim() || data.idToken.length > GOOGLE_ID_TOKEN_MAX_LENGTH)
+    throw new Error("Некоректний токен Google");
+}
+
 export const mockAuthApi = {
+  async loginWithGoogle(
+    data: GoogleLoginRequest,
+    signal?: AbortSignal,
+  ): Promise<AuthResponse> {
+    validateGoogleRequest(data, signal);
+    const response = await mockAuthApi.login({ emailOrUsername: "", password: "" });
+    signal?.throwIfAborted();
+    return response;
+  },
+
+  async linkGoogle(data: GoogleLoginRequest, signal?: AbortSignal): Promise<void> {
+    validateGoogleRequest(data, signal);
+    await delay(MOCK_DELAYS.WRITE);
+    signal?.throwIfAborted();
+  },
+
   async login(data: LoginRequest): Promise<AuthResponse> {
     await delay();
     void data;
@@ -78,8 +102,9 @@ export const mockAuthApi = {
     await delay(MOCK_DELAYS.REACTION);
   },
 
-  async me(): Promise<User> {
+  async me(signal?: AbortSignal): Promise<User> {
     await delay(MOCK_DELAYS.READ);
+    signal?.throwIfAborted();
     return structuredClone(currentUser);
   },
 

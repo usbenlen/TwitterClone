@@ -39,6 +39,8 @@ export const ENDPOINTS = {
     },
   },
   auth: {
+    google: "auth/google",
+    googleLink: "auth/google/link",
     login: "auth/login",
     register: "auth/register",
     refresh: "auth/refresh",

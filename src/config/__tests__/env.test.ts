@@ -4,10 +4,17 @@ import {
   escapeHtml,
   NUMERIC_ENV_DEFAULTS,
   readAppIdentity,
+  readGoogleClientId,
   readNumericEnv,
 } from "@/config/env";
 
 describe("environment settings", () => {
+  it("reads only the configured Google client ID and handles missing values", () => {
+    expect(readGoogleClientId({ VITE_GOOGLE_CLIENT_ID: " test-client " })).toBe("test-client");
+    expect(readGoogleClientId({})).toBe("");
+    expect(readGoogleClientId({ VITE_GOOGLE_CLIENT_ID: "  " })).toBe("");
+    expect(readGoogleClientId({ VITE_GOOGLE_CLIENT_ID: true })).toBe("");
+  });
   it("uses the documented defaults when numbers are absent", () => {
     expect(readNumericEnv({})).toEqual(NUMERIC_ENV_DEFAULTS);
     expect(readAppIdentity({})).toEqual({ name: "Chirp", locale: "uk-UA" });
