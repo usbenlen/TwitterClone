@@ -13,10 +13,12 @@ import { Input, Button } from "@/ui";
 import { APP_NAME, APP_ROUTES } from "@/constants";
 
 import { AuthShell } from "@/components/auth/AuthShell";
+import { GoogleAuthButton } from "@/components/auth/GoogleAuthButton";
 
 export default function RegisterPage() {
   const navigate = useNavigate();
   const [serverError, setServerError] = useState<string | null>(null);
+  const [isGoogleBusy, setIsGoogleBusy] = useState(false);
 
   const {
     register,
@@ -28,6 +30,8 @@ export default function RegisterPage() {
   });
 
   const onSubmit = async (values: RegisterFormValues) => {
+    if (isGoogleBusy) return;
+
     setServerError(null);
     try {
       await authApi.register(values);
@@ -59,6 +63,11 @@ export default function RegisterPage() {
         </span>
       }
     >
+      <GoogleAuthButton
+        mode="signup"
+        disabled={isSubmitting}
+        onBusyChange={setIsGoogleBusy}
+      />
       <form
         onSubmit={handleSubmit(onSubmit)}
         className="flex flex-col gap-4"
@@ -106,7 +115,7 @@ export default function RegisterPage() {
           {...register("password")}
         />
 
-        <Button type="submit" size="lg" fullWidth isLoading={isSubmitting}>
+        <Button type="submit" size="lg" fullWidth isLoading={isSubmitting} disabled={isGoogleBusy}>
           Зареєструватися
         </Button>
       </form>

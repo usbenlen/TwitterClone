@@ -8,6 +8,7 @@ import { useAuth, useTheme } from "@/hooks";
 
 import { EditProfileModal } from "@/components/modal/index";
 import { PageHeader } from "@/components/layout/pageHeader/index";
+import { AccountConnections } from "@/components/auth/AccountConnections";
 
 import { THEME_OPTIONS, APP_NAME, APP_ROUTES } from "@/constants";
 
@@ -139,6 +140,7 @@ export default function SettingsPage({
                 </Link>
               </div>
             </section>
+            <AccountConnections key={user.id} />
           </div>
         </div>
       </section>

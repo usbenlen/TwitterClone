@@ -14,6 +14,7 @@ import { Input, Button } from "@/ui";
 import { APP_NAME, APP_ROUTES } from "@/constants";
 
 import { AuthShell } from "@/components/auth";
+import { GoogleAuthButton } from "@/components/auth/GoogleAuthButton";
 
 interface LocationState {
   from?: { pathname: string };
@@ -24,6 +25,7 @@ export default function LoginPage() {
   const navigate = useNavigate();
   const location = useLocation();
   const [serverError, setServerError] = useState<string | null>(null);
+  const [isGoogleBusy, setIsGoogleBusy] = useState(false);
 
   const {
     register,
@@ -35,6 +37,8 @@ export default function LoginPage() {
   });
 
   const onSubmit = async (values: LoginFormValues) => {
+    if (isGoogleBusy) return;
+
     setServerError(null);
     try {
       await login(values);
@@ -66,6 +70,10 @@ export default function LoginPage() {
         </span>
       }
     >
+      <GoogleAuthButton
+        disabled={isSubmitting}
+        onBusyChange={setIsGoogleBusy}
+      />
       <form
         onSubmit={handleSubmit(onSubmit)}
         className="flex flex-col gap-4"
@@ -106,7 +114,7 @@ export default function LoginPage() {
           </Link>
         </div>
 
-        <Button type="submit" size="lg" fullWidth isLoading={isSubmitting}>
+        <Button type="submit" size="lg" fullWidth isLoading={isSubmitting} disabled={isGoogleBusy}>
           Увійти
         </Button>
       </form>

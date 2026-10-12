@@ -19,6 +19,11 @@ const lazyPage = (load: () => Promise<PageModule>) => async () => ({
 
 export const routes = createBrowserRouter([
   {
+    path: APP_ROUTES.GOOGLE_CALLBACK,
+    lazy: lazyPage(() => import("@/pages/auth/GoogleCallbackPage")),
+    hydrateFallbackElement: <Spinner className="size-8 text-primary" />,
+  },
+  {
     lazy: lazyPage(() => import("@/layouts/InformationLayout")),
     hydrateFallbackElement: <Spinner className="size-8 text-primary" />,
     children: [
