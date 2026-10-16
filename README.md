@@ -165,4 +165,3 @@ npm run build
 ## Пов’язані документи
 
 - [.env-example](.env-example) - шаблон локальних змінних.
-- [MOCK_API.md](MOCK_API.md) - mock API та приклади контрактів.
