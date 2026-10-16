@@ -45,7 +45,7 @@ export default function TweetActions({
   const [isRepostMenuOpen, setIsRepostMenuOpen] = useState(false);
 
   return (
-    <div className="mt-2 flex w-full items-center gap-5 text-muted-foreground">
+    <div className="mt-2 flex w-full min-w-0 items-center justify-between gap-1 text-muted-foreground sm:gap-5">
       <button
         type="button"
         onClick={onComment}
@@ -104,9 +104,9 @@ export default function TweetActions({
         )}
       </button>
 
-      <div className="ml-auto flex items-center gap-1">
+      <div className="flex shrink-0 items-center gap-1">
         <div
-          className="flex min-w-0 items-center justify-center gap-2 rounded-full p-0.5 cursor-default select-none"
+          className="flex min-w-0 items-center justify-center gap-1 rounded-full p-0.5 cursor-default select-none sm:gap-2"
           title="Views"
           aria-label={`${viewsCount} views`}
         >

@@ -42,8 +42,8 @@ export default function ProfileHero({
       </div>
 
       <div className="px-4">
-        <div className="flex items-end justify-between">
-          <div className="-mt-12">
+        <div className="flex min-w-0 items-end justify-between gap-2">
+          <div className="-mt-12 shrink-0">
             <Avatar
               userId={user.id}
               name={user.displayName}
@@ -53,7 +53,7 @@ export default function ProfileHero({
             />
           </div>
 
-          <div className="flex items-center gap-3 pt-3">
+          <div className="flex min-w-0 flex-wrap items-center justify-end gap-2 pt-3">
             {!isOwnProfile && (
               <ActionsMenu onReport={() => setIsReportOpen(true)} />
             )}

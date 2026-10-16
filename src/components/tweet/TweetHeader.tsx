@@ -34,10 +34,10 @@ export default function TweetHeader({
   return (
     <div className="relative flex flex-col gap-0.5 min-w-0">
       <div className="relative flex items-start justify-between gap-2 min-w-0">
-        <div className="flex min-w-0 flex-wrap items-center gap-1 pr-8 text-sm">
+        <div className="flex min-w-0 flex-wrap items-center gap-x-1 gap-y-0.5 pr-8 text-sm">
           <Link
             to={APP_ROUTES.profile(author.username)}
-            className="truncate font-bold text-foreground hover:underline"
+            className="min-w-0 max-w-full truncate font-bold text-foreground hover:underline"
           >
             {author.displayName}
           </Link>
