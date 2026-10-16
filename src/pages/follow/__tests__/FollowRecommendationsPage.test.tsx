@@ -8,8 +8,11 @@ import FollowRecommendationsPage from "@/pages/follow/FollowRecommendationsPage"
 
 import { APP_ROUTES, RECOMMENDATIONS_PAGE_LIMIT } from "@/constants";
 
-const hooks = vi.hoisted(() => ({ users: vi.fn() }));
-vi.mock("@/hooks", () => ({ useRecommendedUsers: hooks.users }));
+const hooks = vi.hoisted(() => ({ users: vi.fn(), trends: vi.fn() }));
+vi.mock("@/hooks", () => ({
+  useRecommendedUsers: hooks.users,
+  useTrends: hooks.trends,
+}));
 vi.mock("@/components/user/index", () => ({
   RecommendationUserItem: ({ user }: { user: { username: string } }) => (
     <a href={APP_ROUTES.profile(user.username)}>@{user.username}</a>
@@ -34,6 +37,12 @@ beforeEach(() => {
   vi.stubGlobal("IS_REACT_ACT_ENVIRONMENT", true);
   vi.clearAllMocks();
   hooks.users.mockReturnValue(ready);
+  hooks.trends.mockReturnValue({
+    trends: [],
+    isLoading: false,
+    error: null,
+    reload: vi.fn(),
+  });
   host = document.createElement("div");
   document.body.appendChild(host);
   root = createRoot(host);
@@ -62,13 +71,12 @@ function button(text: string) {
 
 describe("single recommended author page", () => {
   it.each(["/follow", "/follow?tab=people", "/follow?tab=creators"])(
-    "supports %s without category tabs",
+    "supports %s with mobile recommendation tabs",
     async (path) => {
       await render(path);
-      expect(host.querySelector("h1")?.textContent).toBe(
-        "Рекомендовані автори",
-      );
-      expect(host.querySelector('[role="tablist"]')).toBeNull();
+      expect(host.querySelector("h1")?.textContent).toBe("Рекомендації");
+      expect(host.querySelector('nav[aria-label="Рекомендації"]')).not.toBeNull();
+      expect(host.textContent).toContain("Популярне");
       expect(host.querySelector('a[href="/ada"]')).not.toBeNull();
       expect(hooks.users).toHaveBeenCalledWith(RECOMMENDATIONS_PAGE_LIMIT);
       expect(APP_ROUTES.followRecommendations()).toBe("/follow");
