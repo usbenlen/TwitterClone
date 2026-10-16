@@ -127,7 +127,7 @@ export default function CodeInput({
   };
 
   return (
-    <div className="flex justify-center gap-2">
+    <div className="flex justify-center gap-1.5 sm:gap-2">
       {digits.map((digit, index) => (
         <input
           key={index}
@@ -142,7 +142,7 @@ export default function CodeInput({
           disabled={disabled}
           aria-label={`Цифра ${index + 1}`}
           className={[
-            "size-14 rounded-lg border-2 bg-background text-center text-xl font-bold",
+            "size-12 rounded-lg border-2 bg-background text-center text-lg font-bold min-[360px]:size-13 min-[360px]:text-xl sm:size-14",
             "text-foreground outline-none transition-colors",
             "focus:border-foreground focus:ring-2 focus:ring-foreground/10",
             "disabled:cursor-not-allowed disabled:opacity-50",

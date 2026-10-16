@@ -128,15 +128,21 @@ export default function Composer({
 
           <TweetComposerErrors errors={composer.errors} />
 
-          <div className="flex shrink-0 flex-wrap items-center justify-between gap-2 pt-3">
-            <ComposerToolbar
-              onAction={composer.handleAction}
-              buttonRefs={composer.buttonRefs}
-              disabledActions={composer.disabledActions}
-              activeActions={composer.pollEditor.visible ? ["poll"] : []}
-              hiddenActions={composer.scheduling.enabled ? [] : ["schedule"]}
-            />
-
+          <div className="flex min-w-0 items-center justify-between gap-2 pt-3">
+            <div
+              tabIndex={0}
+              aria-label="Панель інструментів допису"
+              className="min-w-0 max-w-[280px] flex-1 overflow-x-auto overscroll-x-contain focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:max-w-none sm:overflow-visible"
+            >
+              <ComposerToolbar
+                onAction={composer.handleAction}
+                buttonRefs={composer.buttonRefs}
+                disabledActions={composer.disabledActions}
+                activeActions={composer.pollEditor.visible ? ["poll"] : []}
+                hiddenActions={composer.scheduling.enabled ? [] : ["schedule"]}
+                className="w-max shrink-0 flex-nowrap"
+              />
+            </div>
             <TweetComposerFooter
               remaining={composer.remaining}
               canSubmit={composer.canSubmit}
@@ -249,15 +255,21 @@ export default function Composer({
             <TweetComposerErrors errors={composer.errors} />
 
             {/* Toolbar + Reply */}
-            <div className="flex shrink-0 flex-wrap items-center justify-between gap-2 pt-3">
-              <ComposerToolbar
-                onAction={composer.handleAction}
-                buttonRefs={composer.buttonRefs}
-                disabledActions={composer.disabledActions}
-                activeActions={composer.pollEditor.visible ? ["poll"] : []}
-                hiddenActions={["schedule"]}
-              />
-
+            <div className="flex min-w-0 items-center justify-between gap-2 pt-3">
+              <div
+                tabIndex={0}
+                aria-label="Панель інструментів відповіді"
+                className="min-w-0 max-w-[280px] flex-1 overflow-x-auto overscroll-x-contain focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:max-w-none sm:overflow-visible"
+              >
+                <ComposerToolbar
+                  onAction={composer.handleAction}
+                  buttonRefs={composer.buttonRefs}
+                  disabledActions={composer.disabledActions}
+                  activeActions={composer.pollEditor.visible ? ["poll"] : []}
+                  hiddenActions={["schedule"]}
+                  className="w-max shrink-0 flex-nowrap"
+                />
+              </div>
               <TweetComposerFooter
                 remaining={composer.remaining}
                 canSubmit={composer.canSubmit}
