@@ -9,8 +9,10 @@ import { useAuth, useTheme } from "@/hooks";
 import { EditProfileModal } from "@/components/modal/index";
 import { PageHeader } from "@/components/layout/pageHeader/index";
 import { AccountConnections } from "@/components/auth/AccountConnections";
+import { RightSidebarFooterLinks } from "@/components/layout/desktop/rightSidebar";
 
 import { THEME_OPTIONS, APP_NAME, APP_ROUTES } from "@/constants";
+import { AppLogo } from "@/ui";
 
 import { cn } from "@/utils/cn";
 
@@ -37,9 +39,16 @@ export default function SettingsPage({
         className={cn(
           "w-full bg-background",
           variant === "main" && "max-w-3xl border-r border-border",
+          variant === "admin" && "mx-auto max-w-3xl",
         )}
       >
-        <PageHeader title="Налаштування" />
+        {variant === "main" ? (
+          <PageHeader title="Налаштування" />
+        ) : (
+          <header>
+            <h1 className="text-xl font-bold sm:text-2xl">Налаштування</h1>
+          </header>
+        )}
 
         <div className="mx-auto w-full max-w-2xl px-4 py-6">
           <p className="mb-6 text-sm text-muted-foreground">
@@ -70,14 +79,14 @@ export default function SettingsPage({
                     type="button"
                     onClick={() => setTheme(value)}
                     className={cn(
-                      "flex items-center justify-center gap-2 rounded-xl border px-3 py-2.5 text-sm transition",
+                      "flex min-w-0 flex-col items-center justify-center gap-1.5 rounded-xl border px-1.5 py-2.5 text-xs transition sm:flex-row sm:gap-2 sm:px-3 sm:text-sm",
                       theme === value
                         ? "border-primary bg-primary/10 text-primary"
                         : "border-border hover:bg-muted",
                     )}
                   >
-                    <Icon className="size-4" />
-                    {label}
+                    <Icon className="size-4 shrink-0" aria-hidden="true" />
+                    <span className="max-w-full truncate">{label}</span>
                   </button>
                 ))}
               </div>
@@ -141,6 +150,10 @@ export default function SettingsPage({
               </div>
             </section>
             <AccountConnections key={user.id} />
+          </div>
+          <div className="mt-8 border-t border-border pt-8 lg:hidden">
+            <AppLogo className="mx-auto block w-fit text-5xl" />
+            <RightSidebarFooterLinks className="mt-4 text-center [&>div]:justify-center" />
           </div>
         </div>
       </section>

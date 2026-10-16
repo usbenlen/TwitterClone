@@ -46,15 +46,15 @@ function EditProfileModalInner({
   return (
     <>
       <div
-        className="fixed inset-0 z-modal flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm"
+        className="fixed inset-0 z-modal flex items-stretch justify-start bg-black/50 p-0 backdrop-blur-sm sm:items-center sm:justify-center sm:p-4"
         onMouseDown={(event) => {
           if (event.target === event.currentTarget) form.guard.requestClose();
         }}
       >
-        <div className="flex max-h-[90vh] w-full max-w-2xl flex-col overflow-hidden rounded-2xl border border-border bg-background shadow-2xl">
+        <div className="flex h-dvh w-full max-w-none flex-col overflow-hidden border-border bg-background shadow-none sm:h-auto sm:max-h-[90vh] sm:max-w-2xl sm:rounded-2xl sm:border sm:shadow-2xl">
           {/* Header */}
-          <div className="sticky top-0 z-content flex items-center justify-between border-b border-border bg-background/95 px-5 py-4 backdrop-blur">
-            <div className="flex items-center gap-3">
+          <div className="sticky top-0 z-content flex items-center justify-between gap-3 border-b border-border bg-background/95 px-4 py-3 backdrop-blur sm:px-5 sm:py-4">
+            <div className="flex min-w-0 items-center gap-3">
               <button
                 type="button"
                 onClick={form.guard.requestClose}
@@ -65,7 +65,7 @@ function EditProfileModalInner({
                 <X size={20} />
               </button>
 
-              <h2 className="text-lg font-bold">Редагувати профіль</h2>
+              <h2 className="text-base font-bold sm:text-lg">Редагувати профіль</h2>
 
               {form.hasChanges && (
                 <p className="mt-0.5 text-xs text-muted-foreground">
@@ -86,10 +86,10 @@ function EditProfileModalInner({
           </div>
 
           {/* Content */}
-          <div className="overflow-y-auto">
+          <div className="min-h-0 flex-1 overflow-y-auto">
             {/* Banner */}
             <div
-              className="group relative h-48 cursor-pointer bg-muted"
+              className="group relative h-36 cursor-pointer bg-muted sm:h-48"
               onClick={() => bannerInputRef.current?.click()}
             >
               {form.banner.preview ? (
@@ -174,7 +174,7 @@ function EditProfileModalInner({
               />
             </div>
 
-            <div className="space-y-5 p-5">
+            <div className="space-y-5 p-4 sm:p-5">
               {form.ui.error && (
                 <p className="rounded-lg bg-destructive/10 p-3 text-sm text-destructive">
                   {form.ui.error}

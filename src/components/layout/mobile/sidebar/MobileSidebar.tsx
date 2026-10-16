@@ -34,7 +34,7 @@ export default function MobileSidebar({
 
       <aside
         className={cn(
-          "fixed left-0 top-0 z-sidebar flex h-screen w-[85vw] max-w-sm flex-col border-r border-border bg-background shadow-xl transition-transform duration-300",
+          "fixed left-0 top-0 z-sidebar flex h-dvh w-[85vw] max-w-sm flex-col border-r border-border bg-background shadow-xl transition-transform duration-300",
           open ? "translate-x-0" : "-translate-x-full",
         )}
       >
