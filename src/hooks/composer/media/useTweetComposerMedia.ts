@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { useMediaUpload } from "@/hooks/composer/media/useMediaUpload";
 
@@ -18,7 +18,26 @@ export function useTweetComposerMedia(initialMedia?: ComposerMedia[]) {
   const [media, setMedia] = useState<ComposerMedia[]>(initialMedia ?? []);
   // Reservations are synchronous, including between renders and async preparation.
   const currentMedia = useRef<ComposerMedia[]>(initialMedia ?? []);
+  const ownedPreviewUrls = useRef(new Set<string>());
   const [errors, setErrors] = useState<ComposerMediaError[]>([]);
+
+  const ownPreviewUrl = (url: string) => {
+    ownedPreviewUrls.current.add(url);
+  };
+
+  const revokeOwnedPreviewUrl = (url: string) => {
+    if (!ownedPreviewUrls.current.delete(url)) return;
+    URL.revokeObjectURL(url);
+  };
+
+  useEffect(
+    () => () => {
+      ownedPreviewUrls.current.forEach((url) => URL.revokeObjectURL(url));
+      ownedPreviewUrls.current.clear();
+      currentMedia.current = [];
+    },
+    [],
+  );
 
   const commitMedia = (next: ComposerMedia[]) => {
     currentMedia.current = next;
@@ -125,6 +144,7 @@ export function useTweetComposerMedia(initialMedia?: ComposerMedia[]) {
         ...createPreview(file, validation.type),
         status: "compressing" as const,
       };
+      ownPreviewUrl(item.previewUrl);
       commitMedia([...currentMedia.current, item]);
       reserved.push(item);
     }
@@ -134,11 +154,12 @@ export function useTweetComposerMedia(initialMedia?: ComposerMedia[]) {
         try {
           const prepared = await prepareMedia(item.file!);
           if (!prepared.success) throw new Error(prepared.message);
+          ownPreviewUrl(prepared.media.previewUrl);
           if (!hasMedia(item.id)) {
-            URL.revokeObjectURL(prepared.media.previewUrl);
+            revokeOwnedPreviewUrl(prepared.media.previewUrl);
             return;
           }
-          URL.revokeObjectURL(item.previewUrl);
+          revokeOwnedPreviewUrl(item.previewUrl);
           const ready = { ...prepared.media, id: item.id };
           updateMedia(item.id, () => ready);
           await upload(ready);
@@ -210,18 +231,15 @@ export function useTweetComposerMedia(initialMedia?: ComposerMedia[]) {
 
   const removeMedia = (id: string) => {
     const item = currentMedia.current.find((m) => m.id === id);
-    if (item?.previewUrl.startsWith("blob:"))
-      URL.revokeObjectURL(item.previewUrl);
+    if (item) revokeOwnedPreviewUrl(item.previewUrl);
     const next = currentMedia.current.filter((m) => m.id !== id);
     commitMedia(next);
     if (next.length === 0) clearErrors();
   };
 
   const clearMedia = () => {
-    currentMedia.current.forEach((item) => {
-      if (item.previewUrl.startsWith("blob:"))
-        URL.revokeObjectURL(item.previewUrl);
-    });
+    ownedPreviewUrls.current.forEach((url) => URL.revokeObjectURL(url));
+    ownedPreviewUrls.current.clear();
 
     commitMedia([]);
     clearErrors();
