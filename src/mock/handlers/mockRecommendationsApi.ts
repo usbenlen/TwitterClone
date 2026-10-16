@@ -1,21 +1,25 @@
 import { MOCK_DELAYS } from "@/mock/constants";
 
 import { currentUser, mockTrends, sampleAuthors } from "@/mock/data";
+import { mockFollowing } from "@/mock/data/follow";
 
 import { delay } from "@/mock/utils/delay";
 import { toUserShort } from "@/utils/user";
 
 import type {
   PaginatedRecommendations,
-  RecommendationCategory,
   TrendRecommendationsResponse,
   User,
 } from "@/types";
 
-const recommendedUsernames: Record<RecommendationCategory, string[]> = {
-  people: ["margaret", "josino", "grace", "alan", "katherine", "guido"],
-  creators: ["ada", "grace", "katherine", "guido", "margaret", "josino"],
-};
+const recommendedUsernames = [
+  "margaret",
+  "josino",
+  "grace",
+  "alan",
+  "katherine",
+  "guido",
+];
 
 export const mockRecommendationsApi = {
   async trends(limit: number): Promise<TrendRecommendationsResponse> {
@@ -24,21 +28,22 @@ export const mockRecommendationsApi = {
   },
 
   async users(
-    category: RecommendationCategory,
     limit: number,
     cursor?: string | null,
   ): Promise<PaginatedRecommendations> {
     await delay(MOCK_DELAYS.RECOMMENDATIONS);
 
     const start = Math.max(0, Number.parseInt(cursor ?? "0", 10) || 0);
-    const usernames = recommendedUsernames[category];
+    const following = new Set(
+      (mockFollowing[currentUser.id] ?? []).map((user) => user.id),
+    );
 
-    const users = usernames
+    const users = recommendedUsernames
       .map((username) =>
         sampleAuthors.find((user) => user.username === username),
       )
       .filter((user): user is User =>
-        Boolean(user && user.id !== currentUser.id),
+        Boolean(user && user.id !== currentUser.id && !following.has(user.id)),
       );
 
     const page = users.slice(start, start + limit);
@@ -47,6 +52,7 @@ export const mockRecommendationsApi = {
     return {
       items: page.map(toUserShort),
       nextCursor: nextOffset < users.length ? String(nextOffset) : null,
+      hasMore: nextOffset < users.length,
     };
   },
 };

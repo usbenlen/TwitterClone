@@ -10,7 +10,6 @@ import { useRecommendedUsers } from "@/hooks";
 
 export default function RightSidebarSuggestedUsers() {
   const { users, isLoading, error, reload } = useRecommendedUsers(
-    "people",
     SIDEBAR.RECOMMENDED_USERS_LIMIT,
   );
 

@@ -1,28 +1,15 @@
 import { Loader2 } from "lucide-react";
-import { useSearchParams } from "react-router";
 
 import { PageHeader } from "@/components/layout/pageHeader/index";
 import { RecommendationUserItem } from "@/components/user/index";
 
 import { useRecommendedUsers } from "@/hooks";
 
-import { Button, Tab } from "@/ui/index";
+import { Button } from "@/ui";
 
-import type { RecommendationCategory } from "@/types";
-
-import {
-  APP_ROUTES,
-  RECOMMENDATIONS_PAGE_LIMIT,
-  RECOMMENDATION_TABS,
-} from "@/constants";
-
-function parseCategory(value: string | null): RecommendationCategory {
-  return value === "creators" ? "creators" : "people";
-}
+import { APP_ROUTES, RECOMMENDATIONS_PAGE_LIMIT } from "@/constants";
 
 export default function FollowRecommendationsPage() {
-  const [searchParams, setSearchParams] = useSearchParams();
-  const category = parseCategory(searchParams.get("tab"));
   const {
     users,
     nextCursor,
@@ -31,44 +18,16 @@ export default function FollowRecommendationsPage() {
     error,
     reload,
     loadMore,
-  } = useRecommendedUsers(category, RECOMMENDATIONS_PAGE_LIMIT);
-
-  const selectCategory = (nextCategory: RecommendationCategory) => {
-    setSearchParams({ tab: nextCategory }, { replace: true });
-  };
+  } = useRecommendedUsers(RECOMMENDATIONS_PAGE_LIMIT);
 
   return (
     <section className="w-full max-w-3xl border-r border-border bg-background">
       <PageHeader
-        title="Рекомендації"
+        title="Рекомендовані автори"
         backTo={APP_ROUTES.HOME}
-        footer={
-          <nav
-            className="flex"
-            aria-label="Категорії рекомендацій"
-            role="tablist"
-          >
-            {RECOMMENDATION_TABS.map((tab) => (
-              <button
-                key={tab.value}
-                type="button"
-                role="tab"
-                aria-selected={category === tab.value}
-                onClick={() => selectCategory(tab.value)}
-                className="flex flex-1 cursor-pointer justify-center rounded-t-sm px-4 pt-3 transition-colors hover:bg-muted"
-              >
-                <Tab active={category === tab.value}>{tab.label}</Tab>
-              </button>
-            ))}
-          </nav>
-        }
       />
 
       <div className="py-3">
-        <h2 className="px-4 pb-2 text-xl font-bold text-foreground">
-          Рекомендовано для вас
-        </h2>
-
         {isLoading ? (
           <div
             className="flex justify-center py-14"

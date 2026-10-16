@@ -8,11 +8,7 @@ import {
   useGetRecommendedUsersInfiniteQuery,
 } from "@/store/sharedApi";
 
-import type {
-  RecommendationCategory,
-  TrendRecommendation,
-  UserShort,
-} from "@/types";
+import type { TrendRecommendation, UserShort } from "@/types";
 
 const EMPTY_TRENDS: TrendRecommendation[] = [];
 const EMPTY_USERS: UserShort[] = [];
@@ -27,11 +23,8 @@ export function useTrends(limit: number = SIDEBAR.TRENDS_LIMIT) {
   };
 }
 
-export function useRecommendedUsers(
-  category: RecommendationCategory,
-  limit: number,
-) {
-  const query = useGetRecommendedUsersInfiniteQuery({ category, limit });
+export function useRecommendedUsers(limit: number) {
+  const query = useGetRecommendedUsersInfiniteQuery(limit);
   const users = useMemo(() => {
     if (!query.data) return EMPTY_USERS;
 
@@ -47,7 +40,7 @@ export function useRecommendedUsers(
   }, [query.data]);
   return {
     users,
-    nextCursor: query.data?.pages.at(-1)?.nextCursor ?? null,
+    nextCursor: query.hasNextPage ? query.data?.pages.at(-1)?.nextCursor ?? null : null,
     isLoading: query.isLoading,
     isLoadingMore: query.isFetchingNextPage,
     error: query.error ? errorMessage(query.error) : null,

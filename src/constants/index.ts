@@ -27,10 +27,7 @@ export {
   BIRTH_DATE_MIN_YEAR,
   BIRTH_DATE_VISIBILITY_OPTIONS,
 } from "@/constants/profile";
-export {
-  RECOMMENDATIONS_PAGE_LIMIT,
-  RECOMMENDATION_TABS,
-} from "@/constants/recommendations";
+export { RECOMMENDATIONS_PAGE_LIMIT } from "@/constants/recommendations";
 export { APP_ROUTES } from "@/constants/routes";
 export { SCHEDULE, SCHEDULE_MIN_DELAY_MS } from "@/constants/schedule";
 export { THEME_OPTIONS } from "@/constants/theme";
