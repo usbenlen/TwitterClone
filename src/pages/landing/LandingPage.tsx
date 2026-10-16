@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Link, useNavigate } from "react-router";
 import {
   ArrowRight,
@@ -15,6 +15,8 @@ import { GoogleAuthButton } from "@/components/auth";
 import { HeartIcon } from "@/shared/icons";
 
 import { AppLogo, Avatar } from "@/ui";
+
+import { useAutosizeTextarea } from "@/hooks/useAutosizeTextarea";
 
 import { cn } from "@/utils/cn";
 
@@ -122,6 +124,9 @@ const features = [
 export default function LandingPage() {
   const navigate = useNavigate();
   const [draft, setDraft] = useState("");
+  const draftRef = useRef<HTMLTextAreaElement>(null);
+
+  useAutosizeTextarea(draftRef, draft, 1);
 
   const publishDraft = () => {
     if (!draft.trim()) return;
@@ -131,7 +136,7 @@ export default function LandingPage() {
   return (
     <div className="min-h-screen overflow-hidden bg-background text-foreground">
       <header className="relative z-20 border-b border-border/70 bg-background/85 backdrop-blur-xl">
-        <div className="mx-auto flex h-18 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+        <div className="mx-auto flex h-18 max-w-7xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
           <AppLogo to={APP_ROUTES.LANDING} />
 
           <nav
@@ -140,7 +145,7 @@ export default function LandingPage() {
           >
             <Link
               to={APP_ROUTES.LOGIN}
-              className="inline-flex h-10 items-center justify-center rounded-full px-4 text-sm font-bold text-foreground transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              className="inline-flex h-10 shrink-0 items-center justify-center rounded-full border border-border px-4 text-sm font-bold text-foreground transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             >
               Увійти
             </Link>
@@ -159,21 +164,21 @@ export default function LandingPage() {
             aria-hidden="true"
           />
 
-          <div className="relative mx-auto grid max-w-7xl items-center gap-14 px-4 py-16 sm:px-6 sm:py-24 lg:grid-cols-[1.02fr_0.98fr] lg:gap-20 lg:px-8 lg:py-28">
-            <div className="mx-auto max-w-2xl text-center lg:mx-0 lg:text-left">
-              <h1 className="text-5xl font-black leading-[0.98] tracking-[-0.045em] text-balance sm:text-6xl lg:text-7xl">
+          <div className="relative mx-auto grid min-w-0 max-w-7xl items-center gap-10 px-4 py-12 sm:gap-14 sm:px-6 sm:py-24 lg:grid-cols-[1.02fr_0.98fr] lg:gap-20 lg:px-8 lg:py-28">
+            <div className="mx-auto min-w-0 max-w-2xl text-center lg:mx-0 lg:text-left">
+              <h1 className="text-4xl font-black leading-[0.98] tracking-[-0.045em] text-balance sm:text-6xl lg:text-7xl">
                 Діліться тим, що{" "}
                 <span className="text-primary">має значення.</span>
               </h1>
-              <p className="mx-auto mt-6 max-w-xl text-lg leading-8 text-muted-foreground text-pretty sm:text-xl lg:mx-0">
+              <p className="mx-auto mt-5 max-w-xl text-base leading-7 text-muted-foreground text-pretty sm:mt-6 sm:text-xl sm:leading-8 lg:mx-0">
                 {APP_NAME} - простір для живих розмов, нових знайомств і думок,
                 якими хочеться ділитися.
               </p>
 
-              <div className="mx-auto mt-9 flex max-w-md flex-col gap-3 lg:mx-0">
+              <div className="mx-auto mt-7 flex w-full min-w-0 max-w-md flex-col gap-3 sm:mt-9 lg:mx-0">
                 <Link
                   to={APP_ROUTES.REGISTER}
-                  className="inline-flex h-13 items-center justify-center gap-2 rounded-full bg-primary px-7 text-base font-bold text-primary-foreground transition-colors hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                  className="inline-flex h-13 w-full items-center justify-center gap-2 rounded-full bg-primary px-5 text-base font-bold text-primary-foreground transition-colors hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:px-7"
                 >
                   Створити акаунт
                   <ArrowRight className="size-5" />
@@ -182,7 +187,7 @@ export default function LandingPage() {
               </div>
             </div>
 
-            <div className="relative mx-auto w-full max-w-lg lg:max-w-none">
+            <div className="relative mx-auto w-full min-w-0 max-w-lg lg:max-w-none">
               <div
                 className="absolute -inset-5 -rotate-3 rounded-4xl bg-primary/10"
                 aria-hidden="true"
@@ -193,23 +198,24 @@ export default function LandingPage() {
                 </div>
                 <div className="flex gap-3 px-4 py-4">
                   <Avatar name="Ви" />
-                  <div className="flex flex-1 items-center justify-between gap-3">
+                  <div className="flex min-w-0 flex-1 flex-wrap items-center justify-between gap-3">
                     <textarea
+                      ref={draftRef}
                       value={draft}
                       onChange={(event) => setDraft(event.target.value)}
                       rows={1}
                       maxLength={40}
                       aria-label="Що нового?"
                       placeholder="Що нового?"
-                      className="min-w-0 flex-1 resize-none bg-transparent text-sm text-foreground outline-none"
+                      className="min-w-0 grow basis-24 resize-none bg-transparent text-sm text-foreground outline-none transition-[height] duration-400 ease-out"
                     />
-                    <div className="flex items-center gap-3">
+                    <div className="ml-auto flex shrink-0 items-center gap-3">
                       <Image className="cursor-pointer size-5 text-primary" />
                       <button
                         type="button"
                         onClick={publishDraft}
                         disabled={!draft.trim()}
-                        className="cursor-pointer rounded-full bg-primary px-4 py-1.5 text-xs font-bold text-primary-foreground transition-colors hover:bg-primary-hover disabled:opacity-50"
+                        className="cursor-pointer whitespace-nowrap rounded-full bg-primary px-4 py-1.5 text-xs font-bold text-primary-foreground transition-colors hover:bg-primary-hover disabled:opacity-50"
                       >
                         Опублікувати
                       </button>
