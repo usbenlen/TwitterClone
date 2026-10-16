@@ -154,7 +154,7 @@ export default function UsersPage() {
             {users.map((user) => (
               <article
                 key={user.id}
-                className="grid grid-cols-[auto_minmax(0,1fr)] items-center gap-4 p-4 sm:p-5 xl:grid-cols-[auto_minmax(0,1fr)_auto]"
+                className="grid grid-cols-[auto_minmax(0,1fr)] items-center gap-2 p-3 sm:gap-4 sm:p-5 xl:grid-cols-[auto_minmax(0,1fr)_auto]"
               >
                 <input
                   type="checkbox"

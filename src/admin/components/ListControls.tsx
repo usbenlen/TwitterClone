@@ -18,7 +18,7 @@ export function Select<T extends string>({
   onChange: (value: T) => void;
 }) {
   return (
-    <label className="flex min-w-36 flex-col gap-1 text-sm text-muted-foreground">
+    <label className="flex min-w-[calc(50%-0.375rem)] flex-1 flex-col gap-1 text-sm text-muted-foreground sm:min-w-36 sm:flex-none">
       {label}
       <select
         value={value}
@@ -56,7 +56,7 @@ export function Pagination({
       <span className="text-sm text-muted-foreground">
         Усього: {total} · Сторінка {page} з {totalPages}
       </span>
-      <div className="flex gap-2">
+      <div className="flex w-full justify-between gap-2 sm:w-auto sm:justify-start">
         <Button
           variant="outline"
           size="comfortable"

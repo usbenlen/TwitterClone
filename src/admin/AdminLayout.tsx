@@ -30,7 +30,7 @@ export default function AdminLayout() {
                 end={to === APP_ROUTES.ADMIN}
                 className={({ isActive }) =>
                   cn(
-                    "flex min-h-13 items-center gap-3 rounded-xl px-4 py-3 text-lg font-semibold transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+                    "flex min-h-13 min-w-0 items-center gap-2 rounded-xl px-3 py-2.5 text-sm font-semibold transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:gap-3 sm:px-4 sm:py-3 sm:text-base lg:text-lg",
                     isActive && "bg-primary/10 text-primary",
                   )
                 }
