@@ -61,11 +61,14 @@ export function getBirthYear(iso: string): string | null {
   return /^(\d{4})-\d{2}-\d{2}$/.exec(iso)?.[1] ?? null;
 }
 
-// Скорочення чисел: 1200 -> "1,2 тис"
+// Скорочення чисел: 1200 -> "1.2K"
 export function formatCount(n: number): string {
   if (n < 1000) return String(n);
-  if (n < 1_000_000) return `${(n / 1000).toFixed(1).replace(".0", "")} тис`;
-  return `${(n / 1_000_000).toFixed(1).replace(".0", "")} млн`;
+  if (n < 999_950) return `${(n / 1000).toFixed(1).replace(".0", "")}K`;
+  if (n < 999_950_000) {
+    return `${(n / 1_000_000).toFixed(1).replace(".0", "")}M`;
+  }
+  return `${(n / 1_000_000_000).toFixed(1).replace(".0", "")}B`;
 }
 
 const countPluralRules = new Intl.PluralRules(APP_LOCALE);
