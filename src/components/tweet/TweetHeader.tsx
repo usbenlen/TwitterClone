@@ -1,4 +1,5 @@
 import { Link } from "react-router";
+import { PenLine } from "lucide-react";
 
 import { ActionsMenu } from "@/components/tweet";
 
@@ -64,14 +65,20 @@ export default function TweetHeader({
                     event.stopPropagation();
                     onOpenEditHistory();
                   }}
-                  className="shrink-0 cursor-pointer text-muted-foreground italic underline-offset-2 hover:text-foreground hover:underline focus-visible:rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                  title="Відредаговано"
+                  className="shrink-0 cursor-pointer text-muted-foreground hover:text-foreground focus-visible:rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                   aria-label="Відкрити історію редагувань"
                 >
-                  Відредаговано
+                  <PenLine size={16} strokeWidth={2} aria-hidden="true" />
                 </button>
               ) : (
-                <span className="shrink-0 text-muted-foreground italic">
-                  Відредаговано
+                <span
+                  className="shrink-0 text-muted-foreground"
+                  title="Відредаговано"
+                  role="img"
+                  aria-label="Відредаговано"
+                >
+                  <PenLine size={16} strokeWidth={2} aria-hidden="true" />
                 </span>
               )}
             </>

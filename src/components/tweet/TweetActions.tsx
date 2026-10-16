@@ -45,7 +45,7 @@ export default function TweetActions({
   const [isRepostMenuOpen, setIsRepostMenuOpen] = useState(false);
 
   return (
-    <div className="mt-2 flex w-full min-w-0 items-center justify-between gap-1 text-muted-foreground sm:gap-5">
+    <div className="mt-2 flex w-full min-w-0 items-center justify-between gap-1 text-muted-foreground sm:justify-start sm:gap-5">
       <button
         type="button"
         onClick={onComment}
@@ -104,7 +104,7 @@ export default function TweetActions({
         )}
       </button>
 
-      <div className="flex shrink-0 items-center gap-1">
+      <div className="flex shrink-0 items-center gap-1 sm:ml-auto">
         <div
           className="flex min-w-0 items-center justify-center gap-1 rounded-full p-0.5 cursor-default select-none sm:gap-2"
           title="Views"
