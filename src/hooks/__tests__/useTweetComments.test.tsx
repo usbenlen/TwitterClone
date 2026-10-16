@@ -9,11 +9,12 @@ const api = vi.hoisted(() => ({
   create: vi.fn(),
   unwrap: vi.fn(),
   reset: vi.fn(),
+  postsQuery: { currentData: undefined as unknown },
 }));
 
 vi.mock("@/store/postsApi", () => ({
   errorMessage: () => "Request failed",
-  useGetPostsQuery: () => ({ isLoading: false }),
+  useGetPostsQuery: () => api.postsQuery,
   useCreateCommentMutation: () => [
     api.create,
     { isLoading: false, reset: api.reset },
@@ -38,6 +39,7 @@ function renderComments(parentCommentId: string | null) {
 
 const data: ComposerSubmitData = { content: "A reply", mediaIds: [] };
 beforeEach(() => {
+  api.postsQuery.currentData = undefined;
   api.unwrap.mockReset().mockResolvedValue({ id: "new-comment" });
   api.create.mockReset().mockReturnValue({ unwrap: api.unwrap });
 });
@@ -71,5 +73,11 @@ describe("comment request targeting", () => {
     expect(await hook.createComment(data)).toBe(false);
     expect(hook.commentsCount).toBe(3);
     expect(data.content).toBe("A reply");
+  });
+
+  it("preserves the server reply count when loaded comments omit nested replies", () => {
+    api.postsQuery.currentData = [];
+
+    expect(renderComments("comment-1").commentsCount).toBe(3);
   });
 });

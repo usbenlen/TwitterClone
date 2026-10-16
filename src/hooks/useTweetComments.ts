@@ -45,11 +45,7 @@ export function useTweetComments({
   return {
     open,
     comments,
-    commentsCount: query.currentData
-      ? comments.filter(
-          (comment) => (comment.parentCommentId ?? null) === parentCommentId,
-        ).length
-      : initialCount,
+    commentsCount: initialCount,
     isLoading: query.isLoading,
     isSubmitting: creating.isLoading,
     error:
