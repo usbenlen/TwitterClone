@@ -8,23 +8,24 @@ import { mockRecommendationsApi } from "@/mock/handlers";
 import type {
   CursorPage,
   PaginatedRecommendations,
-  RecommendationCategory,
   TrendRecommendationsResponse,
 } from "@/types";
 
 interface RecommendationsApi {
   trends(limit: number): Promise<TrendRecommendationsResponse>;
   users(
-    category: RecommendationCategory,
     limit: number,
     cursor?: string | null,
   ): Promise<PaginatedRecommendations>;
 }
 
 const realRecommendationsApi: RecommendationsApi = {
-  trends: async () => ({ items: [] }),
+  trends: (limit) =>
+    apiClient.get<TrendRecommendationsResponse>(
+      `${ENDPOINTS.recommendations.trends}?${new URLSearchParams({ limit: String(limit) })}`,
+    ),
 
-  users: async (_category, limit, cursor) => {
+  users: async (limit, cursor) => {
     const params = new URLSearchParams({
       limit: String(limit),
     });
@@ -32,8 +33,8 @@ const realRecommendationsApi: RecommendationsApi = {
 
     const page = await apiClient.get<
       CursorPage<BackendUser<PaginatedRecommendations["items"][number]>>
-    >(`${ENDPOINTS.search.users}?${params}`);
-    return { items: page.items.map(mapUserRole), nextCursor: page.nextCursor };
+    >(`${ENDPOINTS.recommendations.users}?${params}`);
+    return { ...page, items: page.items.map(mapUserRole) };
   },
 };
 

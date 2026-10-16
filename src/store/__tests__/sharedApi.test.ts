@@ -1,6 +1,13 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { followApi, scheduledPostApi, tweetApi, userApi } from "@/api";
+import {
+  followApi,
+  recommendationsApi,
+  scheduledPostApi,
+  tweetApi,
+  userApi,
+} from "@/api";
+import { ApiError } from "@/api/client";
 
 import type { ScheduledPost, Tweet, User, UserShort } from "@/types";
 
@@ -80,6 +87,180 @@ beforeEach(() => {
 });
 
 describe("shared RTK Query data", () => {
+  it("shares recommendation pages and stops when hasMore is false", async () => {
+    const store = createAppStore();
+    vi.mocked(recommendationsApi.users)
+      .mockResolvedValueOnce({
+        items: [ada],
+        nextCursor: "opaque-next",
+        hasMore: true,
+      })
+      .mockResolvedValueOnce({
+        items: [],
+        nextCursor: "unused",
+        hasMore: false,
+      });
+    const first = store.dispatch(
+      sharedApi.endpoints.getRecommendedUsers.initiate(4),
+    );
+    const second = store.dispatch(
+      sharedApi.endpoints.getRecommendedUsers.initiate(4),
+    );
+    await Promise.all([first, second]);
+    expect(recommendationsApi.users).toHaveBeenCalledTimes(1);
+
+    await store
+      .dispatch(
+        sharedApi.endpoints.getRecommendedUsers.initiate(4, {
+          direction: "forward",
+          subscribe: false,
+        }),
+      )
+      .unwrap();
+    expect(recommendationsApi.users).toHaveBeenLastCalledWith(4, "opaque-next");
+    await store
+      .dispatch(
+        sharedApi.endpoints.getRecommendedUsers.initiate(4, {
+          direction: "forward",
+          subscribe: false,
+        }),
+      )
+      .unwrap();
+    expect(recommendationsApi.users).toHaveBeenCalledTimes(2);
+    first.unsubscribe();
+    second.unsubscribe();
+  });
+
+  it("preserves loaded pages after a failure and retries the same cursor", async () => {
+    const store = createAppStore();
+    vi.mocked(recommendationsApi.users)
+      .mockResolvedValueOnce({
+        items: [ada],
+        nextCursor: "retry-cursor",
+        hasMore: true,
+      })
+      .mockRejectedValueOnce(new Error("offline"))
+      .mockResolvedValueOnce({ items: [], nextCursor: null, hasMore: false });
+    const query = store.dispatch(
+      sharedApi.endpoints.getRecommendedUsers.initiate(4),
+    );
+    await query;
+    const next = () =>
+      store.dispatch(
+        sharedApi.endpoints.getRecommendedUsers.initiate(4, {
+          direction: "forward",
+          subscribe: false,
+        }),
+      );
+    await expect(next().unwrap()).rejects.toMatchObject({ message: "offline" });
+    expect(
+      sharedApi.endpoints.getRecommendedUsers.select(4)(store.getState()).data
+        ?.pages[0].items,
+    ).toEqual([ada]);
+    await next().unwrap();
+    expect(vi.mocked(recommendationsApi.users).mock.calls).toEqual([
+      [4, null],
+      [4, "retry-cursor"],
+      [4, "retry-cursor"],
+    ]);
+    query.unsubscribe();
+  });
+
+  it("refreshes recommendations after successful follow and unfollow", async () => {
+    const store = createAppStore();
+    let following = false;
+    vi.mocked(recommendationsApi.users).mockImplementation(async () => ({
+      items: following ? [] : [ada],
+      nextCursor: null,
+      hasMore: false,
+    }));
+    vi.mocked(followApi.follow).mockImplementation(async () => {
+      following = true;
+    });
+    vi.mocked(followApi.unfollow).mockImplementation(async () => {
+      following = false;
+    });
+    const query = store.dispatch(
+      sharedApi.endpoints.getRecommendedUsers.initiate(4),
+    );
+    await query;
+    const read = () =>
+      sharedApi.endpoints.getRecommendedUsers.select(4)(store.getState()).data
+        ?.pages[0].items;
+
+    await store
+      .dispatch(
+        sharedApi.endpoints.followUser.initiate({ viewerId: "me", user: ada }),
+      )
+      .unwrap();
+    await vi.waitFor(() => expect(read()).toEqual([]));
+    await store
+      .dispatch(
+        sharedApi.endpoints.unfollowUser.initiate({
+          viewerId: "me",
+          user: ada,
+        }),
+      )
+      .unwrap();
+    await vi.waitFor(() => expect(read()).toEqual([ada]));
+    expect(recommendationsApi.users).toHaveBeenCalledTimes(3);
+    query.unsubscribe();
+  });
+
+  it("does not restore recommendations from a request belonging to the previous session", async () => {
+    const store = createAppStore();
+    let resolve!: (page: {
+      items: UserShort[];
+      nextCursor: null;
+      hasMore: false;
+    }) => void;
+    vi.mocked(recommendationsApi.users).mockReturnValueOnce(
+      new Promise((done) => {
+        resolve = done;
+      }),
+    );
+    const pending = store.dispatch(
+      sharedApi.endpoints.getRecommendedUsers.initiate(4),
+    );
+    store.dispatch(sessionChanged());
+    vi.mocked(recommendationsApi.users).mockResolvedValueOnce({
+      items: [],
+      nextCursor: null,
+      hasMore: false,
+    });
+    const current = store.dispatch(
+      sharedApi.endpoints.getRecommendedUsers.initiate(4),
+    );
+    await current.unwrap();
+    resolve({ items: [ada], nextCursor: null, hasMore: false });
+    await pending;
+    expect(
+      sharedApi.endpoints.getRecommendedUsers.select(4)(store.getState()).data,
+    ).toMatchObject({ pages: [{ items: [] }] });
+    pending.unsubscribe();
+    current.unsubscribe();
+  });
+
+  it("reports a missing trends endpoint as an error and reloads after it becomes available", async () => {
+    const store = createAppStore();
+    vi.mocked(recommendationsApi.trends)
+      .mockRejectedValueOnce(new ApiError(404, "Теми ще недоступні."))
+      .mockResolvedValueOnce({ items: [] });
+    const query = store.dispatch(sharedApi.endpoints.getTrends.initiate(4));
+    await query;
+    expect(
+      sharedApi.endpoints.getTrends.select(4)(store.getState()).error,
+    ).toMatchObject({ status: 404 });
+    expect(
+      sharedApi.endpoints.getTrends.select(4)(store.getState()).data,
+    ).toBeUndefined();
+    await query.refetch().unwrap();
+    expect(
+      sharedApi.endpoints.getTrends.select(4)(store.getState()).data,
+    ).toEqual({ items: [] });
+    query.unsubscribe();
+  });
+
   it("shares follow data and refreshes it after follow and unfollow", async () => {
     const store = createAppStore();
 

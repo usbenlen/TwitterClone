@@ -119,6 +119,10 @@ export const ENDPOINTS = {
     gifs: "search/gifs",
     locations: "search/locations",
   },
+  recommendations: {
+    users: "recommendations/users",
+    trends: "recommendations/trends",
+  },
   follows: {
     follow: (userId: string) => `follows/${encodeURIComponent(userId)}`,
     unfollow: (userId: string) => `follows/${encodeURIComponent(userId)}`,

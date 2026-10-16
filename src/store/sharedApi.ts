@@ -8,7 +8,6 @@ import {
 import type {
   CreateScheduledPostRequest,
   PaginatedRecommendations,
-  RecommendationCategory,
   ScheduledPost,
   TrendRecommendationsResponse,
   UpdateScheduledPostRequest,
@@ -131,20 +130,15 @@ export const sharedApi = postsApi.injectEndpoints({
 
     getRecommendedUsers: build.infiniteQuery<
       PaginatedRecommendations,
-      { category: RecommendationCategory; limit: number },
+      number,
       string | null
     >({
       infiniteQueryOptions: {
         initialPageParam: null,
-        getNextPageParam: (page) => page.nextCursor ?? undefined,
+        getNextPageParam: (page) => page.hasMore ? page.nextCursor ?? undefined : undefined,
       },
       queryFn: ({ queryArg, pageParam }) =>
-        request(() =>
-          recommendationsApi.users(
-            queryArg.category,
-            queryArg.limit,
-            pageParam,
-          ),
+        request(() => recommendationsApi.users(queryArg, pageParam),
         ),
       providesTags: [{ type: "Recommendation", id: "USERS" }],
     }),

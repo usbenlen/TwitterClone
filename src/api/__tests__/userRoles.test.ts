@@ -88,7 +88,7 @@ describe("server user roles", () => {
     ["search", () => searchApi.users(DEFAULT_SEARCH_CRITERIA)],
     [
       "recommendations",
-      async () => (await recommendationsApi.users("people", 5)).items,
+      async () => (await recommendationsApi.users(5)).items,
     ],
   ] as const)("normalizes %s list items", async (_name, read) => {
     client.get.mockResolvedValue({

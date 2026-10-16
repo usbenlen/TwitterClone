@@ -1,6 +1,5 @@
+import type { CursorPage } from "@/types/api";
 import type { UserShort } from "@/types/user";
-
-export type RecommendationCategory = "people" | "creators";
 
 export interface TrendRecommendation {
   id: string;
@@ -14,7 +13,4 @@ export interface TrendRecommendationsResponse {
   items: TrendRecommendation[];
 }
 
-export interface PaginatedRecommendations {
-  items: UserShort[];
-  nextCursor: string | null;
-}
+export type PaginatedRecommendations = CursorPage<UserShort>;
