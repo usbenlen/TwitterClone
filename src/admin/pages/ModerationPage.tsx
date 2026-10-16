@@ -1,6 +1,7 @@
-import { useAdminReportsQuery, useResolveReportMutation } from "@/admin/store";
+import { ArrowRight, ListX } from "lucide-react";
+import { Link } from "react-router";
 
-import { ListX } from "lucide-react";
+import { useAdminReportsQuery, useResolveReportMutation } from "@/admin/store";
 
 import {
   MODERATION_DEFAULTS,
@@ -30,6 +31,7 @@ import {
 } from "@/constants/report";
 
 import SearchBox from "@/ui/SearchBox";
+import { APP_ROUTES } from "@/constants/routes";
 import { Button } from "@/ui/Button";
 
 import type { ReportDecision, ReportSignal } from "@/types/report";
@@ -76,8 +78,8 @@ export default function ModerationPage() {
   return (
     <>
       <header>
-        <h1 className="text-2xl font-bold">Модерація</h1>
-        <p className="mt-1 text-muted-foreground">
+        <h1 className="text-xl font-bold sm:text-2xl">Модерація</h1>
+        <p className="mt-1 hidden text-muted-foreground sm:block">
           Скарги користувачів і системні сигнали.
         </p>
       </header>
@@ -125,10 +127,10 @@ export default function ModerationPage() {
         retry={query.refetch}
       >
         <div
-          className="space-y-4"
+          className="space-y-3 sm:space-y-4"
           aria-busy={query.isFetching || confirmation.busy}
         >
-          <div className="flex flex-wrap items-center gap-3">
+          <div className="hidden flex-wrap items-center gap-3 sm:flex">
             <label className="flex items-center gap-2 text-sm">
               <input
                 type="checkbox"
@@ -192,38 +194,50 @@ export default function ModerationPage() {
           {reports.map((report) => (
             <article
               key={report.id}
-              className="min-w-0 space-y-5 rounded-2xl border border-border bg-card p-5"
+              className="min-w-0 rounded-2xl border border-border bg-card p-4 sm:space-y-5 sm:p-5"
             >
-              <div className="flex items-start gap-3">
-                <input
-                  type="checkbox"
-                  aria-label={`Вибрати скаргу ${report.id}`}
-                  disabled={
-                    report.status !== "pending" ||
-                    confirmation.busy ||
-                    query.isFetching
-                  }
-                  checked={selection.selected.includes(report.id)}
-                  onChange={() => selection.toggle(report.id)}
-                  className="mt-1 accent-primary"
-                />
-                <div className="min-w-0 flex-1">
-                  <ReportSummary report={report} compact />
-                </div>
+              <div className="space-y-3 sm:hidden">
+                <ReportSummary report={report} compact />
+                <Link
+                  to={APP_ROUTES.adminReport(report.id)}
+                  className="inline-flex min-h-10 items-center gap-2 rounded-sm text-sm font-semibold text-primary hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                >
+                  Переглянути скаргу
+                  <ArrowRight className="size-4" aria-hidden="true" />
+                </Link>
               </div>
-              {report.targetType === "users" && (
-                <ReportPreview report={report} />
-              )}
-              <ReportActions
-                report={report}
-                busy={confirmation.busy || query.isFetching}
-                onAction={(decision) => act([report], decision)}
-                leading={
-                  report.targetType !== "users" && report.target ? (
-                    <ReportPreview report={report} compact />
-                  ) : undefined
-                }
-              />
+              <div className="hidden space-y-5 sm:block">
+                <div className="flex items-start gap-3">
+                  <input
+                    type="checkbox"
+                    aria-label={`Вибрати скаргу ${report.id}`}
+                    disabled={
+                      report.status !== "pending" ||
+                      confirmation.busy ||
+                      query.isFetching
+                    }
+                    checked={selection.selected.includes(report.id)}
+                    onChange={() => selection.toggle(report.id)}
+                    className="mt-1 accent-primary"
+                  />
+                  <div className="min-w-0 flex-1">
+                    <ReportSummary report={report} compact />
+                  </div>
+                </div>
+                {report.targetType === "users" && (
+                  <ReportPreview report={report} />
+                )}
+                <ReportActions
+                  report={report}
+                  busy={confirmation.busy || query.isFetching}
+                  onAction={(decision) => act([report], decision)}
+                  leading={
+                    report.targetType !== "users" && report.target ? (
+                      <ReportPreview report={report} compact />
+                    ) : undefined
+                  }
+                />
+              </div>
             </article>
           ))}
         </div>

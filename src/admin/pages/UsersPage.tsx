@@ -64,8 +64,8 @@ export default function UsersPage() {
   return (
     <>
       <header>
-        <h1 className="text-2xl font-bold">Користувачі</h1>
-        <p className="mt-1 text-muted-foreground">
+        <h1 className="text-xl font-bold sm:text-2xl">Користувачі</h1>
+        <p className="mt-1 hidden text-muted-foreground sm:block">
           Керуйте акаунтами та їхнім доступом.
         </p>
       </header>
@@ -99,7 +99,7 @@ export default function UsersPage() {
           className="space-y-4"
           aria-busy={query.isFetching || confirmation.busy}
         >
-          <div className="flex flex-wrap items-center gap-3">
+          <div className="hidden flex-wrap items-center gap-3 sm:flex">
             <label className="flex items-center gap-2 text-sm">
               <input
                 type="checkbox"
@@ -154,7 +154,7 @@ export default function UsersPage() {
             {users.map((user) => (
               <article
                 key={user.id}
-                className="grid grid-cols-[auto_minmax(0,1fr)] items-center gap-2 p-3 sm:gap-4 sm:p-5 xl:grid-cols-[auto_minmax(0,1fr)_auto]"
+                className="grid grid-cols-1 items-center gap-2 p-3 sm:grid-cols-[auto_minmax(0,1fr)] sm:gap-4 sm:p-5 xl:grid-cols-[auto_minmax(0,1fr)_auto]"
               >
                 <input
                   type="checkbox"
@@ -166,12 +166,12 @@ export default function UsersPage() {
                   }
                   checked={selection.selected.includes(user.id)}
                   onChange={() => selection.toggle(user.id)}
-                  className="accent-primary"
+                  className="hidden accent-primary sm:block"
                 />
                 <div className="min-w-0 flex-1">
                   <UserSummary user={user} />
                 </div>
-                <div className="col-span-2 xl:col-span-1">
+                <div className="hidden sm:col-span-2 sm:block xl:col-span-1">
                   <UserActions
                     user={user}
                     busy={confirmation.busy || query.isFetching}

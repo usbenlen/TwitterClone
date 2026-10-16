@@ -29,8 +29,8 @@ export default function DashboardPage() {
   return (
     <>
       <header>
-        <h1 className="text-2xl font-bold">Огляд</h1>
-        <p className="mt-1 text-muted-foreground">
+        <h1 className="text-xl font-bold sm:text-2xl">Огляд</h1>
+        <p className="mt-1 hidden text-muted-foreground sm:block">
           Активність, аудиторія та останні скарги.
         </p>
       </header>
