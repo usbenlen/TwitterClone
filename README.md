@@ -1,3 +1,12 @@
+# Chirp Live Demo
+- Mock Demo (Admin Testing): https://chirp-mock.vercel.app
+- Live Version: https://chirp-seven-sigma.vercel.app
+
+Мок-демонстрація призначена для тестування та демонстрації. Жива версія використовує backend.
+
+# Chirp Backend
+- [Chirp backend repository](https://github.com/IvanZacerkovnij/ASP-React-FinalProject-server)
+
 # Chirp - frontend
 
 Chirp - вебзастосунок соціальної мережі у стилі Twitter. Цей репозиторій містить браузерний frontend на React і TypeScript. Він працює з backend API або з локальними mock-обробниками для розробки.
