@@ -11,7 +11,7 @@ interface ProfileInfoProps {
 export default function ProfileInfo({ user }: ProfileInfoProps) {
   return (
     <div className="px-4 pt-4">
-      <div className="flex min-w-0 items-start gap-1">
+      <div className="flex min-w-0 items-center gap-1">
         <h2 className="min-w-0 wrap-break-word text-xl font-extrabold text-foreground">
           {user.displayName}
         </h2>
