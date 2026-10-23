@@ -26,13 +26,13 @@ export default function NavigationItem({
       className={({ isActive }) =>
         cn(
           "flex items-center rounded-full transition-colors hover:bg-muted",
+          "dark:hover:bg-surface-hover dark:active:bg-muted dark:focus-visible:focus-indicator",
           vertical ? "gap-4 px-4 py-3 text-lg" : "gap-2 px-3 py-2",
-          isActive ? "font-bold text-foreground" : "text-muted-foreground",
+          isActive ? "navigation-active font-bold text-foreground" : "text-muted-foreground dark:text-foreground",
         )
       }
     >
       {icon}
-
       <span>{children}</span>
     </NavLink>
   );

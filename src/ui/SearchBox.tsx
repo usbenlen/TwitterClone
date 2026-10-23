@@ -35,6 +35,7 @@ export default function SearchBox({
           "flex h-10 items-center gap-2 rounded-full",
           "bg-muted px-4",
           "transition-colors focus-within:ring-2 focus-within:ring-ring",
+          "dark:inset-ring dark:inset-ring-border dark:focus-within:inset-ring-primary",
         )}
       >
         <Search size={18} className="shrink-0 text-muted-foreground" />
@@ -52,7 +53,7 @@ export default function SearchBox({
           <button
             type="button"
             onClick={clearSearch}
-            className="cursor-pointer flex size-6 shrink-0 items-center justify-center rounded-full text-muted-foreground transition-colors hover:text-foreground"
+            className="cursor-pointer flex size-6 shrink-0 items-center justify-center rounded-full text-muted-foreground transition-colors hover:text-foreground dark:hover:bg-surface-hover dark:active:bg-background dark:focus-visible:focus-indicator"
             aria-label="Очистити пошук"
           >
             <X size={15} />

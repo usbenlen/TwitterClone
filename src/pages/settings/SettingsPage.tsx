@@ -80,9 +80,10 @@ export default function SettingsPage({
                     onClick={() => setTheme(value)}
                     className={cn(
                       "flex min-w-0 flex-col items-center justify-center gap-1.5 rounded-xl border px-1.5 py-2.5 text-xs transition sm:flex-row sm:gap-2 sm:px-3 sm:text-sm",
+                      "dark:focus-visible:focus-indicator",
                       theme === value
-                        ? "border-primary bg-primary/10 text-primary"
-                        : "border-border hover:bg-muted",
+                        ? "border-primary bg-primary/10 text-primary dark:bg-primary/20"
+                        : "border-border hover:bg-muted dark:border-control-border dark:hover:bg-surface-hover dark:active:bg-muted",
                     )}
                   >
                     <Icon className="size-4 shrink-0" aria-hidden="true" />
@@ -107,7 +108,7 @@ export default function SettingsPage({
                 <button
                   type="button"
                   onClick={() => setIsEditProfileOpen(true)}
-                  className="flex w-full items-center justify-between rounded-xl p-3 text-left transition hover:bg-muted cursor-pointer"
+                  className="flex w-full items-center justify-between rounded-xl p-3 text-left transition hover:bg-muted cursor-pointer dark:hover:bg-surface-hover dark:active:bg-muted dark:focus-visible:focus-indicator"
                 >
                   <div className="flex items-center gap-3">
                     <div className="flex size-10 items-center justify-center rounded-xl bg-muted">
@@ -129,7 +130,7 @@ export default function SettingsPage({
                 {/* Change password */}
                 <Link
                   to={APP_ROUTES.SETTINGS_CHANGE_PASSWORD}
-                  className="flex items-center justify-between rounded-xl p-3 transition hover:bg-muted"
+                  className="flex items-center justify-between rounded-xl p-3 transition hover:bg-muted dark:hover:bg-surface-hover dark:active:bg-muted dark:focus-visible:focus-indicator"
                 >
                   <div className="flex items-center gap-3">
                     <div className="flex size-10 items-center justify-center rounded-xl bg-muted">

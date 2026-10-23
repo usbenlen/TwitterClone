@@ -26,8 +26,10 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
         )}
         <div
           className={cn(
-            "flex items-center rounded-md border bg-input px-3 transition-colors focus-within:border-primary",
-            error ? "border-destructive" : "border-border",
+            "flex items-center rounded-md border bg-input px-3 transition-colors focus-within:border-primary dark:focus-within:ring-2 dark:focus-within:ring-ring",
+            error
+              ? "border-destructive dark:focus-within:border-destructive"
+              : "border-border dark:border-control-border dark:focus-within:border-primary",
           )}
         >
           {prefix && (

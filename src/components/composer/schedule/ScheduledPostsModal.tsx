@@ -47,7 +47,7 @@ export default function ScheduledPostsModal({
   return createPortal(
     <>
       <div
-        className="fixed inset-0 z-modal flex items-start justify-center bg-black/50 p-0 sm:p-4 sm:pt-16"
+        className="fixed inset-0 z-modal flex items-start justify-center modal-backdrop p-0 sm:p-4 sm:pt-16"
         role="dialog"
         aria-modal="true"
         aria-labelledby="scheduled-posts-title"

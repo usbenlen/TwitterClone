@@ -125,9 +125,10 @@ export default function ActionsMenu({
                 }}
                 className={cn(
                   "cursor-pointer flex w-full items-center gap-3 px-4 py-2.5 text-sm font-medium transition-colors first:rounded-t-xl last:rounded-b-xl",
+                  "dark:focus-visible:focus-indicator",
                   action.variant === "danger"
-                    ? "text-destructive  hover:bg-destructive/10"
-                    : "hover:bg-muted",
+                    ? "text-destructive  hover:bg-destructive/10 dark:active:bg-destructive/20"
+                    : "hover:bg-muted dark:hover:bg-surface-hover dark:active:bg-muted",
                 )}
               >
                 <Icon size={18} />

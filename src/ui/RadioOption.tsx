@@ -28,6 +28,7 @@ export function RadioOption<T extends string>({
       onClick={() => onChange(value)}
       className={cn(
         "group flex w-full cursor-pointer items-center justify-between text-sm focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50",
+        "dark:focus-visible:focus-indicator",
         className,
       )}
     >

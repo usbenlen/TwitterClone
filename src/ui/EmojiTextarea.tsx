@@ -12,6 +12,7 @@ const EmojiTextarea = forwardRef<HTMLTextAreaElement, EmojiTextareaProps>(
         {...props}
         className={cn(
           "w-full resize-none overflow-y-auto bg-transparent outline-none",
+          "dark:placeholder:text-muted-foreground",
           className,
         )}
       />

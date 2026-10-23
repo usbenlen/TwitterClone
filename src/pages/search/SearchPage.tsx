@@ -90,7 +90,7 @@ export default function SearchPage() {
                 key={type.value}
                 type="button"
                 onClick={() => switchType(type.value)}
-                className="flex flex-1 cursor-pointer justify-center rounded-t-sm px-4 pt-3 transition-colors hover:bg-muted"
+                className="flex flex-1 cursor-pointer justify-center rounded-t-sm px-4 pt-3 transition-colors hover:bg-muted dark:hover:bg-surface-hover dark:active:bg-muted dark:focus-visible:focus-indicator"
               >
                 <Tab active={activeType === type.value}>{type.label}</Tab>
               </button>

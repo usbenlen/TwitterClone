@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 
 import { COMPOSER_POPOVER } from "@/constants/composer";
+import { cn } from "@/utils/cn";
 
 import {
   autoUpdate,
@@ -18,6 +19,7 @@ interface ComposerPopoverProps {
   onOpenChange: (open: boolean) => void;
   reference: HTMLElement | null;
   children: React.ReactNode;
+  className?: string;
 }
 
 export default function ComposerPopover({
@@ -25,6 +27,7 @@ export default function ComposerPopover({
   onOpenChange,
   reference,
   children,
+  className,
 }: ComposerPopoverProps) {
   const { refs, floatingStyles, context } = useFloating({
     open,
@@ -54,7 +57,10 @@ export default function ComposerPopover({
         ref={refs.setFloating}
         style={floatingStyles}
         {...getFloatingProps()}
-        className="z-popover overflow-hidden rounded-2xl border border-border bg-background shadow-xl"
+        className={cn(
+          "z-popover overflow-hidden rounded-2xl border border-border bg-background shadow-xl dark:border-control-border dark:bg-card",
+          className,
+        )}
       >
         {children}
       </div>

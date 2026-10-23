@@ -17,7 +17,7 @@ export default function SearchPostResult({
     <button
       type="button"
       onClick={onClick}
-      className="flex w-full gap-3 px-4 py-3 text-left transition-colors hover:bg-muted/50"
+      className="flex w-full gap-3 px-4 py-3 text-left transition-colors hover:bg-muted/50 dark:hover:bg-row-hover dark:active:bg-muted dark:focus-visible:focus-indicator"
     >
       <Avatar
         userId={tweet.author.id}

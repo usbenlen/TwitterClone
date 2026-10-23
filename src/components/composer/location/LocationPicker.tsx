@@ -25,7 +25,7 @@ export default function LocationPicker({
         value={query}
         placeholder="Пошук місця..."
         onChange={(e) => onQueryChange(e.target.value)}
-        className="border-b border-border bg-transparent px-4 py-3 outline-none"
+        className="border-b border-border bg-transparent px-4 py-3 outline-none dark:border-control-border dark:placeholder:text-muted-foreground"
       />
 
       <div className="max-h-80 overflow-y-auto">
@@ -46,7 +46,7 @@ export default function LocationPicker({
               key={location.id}
               type="button"
               onClick={() => onSelect(location)}
-              className="flex w-full items-center gap-3 px-4 py-3 text-left transition-colors hover:bg-muted"
+              className="flex w-full items-center gap-3 px-4 py-3 text-left transition-colors hover:bg-muted dark:hover:bg-surface-hover dark:active:bg-muted"
             >
               <MapPin size={18} className="text-muted-foreground" />
 

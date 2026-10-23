@@ -23,7 +23,7 @@ export default function SearchUserResult({ user }: SearchUserResultProps) {
   return (
     <Link
       to={APP_ROUTES.profile(user.username)}
-      className="flex items-center justify-between gap-4 p-4 transition-colors hover:bg-muted/40"
+      className="flex items-center justify-between gap-4 p-4 transition-colors hover:bg-muted/40 dark:hover:bg-row-hover dark:active:bg-muted dark:focus-visible:focus-indicator"
     >
       <div className="flex min-w-0 items-center gap-3">
         <Avatar

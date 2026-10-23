@@ -47,7 +47,7 @@ export default function ScheduledPostEditModal({
   return createPortal(
     <>
       <div
-        className="fixed inset-0 z-nested-modal flex items-start justify-center bg-black/50 p-0 sm:p-4 sm:pt-12"
+        className="fixed inset-0 z-nested-modal flex items-start justify-center modal-backdrop p-0 sm:p-4 sm:pt-12"
         role="dialog"
         aria-modal="true"
         aria-labelledby="scheduled-post-edit-title"

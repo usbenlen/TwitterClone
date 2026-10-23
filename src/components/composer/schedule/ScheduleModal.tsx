@@ -44,7 +44,7 @@ function SelectField({
   children: React.ReactNode;
 }) {
   return (
-    <label className="flex min-w-0 flex-1 flex-col rounded-md border border-border px-3 py-2 focus-within:border-primary focus-within:ring-1 focus-within:ring-primary">
+    <label className="flex min-w-0 flex-1 flex-col rounded-md border border-border px-3 py-2 focus-within:border-primary focus-within:ring-1 focus-within:ring-primary dark:border-control-border dark:focus-within:border-primary">
       <span className="text-xs text-muted-foreground">{label}</span>
       <select
         value={value}
@@ -110,7 +110,7 @@ export default function ScheduleModal({
 
   return createPortal(
     <div
-      className="fixed inset-0 z-confirm-modal flex items-start justify-center bg-black/50 p-0 sm:p-4 sm:pt-16"
+      className="fixed inset-0 z-confirm-modal flex items-start justify-center modal-backdrop p-0 sm:p-4 sm:pt-16"
       role="dialog"
       aria-modal="true"
       aria-labelledby="schedule-modal-title"
@@ -118,7 +118,7 @@ export default function ScheduleModal({
         if (event.target === event.currentTarget) onClose();
       }}
     >
-      <div className="flex h-full w-full max-w-2xl flex-col overflow-hidden bg-background shadow-xl sm:h-auto sm:max-h-[calc(100vh-8rem)] sm:rounded-2xl">
+      <div className="flex h-full w-full max-w-2xl flex-col overflow-hidden bg-background shadow-xl sm:h-auto sm:max-h-[calc(100vh-8rem)] sm:rounded-2xl sm:inset-ring sm:inset-ring-border dark:sm:inset-ring-control-border">
         <header className="flex items-center gap-3 px-4 py-3">
           <button
             type="button"

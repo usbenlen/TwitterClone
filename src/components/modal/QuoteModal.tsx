@@ -87,24 +87,24 @@ function QuoteModalInner({
   return createPortal(
     <>
       <div
-        className="fixed inset-0 z-modal flex items-start justify-center bg-black/40 p-0 sm:p-4 sm:pt-12"
+        className="fixed inset-0 z-modal flex items-start justify-center modal-backdrop p-0 sm:p-4 sm:pt-12"
         onMouseDown={(event) => {
           if (event.target === event.currentTarget) requestClose();
         }}
       >
-        <div className="relative flex h-full w-full max-w-[600px] flex-col bg-background sm:h-auto sm:max-h-[calc(100vh-clamp(48px,8vh,100px))] sm:rounded-2xl">
+        <div className="relative flex h-full w-full max-w-[600px] flex-col bg-background sm:h-auto sm:max-h-[calc(100vh-clamp(48px,8vh,100px))] sm:rounded-2xl dark:sm:inset-ring dark:sm:inset-ring-control-border">
           <div className="flex items-center gap-6 px-4 py-2">
             <button
               type="button"
               onClick={requestClose}
               disabled={composer.isPosting}
-              className="flex size-9 cursor-pointer items-center justify-center rounded-full transition-colors hover:bg-muted disabled:cursor-not-allowed disabled:opacity-50"
+              className="flex size-9 cursor-pointer items-center justify-center rounded-full transition-colors hover:bg-muted disabled:cursor-not-allowed disabled:opacity-50 dark:hover:bg-surface-hover dark:active:bg-muted dark:focus-visible:focus-indicator"
               aria-label="Закрити"
             >
               <X size={20} />
             </button>
 
-            <h2 className="text-xl font-bold">Quote</h2>
+            <h2 className="text-xl font-bold">Цитувати допис</h2>
           </div>
 
           <div className="overflow-y-auto overscroll-contain px-4 pb-4">
@@ -112,7 +112,7 @@ function QuoteModalInner({
               composer={composer}
               quotedTweet={quote}
               placeholder="Додайте коментар"
-              submitLabel="Post"
+              submitLabel="Опублікувати"
               onSuccess={onClose}
               showAvatar
             />
@@ -123,7 +123,7 @@ function QuoteModalInner({
       <ConfirmModal
         open={isConfirmOpen}
         title="Вийти без збереження?"
-        description="Ваш незавершений Quote буде втрачено."
+        description="Ваш незавершений допис із цитатою буде втрачено."
         confirmText="Вийти"
         cancelText="Залишитися"
         onCancel={cancelDiscard}

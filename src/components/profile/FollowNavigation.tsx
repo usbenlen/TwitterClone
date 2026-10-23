@@ -40,7 +40,7 @@ export default function FollowNavigation({ user }: FollowNavigationProps) {
               key={tab.to}
               to={tab.to}
               replace
-              className="flex flex-1 cursor-pointer justify-center rounded-t-sm px-4 pt-3 transition-colors hover:bg-muted"
+              className="flex flex-1 cursor-pointer justify-center rounded-t-sm px-4 pt-3 transition-colors hover:bg-muted dark:hover:bg-surface-hover dark:active:bg-muted dark:focus-visible:focus-indicator"
             >
               {({ isActive }) => <Tab active={isActive}>{tab.label}</Tab>}
             </NavLink>

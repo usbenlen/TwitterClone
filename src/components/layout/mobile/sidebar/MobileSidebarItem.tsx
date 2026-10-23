@@ -22,7 +22,10 @@ export default function MobileSidebarItem({
 }: MobileSidebarItemProps) {
   const className = cn(
     "flex w-full items-center gap-4 rounded-xl px-4 py-3 text-left text-base font-medium transition-colors hover:bg-muted",
-    danger ? "text-destructive hover:bg-destructive/10" : "text-foreground",
+    "dark:focus-visible:focus-indicator",
+    danger
+      ? "text-destructive hover:bg-destructive/10 dark:active:bg-destructive/20"
+      : "text-foreground dark:hover:bg-surface-hover dark:active:bg-muted",
   );
 
   if (to) {

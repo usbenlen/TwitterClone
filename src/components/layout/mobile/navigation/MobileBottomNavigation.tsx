@@ -30,6 +30,7 @@ export default function MobileBottomNavigation() {
             return (
               <MobileNavigationItem
                 key={item.label}
+                label={item.label}
                 to={item.to}
                 icon={<Icon />}
                 end={item.to === APP_ROUTES.HOME}
@@ -38,6 +39,7 @@ export default function MobileBottomNavigation() {
           })}
 
           <MobileNavigationItem
+            label="Відкрити меню"
             icon={<Menu size={22} />}
             onClick={() => setDrawerOpen(true)}
           />

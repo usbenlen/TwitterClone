@@ -19,7 +19,7 @@ export default function ProfileTabs({ activeTab }: ProfileTabsProps) {
             search: tab.id === "posts" ? "" : `?tab=${tab.id}`,
           }}
           replace
-          className="flex min-w-max flex-1 justify-center px-2 pt-3 transition-colors hover:bg-muted rounded-t-sm sm:px-4"
+          className="flex min-w-max flex-1 justify-center px-2 pt-3 transition-colors hover:bg-muted rounded-t-sm sm:px-4 dark:hover:bg-surface-hover dark:active:bg-muted dark:focus-visible:focus-indicator"
         >
           <Tab active={tab.id === activeTab}>{tab.label}</Tab>
         </Link>

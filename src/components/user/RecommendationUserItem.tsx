@@ -44,13 +44,14 @@ export default function RecommendationUserItem({
     <div
       className={cn(
         "transition-colors hover:bg-muted/40",
+        compact ? "dark:hover:bg-surface-hover" : "dark:hover:bg-row-hover",
         compact ? "-mx-4 px-4 py-2.5" : "px-4 py-3",
       )}
     >
       <div className="flex items-start justify-between gap-3">
         <Link
           to={APP_ROUTES.profile(user.username)}
-          className="flex min-w-0 flex-1 gap-3"
+          className="flex min-w-0 flex-1 gap-3 dark:focus-visible:focus-indicator"
         >
           <Avatar
             userId={user.id}

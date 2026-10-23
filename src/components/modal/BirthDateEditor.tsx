@@ -26,7 +26,7 @@ interface BirthDateEditorProps {
   onRemove: () => void;
 }
 
-const SELECT_CLASS = "h-14 w-full cursor-pointer rounded-lg border border-border bg-background px-3 pt-4 text-foreground outline-none transition focus:ring-2 focus:ring-ring";
+const SELECT_CLASS = "h-14 w-full cursor-pointer rounded-lg border border-border bg-background px-3 pt-4 text-foreground outline-none transition focus:ring-2 focus:ring-ring dark:border-control-border";
 
 function SelectField({
   label,

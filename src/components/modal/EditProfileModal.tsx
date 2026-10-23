@@ -46,12 +46,12 @@ function EditProfileModalInner({
   return (
     <>
       <div
-        className="fixed inset-0 z-modal flex items-stretch justify-start bg-black/50 p-0 backdrop-blur-sm sm:items-center sm:justify-center sm:p-4"
+        className="fixed inset-0 z-modal flex items-stretch justify-start modal-backdrop p-0 sm:items-center sm:justify-center sm:p-4"
         onMouseDown={(event) => {
           if (event.target === event.currentTarget) form.guard.requestClose();
         }}
       >
-        <div className="flex h-dvh w-full max-w-none flex-col overflow-hidden border-border bg-background shadow-none sm:h-auto sm:max-h-[90vh] sm:max-w-2xl sm:rounded-2xl sm:border sm:shadow-2xl">
+        <div className="flex h-dvh w-full max-w-none flex-col overflow-hidden border-border bg-background shadow-none sm:h-auto sm:max-h-[90vh] sm:max-w-2xl sm:rounded-2xl sm:border sm:shadow-2xl dark:sm:border-control-border">
           {/* Header */}
           <div className="sticky top-0 z-content flex items-center justify-between gap-3 border-b border-border bg-background/95 px-4 py-3 backdrop-blur sm:px-5 sm:py-4">
             <div className="flex min-w-0 items-center gap-3">
@@ -59,7 +59,7 @@ function EditProfileModalInner({
                 type="button"
                 onClick={form.guard.requestClose}
                 disabled={form.ui.isSaving}
-                className="flex size-9 cursor-pointer items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground disabled:cursor-not-allowed disabled:opacity-50"
+                className="flex size-9 cursor-pointer items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground disabled:cursor-not-allowed disabled:opacity-50 dark:hover:bg-surface-hover dark:active:bg-muted dark:focus-visible:focus-indicator"
                 aria-label="Закрити"
               >
                 <X size={20} />
@@ -205,7 +205,7 @@ function EditProfileModalInner({
                   maxLength={MAX_BIO_LENGTH}
                   rows={4}
                   placeholder="Розкажіть трохи про себе"
-                  className="w-full resize-none rounded-lg border border-border bg-background p-3 outline-none transition focus:ring-2 focus:ring-ring"
+                  className="w-full resize-none rounded-lg border border-border bg-background p-3 outline-none transition focus:ring-2 focus:ring-ring dark:border-control-border dark:placeholder:text-muted-foreground"
                 />
 
                 <div className="mt-1 text-right text-xs text-muted-foreground">
@@ -222,7 +222,7 @@ function EditProfileModalInner({
                 <button
                   type="button"
                   onClick={form.toggleLocation}
-                  className="flex min-h-10 w-full items-center justify-between rounded-lg border border-border bg-background px-3 text-left outline-none transition-colors hover:bg-muted/50 focus:ring-2 focus:ring-ring"
+                  className="flex min-h-10 w-full items-center justify-between rounded-lg border border-border bg-background px-3 text-left outline-none transition-colors hover:bg-muted/50 focus:ring-2 focus:ring-ring dark:border-control-border dark:hover:bg-surface-hover dark:active:bg-muted"
                 >
                   <span
                     className={
@@ -251,7 +251,7 @@ function EditProfileModalInner({
                           form.handleRemoveLocation();
                         }
                       }}
-                      className="ml-2 flex size-7 cursor-pointer items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                      className="ml-2 flex size-7 cursor-pointer items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground dark:hover:bg-surface-hover dark:active:bg-muted dark:focus-visible:focus-indicator"
                       aria-label="Видалити локацію"
                     >
                       <X size={16} />

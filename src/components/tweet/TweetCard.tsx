@@ -151,7 +151,7 @@ function TweetCard({
         {...(navigateToPost ? clickOrDragHandlers : {})}
         className={cn(
           "grid grid-cols-[40px_minmax(0,1fr)] gap-x-3 border-b border-border px-4 py-3 transition-colors",
-          navigateToPost && "cursor-pointer hover:bg-muted/40",
+          navigateToPost && "cursor-pointer hover:bg-muted/40 dark:hover:bg-row-hover dark:active:bg-muted",
           className,
         )}
       >

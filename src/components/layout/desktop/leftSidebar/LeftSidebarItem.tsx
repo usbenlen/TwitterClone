@@ -14,7 +14,8 @@ interface LeftSidebarItemProps {
 const classes = ({ isActive }: { isActive?: boolean }) =>
   cn(
     "flex w-full items-center gap-4 rounded-full px-4 py-3 text-lg transition-colors hover:bg-muted",
-    isActive ? "font-bold text-foreground" : "text-muted-foreground",
+    "dark:hover:bg-surface-hover dark:active:bg-muted dark:focus-visible:focus-indicator",
+    isActive ? "navigation-active font-bold text-foreground" : "text-muted-foreground dark:text-foreground",
   );
 
 export default function LeftSidebarItem({

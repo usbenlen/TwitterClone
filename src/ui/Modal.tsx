@@ -45,7 +45,7 @@ export function Modal({
   if (!open) return null;
   return (
     <FloatingPortal>
-      <FloatingOverlay className="z-confirm-modal flex items-center justify-center bg-black/50 p-4">
+      <FloatingOverlay className="z-confirm-modal flex items-center justify-center modal-backdrop p-4">
         <FloatingFocusManager context={context}>
           <section
             // eslint-disable-next-line react-hooks/refs
@@ -54,7 +54,7 @@ export function Modal({
             aria-labelledby={titleId}
             aria-busy={busy}
             className={cn(
-              "max-h-[90dvh] w-full max-w-lg overflow-y-auto rounded-2xl border border-border bg-background p-6 shadow-xl",
+              "max-h-[90dvh] w-full max-w-lg overflow-y-auto rounded-2xl border border-border bg-background p-6 shadow-xl dark:border-control-border",
               className,
             )}
           >
@@ -67,7 +67,7 @@ export function Modal({
                 disabled={busy}
                 aria-label="Закрити"
                 onClick={onClose}
-                className="rounded-full p-2 hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-50"
+                className="rounded-full p-2 hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-50 dark:hover:bg-surface-hover dark:active:bg-muted"
               >
                 <X className="size-5" />
               </button>

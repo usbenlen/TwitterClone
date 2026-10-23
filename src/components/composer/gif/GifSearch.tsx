@@ -10,7 +10,7 @@ export default function GifSearch({ value, onChange }: GifSearchProps) {
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder="Пошук GIF..."
-        className="w-full rounded-full bg-muted px-4 py-2 text-sm outline-none"
+        className="w-full rounded-full bg-muted px-4 py-2 text-sm outline-none dark:inset-ring dark:inset-ring-control-border dark:placeholder:text-muted-foreground"
       />
     </div>
   );

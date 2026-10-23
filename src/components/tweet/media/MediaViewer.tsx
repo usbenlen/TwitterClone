@@ -95,7 +95,7 @@ function MediaViewerInner({
 
   return (
     <div
-      className="fixed inset-0 z-media-viewer flex items-center justify-center bg-black/90"
+      className="fixed inset-0 z-media-viewer flex items-center justify-center modal-backdrop"
       onClick={handleBackdropClick}
     >
       {/* Close */}

@@ -38,7 +38,9 @@ export function ComposerAttachments({
         />
       )}
 
-      {quotedTweet && <QuotedTweetCard quote={quotedTweet} />}
+      {quotedTweet && (
+        <QuotedTweetCard quote={quotedTweet} allowVoting={false} />
+      )}
 
       {composer.locationPreview.visible &&
         composer.locationPreview.location && (

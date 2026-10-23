@@ -19,6 +19,7 @@ export function ThemeSwitch({ className }: ThemeSwitchProps) {
       onClick={toggleTheme}
       className={cn(
         "flex w-full items-center justify-between rounded-xl border border-border bg-card px-4 py-3 transition-colors hover:bg-muted",
+        "dark:border-control-border dark:hover:bg-surface-hover dark:active:bg-muted dark:focus-visible:focus-indicator",
         className,
       )}
     >

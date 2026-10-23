@@ -85,7 +85,7 @@ export default function AdvancedSearchModal({
 
   return createPortal(
     <div
-      className="fixed inset-0 z-modal flex items-start justify-center bg-black/50 p-0 sm:p-4 sm:pt-10"
+      className="fixed inset-0 z-modal flex items-start justify-center modal-backdrop p-0 sm:p-4 sm:pt-10"
       role="dialog"
       aria-modal="true"
       aria-labelledby="advanced-search-title"
@@ -95,7 +95,7 @@ export default function AdvancedSearchModal({
     >
       <form
         onSubmit={submit}
-        className="flex h-full w-full max-w-150 flex-col overflow-hidden bg-background shadow-xl sm:max-h-[calc(100vh-5rem)] sm:rounded-2xl sm:border sm:border-border"
+        className="flex h-full w-full max-w-150 flex-col overflow-hidden bg-background shadow-xl sm:max-h-[calc(100vh-5rem)] sm:rounded-2xl sm:border sm:border-border dark:sm:border-control-border"
       >
         <header className="flex shrink-0 items-center justify-between gap-2 border-b border-border px-4 py-3">
           <div className="flex min-w-0 items-center gap-3">
