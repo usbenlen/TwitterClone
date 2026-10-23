@@ -46,6 +46,7 @@ export const appApi = createApi({
     "Report",
     "Dashboard",
     "Post",
+    "Poll",
     "List",
     "History",
     "Profile",

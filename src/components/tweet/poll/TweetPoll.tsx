@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { Check, Clock3, LoaderCircle } from "lucide-react";
 
-import PollCard, { pollRowClassName } from "@/components/tweet/poll/PollCard";
+import PollCard from "@/components/tweet/poll/PollCard";
 
 import { usePollVote, usePollCountdown } from "@/hooks";
 
@@ -15,6 +15,7 @@ interface TweetPollProps {
   poll: TweetPollType;
   readOnly?: boolean;
   isComment?: boolean;
+  allowVoting?: boolean;
 }
 
 export default function TweetPoll({
@@ -22,12 +23,13 @@ export default function TweetPoll({
   tweetId,
   readOnly = false,
   isComment = false,
+  allowVoting = true,
 }: TweetPollProps) {
   const {
     poll: currentPoll,
     loading,
     vote,
-  } = usePollVote(tweetId, poll, isComment);
+  } = usePollVote(tweetId, poll, isComment, readOnly);
   const countdown = usePollCountdown(currentPoll.expiresAt);
   const [voteError, setVoteError] = useState<string | null>(null);
 
@@ -35,7 +37,7 @@ export default function TweetPoll({
 
   const hasVoted = !!currentPoll.votedOptionId;
   const showResults = readOnly || hasVoted || expired;
-  const disabled = readOnly || expired || hasVoted || loading;
+  const disabled = !allowVoting || readOnly || expired || hasVoted || loading;
 
   const handleVote = async (optionId: string) => {
     if (disabled) return;
@@ -61,13 +63,17 @@ export default function TweetPoll({
       ]),
     );
   }, [currentPoll]);
+  const leadingVotes = Math.max(
+    ...currentPoll.options.map((option) => option.votesCount),
+  );
 
   return (
     <PollCard
+      variant="display"
       busy={loading}
       action={
         loading && (
-          <span role="status" className="flex items-center text-primary">
+          <span role="status" className="mb-2 flex items-center text-primary">
             <LoaderCircle
               size={17}
               className="animate-spin"
@@ -104,6 +110,7 @@ export default function TweetPoll({
       {currentPoll.options.map((option) => {
         const percent = percentages[option.id] ?? 0;
         const selected = currentPoll.votedOptionId === option.id;
+        const leading = option.votesCount > 0 && option.votesCount === leadingVotes;
 
         return (
           <button
@@ -115,50 +122,59 @@ export default function TweetPoll({
             aria-label={
               showResults
                 ? `${option.text}: ${percent}%${selected ? ", ваш голос" : ""}`
-                : `Голосувати за ${option.text}`
+                : `${allowVoting ? "Голосувати за" : "Варіант"} ${option.text}`
             }
             className={cn(
-              pollRowClassName,
-              "relative w-full overflow-hidden text-left disabled:cursor-default",
-              !disabled && "hover:border-primary/50 hover:bg-primary/5",
-              selected && "border-primary/50",
+              "w-full min-w-0 text-sm transition-colors focus-visible:focus-indicator disabled:cursor-default",
+              showResults
+                ? "grid grid-cols-[minmax(0,1fr)_3.5rem] items-center gap-3 text-left"
+                : "min-h-11 rounded-sm px-4 py-2 font-semibold text-primary inset-ring inset-ring-primary/60",
+              !disabled && "hover:bg-primary/10 active:bg-primary/20",
               loading && "opacity-60",
             )}
           >
-            {showResults && (
-              <div
-                aria-hidden="true"
-                className={cn(
-                  "absolute inset-y-0 left-0 transition-[width] duration-300 motion-reduce:transition-none",
-                  selected ? "bg-primary/20" : "bg-muted",
-                )}
-                style={{ width: `${percent}%` }}
-              />
-            )}
-
-            <div className="relative flex min-w-0 items-center justify-between gap-3">
+            <span
+              className={cn(
+                "relative flex min-w-0 items-center gap-2",
+                showResults && "min-h-9 px-3 py-2",
+              )}
+            >
+              {showResults && (
+                <span
+                  aria-hidden="true"
+                  className={cn(
+                    "absolute inset-y-0 left-0 rounded-md transition-[width] duration-300 motion-reduce:transition-none",
+                    leading ? "bg-primary/35" : "bg-muted-foreground/25",
+                  )}
+                  style={{ width: `${percent}%` }}
+                />
+              )}
               <span
                 className={cn(
-                  "min-w-0 wrap-anywhere whitespace-pre-wrap",
-                  selected && "font-semibold",
+                  "relative min-w-0 wrap-anywhere whitespace-pre-wrap",
+                  leading && showResults && "font-semibold",
                 )}
               >
                 {option.text}
               </span>
-
-              {showResults && (
-                <span className="flex shrink-0 items-center gap-1.5 font-semibold tabular-nums">
-                  {selected && (
-                    <Check
-                      size={15}
-                      className="text-primary"
-                      aria-hidden="true"
-                    />
-                  )}
-                  {percent}%
-                </span>
+              {showResults && selected && (
+                <Check
+                  size={15}
+                  className="relative shrink-0 text-foreground"
+                  aria-hidden="true"
+                />
               )}
-            </div>
+            </span>
+            {showResults && (
+              <span
+                className={cn(
+                  "text-right tabular-nums",
+                  leading && "font-bold",
+                )}
+              >
+                {percent}%
+              </span>
+            )}
           </button>
         );
       })}

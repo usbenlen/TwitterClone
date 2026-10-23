@@ -1,6 +1,10 @@
 import { current } from "@reduxjs/toolkit";
 
-import { tweetApi, commentApi, searchApi } from "@/api";
+import { tweetApi, commentApi, searchApi, pollApi } from "@/api";
+
+import { pollsMatch, withPollVote } from "@/utils/poll";
+
+import type { TweetPoll } from "@/types/poll";
 
 import type {
   User,
@@ -53,6 +57,24 @@ function tagsFor(tweets: Tweet[]): ReturnType<typeof entityTag>[] {
 
 export const postsApi = appApi.injectEndpoints({
   endpoints: (build) => ({
+    getPollState: build.query<TweetPoll | null, Target>({
+      queryFn: (target) => request(() => pollApi.get(target.type, target.id)),
+      providesTags: (_data, _error, target) => [
+        { type: "Poll", id: targetKey(target) },
+      ],
+      merge(currentPoll, incoming) {
+        // A read begun before voting must not erase the user's confirmed choice
+        if (
+          currentPoll &&
+          incoming &&
+          pollsMatch(currentPoll, incoming) &&
+          currentPoll.votedOptionId &&
+          !incoming.votedOptionId
+        )
+          return;
+        return incoming;
+      },
+    }),
     getPosts: build.query<Tweet[], PostsQuery>({
       queryFn: (arg) => request(() => fetchPosts(arg)),
       providesTags: (data, _error, arg) => [
@@ -155,6 +177,7 @@ export const postsApi = appApi.injectEndpoints({
         data
           ? [
               entityTag(arg),
+              { type: "Poll", id: targetKey(arg) },
               { type: "History", id: targetKey(arg) },
               listTag("search"),
             ]
@@ -186,6 +209,7 @@ export const postsApi = appApi.injectEndpoints({
           ? []
           : [
               entityTag(arg),
+              { type: "Poll", id: targetKey(arg) },
               { type: "History", id: targetKey(arg) },
               listTag("search"),
             ],
@@ -195,6 +219,63 @@ export const postsApi = appApi.injectEndpoints({
       queryFn: (arg) => request(() => sendReaction(arg)),
       async onQueryStarted(arg, lifecycle) {
         const generation = sessionGeneration(lifecycle.getState());
+        if (arg.action === "vote") {
+          const target: Target = { type: arg.type, id: arg.id };
+          const apply = (poll: TweetPoll) => {
+            cache.patchPoll(
+              postsApi,
+              lifecycle.dispatch,
+              lifecycle.getState() as RootState,
+              target,
+              arg.poll,
+              poll,
+            );
+          };
+
+          const optimistic = withPollVote(arg.poll, arg.optionId);
+          lifecycle.dispatch(
+            postsApi.util.upsertQueryEntries([
+              { endpointName: "getPollState", arg: target, value: optimistic },
+            ]),
+          );
+
+          apply(optimistic);
+
+          try {
+            const { data } = await lifecycle.queryFulfilled;
+
+            if (generation !== sessionGeneration(lifecycle.getState())) return;
+            if (data.poll) {
+              lifecycle.dispatch(
+                postsApi.util.upsertQueryEntries([
+                  {
+                    endpointName: "getPollState",
+                    arg: target,
+                    value: data.poll,
+                  },
+                ]),
+              );
+
+              apply(data.poll);
+            }
+          } catch {
+            if (generation !== sessionGeneration(lifecycle.getState())) return;
+
+            // Rollback bypasses merge, which otherwise protects a selected option
+            lifecycle.dispatch(
+              postsApi.util.updateQueryData(
+                "getPollState",
+                target,
+                () => arg.poll,
+              ),
+            );
+
+            apply(arg.poll);
+          }
+
+          lifecycle.dispatch(postsApi.util.invalidateTags([entityTag(arg)]));
+          return;
+        }
         let previous: Partial<Tweet> | undefined;
         patchTweets(
           lifecycle.dispatch,
@@ -213,9 +294,7 @@ export const postsApi = appApi.injectEndpoints({
                       repostedByMe: original.repostedByMe,
                       retweetsCount: original.retweetsCount,
                     }
-                  : arg.action === "bookmark"
-                    ? { bookmarkedByMe: original.bookmarkedByMe }
-                    : { poll: original.poll };
+                  : { bookmarkedByMe: original.bookmarkedByMe };
             switch (arg.action) {
               case "like":
                 tweet.likedByMe = !arg.active;
@@ -234,16 +313,6 @@ export const postsApi = appApi.injectEndpoints({
               case "bookmark":
                 tweet.bookmarkedByMe = !arg.active;
                 break;
-              case "vote": {
-                if (!tweet.poll) break;
-                tweet.poll.votedOptionId = arg.optionId;
-                tweet.poll.totalVotes += 1;
-                const option = tweet.poll.options.find(
-                  (item) => item.id === arg.optionId,
-                );
-                if (option) option.votesCount += 1;
-                break;
-              }
             }
           },
         );
@@ -350,6 +419,7 @@ export function publishPosts(
 }
 
 export const {
+  useGetPollStateQuery,
   useGetSearchUsersQuery,
   useGetPostsQuery,
   useGetThreadQuery,

@@ -8,7 +8,11 @@ import type { Tweet } from "@/types";
 
 const pollProps = vi.hoisted(() => vi.fn());
 vi.mock("@/hooks", () => ({ useClickOrDrag: () => ({}) }));
-vi.mock("@/ui/index", () => ({ Avatar: () => null, TwemojiText: () => null }));
+vi.mock("@/ui/index", () => ({
+  Avatar: () => null,
+  TwemojiText: () => null,
+  VerifiedBadge: () => null,
+}));
 vi.mock("@/components/tweet/poll/TweetPoll", () => ({
   default: (props: unknown) => {
     pollProps(props);

@@ -1,3 +1,6 @@
+// @vitest-environment happy-dom
+import { act } from "react";
+import { createRoot } from "react-dom/client";
 import { renderToString } from "react-dom/server";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -37,6 +40,33 @@ beforeEach(() => {
 });
 
 describe("poll display states", () => {
+  it("lets a failed vote be retried and clears its error", async () => {
+    vi.stubGlobal("IS_REACT_ACT_ENVIRONMENT", true);
+    hooks.vote
+      .mockReset()
+      .mockResolvedValueOnce(false)
+      .mockResolvedValueOnce(true);
+    const container = document.createElement("div");
+    document.body.append(container);
+    const root = createRoot(container);
+    try {
+      await act(async () =>
+        root.render(<TweetPoll tweetId="post" poll={poll} />),
+      );
+      await act(async () => container.querySelector("button")!.click());
+      expect(hooks.vote).toHaveBeenLastCalledWith("yes");
+      expect(container.querySelector('[role="alert"]')?.textContent).toContain(
+        "Спробуйте ще раз",
+      );
+      await act(async () => container.querySelector("button")!.click());
+      expect(hooks.vote).toHaveBeenCalledTimes(2);
+      expect(container.querySelector('[role="alert"]')).toBeNull();
+    } finally {
+      await act(async () => root.unmount());
+      container.remove();
+      vi.unstubAllGlobals();
+    }
+  });
   it.each([
     [0, "0 голосів"],
     [1, "1 голос"],

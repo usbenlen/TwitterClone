@@ -1,6 +1,9 @@
 import { MOCK_ENABLED } from "@/mock/config";
 
 import { updateTweetAuthors } from "@/utils/updateTweetAuthors";
+import { pollsMatch } from "@/utils/poll";
+
+import type { TweetPoll } from "@/types/poll";
 
 import type { Tweet, User } from "@/types";
 
@@ -52,6 +55,36 @@ export function patchTweets(
   }
 
   return patches;
+}
+
+/** Update vote state without applying post edits to versioned quote snapshots. */
+export function patchPoll(
+  postsApi: PostsCacheApi,
+  dispatch: AppDispatch,
+  state: RootState,
+  target: Target,
+  expected: TweetPoll,
+  poll: TweetPoll,
+) {
+  patchTweets(postsApi, dispatch, state, (tweet) => {
+    if (
+      matches(tweet, target) &&
+      tweet.poll &&
+      pollsMatch(tweet.poll, expected)
+    ) {
+      tweet.poll = poll;
+    }
+    const quote = tweet.quote;
+    if (
+      quote?.targetId === target.id &&
+      quote.targetType === target.type &&
+      quote.target?.poll &&
+      pollsMatch(quote.target.poll, expected) &&
+      pollsMatch(poll, expected)
+    ) {
+      quote.target.poll = poll;
+    }
+  });
 }
 
 export function updateCachedProfileAuthors(
