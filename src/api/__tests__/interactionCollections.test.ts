@@ -25,11 +25,13 @@ describe("real mixed interaction collections", () => {
   it.each([
     { name: "bookmarks", load: () => tweetApi.getBookmarked(), path: ENDPOINTS.posts.bookmarked },
     { name: "likes", load: () => userApi.getLikes("author"), path: ENDPOINTS.users.likes("author") },
+    { name: "reposts", load: () => userApi.getReposts("author"), path: ENDPOINTS.users.reposts("author") },
   ])("reads posts and comments with one request for $name", async ({ load, path }) => {
     const get = vi.spyOn(apiClient, "get").mockResolvedValueOnce({
       posts: [post],
       comments: [{
         ...post, versionId: "comment-v1", postId: "root", content: "Comment",
+        replyToUsername: "recipient",
         actionAt: "2026-10-22T12:00:00Z",
       }],
       nextCursor: null, hasMore: false,
@@ -42,5 +44,28 @@ describe("real mixed interaction collections", () => {
     ]);
     expect(result.every((item) => item.likedByMe && item.bookmarkedByMe)).toBe(true);
     expect(result[0].postId).toBe("root");
+    expect(result[0].replyToUsername).toBe("recipient");
+  });
+
+  describe.each(["likes", "reposts"] as const)("%s reply metadata", (tab) => {
+    it.each([
+      { parentCommentId: null, replyToUsername: "root-author" },
+      { parentCommentId: "parent", replyToUsername: "parent-author" },
+      { parentCommentId: "missing-parent", replyToUsername: undefined },
+    ])("preserves the direct recipient: %j", async (context) => {
+      const get = vi.spyOn(apiClient, "get").mockResolvedValueOnce({
+        posts: [],
+        comments: [{ ...post, postId: "root", ...context }],
+        nextCursor: null, hasMore: false,
+      });
+      const result = await (tab === "likes" ? userApi.getLikes : userApi.getReposts)("author");
+      expect(get).toHaveBeenCalledExactlyOnceWith(ENDPOINTS.users[tab]("author"));
+      expect(result[0]).toMatchObject({
+        isComment: true,
+        postId: "root",
+        parentCommentId: context.parentCommentId,
+        replyToUsername: context.replyToUsername ?? null,
+      });
+    });
   });
 });

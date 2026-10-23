@@ -79,12 +79,10 @@ export const mockUserApi = {
   async getReposts(username: string): Promise<Tweet[]> {
     await delay();
 
-    const comments = Object.values(commentsByPostId).flat();
-
     if (username === currentUser.username) {
       return [
         ...tweets.filter((tweet) => tweet.repostedByMe),
-        ...comments.filter((comment) => comment.repostedByMe),
+        ...selectMockComments((comment) => comment.repostedByMe),
       ];
     }
 
@@ -93,9 +91,7 @@ export const mockUserApi = {
 
     return [
       ...tweets.filter((tweet) => repostedIds.includes(tweet.id)),
-      ...comments
-        .filter((comment) => repostedCommentIds.includes(comment.id))
-        .map((comment) => ({ ...comment, isComment: true })),
+      ...selectMockComments((comment) => repostedCommentIds.includes(comment.id)),
     ];
   },
 

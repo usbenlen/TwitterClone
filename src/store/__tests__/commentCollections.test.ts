@@ -23,6 +23,10 @@ const cases = [
     action: "like", flag: "likedByMe",
     query: { kind: "profile", username: currentUser.username, tab: "likes" },
   },
+  {
+    action: "repost", flag: "repostedByMe",
+    query: { kind: "profile", username: currentUser.username, tab: "reposts" },
+  },
 ] as const;
 
 const load = (query: PostsQuery) =>
@@ -109,7 +113,9 @@ describe.each(cases)("comment $action collections through mock adapters", ({ act
 
     let reject!: (error: Error) => void;
     const failure = new Promise<never>((_resolve, no) => { reject = no; });
-    vi.spyOn(commentApi, action === "like" ? "toggleLike" : "toggleBookmark")
+    const method = action === "like" ? "toggleLike"
+      : action === "repost" ? "toggleRepost" : "toggleBookmark";
+    vi.spyOn(commentApi, method)
       .mockReturnValueOnce(failure);
 
     const pending = runReaction(store, { type: "comment", id, action, active: true });
