@@ -16,3 +16,4 @@ export { RadioOption } from "@/ui/RadioOption";
 export { default as SearchBox } from "@/ui/SearchBox";
 export { default as Tab } from "@/ui/Tab";
 export { ThemeSwitch } from "@/ui/ThemeSwitch";
+export { Tooltip } from "@/ui/Tooltip";

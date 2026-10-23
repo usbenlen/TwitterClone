@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Bookmark, Eye, MessageCircle, Repeat2 } from "lucide-react";
 
 import { HeartIcon } from "@/shared/icons";
+import { Tooltip } from "@/ui/Tooltip";
 
 import { cn, formatCount } from "@/utils";
 
@@ -46,37 +47,48 @@ export default function TweetActions({
 
   return (
     <div className="mt-2 flex w-full min-w-0 items-center justify-between gap-1 text-muted-foreground sm:justify-start sm:gap-5">
-      <button
-        type="button"
-        onClick={onComment}
-        className="flex min-w-0 items-center justify-center gap-2 rounded-full p-0.5 transition-colors hover:text-primary"
-      >
-        <MessageCircle size={18} />
+      <Tooltip label="Коментувати">
+        <button
+          type="button"
+          onClick={onComment}
+          aria-label="Коментувати"
+          className="tweet-action flex min-w-0 items-center justify-center gap-2 rounded-full p-0.5 transition-colors hover:text-primary focus-visible:text-primary focus-visible:focus-indicator"
+        >
+          <span className="tweet-action-icon" aria-hidden="true">
+            <MessageCircle size={18} />
+          </span>
 
-        {repliesCount > 0 && (
-          <span className="text-sm">{formatCount(repliesCount)}</span>
-        )}
-      </button>
+          {repliesCount > 0 && (
+            <span className="text-sm">{formatCount(repliesCount)}</span>
+          )}
+        </button>
+      </Tooltip>
 
-      <button
-        ref={setRepostButton}
-        type="button"
-        onClick={() => setIsRepostMenuOpen((value) => !value)}
-        disabled={repostPending}
-        aria-pressed={repostedByMe}
-        aria-expanded={isRepostMenuOpen}
-        aria-haspopup="menu"
-        className={cn(
-          "flex min-w-0 items-center justify-center gap-2 rounded-full p-0.5 transition-colors hover:text-emerald-500",
-          repostedByMe && "text-emerald-500",
-        )}
-      >
-        <Repeat2 size={18} />
+      <Tooltip label={repostedByMe ? "Скасувати репост" : "Репостнути"}>
+        <button
+          ref={setRepostButton}
+          type="button"
+          onClick={() => setIsRepostMenuOpen((value) => !value)}
+          disabled={repostPending}
+          aria-label={repostedByMe ? "Скасувати репост" : "Репостнути"}
+          aria-pressed={repostedByMe}
+          aria-expanded={isRepostMenuOpen}
+          aria-haspopup="menu"
+          className={cn(
+            "tweet-action flex min-w-0 items-center justify-center gap-2 rounded-full p-0.5 transition-colors hover:text-emerald-500 focus-visible:text-emerald-500",
+            "focus-visible:focus-indicator dark:disabled:pointer-events-none dark:disabled:opacity-50",
+            repostedByMe && "text-emerald-500",
+          )}
+        >
+          <span className="tweet-action-icon" aria-hidden="true">
+            <Repeat2 size={18} />
+          </span>
 
-        {retweetsCount > 0 && (
-          <span className="text-sm">{formatCount(retweetsCount)}</span>
-        )}
-      </button>
+          {retweetsCount > 0 && (
+            <span className="text-sm">{formatCount(retweetsCount)}</span>
+          )}
+        </button>
+      </Tooltip>
 
       <RepostMenu
         open={isRepostMenuOpen}
@@ -88,44 +100,64 @@ export default function TweetActions({
         onQuote={onQuote}
       />
 
-      <button
-        type="button"
-        onClick={onLike}
-        aria-pressed={likedByMe}
-        className={cn(
-          "flex min-w-0 items-center justify-center gap-2 rounded-full p-0.5 transition-colors hover:text-rose-500",
-          likedByMe && "text-rose-500",
-        )}
-      >
-        <HeartIcon size={18} filled={likedByMe} />
-
-        {likesCount > 0 && (
-          <span className="text-sm">{formatCount(likesCount)}</span>
-        )}
-      </button>
-
-      <div className="flex shrink-0 items-center gap-1 sm:ml-auto">
-        <div
-          className="flex min-w-0 items-center justify-center gap-1 rounded-full p-0.5 cursor-default select-none sm:gap-2"
-          title="Views"
-          aria-label={`${viewsCount} views`}
-        >
-          <Eye size={18} />
-
-          <span className="text-sm">{formatCount(viewsCount)}</span>
-        </div>
-
+      <Tooltip label={likedByMe ? "Скасувати вподобання" : "Вподобати"}>
         <button
           type="button"
-          onClick={onBookmark}
-          aria-pressed={bookmarkedByMe}
+          onClick={onLike}
+          aria-label={likedByMe ? "Скасувати вподобання" : "Вподобати"}
+          aria-pressed={likedByMe}
           className={cn(
-            "ml-auto flex min-w-0 items-center justify-center gap-2 rounded-full p-0.5 transition-colors hover:text-primary",
-            bookmarkedByMe && "text-primary",
+            "tweet-action flex min-w-0 items-center justify-center gap-2 rounded-full p-0.5 transition-colors hover:text-rose-500 focus-visible:text-rose-500",
+            "focus-visible:focus-indicator",
+            likedByMe && "text-rose-500",
           )}
         >
-          <Bookmark size={18} fill={bookmarkedByMe ? "currentColor" : "none"} />
+          <span className="tweet-action-icon" aria-hidden="true">
+            <HeartIcon size={18} filled={likedByMe} />
+          </span>
+
+          {likesCount > 0 && (
+            <span className="text-sm">{formatCount(likesCount)}</span>
+          )}
         </button>
+      </Tooltip>
+
+      <div className="flex shrink-0 items-center gap-1 sm:ml-auto">
+        <Tooltip label="Перегляди">
+          <div
+            className="flex min-w-0 items-center justify-center gap-1 rounded-full p-0.5 cursor-default select-none sm:gap-2"
+            aria-label={`${viewsCount} переглядів`}
+          >
+            <Eye size={18} />
+
+            <span className="text-sm">{formatCount(viewsCount)}</span>
+          </div>
+        </Tooltip>
+
+        <Tooltip
+          label={bookmarkedByMe ? "Видалити із закладок" : "Додати до закладок"}
+        >
+          <button
+            type="button"
+            onClick={onBookmark}
+            aria-label={
+              bookmarkedByMe ? "Видалити із закладок" : "Додати до закладок"
+            }
+            aria-pressed={bookmarkedByMe}
+            className={cn(
+              "ml-auto tweet-action flex min-w-0 items-center justify-center gap-2 rounded-full p-0.5 transition-colors hover:text-primary focus-visible:text-primary",
+              "focus-visible:focus-indicator",
+              bookmarkedByMe && "text-primary",
+            )}
+          >
+            <span className="tweet-action-icon" aria-hidden="true">
+              <Bookmark
+                size={18}
+                fill={bookmarkedByMe ? "currentColor" : "none"}
+              />
+            </span>
+          </button>
+        </Tooltip>
       </div>
     </div>
   );

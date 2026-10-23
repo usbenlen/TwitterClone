@@ -27,7 +27,7 @@ describe("tweet actions layout", () => {
       />,
     );
     const document = new DOMParser().parseFromString(html, "text/html");
-    const counts = [...document.querySelectorAll("span")];
+    const counts = [...document.querySelectorAll("span.text-sm")];
 
     expect(counts.map((span) => span.textContent)).toEqual([
       "54.4K",

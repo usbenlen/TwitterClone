@@ -1,4 +1,5 @@
 import { COMPOSER_ACTIONS } from "@/constants/composer";
+import { Tooltip } from "@/ui/Tooltip";
 
 import type { ComposerAction } from "@/types/composer";
 
@@ -45,31 +46,34 @@ export default function ComposerToolbar({
       {filteredActions.map((action) => {
         const Icon = action.icon;
         return (
-          <button
-            key={action.id}
-            ref={buttonRefs[action.id]}
-            type="button"
-            aria-label={action.label}
-            aria-expanded={
-              action.id === "poll"
-                ? activeActions.includes("poll")
-                : action.id === "emoji"
-                  ? showEmojiPicker
-                  : undefined
-            }
-            disabled={disabled || disabledActions.includes(action.id)}
-            onClick={() => onAction(action.id)}
-            className={cn(
-              "flex size-9 items-center justify-center rounded-full text-primary transition-colors hover:bg-primary/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60 disabled:pointer-events-none disabled:opacity-50",
-              activeActions.includes(action.id) && "bg-primary/10",
-            )}
-          >
-            {Icon ? (
-              <Icon size={20} />
-            ) : (
-              <span className="text-[11px] font-bold tracking-wide">GIF</span>
-            )}
-          </button>
+          <Tooltip key={action.id} label={action.label}>
+            <button
+              ref={buttonRefs[action.id]}
+              type="button"
+              aria-label={action.label}
+              aria-expanded={
+                action.id === "poll"
+                  ? activeActions.includes("poll")
+                  : action.id === "emoji"
+                    ? showEmojiPicker
+                    : undefined
+              }
+              disabled={disabled || disabledActions.includes(action.id)}
+              onClick={() => onAction(action.id)}
+              className={cn(
+                "flex size-9 items-center justify-center rounded-full text-primary transition-colors hover:bg-primary/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60 disabled:pointer-events-none disabled:opacity-50",
+                "dark:hover:bg-primary/20 dark:active:bg-primary/30 dark:focus-visible:ring-ring",
+                activeActions.includes(action.id) &&
+                  "bg-primary/10 dark:bg-primary/20 dark:inset-ring dark:inset-ring-primary/60",
+              )}
+            >
+              {Icon ? (
+                <Icon size={20} />
+              ) : (
+                <span className="text-[11px] font-bold tracking-wide">GIF</span>
+              )}
+            </button>
+          </Tooltip>
         );
       })}
     </div>
