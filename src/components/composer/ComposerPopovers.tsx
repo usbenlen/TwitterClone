@@ -14,6 +14,7 @@ interface ComposerPopoversProps {
   };
 
   gif: ComposerPopoverState & {
+    available: boolean;
     gifs: Gif[];
     query: string;
     loading: boolean;
@@ -53,6 +54,7 @@ export default function ComposerPopovers({
         reference={gif.reference}
       >
         <GifPicker
+          available={gif.available}
           gifs={gif.gifs}
           query={gif.query}
           loading={gif.loading}

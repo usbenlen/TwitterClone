@@ -19,7 +19,7 @@ export function useComposerGif() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!popup.isOpen || query !== debounced) return;
+    if (!gifApi.available || !popup.isOpen || query !== debounced) return;
 
     const controller = new AbortController();
 
@@ -58,11 +58,12 @@ export function useComposerGif() {
 
   return {
     ...popup,
+    available: gifApi.available,
     close,
     toggle: () => (popup.isOpen ? close() : popup.open()),
     gifs: popup.isOpen && query === debounced ? gifs : [],
     query,
-    loading: popup.isOpen && (query !== debounced || loading),
+    loading: gifApi.available && popup.isOpen && (query !== debounced || loading),
     error: popup.isOpen && query === debounced ? error : null,
     setQuery,
   };

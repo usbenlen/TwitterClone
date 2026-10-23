@@ -4,6 +4,7 @@ import GifSearch from "@/components/composer/gif/GifSearch";
 import type { Gif } from "@/types/gif";
 
 interface GifPickerProps {
+  available: boolean;
   gifs: Gif[];
   query: string;
   loading: boolean;
@@ -13,6 +14,7 @@ interface GifPickerProps {
 }
 
 export default function GifPicker({
+  available,
   gifs,
   query,
   loading,
@@ -22,28 +24,34 @@ export default function GifPicker({
 }: GifPickerProps) {
   return (
     <div className="flex h-105 w-90 flex-col">
-      <GifSearch value={query} onChange={onQueryChange} />
+      <GifSearch value={query} onChange={onQueryChange} disabled={!available} />
 
       <div className="flex-1 overflow-y-auto">
-        {loading && (
+        {!available && (
+          <div role="status" className="flex h-full items-center justify-center p-6 text-center text-sm text-muted-foreground">
+            GIF недоступні в mock режимі.
+          </div>
+        )}
+
+        {available && loading && (
           <div className="p-6 text-center text-sm text-muted-foreground">
             Завантаження...
           </div>
         )}
 
-        {!loading && error && (
+        {available && !loading && error && (
           <div className="p-6 text-center text-sm text-destructive">
             {error}
           </div>
         )}
 
-        {!loading && !error && gifs.length === 0 && (
+        {available && !loading && !error && gifs.length === 0 && (
           <div className="p-6 text-center text-sm text-muted-foreground">
             GIF не знайдено.
           </div>
         )}
 
-        {!loading && !error && gifs.length > 0 && (
+        {available && !loading && !error && gifs.length > 0 && (
           <GifGrid gifs={gifs} onSelect={onSelect} />
         )}
       </div>

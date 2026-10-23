@@ -15,7 +15,9 @@ const mocks = vi.hoisted(() => ({
   upload: vi.fn(),
 }));
 vi.mock("@/api", () => ({ mediaApi: { upload: mocks.upload } }));
-vi.mock("@/api/gif.api", () => ({ gifApi: { search: async () => [] } }));
+vi.mock("@/api/gif.api", () => ({
+  gifApi: { available: true, search: async () => [] },
+}));
 vi.mock("@/api/location.api", () => ({
   locationApi: { search: async () => [] },
 }));

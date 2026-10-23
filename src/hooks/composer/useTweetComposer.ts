@@ -340,6 +340,7 @@ export function useTweetComposer({
 
     gif: {
       open: gif.isOpen,
+      available: gif.available,
       reference: buttonRefs.gif?.current ?? null,
       onOpenChange: (open: boolean) => changePopup("gif", gif, open),
       gifs: gif.gifs,
