@@ -15,6 +15,7 @@ import { GoogleAuthButton } from "@/components/auth";
 import { HeartIcon } from "@/shared/icons";
 
 import { AppLogo, Avatar } from "@/ui";
+import { Tooltip } from "@/ui/Tooltip";
 
 import { useAutosizeTextarea } from "@/hooks/useAutosizeTextarea";
 
@@ -44,6 +45,8 @@ function PreviewPost({
   const navigate = useNavigate();
   const [reposted, setReposted] = useState(false);
   const [liked, setLiked] = useState(false);
+  const repostLabel = reposted ? "Скасувати репост" : "Репостнути";
+  const likeLabel = liked ? "Скасувати вподобання" : "Вподобати";
 
   return (
     <article className="flex gap-3 border-t border-border px-4 py-4 text-left">
@@ -57,43 +60,53 @@ function PreviewPost({
         </div>
         <p className="mt-1 text-sm leading-5 text-foreground">{children}</p>
         <div className="mt-3 flex max-w-xs items-center justify-between text-muted-foreground">
-          <button
-            type="button"
-            onClick={() => navigate(APP_ROUTES.LOGIN)}
-            aria-label="Прокоментувати"
-            className={cn(
-              "flex items-center gap-1.5 rounded-full p-0.5 text-xs transition-colors hover:text-primary",
-            )}
-          >
-            <MessageCircle className="size-4" />
-            {replies}
-          </button>
-          <button
-            type="button"
-            onClick={() => setReposted((value) => !value)}
-            aria-label="Поширити"
-            aria-pressed={reposted}
-            className={cn(
-              "flex items-center gap-1.5 rounded-full p-0.5 text-xs transition-colors hover:text-emerald-500",
-              reposted && "text-emerald-500",
-            )}
-          >
-            <Repeat2 className="size-4" />
-            {reposts + Number(reposted)}
-          </button>
-          <button
-            type="button"
-            onClick={() => setLiked((value) => !value)}
-            aria-label="Вподобати"
-            aria-pressed={liked}
-            className={cn(
-              "flex items-center gap-1.5 rounded-full p-0.5 text-xs transition-colors hover:text-rose-500",
-              liked && "text-rose-500",
-            )}
-          >
-            <HeartIcon className="size-4" filled={liked} />
-            {likes + Number(liked)}
-          </button>
+          <Tooltip label="Коментувати">
+            <button
+              type="button"
+              onClick={() => navigate(APP_ROUTES.LOGIN)}
+              aria-label="Коментувати"
+              className="tweet-action flex items-center gap-1.5 rounded-full p-0.5 text-xs transition-colors hover:text-primary focus-visible:text-primary focus-visible:focus-indicator"
+            >
+              <span className="tweet-action-icon" aria-hidden="true">
+                <MessageCircle className="size-4" />
+              </span>
+              {replies}
+            </button>
+          </Tooltip>
+          <Tooltip label={repostLabel}>
+            <button
+              type="button"
+              onClick={() => setReposted((value) => !value)}
+              aria-label={repostLabel}
+              aria-pressed={reposted}
+              className={cn(
+                "tweet-action flex items-center gap-1.5 rounded-full p-0.5 text-xs transition-colors hover:text-emerald-500 focus-visible:text-emerald-500 focus-visible:focus-indicator",
+                reposted && "text-emerald-500",
+              )}
+            >
+              <span className="tweet-action-icon" aria-hidden="true">
+                <Repeat2 className="size-4" />
+              </span>
+              {reposts + Number(reposted)}
+            </button>
+          </Tooltip>
+          <Tooltip label={likeLabel}>
+            <button
+              type="button"
+              onClick={() => setLiked((value) => !value)}
+              aria-label={likeLabel}
+              aria-pressed={liked}
+              className={cn(
+                "tweet-action flex items-center gap-1.5 rounded-full p-0.5 text-xs transition-colors hover:text-rose-500 focus-visible:text-rose-500 focus-visible:focus-indicator",
+                liked && "text-rose-500",
+              )}
+            >
+              <span className="tweet-action-icon" aria-hidden="true">
+                <HeartIcon className="size-4" filled={liked} />
+              </span>
+              {likes + Number(liked)}
+            </button>
+          </Tooltip>
         </div>
       </div>
     </article>
@@ -210,7 +223,18 @@ export default function LandingPage() {
                       className="min-w-0 grow basis-24 resize-none bg-transparent text-sm text-foreground outline-none transition-[height] duration-400 ease-out"
                     />
                     <div className="ml-auto flex shrink-0 items-center gap-3">
-                      <Image className="cursor-pointer size-5 text-primary" />
+                      <Tooltip label="Додати зображення">
+                        <button
+                          type="button"
+                          onClick={() => navigate(APP_ROUTES.LOGIN)}
+                          aria-label="Додати зображення"
+                          className="tweet-action flex size-5 shrink-0 cursor-pointer items-center justify-center rounded-full text-primary focus-visible:focus-indicator"
+                        >
+                          <span className="tweet-action-icon" aria-hidden="true">
+                            <Image className="size-5" />
+                          </span>
+                        </button>
+                      </Tooltip>
                       <button
                         type="button"
                         onClick={publishDraft}
