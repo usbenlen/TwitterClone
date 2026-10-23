@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useNavigate, useSearchParams } from "react-router";
 
 import { RightSidebarCard } from "@/components/layout/desktop/rightSidebar";
+import { sidebarCardActionClassName } from "@/components/layout/desktop/rightSidebar/RightSidebarCard";
 import { AdvancedSearchModal } from "@/components/search/index";
 
 import { useAuth } from "@/hooks";
@@ -11,11 +12,7 @@ import { APP_ROUTES } from "@/constants/routes";
 
 import { parseSearchCriteria } from "@/utils/search";
 
-import type {
-  SearchCriteria,
-  SearchLocation,
-  SearchPeople,
-} from "@/types";
+import type { SearchCriteria, SearchLocation, SearchPeople } from "@/types";
 
 export default function RightSidebarSearchFilters() {
   const navigate = useNavigate();
@@ -30,7 +27,18 @@ export default function RightSidebarSearchFilters() {
 
   return (
     <>
-      <RightSidebarCard title="Search filters">
+      <RightSidebarCard
+        title="Search filters"
+        footer={
+          <button
+            type="button"
+            onClick={() => setAdvancedOpen(true)}
+            className={sidebarCardActionClassName}
+          >
+            Advanced search
+          </button>
+        }
+      >
         <div className="space-y-5">
           <fieldset>
             <legend className="mb-2 text-sm font-bold text-foreground">
@@ -85,14 +93,6 @@ export default function RightSidebarSearchFilters() {
               </p>
             )}
           </fieldset>
-
-          <button
-            type="button"
-            onClick={() => setAdvancedOpen(true)}
-            className="cursor-pointer text-sm text-primary transition hover:underline"
-          >
-            Advanced search
-          </button>
         </div>
       </RightSidebarCard>
 

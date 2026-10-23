@@ -1,1 +1,2 @@
 export const RECOMMENDATIONS_PAGE_LIMIT = 4;
+export const TRENDS_PAGE_LIMIT = 20;

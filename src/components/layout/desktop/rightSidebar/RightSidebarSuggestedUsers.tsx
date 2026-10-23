@@ -3,7 +3,9 @@ import { SIDEBAR, APP_ROUTES } from "@/constants";
 import { Loader2 } from "lucide-react";
 import { Link } from "react-router";
 
-import RightSidebarCard from "@/components/layout/desktop/rightSidebar/RightSidebarCard";
+import RightSidebarCard, {
+  sidebarCardActionClassName,
+} from "@/components/layout/desktop/rightSidebar/RightSidebarCard";
 import { RecommendationUserItem } from "@/components/user/index";
 
 import { useRecommendedUsers } from "@/hooks";
@@ -14,7 +16,19 @@ export default function RightSidebarSuggestedUsers() {
   );
 
   return (
-    <RightSidebarCard title="Кого читати">
+    <RightSidebarCard
+      title="Кого читати"
+      footer={
+        !isLoading && !error && users.length > 0 ? (
+          <Link
+            to={APP_ROUTES.FOLLOW_RECOMMENDATIONS}
+            className={sidebarCardActionClassName}
+          >
+            Показати більше
+          </Link>
+        ) : undefined
+      }
+    >
       {isLoading ? (
         <div
           className="flex justify-center py-6"
@@ -36,19 +50,11 @@ export default function RightSidebarSuggestedUsers() {
       ) : users.length === 0 ? (
         <p className="py-3 text-sm text-muted-foreground">Ще немає</p>
       ) : (
-        <>
-          <div>
-            {users.map((user) => (
-              <RecommendationUserItem key={user.id} user={user} compact />
-            ))}
-          </div>
-          <Link
-            to={APP_ROUTES.FOLLOW_RECOMMENDATIONS}
-            className="-mx-4 -mb-4 mt-1 block rounded-b-2xl px-4 py-3 text-sm text-primary transition-colors hover:bg-muted/40"
-          >
-            Показати більше
-          </Link>
-        </>
+        <div>
+          {users.map((user) => (
+            <RecommendationUserItem key={user.id} user={user} compact />
+          ))}
+        </div>
       )}
     </RightSidebarCard>
   );

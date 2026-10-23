@@ -48,6 +48,7 @@ describe("right sidebar cards", () => {
     expect(html).toContain("Завантаження тем");
     expect(html).toContain("Завантаження рекомендацій");
     expect(html).not.toContain("Ще немає");
+    expect(html).not.toContain("Показати більше");
   });
 
   it("keeps failures and retry controls visible instead of treating them as empty", () => {
@@ -66,6 +67,7 @@ describe("right sidebar cards", () => {
     expect(html).toContain("Помилка рекомендацій");
     expect(html.match(/Спробувати ще раз/g)).toHaveLength(2);
     expect(html).not.toContain("Ще немає");
+    expect(html).not.toContain("Показати більше");
   });
 
   it("renders returned trends and recommended users with navigation", () => {
@@ -83,6 +85,8 @@ describe("right sidebar cards", () => {
     expect(html).toContain("#Київ");
     expect(html).toContain("@alice");
     expect(html).toContain('href="/follow"');
+    expect(html).toContain('href="/follow?tab=trends"');
+    expect(html.match(/Показати більше/g)).toHaveLength(2);
     expect(html).not.toContain("Ще немає");
   });
 });

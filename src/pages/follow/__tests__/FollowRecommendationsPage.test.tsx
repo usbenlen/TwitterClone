@@ -1,12 +1,16 @@
 // @vitest-environment happy-dom
 import { act } from "react";
 import { createRoot, type Root } from "react-dom/client";
-import { MemoryRouter } from "react-router";
+import { MemoryRouter, useLocation, useNavigate } from "react-router";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import FollowRecommendationsPage from "@/pages/follow/FollowRecommendationsPage";
 
-import { APP_ROUTES, RECOMMENDATIONS_PAGE_LIMIT } from "@/constants";
+import {
+  APP_ROUTES,
+  RECOMMENDATIONS_PAGE_LIMIT,
+  TRENDS_PAGE_LIMIT,
+} from "@/constants";
 
 const hooks = vi.hoisted(() => ({ users: vi.fn(), trends: vi.fn() }));
 vi.mock("@/hooks", () => ({
@@ -53,11 +57,28 @@ afterEach(async () => {
   vi.unstubAllGlobals();
 });
 
+function RouteProbe() {
+  const location = useLocation();
+  const navigate = useNavigate();
+  return (
+    <>
+      <output data-route>
+        {location.pathname}
+        {location.search}
+      </output>
+      <button type="button" onClick={() => navigate(-1)}>
+        Back
+      </button>
+    </>
+  );
+}
+
 async function render(path: string = APP_ROUTES.FOLLOW_RECOMMENDATIONS) {
   await act(async () =>
     root.render(
       <MemoryRouter initialEntries={[path]}>
         <FollowRecommendationsPage />
+        <RouteProbe />
       </MemoryRouter>,
     ),
   );
@@ -75,13 +96,71 @@ describe("single recommended author page", () => {
     async (path) => {
       await render(path);
       expect(host.querySelector("h1")?.textContent).toBe("Рекомендації");
-      expect(host.querySelector('nav[aria-label="Рекомендації"]')).not.toBeNull();
+      expect(
+        host.querySelector('nav[aria-label="Рекомендації"]'),
+      ).not.toBeNull();
       expect(host.textContent).toContain("Популярне");
       expect(host.querySelector('a[href="/ada"]')).not.toBeNull();
       expect(hooks.users).toHaveBeenCalledWith(RECOMMENDATIONS_PAGE_LIMIT);
       expect(APP_ROUTES.followRecommendations()).toBe("/follow");
     },
   );
+
+  it("opens a directly linked trends tab and renders more than the sidebar limit", async () => {
+    hooks.trends.mockReturnValue({
+      trends: Array.from({ length: 6 }, (_, index) => ({
+        id: `trend-${index}`,
+        title: `Тема ${index}`,
+        context: "Популярне",
+        query: `topic-${index}`,
+      })),
+      isLoading: false,
+      error: null,
+      reload: vi.fn(),
+    });
+
+    await render(APP_ROUTES.followRecommendations("trends"));
+
+    expect(hooks.trends).toHaveBeenCalledWith(TRENDS_PAGE_LIMIT);
+    expect(host.querySelectorAll('[role="tabpanel"] a')).toHaveLength(6);
+    expect(host.textContent).toContain("Тема 5");
+    expect(host.querySelector('a[href="/ada"]')).toBeNull();
+    expect(button("Популярне").getAttribute("aria-pressed")).toBe("true");
+    expect(button("Показати ще")).toBeUndefined();
+  });
+
+  it("keeps tab selection in the URL, preserves other parameters and supports Back", async () => {
+    await render("/follow?source=sidebar");
+    await act(async () => button("Популярне").click());
+    expect(host.querySelector("[data-route]")?.textContent).toBe(
+      "/follow?source=sidebar&tab=trends",
+    );
+    expect(host.querySelector('a[href="/ada"]')).toBeNull();
+
+    await act(async () => button("Автори").click());
+    expect(host.querySelector("[data-route]")?.textContent).toBe(
+      "/follow?source=sidebar",
+    );
+    expect(host.querySelector('a[href="/ada"]')).not.toBeNull();
+
+    await act(async () => button("Back").click());
+    expect(button("Популярне").getAttribute("aria-pressed")).toBe("true");
+    expect(host.querySelector('a[href="/ada"]')).toBeNull();
+  });
+
+  it("shows an actionable retry when the trends page fails", async () => {
+    const retryTrends = vi.fn();
+    hooks.trends.mockReturnValue({
+      trends: [],
+      isLoading: false,
+      error: "Не вдалося отримати теми",
+      reload: retryTrends,
+    });
+    await render(APP_ROUTES.followRecommendations("trends"));
+    expect(host.textContent).toContain("Не вдалося отримати теми");
+    await act(async () => button("Спробувати ще раз").click());
+    expect(retryTrends).toHaveBeenCalledTimes(1);
+  });
 
   it("loads another page and disables the button while loading", async () => {
     await render();

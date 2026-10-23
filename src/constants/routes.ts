@@ -53,7 +53,8 @@ export const APP_ROUTES = {
   following: (username: string) => `/${username}/following`,
   followers: (username: string) => `/${username}/followers`,
 
-  followRecommendations: () => "/follow",
+  followRecommendations: (tab?: "authors" | "trends") =>
+    tab === "trends" ? "/follow?tab=trends" : "/follow",
 
   post: (postId: string) => `/post/${postId}`,
 

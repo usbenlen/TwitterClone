@@ -3,11 +3,17 @@ import { Link } from "react-router";
 
 import { formatCompactCount } from "@/utils/format";
 import { SIDEBAR, APP_ROUTES } from "@/constants";
-import RightSidebarCard from "@/components/layout/desktop/rightSidebar/RightSidebarCard";
+import RightSidebarCard, {
+  sidebarCardActionClassName,
+} from "@/components/layout/desktop/rightSidebar/RightSidebarCard";
 import { useTrends } from "@/hooks";
 
-export function RightSidebarTrendsList() {
-  const { trends, isLoading, error, reload } = useTrends(SIDEBAR.TRENDS_LIMIT);
+function TrendsListContent({
+  result,
+}: {
+  result: ReturnType<typeof useTrends>;
+}) {
+  const { trends, isLoading, error, reload } = result;
 
   if (isLoading) {
     return (
@@ -37,14 +43,16 @@ export function RightSidebarTrendsList() {
   }
 
   return (
-    <div className="-mx-4 -mb-4">
+    <div className="-mx-4">
       {trends.map((trend) => (
         <Link
           key={trend.id}
           to={APP_ROUTES.search({ query: trend.query, type: "posts" })}
-          className="block px-4 py-2.5 transition-colors last:rounded-b-2xl hover:bg-muted/40"
+          className="block px-4 py-2.5 transition-colors hover:bg-muted/40 dark:hover:bg-surface-hover dark:active:bg-muted focus-visible:focus-indicator"
         >
-          <p className="truncate text-xs text-muted-foreground">{trend.context}</p>
+          <p className="truncate text-xs text-muted-foreground">
+            {trend.context}
+          </p>
           <p className="mt-0.5 truncate text-sm font-bold text-foreground">
             {trend.title}
           </p>
@@ -59,10 +67,34 @@ export function RightSidebarTrendsList() {
   );
 }
 
+export function RightSidebarTrendsList({
+  limit = SIDEBAR.TRENDS_LIMIT,
+}: {
+  limit?: number;
+}) {
+  return <TrendsListContent result={useTrends(limit)} />;
+}
+
 export default function RightSidebarTrendsCard() {
+  const result = useTrends(SIDEBAR.TRENDS_LIMIT);
+  const showMore =
+    !result.isLoading && !result.error && result.trends.length > 0;
+
   return (
-    <RightSidebarCard title="Популярне">
-      <RightSidebarTrendsList />
+    <RightSidebarCard
+      title="Популярне"
+      footer={
+        showMore ? (
+          <Link
+            to={APP_ROUTES.followRecommendations("trends")}
+            className={sidebarCardActionClassName}
+          >
+            Показати більше
+          </Link>
+        ) : undefined
+      }
+    >
+      <TrendsListContent result={result} />
     </RightSidebarCard>
   );
 }
