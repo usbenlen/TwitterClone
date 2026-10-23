@@ -13,6 +13,7 @@ interface FeedListProps {
   emptyMessage?: string;
   variant?: "feed" | "replies" | "bookmarks";
   repostedBy?: Pick<User, "username" | "displayName">;
+  showReplyContext?: boolean;
 }
 
 function ReplyTweetItem({ tweet }: { tweet: Tweet }) {
@@ -53,6 +54,7 @@ export default function FeedList({
   emptyMessage = "Поки що тут порожньо.",
   variant = "feed",
   repostedBy,
+  showReplyContext = false,
 }: FeedListProps) {
   if (isLoading) {
     return (
@@ -118,6 +120,7 @@ export default function FeedList({
           tweet={tweet}
           variant="feed"
           repostedBy={repostedBy}
+          showReplyContext={showReplyContext}
         />
       ))}
     </>

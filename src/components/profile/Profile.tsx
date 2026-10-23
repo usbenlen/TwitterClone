@@ -61,6 +61,7 @@ export default function Profile({
         tweets={tweets}
         variant={activeTab === "replies" ? "replies" : "feed"}
         repostedBy={activeTab === "reposts" ? user : undefined}
+        showReplyContext={activeTab === "likes" || activeTab === "reposts"}
         isLoading={isTabLoading}
         error={tabError}
         emptyMessage={emptyMessage}

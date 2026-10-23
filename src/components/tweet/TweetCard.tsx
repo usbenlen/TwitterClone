@@ -36,6 +36,7 @@ import {
 
 import { APP_ROUTES } from "@/constants/routes";
 import { mapMediaToComposerMedia, mapPollToComposerPoll, cn } from "@/utils";
+import { getReplyToUsername } from "@/utils/ancestors";
 
 import type { Tweet, ComposerSubmitData, User } from "@/types";
 
@@ -46,6 +47,7 @@ interface TweetCardProps {
   className?: string;
   variant?: "feed" | "post";
   repostedBy?: Pick<User, "username" | "displayName">;
+  showReplyContext?: boolean;
   onOpenReplyModal?: (comment: Tweet) => void;
   onDelete?: (tweetId: string) => Promise<void>;
   onUpdate?: (
@@ -61,6 +63,7 @@ function TweetCard({
   className,
   variant = "feed",
   repostedBy,
+  showReplyContext = false,
   onOpenReplyModal,
   onDelete,
   onUpdate,
@@ -79,6 +82,11 @@ function TweetCard({
   const [isReportOpen, setIsReportOpen] = useState(false);
 
   const isOwnTweet = user?.id === tweet.author.id;
+  const showReply = showReplyContext && tweet.isComment;
+  const replyToUsername = showReply ? getReplyToUsername(tweet) : null;
+  const replyToFallbackHref = showReply && !replyToUsername
+    ? APP_ROUTES.post(tweet.parentCommentId ?? tweet.postId ?? tweet.id)
+    : undefined;
 
   const handleDelete = async () => {
     try {
@@ -190,7 +198,9 @@ function TweetCard({
             author={tweet.author}
             createdAt={tweet.createdAt}
             updatedAt={tweet.updatedAt}
-            // replyToUsername={tweet.replyToUsername} якщо десь знадобиться "У відповідь @dev_user"
+            replyToUsername={replyToUsername}
+            replyToLabel="Replying to"
+            replyToFallbackHref={replyToFallbackHref}
             onDelete={isOwnTweet ? handleDelete : undefined}
             onEdit={isOwnTweet ? () => setIsEditModalOpen(true) : undefined}
             onOpenEditHistory={

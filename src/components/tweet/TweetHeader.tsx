@@ -17,6 +17,8 @@ interface TweetHeaderProps {
   createdAt: string;
   updatedAt?: string | null;
   replyToUsername?: string | null;
+  replyToLabel?: string;
+  replyToFallbackHref?: string;
   onDelete?: () => void;
   onEdit?: () => void;
   onOpenEditHistory?: () => void;
@@ -27,6 +29,8 @@ export default function TweetHeader({
   createdAt,
   updatedAt,
   replyToUsername,
+  replyToLabel = "У відповідь",
+  replyToFallbackHref,
   onDelete,
   onEdit,
   onOpenEditHistory,
@@ -96,16 +100,28 @@ export default function TweetHeader({
         )}
       </div>
 
-      {replyToUsername && (
+      {(replyToUsername || replyToFallbackHref) && (
         <div className="w-full text-xs text-muted-foreground">
-          У відповідь{" "}
-          <Link
-            to={APP_ROUTES.profile(replyToUsername)}
-            onClick={(e) => e.stopPropagation()}
-            className="text-primary hover:underline"
-          >
-            @{replyToUsername}
-          </Link>
+          {replyToUsername ? (
+            <>
+              {replyToLabel}{" "}
+              <Link
+                to={APP_ROUTES.profile(replyToUsername)}
+                onClick={(e) => e.stopPropagation()}
+                className="text-primary hover:underline focus-visible:rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              >
+                @{replyToUsername}
+              </Link>
+            </>
+          ) : replyToFallbackHref ? (
+            <Link
+              to={replyToFallbackHref}
+              onClick={(e) => e.stopPropagation()}
+              className="hover:underline focus-visible:rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            >
+              Відповідь
+            </Link>
+          ) : null}
         </div>
       )}
     </div>

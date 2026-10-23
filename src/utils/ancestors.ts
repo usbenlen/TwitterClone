@@ -1,5 +1,19 @@
 import type { Tweet, TweetAncestor } from "@/types/tweet";
 
+export function getReplyToUsername(tweet: Tweet): string | null {
+  if (!tweet.isComment) return null;
+  if (tweet.replyToUsername) return tweet.replyToUsername;
+
+  const parentId = tweet.parentCommentId ?? tweet.postId;
+  if (!parentId) return null;
+
+  return tweet.ancestors?.find(
+    (ancestor) =>
+      ancestor.id === parentId &&
+      Boolean(ancestor.isComment) === Boolean(tweet.parentCommentId),
+  )?.author.username ?? null;
+}
+
 export function getAncestorContext(
   ancestors: TweetAncestor[],
   ancestorId: string,
