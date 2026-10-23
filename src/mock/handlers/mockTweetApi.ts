@@ -27,6 +27,7 @@ import {
 import { markQuotedTargetEdited } from "@/mock/utils/mockQuotes";
 import { getQuoteReplyingToUsernames, withAncestors } from "@/utils/ancestors";
 import { delay } from "@/mock/utils/delay";
+import { selectMockComments } from "@/mock/utils/selectMockComments";
 import { removeMockContent } from "@/mock/utils/removeMockContent";
 import { createMockPoll, updateMockPoll } from "@/mock/utils/mockPoll";
 import {
@@ -91,7 +92,10 @@ export const mockTweetApi = {
   async getBookmarked(): Promise<Tweet[]> {
     await delay();
 
-    return tweets.filter((tweet) => tweet.bookmarkedByMe);
+    return [
+      ...tweets.filter((tweet) => tweet.bookmarkedByMe),
+      ...selectMockComments((comment) => comment.bookmarkedByMe),
+    ];
   },
 
   async getById(id: string): Promise<Tweet> {

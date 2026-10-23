@@ -13,6 +13,7 @@ import {
 
 import { withAncestors, updateTweetAuthors } from "@/utils";
 import { delay } from "@/mock/utils/delay";
+import { selectMockComments } from "@/mock/utils/selectMockComments";
 
 const likedTweetsByUsername: Record<string, string[]> = {
   [currentUser.username]: ["t2"],
@@ -65,7 +66,10 @@ export const mockUserApi = {
     await delay();
 
     if (username === currentUser.username)
-      return tweets.filter((tweet) => tweet.likedByMe);
+      return [
+        ...tweets.filter((tweet) => tweet.likedByMe),
+        ...selectMockComments((comment) => comment.likedByMe),
+      ];
 
     const likedIds = likedTweetsByUsername[username] ?? [];
 
