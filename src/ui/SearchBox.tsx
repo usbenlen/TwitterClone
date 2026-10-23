@@ -32,10 +32,10 @@ export default function SearchBox({
     <form onSubmit={handleSubmit} className={cn("relative", className)}>
       <div
         className={cn(
-          "flex h-10 items-center gap-2 rounded-full",
-          "bg-muted px-4",
+          "flex h-11 items-center gap-2 rounded-full",
+          "bg-card px-4",
           "transition-colors focus-within:ring-2 focus-within:ring-ring",
-          "dark:inset-ring dark:inset-ring-border dark:focus-within:inset-ring-primary",
+          "inset-ring inset-ring-control-border dark:inset-ring-border dark:focus-within:inset-ring-primary",
         )}
       >
         <Search size={18} className="shrink-0 text-muted-foreground" />
