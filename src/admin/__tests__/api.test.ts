@@ -86,6 +86,7 @@ describe("HTTP administrative adapters", () => {
     const result = await realAdminApi.tables(5);
     expect(client.get).toHaveBeenCalledExactlyOnceWith(
       "admin/dashboard/tables?limit=5",
+      { refreshOnForbidden: true },
     );
 
     expect(result.latestReports.map((row) => row.latestSignal)).toEqual([
@@ -113,7 +114,9 @@ describe("HTTP administrative adapters", () => {
 
     const result = await realAdminApi.report("r/1");
 
-    expect(client.get).toHaveBeenCalledWith("admin/moderation/r%2F1");
+    expect(client.get).toHaveBeenCalledWith("admin/moderation/r%2F1", {
+      refreshOnForbidden: true,
+    });
     expect(result.target).toMatchObject({
       type: "comments",
       data: {
@@ -142,6 +145,7 @@ describe("HTTP administrative adapters", () => {
     expect(client.put).toHaveBeenCalledExactlyOnceWith(
       "admin/moderation/r1/status",
       { status: "resolved", decision: "deleted" },
+      { refreshOnForbidden: true },
     );
 
     expect(client.delete).not.toHaveBeenCalled();
@@ -163,10 +167,14 @@ describe("HTTP administrative adapters", () => {
     );
 
     await realAdminApi.actOnUser("u/2", "block");
-    expect(client.put).toHaveBeenCalledWith("admin/users/u%2F2/block");
+    expect(client.put).toHaveBeenCalledWith("admin/users/u%2F2/block", undefined, {
+      refreshOnForbidden: true,
+    });
 
     await realAdminApi.actOnUser("u/2", "delete");
-    expect(client.delete).toHaveBeenCalledWith("admin/users/u%2F2/delete");
+    expect(client.delete).toHaveBeenCalledWith("admin/users/u%2F2/delete", {
+      refreshOnForbidden: true,
+    });
   });
 
   it.each(["posts", "comments", "users"] as const)("submits a public %s report through the shared client",

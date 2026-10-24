@@ -27,13 +27,51 @@ export class ApiError extends Error {
 interface RequestOptions extends Omit<RequestInit, "body"> {
   body?: unknown;
   skipAuth?: boolean;
+  refreshOnForbidden?: boolean;
 }
 
-// Обробка одночасних 401: щоб не робити кілька запитів на /refresh паралельно, зберігаєм один проміс оновлення
-let refreshPromise: Promise<boolean> | null = null;
+interface TokenSession {
+  version: number;
+  accessToken: string | null;
+  refreshToken: string | null;
+}
 
-async function refreshTokens(): Promise<boolean> {
-  const refreshToken = tokenStorage.getRefreshToken();
+let currentSession: TokenSession | null = null;
+let pendingRefresh: {
+  session: TokenSession;
+  promise: Promise<boolean>;
+} | null = null;
+
+function readTokenSession(): TokenSession {
+  return {
+    version: tokenStorage.getVersion(),
+    accessToken: tokenStorage.getAccessToken(),
+    refreshToken: tokenStorage.getRefreshToken(),
+  };
+}
+
+function getTokenSession(): TokenSession {
+  const stored = readTokenSession();
+  if (
+    !currentSession ||
+    currentSession.version !== stored.version ||
+    currentSession.accessToken !== stored.accessToken ||
+    currentSession.refreshToken !== stored.refreshToken
+  )
+    currentSession = stored;
+  return currentSession;
+}
+
+function ensureActiveSession(
+  session: TokenSession,
+  signal?: AbortSignal | null,
+) {
+  signal?.throwIfAborted();
+  if (getTokenSession() !== session) throw new DOMException("Сесію змінено.", "AbortError");
+}
+
+async function refreshTokens(session: TokenSession): Promise<boolean> {
+  const refreshToken = session.refreshToken;
   if (!refreshToken) return false;
 
   try {
@@ -45,13 +83,26 @@ async function refreshTokens(): Promise<boolean> {
     if (!res.ok) return false;
 
     const data = (await res.json()) as RefreshResponse;
+    if (getTokenSession() !== session) return false;
 
-    // Token rotation: сервер повертає нову пару токенів
+    // Ротація продовжує цю ж сесію; інші записи в storage створюють нову.
     tokenStorage.setTokens(data.accessToken, data.refreshToken);
+    Object.assign(session, readTokenSession());
     return true;
   } catch {
     return false;
   }
+}
+
+function refreshSession(session: TokenSession): Promise<boolean> {
+  if (pendingRefresh?.session === session) return pendingRefresh.promise;
+
+  const pending = { session, promise: refreshTokens(session) };
+  pendingRefresh = pending;
+  pending.promise = pending.promise.finally(() => {
+    if (pendingRefresh === pending) pendingRefresh = null;
+  });
+  return pending.promise;
 }
 
 // Викликається при остаточній втраті сесії
@@ -74,8 +125,13 @@ async function rawRequest<T>(
   path: string,
   options: RequestOptions,
   isRetry = false,
+  session?: TokenSession,
 ): Promise<T> {
-  const { body, skipAuth, headers, ...rest } = options;
+  const { body, skipAuth, refreshOnForbidden, headers, ...rest } = options;
+  const requestSession = skipAuth ? undefined : (session ?? getTokenSession());
+  if (requestSession) ensureActiveSession(requestSession, options.signal);
+  const accessToken = requestSession?.accessToken;
+  const tokenVersion = requestSession?.version;
 
   const finalHeaders = new Headers(headers);
 
@@ -83,8 +139,7 @@ async function rawRequest<T>(
     finalHeaders.set("Content-Type", "application/json");
 
   if (!skipAuth) {
-    const token = tokenStorage.getAccessToken();
-    if (token) finalHeaders.set("Authorization", `Bearer ${token}`);
+    if (accessToken) finalHeaders.set("Authorization", `Bearer ${accessToken}`);
   }
 
   const requestBody =
@@ -100,15 +155,22 @@ async function rawRequest<T>(
     body: requestBody,
   });
 
-  // Спроба оновити токен один раз при 401
-  if (response.status === 401 && !skipAuth && !isRetry) {
-    if (!refreshPromise) refreshPromise = refreshTokens();
-    const refreshed = await refreshPromise;
-    refreshPromise = null;
+  if (requestSession) ensureActiveSession(requestSession, options.signal);
 
-    if (refreshed) return rawRequest<T>(path, options, true);
-    handleUnauthorized();
-    throw new ApiError(401, "Сесія завершена. Увійдіть знову.");
+  // 403 потребує явного дозволу адаптера; будь-який запит повторюємо лише раз.
+  if (
+    requestSession &&
+    !isRetry &&
+    (response.status === 401 || (response.status === 403 && refreshOnForbidden))
+  ) {
+    const refreshed = requestSession.version !== tokenVersion || (await refreshSession(requestSession));
+    ensureActiveSession(requestSession, options.signal);
+
+    if (refreshed) return rawRequest<T>(path, options, true, requestSession);
+    if (response.status === 401) {
+      handleUnauthorized();
+      throw new ApiError(401, "Сесія завершена. Увійдіть знову.");
+    }
   }
 
   if (response.status === 204) return undefined as T;
@@ -130,9 +192,9 @@ async function rawRequest<T>(
           ? problem.title
           : problem?.message
             ? String(problem.message)
-        : typeof payload === "string" && payload
-          ? payload
-          : null) ?? `Помилка запиту (${response.status})`;
+            : typeof payload === "string" && payload
+              ? payload
+              : null) ?? `Помилка запиту (${response.status})`;
     throw new ApiError(
       response.status,
       message,
