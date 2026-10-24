@@ -4,7 +4,6 @@ export * from "@/components/tweet/quote/index";
 export * from "@/components/tweet/repost/index";
 export * from "@/components/tweet/TweetComposer/index";
 
-export { default as ActionsMenu } from "@/components/tweet/ActionsMenu";
 export { default as TweetLocation } from "@/components/tweet/location/TweetLocation";
 export { default as TweetPoll } from "@/components/tweet/poll/TweetPoll";
 export { default as TweetActions } from "@/components/tweet/TweetActions";

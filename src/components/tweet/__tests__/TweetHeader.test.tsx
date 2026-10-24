@@ -7,7 +7,7 @@ import TweetHeader from "@/components/tweet/TweetHeader";
 
 import type { Tweet } from "@/types";
 
-vi.mock("@/components/tweet", () => ({ ActionsMenu: () => null }));
+vi.mock("@/ui/ActionsMenu", () => ({ ActionsMenu: () => null }));
 vi.mock("@/ui/VerifiedBadge", () => ({ VerifiedBadge: () => null }));
 
 const author: Tweet["author"] = {

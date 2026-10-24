@@ -23,14 +23,19 @@ import {
 
 interface TooltipProps {
   label: string;
+  disabled?: boolean;
   children: ReactElement<
     HTMLAttributes<HTMLElement> & { ref?: Ref<HTMLElement>; disabled?: boolean }
   >;
 }
 
-export function Tooltip({ label, children }: TooltipProps) {
+export function Tooltip({
+  label,
+  children,
+  disabled: tooltipDisabled = false,
+}: TooltipProps) {
   const [open, setOpen] = useState(false);
-  const disabled = children.props.disabled ?? false;
+  const disabled = tooltipDisabled || (children.props.disabled ?? false);
 
   const { refs, floatingStyles, context } = useFloating({
     open: open && !disabled,

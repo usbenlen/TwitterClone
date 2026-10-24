@@ -1,7 +1,7 @@
 import { Link } from "react-router";
-import { PenLine } from "lucide-react";
+import { Flag, Pencil, PenLine, Trash2 } from "lucide-react";
 
-import { ActionsMenu } from "@/components/tweet";
+import { ActionsMenu, type ActionsMenuItem } from "@/ui/ActionsMenu";
 
 import { VerifiedBadge } from "@/ui/VerifiedBadge";
 
@@ -36,6 +36,32 @@ export default function TweetHeader({
   onOpenEditHistory,
   onReport,
 }: TweetHeaderProps) {
+  const actions: ActionsMenuItem[] = [
+    ...(onReport
+      ? [
+          {
+            id: "report",
+            label: "Поскаржитися",
+            icon: Flag,
+            onSelect: onReport,
+          },
+        ]
+      : []),
+    ...(onEdit
+      ? [{ id: "edit", label: "Редагувати", icon: Pencil, onSelect: onEdit }]
+      : []),
+    ...(onDelete
+      ? [
+          {
+            id: "delete",
+            label: "Видалити",
+            icon: Trash2,
+            onSelect: onDelete,
+            variant: "danger" as const,
+          },
+        ]
+      : []),
+  ];
   return (
     <div className="relative flex flex-col gap-0.5 min-w-0">
       <div className="relative flex items-start justify-between gap-2 min-w-0">
@@ -90,11 +116,11 @@ export default function TweetHeader({
         </div>
 
         {(onDelete || onEdit || onReport) && (
-          <div className="absolute right-0 top-0">
+          <div className="absolute -right-2 -top-2">
             <ActionsMenu
-              onDelete={onDelete}
-              onEdit={onEdit}
-              onReport={onReport}
+              items={actions}
+              ariaLabel="Додаткові дії"
+              menuLabel="Дії з дописом"
             />
           </div>
         )}

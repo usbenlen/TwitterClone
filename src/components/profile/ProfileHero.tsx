@@ -1,10 +1,11 @@
 import { useState } from "react";
+import { Flag } from "lucide-react";
 
 import { Avatar, Button } from "@/ui";
 
 import { useImageCache, useFollow } from "@/hooks";
 
-import { ActionsMenu } from "@/components/tweet";
+import { ActionsMenu } from "@/ui/ActionsMenu";
 import { EditProfileModal, ReportModal } from "@/components/modal";
 
 import type { UpdateProfileRequest } from "@/api/user.api";
@@ -55,7 +56,18 @@ export default function ProfileHero({
 
           <div className="flex min-w-0 flex-wrap items-center justify-end gap-2 pt-3">
             {!isOwnProfile && (
-              <ActionsMenu onReport={() => setIsReportOpen(true)} />
+              <ActionsMenu
+                ariaLabel="Додаткові дії"
+                menuLabel="Дії з профілем"
+                items={[
+                  {
+                    id: "report",
+                    label: "Поскаржитися",
+                    icon: Flag,
+                    onSelect: () => setIsReportOpen(true),
+                  },
+                ]}
+              />
             )}
             {isOwnProfile ? (
               <Button

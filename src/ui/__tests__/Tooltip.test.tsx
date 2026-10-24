@@ -33,6 +33,25 @@ async function hover(button: HTMLButtonElement, pointerType = "mouse") {
 }
 
 describe("action tooltips", () => {
+  it("can disable an existing tooltip without disabling its child", async () => {
+    const render = (disabled: boolean) => (
+      <Tooltip label="Більше" disabled={disabled}>
+        <button>Меню</button>
+      </Tooltip>
+    );
+    await act(async () => root.render(render(false)));
+    const button = container.querySelector("button")!;
+    await hover(button);
+    await act(async () => vi.advanceTimersByTime(450));
+    expect(tooltip()).not.toBeNull();
+    await act(async () => root.render(render(true)));
+    expect(tooltip()).toBeNull();
+    expect(button.disabled).toBe(false);
+    await hover(button);
+    await act(async () => vi.advanceTimersByTime(1000));
+    expect(tooltip()).toBeNull();
+  });
+
   it("waits on hover, preserves refs and handlers, and adds no layout wrapper", async () => {
     const ref = createRef<HTMLButtonElement>();
     const click = vi.fn();
