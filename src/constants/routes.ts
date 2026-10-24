@@ -1,4 +1,4 @@
-import type { SearchCriteria } from "@/types";
+import type { ExploreTab, SearchCriteria } from "@/types";
 import type { ReportTargetType } from "@/types/report";
 import {
   DEFAULT_SEARCH_CRITERIA,
@@ -32,6 +32,7 @@ export const APP_ROUTES = {
   RESET_PASSWORD: "/reset-password",
   VERIFY_EMAIL: "/verify-email",
   SEARCH: "/search",
+  EXPLORE: "/explore",
   BOOKMARKS: "/bookmarks",
   FOLLOW_RECOMMENDATIONS: "/follow",
 
@@ -53,8 +54,10 @@ export const APP_ROUTES = {
   following: (username: string) => `/${username}/following`,
   followers: (username: string) => `/${username}/followers`,
 
-  followRecommendations: (tab?: "authors" | "trends") =>
-    tab === "trends" ? "/follow?tab=trends" : "/follow",
+  followRecommendations: () => "/follow",
+
+  explore: (tab: ExploreTab = "overview") =>
+    tab === "overview" ? "/explore" : `/explore?${new URLSearchParams({ tab })}`,
 
   post: (postId: string) => `/post/${postId}`,
 

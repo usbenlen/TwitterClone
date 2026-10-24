@@ -1,9 +1,11 @@
 import { renderToStaticMarkup } from "react-dom/server";
 import { MemoryRouter } from "react-router";
+import { Provider } from "react-redux";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import RightSidebarTrendsCard from "@/components/layout/desktop/rightSidebar/RightSidebarTrendsCard";
 import RightSidebarSuggestedUsers from "@/components/layout/desktop/rightSidebar/RightSidebarSuggestedUsers";
+import { createAppStore } from "@/store";
 
 const hooks = vi.hoisted(() => ({ trends: vi.fn(), users: vi.fn() }));
 vi.mock("@/hooks", () => ({
@@ -26,8 +28,10 @@ beforeEach(() => {
 function renderCards() {
   return renderToStaticMarkup(
     <MemoryRouter>
-      <RightSidebarTrendsCard />
-      <RightSidebarSuggestedUsers />
+      <Provider store={createAppStore()}>
+        <RightSidebarTrendsCard />
+        <RightSidebarSuggestedUsers />
+      </Provider>
     </MemoryRouter>,
   );
 }
@@ -85,7 +89,7 @@ describe("right sidebar cards", () => {
     expect(html).toContain("#Київ");
     expect(html).toContain("@alice");
     expect(html).toContain('href="/follow"');
-    expect(html).toContain('href="/follow?tab=trends"');
+    expect(html).toContain('href="/explore?tab=trending"');
     expect(html.match(/Показати більше/g)).toHaveLength(2);
     expect(html).not.toContain("Ще немає");
   });

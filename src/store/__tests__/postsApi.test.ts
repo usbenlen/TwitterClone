@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { tweetApi, commentApi, userApi, searchApi, pollApi } from "@/api";
+import { tweetApi, commentApi, userApi, searchApi, pollApi, recommendationsApi } from "@/api";
 
 import { createAppStore, type AppStore } from "@/store";
 import {
@@ -41,6 +41,7 @@ vi.mock("@/api/index", () => {
 
   return {
     tweetApi: api(),
+    recommendationsApi: { posts: vi.fn() },
     commentApi: api(),
     userApi: {
       getPosts: vi.fn(),
@@ -139,6 +140,7 @@ beforeEach(() => {
 
   vi.mocked(userApi.getReplies).mockImplementation(async () => clone(comments));
   vi.mocked(searchApi.posts).mockImplementation(async () => clone(posts));
+  vi.mocked(recommendationsApi.posts).mockImplementation(async () => ({ items: clone(posts), nextCursor: null, hasMore: false }));
 });
 
 afterEach(() => {
@@ -146,6 +148,65 @@ afterEach(() => {
 });
 
 describe("post queries and mutations", () => {
+  it("shares optimistic reactions and rollback with every recommended page", async () => {
+    await load();
+    await store.dispatch(postsApi.endpoints.getRecommendedPosts.initiate(10));
+    const readRecommended = () => postsApi.endpoints.getRecommendedPosts.select(10)(store.getState()).data!.pages[0].items[0];
+    const pending = deferred<ToggleLikeResponse>();
+    vi.mocked(tweetApi.toggleLike).mockReturnValue(pending.promise);
+    const reaction = store.dispatch(postsApi.endpoints.react.initiate({ type: "post", id: "p1", action: "like", active: false }));
+    expect(readRecommended().likedByMe).toBe(true);
+    expect(readRecommended().likesCount).toBe(1);
+    expect(read()![0].likedByMe).toBe(true);
+    pending.reject(new Error("offline"));
+    await reaction;
+    expect(readRecommended().likedByMe).toBe(false);
+    expect(readRecommended().likesCount).toBe(0);
+    expect(read()![0].likedByMe).toBe(false);
+  });
+
+  it("updates recommended authors, post edits and deletion using shared cache helpers", async () => {
+    await store.dispatch(postsApi.endpoints.getRecommendedPosts.initiate(10));
+    const readRecommended = () => postsApi.endpoints.getRecommendedPosts.select(10)(store.getState()).data!.pages[0].items;
+    updateCachedProfileAuthors({ ...posts[0].author, displayName: "Updated" } as User, store.dispatch, store.getState());
+    expect(readRecommended()[0].author.displayName).toBe("Updated");
+    vi.mocked(tweetApi.update).mockImplementation(async () => {
+      posts[0] = { ...posts[0], content: "edited" };
+      return clone(posts[0]);
+    });
+    await store.dispatch(postsApi.endpoints.updatePost.initiate({ type: "post", id: "p1", data: { content: "edited" } }));
+    expect(readRecommended()[0].content).toBe("edited");
+    vi.mocked(tweetApi.delete).mockImplementation(async () => { posts = []; });
+    await store.dispatch(postsApi.endpoints.deletePost.initiate({ type: "post", id: "p1" }));
+    expect(readRecommended()).toEqual([]);
+  });
+
+  it("paginates recommendations with opaque cursors and retains pages on failure", async () => {
+    vi.mocked(recommendationsApi.posts)
+      .mockResolvedValueOnce({ items: [tweet()], nextCursor: "opaque+/=", hasMore: true })
+      .mockRejectedValueOnce(new Error("offline"))
+      .mockResolvedValueOnce({ items: [tweet({ id: "p2" })], nextCursor: null, hasMore: false });
+    await store.dispatch(postsApi.endpoints.getRecommendedPosts.initiate(10));
+    const next = () => store.dispatch(postsApi.endpoints.getRecommendedPosts.initiate(10, { direction: "forward" }));
+    await next();
+    expect(postsApi.endpoints.getRecommendedPosts.select(10)(store.getState()).data!.pages).toHaveLength(1);
+    await next();
+    const result = postsApi.endpoints.getRecommendedPosts.select(10)(store.getState());
+    expect(result.data!.pages.flatMap((page) => page.items).map((post) => post.id)).toEqual(["p1", "p2"]);
+    expect(result.hasNextPage).toBe(false);
+    expect(recommendationsApi.posts).toHaveBeenLastCalledWith(10, "opaque+/=");
+  });
+
+  it("discards a recommended page completed after the session changes", async () => {
+    const pending = deferred<{ items: Tweet[]; nextCursor: null; hasMore: false }>();
+    vi.mocked(recommendationsApi.posts).mockReturnValue(pending.promise);
+    const request = store.dispatch(postsApi.endpoints.getRecommendedPosts.initiate(10));
+    store.dispatch(sessionChanged());
+    pending.resolve({ items: [tweet()], nextCursor: null, hasMore: false });
+    await request;
+    expect(postsApi.endpoints.getRecommendedPosts.select(10)(store.getState()).data).toBeUndefined();
+  });
+
   it("updates profile authors in cached lists and deep threads without a refetch", async () => {
     const root = tweet();
     const parent = tweet({ id: "parent", isComment: true, postId: root.id });

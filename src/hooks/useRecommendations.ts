@@ -1,6 +1,7 @@
 import { useMemo } from "react";
 
 import { SIDEBAR } from "@/constants/layout";
+import { useAppSelector } from "@/store/hooks";
 
 import { errorMessage } from "@/store/postsApi";
 import {
@@ -15,8 +16,15 @@ const EMPTY_USERS: UserShort[] = [];
 
 export function useTrends(limit: number = SIDEBAR.TRENDS_LIMIT) {
   const query = useGetTrendsQuery(limit);
+  const hidden = useAppSelector((state) => state.trendFeedback.hidden);
+  const trends = useMemo(
+    () => (query.data?.items ?? EMPTY_TRENDS).filter((trend) =>
+      !Object.hasOwn(hidden, trend.id),
+    ),
+    [query.data, hidden],
+  );
   return {
-    trends: query.data?.items ?? EMPTY_TRENDS,
+    trends,
     isLoading: query.isLoading,
     error: query.error ? errorMessage(query.error) : null,
     reload: query.refetch,

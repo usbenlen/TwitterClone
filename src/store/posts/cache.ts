@@ -54,6 +54,19 @@ export function patchTweets(
     );
   }
 
+  for (const limit of postsApi.util.selectCachedArgsForQuery(
+    state,
+    "getRecommendedPosts",
+  )) {
+    patches.push(
+      dispatch(
+        postsApi.util.updateQueryData("getRecommendedPosts", limit, (draft) => {
+          draft.pages.forEach((page) => visit(page.items, update));
+        }),
+      ),
+    );
+  }
+
   return patches;
 }
 
@@ -93,6 +106,16 @@ export function updateCachedProfileAuthors(
   dispatch: AppDispatch,
   state: RootState,
 ) {
+  for (const limit of postsApi.util.selectCachedArgsForQuery(
+    state,
+    "getRecommendedPosts",
+  )) {
+    dispatch(
+      postsApi.util.updateQueryData("getRecommendedPosts", limit, (draft) => {
+        draft.pages.forEach((page) => updateTweetAuthors(page.items, user));
+      }),
+    );
+  }
   for (const arg of postsApi.util.selectCachedArgsForQuery(state, "getPosts")) {
     dispatch(
       postsApi.util.updateQueryData("getPosts", arg, (draft) => {
@@ -121,7 +144,7 @@ export function publishPosts(
 ) {
   if (MOCK_ENABLED) tweets = structuredClone(tweets);
 
-  const tags = [listTag("feed"), listTag("search")];
+  const tags = [listTag("feed"), listTag("search"), listTag("recommended")];
 
   for (const arg of postsApi.util.selectCachedArgsForQuery(state, "getPosts")) {
     if (arg.kind !== "feed" && !(arg.kind === "profile" && arg.tab === "posts"))
@@ -156,6 +179,14 @@ export function removeCachedTweet(
   const removed = new Set([targetKey(target)]);
 
   const all: Tweet[] = [];
+
+  for (const limit of postsApi.util.selectCachedArgsForQuery(
+    state,
+    "getRecommendedPosts",
+  )) {
+    const data = postsApi.endpoints.getRecommendedPosts.select(limit)(state).data;
+    if (data) all.push(...data.pages.flatMap((page) => page.items));
+  }
 
   for (const arg of postsApi.util.selectCachedArgsForQuery(state, "getPosts"))
     all.push(...(postsApi.endpoints.getPosts.select(arg)(state).data ?? []));
@@ -198,6 +229,19 @@ export function removeCachedTweet(
 
     if (tweet.ancestors) tweet.ancestors = tweet.ancestors.filter(keep);
   });
+
+  for (const limit of postsApi.util.selectCachedArgsForQuery(
+    state,
+    "getRecommendedPosts",
+  )) {
+    dispatch(
+      postsApi.util.updateQueryData("getRecommendedPosts", limit, (draft) => {
+        draft.pages.forEach((page) => {
+          page.items = page.items.filter(keep);
+        });
+      }),
+    );
+  }
 
   for (const arg of postsApi.util.selectCachedArgsForQuery(state, "getPosts")) {
     dispatch(

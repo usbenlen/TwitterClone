@@ -120,6 +120,7 @@ export const ENDPOINTS = {
     locations: "search/locations",
   },
   recommendations: {
+    posts: "recommendations/posts",
     users: "recommendations/users",
     trends: "recommendations/trends",
   },

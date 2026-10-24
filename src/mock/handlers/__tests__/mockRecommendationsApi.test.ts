@@ -4,6 +4,36 @@ vi.mock("@/mock/utils/delay", () => ({ delay: async () => {} }));
 beforeEach(() => vi.resetModules());
 
 describe("mock author recommendations", () => {
+  it("paginates existing posts by date without mutating the fixture order", async () => {
+    const { tweets } = await import("@/mock/data");
+    const originalOrder = tweets.map((tweet) => tweet.id);
+    const { mockRecommendationsApi } =
+      await import("@/mock/handlers/mockRecommendationsApi");
+    const first = await mockRecommendationsApi.posts(2);
+    const pages = [first];
+    while (pages.at(-1)!.hasMore) {
+      const next = await mockRecommendationsApi.posts(
+        2,
+        pages.at(-1)!.nextCursor,
+      );
+      expect(next.items.length).toBeGreaterThan(0);
+      expect(next.items.length).toBeLessThanOrEqual(2);
+      pages.push(next);
+      expect(pages.length).toBeLessThanOrEqual(Math.ceil(tweets.length / 2));
+    }
+    expect(first.items).toHaveLength(2);
+    expect(first.hasMore).toBe(true);
+    expect(pages.at(-1)!.hasMore).toBe(false);
+    expect(pages.at(-1)!.nextCursor).toBeNull();
+    expect(
+      new Set(pages.flatMap((page) => page.items).map((post) => post.id)).size,
+    ).toBe(tweets.length);
+    expect(Date.parse(first.items[0].createdAt)).toBeGreaterThanOrEqual(
+      Date.parse(first.items[1].createdAt),
+    );
+    expect(tweets.map((tweet) => tweet.id)).toEqual(originalOrder);
+  });
+
   it("paginates one list without duplicates and ends with a complete envelope", async () => {
     const { mockRecommendationsApi } =
       await import("@/mock/handlers/mockRecommendationsApi");

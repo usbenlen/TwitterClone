@@ -10,6 +10,28 @@ vi.mock("@/mock/handlers", () => ({ mockRecommendationsApi: {} }));
 beforeEach(() => vi.resetAllMocks());
 
 describe("real recommendation requests", () => {
+  it("maps recommended post DTOs and preserves the opaque page cursor", async () => {
+    const cursor = "opaque+/=?&ю";
+    client.get.mockResolvedValue({
+      items: [{
+        id: "p1", versionId: "v1", content: "hello",
+        author: { id: "u2", username: "ada", role: "ADMIN" },
+        likesCount: 3, commentsCount: 4, repostsCount: 5, viewsCount: 6,
+        isLikedByCurrentUser: true, createdAt: "2026-01-01T00:00:00Z",
+      }],
+      nextCursor: "next-opaque", hasMore: true,
+    });
+    const page = await recommendationsApi.posts(10, cursor);
+    expect(page).toMatchObject({
+      items: [{ id: "p1", author: { role: "Admin" }, repliesCount: 4, retweetsCount: 5, likedByMe: true }],
+      nextCursor: "next-opaque", hasMore: true,
+    });
+    const url = new URL(client.get.mock.calls[0][0], "https://example.com/");
+    expect(url.pathname).toBe("/recommendations/posts");
+    expect(url.searchParams.get("limit")).toBe("10");
+    expect(url.searchParams.get("cursor")).toBe(cursor);
+  });
+
   it("reads recommendations instead of search and preserves the cursor envelope", async () => {
     client.get.mockResolvedValue({
       items: [{ id: "u2", username: "ada", role: "ADMIN", isVerified: false }],
@@ -59,7 +81,7 @@ describe("real recommendation requests", () => {
     expect(client.get).toHaveBeenCalledWith("recommendations/trends?limit=4");
   });
 
-  it.each(["users", "trends"] as const)(
+  it.each(["users", "trends", "posts"] as const)(
     "propagates %s failures and permits another request",
     async (kind) => {
       const error = new Error("Endpoint unavailable");

@@ -5,6 +5,7 @@ import { sessionChanged, sessionReducer } from "@/store/session";
 import { authReducer } from "@/store/auth";
 import { themeReducer } from "@/store/theme";
 import { scheduledStatusReducer } from "@/store/scheduledStatus";
+import { trendFeedbackReducer } from "@/store/trendFeedback";
 import "@/store/postsApi";
 import "@/store/sharedApi";
 
@@ -17,6 +18,7 @@ export function createAppStore() {
       auth: authReducer,
       theme: themeReducer,
       scheduledStatus: scheduledStatusReducer,
+      trendFeedback: trendFeedbackReducer,
     },
     middleware: (getDefaultMiddleware) =>
       getDefaultMiddleware()

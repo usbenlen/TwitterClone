@@ -5,6 +5,7 @@ import {
   UserRoundPlus,
   House,
   Bookmark,
+  Search,
 } from "lucide-react";
 
 import { APP_ROUTES } from "@/constants/routes";
@@ -26,6 +27,13 @@ export const MAIN_NAVIGATION: NavigationItem[] = [
     getPath: () => APP_ROUTES.HOME,
     requiresAuth: true,
     mobilePlacement: ["bottom", "more"],
+  },
+  {
+    label: "Дослідження",
+    icon: Search,
+    getPath: () => APP_ROUTES.EXPLORE,
+    requiresAuth: true,
+    mobilePlacement: ["more"],
   },
   {
     label: "Профіль",

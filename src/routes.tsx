@@ -100,6 +100,10 @@ export const routes = createBrowserRouter([
             lazy: lazyPage(() => import("@/pages/search/SearchPage")),
           },
           {
+            path: APP_ROUTES.EXPLORE,
+            lazy: lazyPage(() => import("@/pages/explore/ExplorePage")),
+          },
+          {
             path: APP_ROUTES.BOOKMARKS,
             lazy: lazyPage(() => import("@/pages/bookmarks/BookmarksPage")),
           },

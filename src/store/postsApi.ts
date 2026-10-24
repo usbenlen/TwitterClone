@@ -1,6 +1,6 @@
 import { current } from "@reduxjs/toolkit";
 
-import { tweetApi, commentApi, searchApi, pollApi } from "@/api";
+import { tweetApi, commentApi, searchApi, pollApi, recommendationsApi } from "@/api";
 
 import { pollsMatch, withPollVote } from "@/utils/poll";
 
@@ -18,6 +18,7 @@ import type {
   UpdateCommentRequest,
   SearchCriteria,
   SearchViewerContext,
+  PaginatedRecommendedPosts,
 } from "@/types";
 
 import { appApi, request } from "@/store/api";
@@ -83,12 +84,29 @@ export const postsApi = appApi.injectEndpoints({
       ],
     }),
 
+    getRecommendedPosts: build.infiniteQuery<
+      PaginatedRecommendedPosts,
+      number,
+      string | null
+    >({
+      infiniteQueryOptions: {
+        initialPageParam: null,
+        getNextPageParam: (page) => page.hasMore ? page.nextCursor ?? undefined : undefined,
+      },
+
+      queryFn: ({ queryArg, pageParam }) => request(() => recommendationsApi.posts(queryArg, pageParam)),
+
+      providesTags: (data) => [
+        listTag("recommended"),
+        ...tagsFor(data?.pages.flatMap((page) => page.items) ?? []),
+      ],
+    }),
+
     getSearchUsers: build.query<
       UserShort[],
       { criteria: SearchCriteria; viewer: SearchViewerContext }
     >({
-      queryFn: ({ criteria, viewer }) =>
-        request(() => searchApi.users(criteria, viewer)),
+      queryFn: ({ criteria, viewer }) => request(() => searchApi.users(criteria, viewer)),
     }),
 
     getThread: build.query<ThreadResponse, string>({
@@ -419,6 +437,7 @@ export function publishPosts(
 }
 
 export const {
+  useGetRecommendedPostsInfiniteQuery,
   useGetPollStateQuery,
   useGetSearchUsersQuery,
   useGetPostsQuery,
