@@ -1,10 +1,52 @@
 import type { Tweet } from "@/types";
 
 import { currentUser, sampleAuthors } from "@/mock/data/users";
+import { tweets } from "@/mock/data/tweets";
+import { discoveryCommentSeeds } from "@/mock/data/discoveryComments";
+
+import { MILLISECONDS_PER_MINUTE } from "@/constants/date";
 
 import { toTweetAuthor } from "@/utils/user";
 
 const author = toTweetAuthor;
+
+const discoveryCommentsByPostId: Record<string, Tweet[]> = Object.fromEntries(
+  Object.entries(discoveryCommentSeeds).map(([postId, seeds]) => {
+    const post = tweets.find((tweet) => tweet.id === postId)!;
+    return [
+      postId,
+      seeds.map(({ minutesAfterPost, ...seed }): Tweet => {
+        const parent = seeds.find(
+          (comment) => comment.id === seed.parentCommentId,
+        );
+        return {
+          attachments: [],
+          likesCount: 0,
+          ...seed,
+          author: author(seed.author),
+          versionId: `${seed.id}-v1`,
+          postId,
+          parentCommentId: seed.parentCommentId ?? null,
+          isComment: true,
+          replyToUsername: parent?.author.username ?? post.author.username,
+          repliesCount: seeds.filter(
+            (comment) => comment.parentCommentId === seed.id,
+          ).length,
+          retweetsCount: 0,
+          viewsCount: 0,
+          likedByMe: false,
+          repostedByMe: false,
+          bookmarkedByMe: false,
+          createdAt: new Date(
+            Date.parse(post.createdAt) +
+              minutesAfterPost * MILLISECONDS_PER_MINUTE,
+          ).toISOString(),
+          updatedAt: null,
+        };
+      }),
+    ];
+  }),
+);
 
 export const commentsByPostId: Record<string, Tweet[]> = {
   t1: [
@@ -158,6 +200,7 @@ export const commentsByPostId: Record<string, Tweet[]> = {
       updatedAt: null,
     },
   ],
+  ...discoveryCommentsByPostId,
 };
 
 let commentIdCounter = 100;
