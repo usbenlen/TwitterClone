@@ -43,6 +43,8 @@ vi.mock("@/hooks/composer", () => ({
       getIsActive: () => mocks.active,
       isValid: mocks.valid,
       poll: mocks.poll,
+      getPoll: () => mocks.poll,
+      images: { errors: {}, select: vi.fn(), remove: vi.fn(), retry: vi.fn() },
       firstOptionRef: { current: null },
       reset: mocks.reset,
     },
@@ -95,16 +97,23 @@ describe("inline poll lifecycle", () => {
     expect(renderComposer({ allowEmptySubmit: true }).canSubmit).toBe(false);
   });
 
-  it("allows a valid poll without body text", () => {
-    mocks.active = true;
-    mocks.valid = true;
-    expect(renderComposer().canSubmit).toBe(true);
-  });
+  it.each([false, true])(
+    "blocks a valid poll without body text even with allowEmptySubmit=%s",
+    async (allowEmptySubmit) => {
+      mocks.active = true;
+      mocks.valid = true;
+      const composer = renderComposer({ allowEmptySubmit });
+      expect(composer.canSubmit).toBe(false);
+      await composer.submit();
+      expect(mocks.submit).not.toHaveBeenCalled();
+      expect(mocks.reset).not.toHaveBeenCalled();
+    },
+  );
 
   it("clears the poll after successful submission", async () => {
     mocks.active = true;
     mocks.valid = true;
-    await renderComposer().submit();
+    await renderComposer({ initialContent: "Питання" }).submit();
     expect(mocks.reset).toHaveBeenCalledOnce();
   });
 
@@ -112,7 +121,9 @@ describe("inline poll lifecycle", () => {
     mocks.active = true;
     mocks.valid = true;
     mocks.submit.mockResolvedValue(false);
-    expect(await renderComposer().submit()).toBe(false);
+    expect(await renderComposer({ initialContent: "Питання" }).submit()).toBe(
+      false,
+    );
     expect(mocks.reset).not.toHaveBeenCalled();
     expect(mocks.closeAllPopups).not.toHaveBeenCalled();
   });
@@ -121,7 +132,9 @@ describe("inline poll lifecycle", () => {
     mocks.active = true;
     mocks.valid = true;
     mocks.submit.mockRejectedValue(new Error("offline"));
-    await expect(renderComposer().submit()).rejects.toThrow("offline");
+    await expect(
+      renderComposer({ initialContent: "Питання" }).submit(),
+    ).rejects.toThrow("offline");
     expect(mocks.reset).not.toHaveBeenCalled();
   });
 });

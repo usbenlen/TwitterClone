@@ -56,34 +56,38 @@ afterEach(async () => {
 
 describe("poll editor interaction", () => {
   it("focuses added options, caps the list at four and returns focus after removal", async () => {
-    expect(container.querySelectorAll("input")).toHaveLength(POLL.MIN_OPTIONS);
-    expect(document.activeElement).toBe(container.querySelector("input"));
-    expect(
-      container.querySelector('[aria-label^="Видалити варіант"]'),
-    ).toBeNull();
+    expect(container.querySelectorAll('input:not([type="file"])')).toHaveLength(POLL.MIN_OPTIONS);
+    expect(document.activeElement).toBe(container.querySelector('input:not([type="file"])'));
+    expect(container.querySelector('[aria-label^="Видалити варіант"]')).toBeNull();
     expect(
       button("Додати варіант").parentElement?.parentElement?.querySelector(
-        "input",
+        'input:not([type="file"])',
       ),
-    ).toBe(container.querySelectorAll("input")[1]);
+    ).toBe(container.querySelectorAll('input:not([type="file"])')[1]);
+
     await act(async () => button("Додати варіант").click());
-    expect(document.activeElement).toBe(container.querySelectorAll("input")[2]);
+
+    expect(document.activeElement).toBe(container.querySelectorAll('input:not([type="file"])')[2]);
     expect(
       button("Додати варіант").parentElement?.parentElement?.querySelector(
-        "input",
+        'input:not([type="file"])',
       ),
-    ).toBe(container.querySelectorAll("input")[2]);
+    ).toBe(container.querySelectorAll('input:not([type="file"])')[2]);
+
     await act(async () => button("Додати варіант").click());
-    expect(container.querySelectorAll("input")).toHaveLength(POLL.MAX_OPTIONS);
-    expect(document.activeElement).toBe(container.querySelectorAll("input")[3]);
+
+    expect(container.querySelectorAll('input:not([type="file"])')).toHaveLength(POLL.MAX_OPTIONS);
+    expect(document.activeElement).toBe(container.querySelectorAll('input:not([type="file"])')[3]);
     expect(button("Додати варіант")).toBeUndefined();
+
     await act(async () =>
       container
         .querySelector<HTMLButtonElement>('[aria-label="Видалити варіант 4"]')!
         .click(),
     );
-    expect(document.activeElement).toBe(container.querySelectorAll("input")[2]);
-    expect(container.querySelectorAll("input")).toHaveLength(3);
+
+    expect(document.activeElement).toBe(container.querySelectorAll('input:not([type="file"])')[2]);
+    expect(container.querySelectorAll('input:not([type="file"])')).toHaveLength(3);
     expect(button("Додати варіант")).toBeDefined();
   });
 
@@ -92,7 +96,10 @@ describe("poll editor interaction", () => {
     await act(async () =>
       editor.updateOption(option.id, "😀".repeat(POLL.MAX_OPTION_LENGTH + 1)),
     );
-    const input = container.querySelector("input")!;
+    const input = container.querySelector<HTMLInputElement>(
+      'input:not([type="file"])',
+    )!;
+
     expect(input.value).toBe("😀".repeat(POLL.MAX_OPTION_LENGTH));
     expect(input.hasAttribute("maxlength")).toBe(false);
     expect(input.closest("label")?.textContent).toContain("25/25");
@@ -126,9 +133,7 @@ describe("poll editor interaction", () => {
       editor.setDuration(POLL.MIN_DURATION_MINUTES - 1);
     });
     expect(editor.isValid).toBe(false);
-    expect(
-      container.querySelector("input")?.getAttribute("aria-describedby"),
-    ).toBeTruthy();
+    expect(container.querySelector('input:not([type="file"])')?.getAttribute("aria-describedby")).toBeTruthy();
     await act(async () => editor.setDuration(POLL.MIN_DURATION_MINUTES));
     expect(editor.isValid).toBe(true);
     await act(async () => button("Видалити опитування").click());

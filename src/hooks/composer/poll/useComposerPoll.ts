@@ -3,7 +3,10 @@ import { isComposerPollValid } from "@/utils/composer";
 
 import { POLL } from "@/constants/poll";
 
+import { usePollOptionMedia } from "@/hooks/composer/poll/usePollOptionMedia";
+
 import type { ComposerPoll } from "@/types/poll";
+import type { ComposerMedia } from "@/types/composer";
 
 function createEmptyPoll(): ComposerPoll {
   return {
@@ -23,6 +26,23 @@ export function useComposerPoll(initialPoll?: ComposerPoll | null) {
   const [poll, setPoll] = useState<ComposerPoll>(
     () => initialPoll ?? createEmptyPoll(),
   );
+  const currentPoll = useRef(poll);
+
+  const commit = (update: (current: ComposerPoll) => ComposerPoll) => {
+    currentPoll.current = update(currentPoll.current);
+    setPoll(currentPoll.current);
+  };
+
+  const images = usePollOptionMedia({
+    getOption: (id) => currentPoll.current.options.find((option) => option.id === id),
+    updateImage: (id: string, image?: ComposerMedia) =>
+      commit((current) => ({
+        ...current,
+        options: current.options.map((option) =>
+          option.id === id ? { ...option, image } : option,
+        ),
+      })),
+  });
 
   const activate = () => {
     activeRef.current = true;
@@ -31,7 +51,7 @@ export function useComposerPoll(initialPoll?: ComposerPoll | null) {
   };
 
   const updateOption = (id: string, text: string) => {
-    setPoll((current) => ({
+    commit((current) => ({
       ...current,
 
       options: current.options.map((option) =>
@@ -46,7 +66,7 @@ export function useComposerPoll(initialPoll?: ComposerPoll | null) {
   };
 
   const addOption = () => {
-    setPoll((current) => {
+    commit((current) => {
       if (current.options.length >= POLL.MAX_OPTIONS) return current;
 
       return {
@@ -64,7 +84,9 @@ export function useComposerPoll(initialPoll?: ComposerPoll | null) {
   };
 
   const removeOption = (id: string) => {
-    setPoll((current) => {
+    if (currentPoll.current.options.length <= POLL.MIN_OPTIONS) return;
+    images.remove(id);
+    commit((current) => {
       if (current.options.length <= POLL.MIN_OPTIONS) return current;
 
       return {
@@ -76,20 +98,23 @@ export function useComposerPoll(initialPoll?: ComposerPoll | null) {
   };
 
   const setDuration = (minutes: number) => {
-    setPoll((current) => ({
+    commit((current) => ({
       ...current,
       duration: minutes,
     }));
   };
 
   const reset = () => {
+    images.clear();
     activeRef.current = false;
     setIsActive(false);
-    setPoll(createEmptyPoll());
+    commit(createEmptyPoll);
   };
 
   return {
     poll,
+    getPoll: () => currentPoll.current,
+    images,
     isActive,
     getIsActive: () => activeRef.current,
     isValid: isComposerPollValid(poll),

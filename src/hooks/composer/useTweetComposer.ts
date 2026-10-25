@@ -1,6 +1,7 @@
 import { useMemo, useRef, useState } from "react";
 
-import {  } from "@/hooks/composer/useComposerScheduling";
+import { useComposerScheduling } from "@/hooks/composer/useComposerScheduling";
+
 import {
   canScheduleMedia,
   getComposerError,
@@ -11,6 +12,7 @@ import {
   countCharacters,
   getDisabledComposerActions,
   getPollError,
+  POLL_CONTENT_REQUIRED_MESSAGE,
 } from "@/utils/composerRules";
 
 import {
@@ -19,10 +21,10 @@ import {
   useComposerEditor,
   useTweetComposerMedia,
   useComposerLinkPreview,
-  useComposerScheduling,
 } from "@/hooks/composer";
 
 import { MAX_TWEET_LENGTH } from "@/constants/app";
+import { POLL } from "@/constants/poll";
 
 import type {
   Gif,
@@ -76,6 +78,11 @@ export function useTweetComposer({
   const locationRef = useRef<Location | null>(initialLocation);
   const submittingRef = useRef(false);
   const cursor = useComposerEditor();
+  const activePollOption = useRef<{
+    id: string;
+    input: HTMLInputElement;
+  } | null>(null);
+  const [submitError, setSubmitError] = useState<string | null>(null);
   const linkPreview = useComposerLinkPreview(content, initialLinkPreview);
 
   const remaining = useMemo(
@@ -136,7 +143,7 @@ export function useTweetComposer({
   const getLiveValues = () => ({
     content,
     media: mediaManager.getMedia(),
-    poll: poll.getIsActive() ? poll.poll : null,
+    poll: poll.getIsActive() ? poll.getPoll() : null,
     location: locationRef.current,
     linkPreview: linkPreview.preview,
     scheduledAt,
@@ -238,6 +245,8 @@ export function useTweetComposer({
   };
 
   const resetComposer = () => {
+    activePollOption.current = null;
+    setSubmitError(null);
     setContent("");
     removeLocation();
     linkPreview.clear();
@@ -258,6 +267,7 @@ export function useTweetComposer({
     )
       return;
     submittingRef.current = true;
+    setSubmitError(null);
     try {
       if (scheduledAt && allowScheduling) {
         const created = await scheduleState.submit({
@@ -271,10 +281,27 @@ export function useTweetComposer({
         scheduleState.reset();
         return created;
       }
-      const created = await submitComposer(values);
+      const unchangedPoll =
+        initialPoll &&
+        values.poll &&
+        !hasComposerChanges(
+          { content: "", media: [], poll: values.poll },
+          { content: "", media: [], poll: initialPoll },
+        );
+      const created = await submitComposer({
+        ...values,
+        ...(unchangedPoll ? { poll: undefined } : {}),
+      });
       if (created) resetComposer();
 
       return created;
+    } catch (error) {
+      setSubmitError(
+        error instanceof Error
+          ? error.message
+          : "Не вдалося опублікувати. Спробуйте ще раз.",
+      );
+      throw error;
     } finally {
       submittingRef.current = false;
     }
@@ -283,6 +310,7 @@ export function useTweetComposer({
   const removePoll = () => {
     if (isPosting || submittingRef.current) return;
     poll.reset();
+    activePollOption.current = null;
 
     if (mediaManager.getMedia().length === 0) mediaManager.clearErrors();
     buttonRefs.poll?.current?.focus();
@@ -295,6 +323,26 @@ export function useTweetComposer({
 
   const insertEmoji = (emojiValue: string) => {
     if (getDisabledActions().includes("emoji")) return;
+    const target = activePollOption.current;
+    const option =
+      poll.getIsActive() && target
+        ? poll.getPoll().options.find((option) => option.id === target.id)
+        : undefined;
+    if (option && target && target.input.isConnected) {
+      cursor.insertAtCursor(
+        emojiValue,
+        option.text,
+        (text) => poll.updateOption(option.id, text),
+        {
+          editor: target.input,
+          maxLength: POLL.MAX_OPTION_LENGTH,
+        },
+      );
+      closeAllPopups();
+      target.input.focus();
+      return;
+    }
+    activePollOption.current = null;
     cursor.insertAtCursor(emojiValue, content, setContent);
 
     closeAllPopups();
@@ -388,7 +436,10 @@ export function useTweetComposer({
 
     errors: [
       ...mediaManager.errors,
-      ...(rulesError && rulesError !== inlinePollError
+      ...(submitError ? [{ id: "composer-submit", message: submitError }] : []),
+      ...(rulesError &&
+      rulesError !== inlinePollError &&
+      rulesError !== POLL_CONTENT_REQUIRED_MESSAGE
         ? [{ id: "composer-rules", message: rulesError }]
         : []),
     ],
@@ -402,6 +453,9 @@ export function useTweetComposer({
     handleAction,
 
     editorRef: cursor.editorRef,
+    onEditorFocus: () => {
+      activePollOption.current = null;
+    },
 
     buttonRefs,
 
@@ -438,6 +492,20 @@ export function useTweetComposer({
       isValid: poll.isValid,
       disabled: isPosting,
       firstOptionRef: poll.firstOptionRef,
+      imageErrors: poll.images.errors,
+      onOptionFocus: (id: string, input: HTMLInputElement) => {
+        activePollOption.current = { id, input };
+      },
+      onImageSelect: (id: string, file: File) => {
+        if (!isPosting && !submittingRef.current)
+          void poll.images.select(id, file);
+      },
+      onImageRemove: (id: string) => {
+        if (!isPosting && !submittingRef.current) poll.images.remove(id);
+      },
+      onImageRetry: (id: string) => {
+        if (!isPosting && !submittingRef.current) void poll.images.retry(id);
+      },
       onOptionChange: (id: string, text: string) => {
         if (!isPosting && !submittingRef.current) poll.updateOption(id, text);
       },
@@ -445,7 +513,9 @@ export function useTweetComposer({
         if (!isPosting && !submittingRef.current) poll.addOption();
       },
       onRemoveOption: (id: string) => {
-        if (!isPosting && !submittingRef.current) poll.removeOption(id);
+        if (isPosting || submittingRef.current) return;
+        if (activePollOption.current?.id === id) activePollOption.current = null;
+        poll.removeOption(id);
       },
       onDurationChange: (minutes: number) => {
         if (!isPosting && !submittingRef.current) poll.setDuration(minutes);

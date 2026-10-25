@@ -99,6 +99,7 @@ export default function Composer({
             value={composer.content}
             onChange={composer.setContent}
             editorRef={composer.editorRef}
+            onFocus={composer.onEditorFocus}
             placeholder={placeholder}
             rows={2}
             className="max-h-160 text-lg"
@@ -227,7 +228,10 @@ export default function Composer({
             onChange={composer.setContent}
             editorRef={composer.editorRef}
             placeholder={placeholder}
-            onFocus={() => setIsExpanded(true)}
+            onFocus={() => {
+              composer.onEditorFocus();
+              setIsExpanded(true);
+            }}
             rows={!isExpanded ? 1 : 2}
             className="max-h-160 min-h-12 py-1.5 text-lg"
           />

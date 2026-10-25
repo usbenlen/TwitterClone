@@ -61,6 +61,12 @@ function mount(options: Parameters<typeof useTweetComposer>[0] = {}) {
     result = useTweetComposer(options);
     return (
       <>
+        <textarea
+          ref={result.editorRef}
+          value={result.content}
+          onFocus={result.onEditorFocus}
+          onChange={(event) => result.setContent(event.target.value)}
+        />
         <ComposerToolbar
           onAction={result.handleAction}
           disabledActions={result.disabledActions}
@@ -119,6 +125,116 @@ afterEach(() => {
 });
 
 describe("composer interactions", () => {
+  it.each([false, true])(
+    "requires main text when editing an existing poll with photos=%s",
+    async (withPhoto) => {
+      const read = mount({
+        allowEmptySubmit: true,
+        initialPoll: {
+          duration: 60,
+          options: [
+            { id: "a", text: "Так", ...(withPhoto ? { image: uploaded } : {}) },
+            { id: "b", text: "Ні" },
+          ],
+        },
+      });
+      act(() => read().popovers.location.onSelect(location));
+      for (const text of ["", " \n\t "]) {
+        act(() => read().setContent(text));
+        expect(read().canSubmit).toBe(false);
+        expect(read().errors).toEqual([]);
+        await act(async () => {
+          await read().submit();
+        });
+        expect(mocks.submit).not.toHaveBeenCalled();
+        expect(read().pollEditor.visible).toBe(true);
+      }
+      act(() => read().setContent("😀"));
+      expect(read().canSubmit).toBe(true);
+      act(() => read().setContent(" "));
+      expect(read().canSubmit).toBe(false);
+    },
+  );
+
+  it("blocks pending option photos, allows their removal and retains drafts after a server error", async () => {
+    const read = mount({
+      initialContent: "Питання",
+      initialPoll: {
+        duration: 60,
+        options: [
+          { id: "a", text: "Так", image: { ...uploaded, status: "uploading" } },
+          { id: "b", text: "Ні" },
+        ],
+      },
+    });
+    expect(read().canSubmit).toBe(false);
+    await act(async () => {
+      await read().submit();
+    });
+    expect(mocks.submit).not.toHaveBeenCalled();
+    act(() => read().pollEditor.onImageRemove("a"));
+    expect(read().canSubmit).toBe(true);
+    mocks.submit.mockRejectedValueOnce(new Error("Сервер не підтримує фото"));
+    await act(async () => {
+      await expect(read().submit()).rejects.toThrow("Сервер");
+    });
+    expect(read().pollEditor.visible).toBe(true);
+    expect(read().pollEditor.poll.options[0].text).toBe("Так");
+    expect(read().errors).toContainEqual({
+      id: "composer-submit",
+      message: "Сервер не підтримує фото",
+    });
+  });
+  it("inserts emoji into the focused answer, replaces selection and respects the code point limit", async () => {
+    const read = mount();
+    act(() => read().handleAction("poll"));
+    const option = read().pollEditor.poll.options[0];
+    act(() => read().pollEditor.onOptionChange(option.id, "Так"));
+    const input = read().pollEditor.firstOptionRef.current!;
+    act(() => {
+      input.focus();
+      input.setSelectionRange(3, 3);
+      read().popovers.emoji.onSelect("😀");
+    });
+    await act(async () => {
+      await new Promise((resolve) => requestAnimationFrame(resolve));
+    });
+    expect(read().pollEditor.poll.options[0].text).toBe("Так😀");
+    expect(read().content).toBe("");
+    expect(document.activeElement).toBe(input);
+    act(() => read().pollEditor.onOptionChange(option.id, "a".repeat(25)));
+    act(() => {
+      input.setSelectionRange(25, 25);
+      read().popovers.emoji.onSelect("😀");
+    });
+    expect(read().pollEditor.poll.options[0].text).toBe("a".repeat(25));
+    act(() => {
+      input.setSelectionRange(24, 25);
+      read().popovers.emoji.onSelect("😀");
+    });
+    expect(read().pollEditor.poll.options[0].text).toBe("a".repeat(24) + "😀");
+    act(() => {
+      host.querySelector("textarea")!.focus();
+      read().popovers.emoji.onSelect("❤️");
+    });
+    expect(read().content).toBe("❤️");
+  });
+
+  it("omits an unchanged poll with photos when only the body is edited", async () => {
+    const initialPoll = {
+      duration: 60,
+      options: [
+        { id: "a", text: "Так", image: uploaded },
+        { id: "b", text: "Ні" },
+      ],
+    };
+    const read = mount({ initialContent: "Текст", initialPoll });
+    act(() => read().setContent("Оновлений текст"));
+    await act(async () => {
+      await read().submit();
+    });
+    expect(mocks.submit.mock.calls[0][0].poll).toBeUndefined();
+  });
   it("blocks files immediately after poll activation, including before a render", async () => {
     const read = mount({ initialContent: "Question", allowScheduling: true });
     act(() => {
@@ -179,7 +295,7 @@ describe("composer interactions", () => {
   });
 
   it("limits Unicode poll options and exposes duration controls with boundary errors", () => {
-    const read = mount();
+    const read = mount({ initialContent: "Питання" });
     act(() => read().handleAction("poll"));
     const ids = read().pollEditor.poll.options.map((option) => option.id);
     act(() => {
