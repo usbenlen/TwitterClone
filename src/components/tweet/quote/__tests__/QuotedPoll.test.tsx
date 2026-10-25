@@ -116,6 +116,29 @@ afterEach(async () => {
 });
 
 describe("shared quoted poll state", () => {
+  it("marks a quote as changed when only the option photo changes", async () => {
+    const { mediaStore } = await import("@/mock/stores/mediaStore");
+    mediaStore.add({
+      id: "option-photo",
+      type: "image",
+      url: "blob:option-photo",
+    });
+
+    await tweetApi.update(original.id, {
+      poll: {
+        duration: 60,
+        options: [{ text: "Так", mediaId: "option-photo" }, { text: "Ні" }],
+      },
+    });
+
+    await render(
+      <QuotedPoll target={targetOf()} snapshot={quote.target!.poll!} />,
+    );
+
+    expect(container.textContent).toContain("Опитування змінилося");
+    expect(votingButtons()).toHaveLength(0);
+  });
+
   it.each(["post", "comment"] as const)(
     "shows a previous %s vote immediately in a newly mounted quote",
     async (type) => {

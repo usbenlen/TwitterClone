@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { Check, Clock3, LoaderCircle } from "lucide-react";
 
 import PollCard from "@/components/tweet/poll/PollCard";
+import TwemojiText from "@/ui/TwemojiText";
 
 import { usePollVote, usePollCountdown } from "@/hooks";
 
@@ -66,6 +67,7 @@ export default function TweetPoll({
   const leadingVotes = Math.max(
     ...currentPoll.options.map((option) => option.votesCount),
   );
+  const hasImages = currentPoll.options.some((option) => option.media);
 
   return (
     <PollCard
@@ -125,18 +127,37 @@ export default function TweetPoll({
                 : `${allowVoting ? "Голосувати за" : "Варіант"} ${option.text}`
             }
             className={cn(
-              "w-full min-w-0 text-sm transition-colors focus-visible:focus-indicator disabled:cursor-default",
+              "group w-full min-w-0 text-sm focus-visible:focus-indicator disabled:cursor-default",
               showResults
                 ? "grid grid-cols-[minmax(0,1fr)_3.5rem] items-center gap-3 text-left"
-                : "min-h-11 rounded-sm px-4 py-2 font-semibold text-primary inset-ring inset-ring-primary/60",
-              !disabled && "hover:bg-primary/10 active:bg-primary/20",
+                : hasImages &&
+                    "grid grid-cols-[3rem_minmax(0,1fr)] items-center gap-3 text-left",
               loading && "opacity-60",
+              hasImages &&
+                showResults &&
+                "grid-cols-[3rem_minmax(0,1fr)_3.5rem]",
             )}
           >
+            {hasImages &&
+              (option.media ? (
+                <img
+                  src={option.media.thumbnailUrl ?? option.media.url}
+                  alt=""
+                  loading="lazy"
+                  className="size-12 rounded-md object-cover"
+                />
+              ) : (
+                <span aria-hidden="true" />
+              ))}
             <span
               className={cn(
                 "relative flex min-w-0 items-center gap-2",
-                showResults && "min-h-9 px-3 py-2",
+                showResults
+                  ? "min-h-9 px-3 py-2"
+                  : "min-h-11 justify-center rounded-sm px-4 py-2 font-semibold text-primary inset-ring inset-ring-primary/60 transition-colors",
+                !showResults && hasImages && "min-h-12 justify-start",
+                !disabled &&
+                  "group-hover:bg-primary/10 group-active:bg-primary/20",
               )}
             >
               {showResults && (
@@ -155,7 +176,7 @@ export default function TweetPoll({
                   leading && showResults && "font-semibold",
                 )}
               >
-                {option.text}
+                <TwemojiText text={option.text} />
               </span>
               {showResults && selected && (
                 <Check

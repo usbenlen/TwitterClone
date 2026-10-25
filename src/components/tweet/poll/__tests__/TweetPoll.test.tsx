@@ -40,6 +40,72 @@ beforeEach(() => {
 });
 
 describe("poll display states", () => {
+  it("shows photos and Twemoji before voting and keeps both in results", async () => {
+    vi.stubGlobal("IS_REACT_ACT_ENVIRONMENT", true);
+    const container = document.createElement("div");
+    document.body.append(container);
+    const root = createRoot(container);
+    const withPhoto = {
+      ...poll,
+      options: [
+        {
+          ...poll.options[0],
+          text: "Так 😀",
+          media: {
+            id: "photo",
+            type: "image" as const,
+            url: "https://example.com/photo.png",
+          },
+        },
+        poll.options[1],
+      ],
+    };
+
+    try {
+      await act(async () =>
+        root.render(<TweetPoll tweetId="post" poll={withPhoto} />),
+      );
+
+      expect(container.querySelector('img[src="https://example.com/photo.png"]')).not.toBeNull();
+      expect(container.querySelector("img.twemoji")?.getAttribute("alt")).toBe(
+        "😀",
+      );
+
+      hooks.vote.mockReset().mockResolvedValue(true);
+
+      await act(async () =>
+        container
+          .querySelector<HTMLImageElement>(
+            'img[src="https://example.com/photo.png"]',
+          )!
+          .click(),
+      );
+
+      expect(hooks.vote).toHaveBeenCalledExactlyOnceWith("yes");
+
+      await act(async () =>
+        root.render(
+          <TweetPoll
+            tweetId="post"
+            poll={{ ...withPhoto, votedOptionId: "yes" }}
+          />,
+        ),
+      );
+
+      expect(
+        container
+          .querySelector('[aria-pressed="true"] img')
+          ?.getAttribute("src"),
+      ).toBe("https://example.com/photo.png");
+      expect(container.textContent).toContain("100%");
+
+    } finally {
+      await act(async () => root.unmount());
+      container.remove();
+      vi.unstubAllGlobals();
+    }
+  });
+
   it("lets a failed vote be retried and clears its error", async () => {
     vi.stubGlobal("IS_REACT_ACT_ENVIRONMENT", true);
     hooks.vote

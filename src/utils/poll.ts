@@ -8,7 +8,8 @@ export function pollsMatch(left: TweetPoll, right: TweetPoll): boolean {
     left.options.every(
       (option, index) =>
         option.id === right.options[index].id &&
-        option.text === right.options[index].text,
+        option.text === right.options[index].text &&
+        option.media?.id === right.options[index].media?.id,
     )
   );
 }
