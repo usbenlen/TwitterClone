@@ -1,5 +1,5 @@
 import type { User } from "@/types/user";
-import type { TweetPoll } from "@/types/poll";
+import type { PollRequest, TweetPoll } from "@/types/poll";
 import type { Location } from "@/types/location";
 import type { LinkPreview } from "@/types/linkPreview";
 import type { MediaAttachment } from "@/types/media";
@@ -85,10 +85,7 @@ export interface CreateTweetRequest {
   content: string;
   mediaIds: string[];
   linkPreview?: LinkPreview | null;
-  poll?: {
-    options: string[];
-    duration: number;
-  };
+  poll?: PollRequest;
   location?: Location | null;
   quotedPostId?: string | null;
   quotedCommentId?: string | null;
@@ -99,10 +96,7 @@ export interface UpdateTweetRequest {
   content?: string;
   mediaIds?: string[];
   linkPreview?: LinkPreview | null;
-  poll?: {
-    options: string[];
-    duration: number;
-  } | null;
+  poll?: PollRequest | null;
   location?: Location | null;
   removePoll?: boolean;
   removeLocation?: boolean;
@@ -116,10 +110,7 @@ export interface CreateCommentRequest {
   content: string;
   mediaIds?: string[];
 
-  poll?: {
-    options: string[];
-    duration: number;
-  };
+  poll?: PollRequest;
 
   location?: Location | null;
   linkPreview?: LinkPreview | null;
@@ -129,10 +120,7 @@ export interface UpdateCommentRequest {
   content: string;
   mediaIds?: string[];
 
-  poll?: {
-    options: string[];
-    duration: number;
-  } | null;
+  poll?: PollRequest | null;
 
   location?: Location | null;
   linkPreview?: LinkPreview | null;

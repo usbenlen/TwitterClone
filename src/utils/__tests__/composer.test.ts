@@ -22,6 +22,86 @@ const media: ComposerMedia = {
 };
 
 describe("composer data", () => {
+  it("keeps option images paired with trimmed text and out of post attachments", () => {
+    const poll = {
+      duration: 60,
+      options: [
+        { id: "1", text: " Так 😀 ", image: media },
+        { id: "2", text: " Ні " },
+      ],
+    };
+
+    expect(
+      buildComposerPayload({ content: "Питання", media: [], poll }),
+    ).toMatchObject({
+      mediaIds: [],
+      poll: {
+        options: [{ text: "Так 😀", mediaId: "uploaded" }, { text: "Ні" }],
+        duration: 60,
+      },
+    });
+
+    expect(() =>
+      buildComposerPayload({
+        content: "Питання",
+        media: [],
+        poll: {
+          ...poll,
+          options: [
+            { ...poll.options[0], image: { ...media, status: "uploading" } },
+            poll.options[1],
+          ],
+        },
+      }),
+    ).toThrow("завантаження");
+    expect(() =>
+      buildComposerPayload({
+        content: "Питання",
+        media: [],
+        poll: {
+          ...poll,
+          options: [...poll.options, { id: "3", text: "", image: media }],
+        },
+      }),
+    ).toThrow("Додайте текст");
+  });
+
+  it("tracks image changes using identity rather than preview URLs", () => {
+    const initial = {
+      content: "",
+      media: [],
+      poll: {
+        duration: 60,
+        options: [
+          { id: "1", text: "Так", image: media },
+          { id: "2", text: "Ні" },
+        ],
+      },
+    };
+
+    const changed = (image?: ComposerMedia) => ({
+      ...initial,
+      poll: {
+        ...initial.poll,
+        options: [
+          { ...initial.poll.options[0], image },
+          initial.poll.options[1],
+        ],
+      },
+    });
+
+    expect(
+      hasComposerChanges(
+        changed({ ...media, previewUrl: "https://renewed-url" }),
+        initial,
+      ),
+    ).toBe(false);
+    expect(
+      hasComposerChanges(changed({ ...media, attachmentId: "other" }), initial),
+    ).toBe(true);
+    expect(hasComposerChanges(changed(), initial)).toBe(true);
+  });
+
   it("trims submitted content and poll options", () => {
     expect(
       buildComposerPayload({

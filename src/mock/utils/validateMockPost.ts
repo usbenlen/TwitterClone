@@ -29,4 +29,14 @@ export function validateMockPost(
       : null,
   });
   if (error) throw new Error(error);
+  if (
+    poll?.options.some(
+      (option) =>
+        typeof option !== "string" &&
+        "mediaId" in option &&
+        option.mediaId &&
+        !option.text.trim(),
+    )
+  )
+    throw new Error("Додайте текст до варіанта з фото.");
 }

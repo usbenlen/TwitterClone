@@ -32,6 +32,9 @@ export function mapPollToComposerPoll(poll?: TweetPoll): ComposerPoll | null {
     options: poll.options.map((option) => ({
       id: option.id,
       text: option.text,
+      ...(option.media
+        ? { image: mapMediaToComposerMedia([option.media])[0] }
+        : {}),
     })),
     duration: POLL.DEFAULT_DURATION_MINUTES,
   };

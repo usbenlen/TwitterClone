@@ -3,6 +3,8 @@ import { POLL } from "@/constants/poll";
 
 import type { ComposerAction } from "@/types/composer";
 
+export const POLL_CONTENT_REQUIRED_MESSAGE = "Додайте текст до опитування";
+
 export function countCharacters(text: string): number {
   return Array.from(text).length;
 }
@@ -63,11 +65,14 @@ export function getPostRulesError(values: {
   if (values.poll && values.media.length)
     return "Медіа та опитування не можна поєднувати";
 
-  if (values.poll)
-    return getPollError(
+  if (values.poll) {
+    const pollError = getPollError(
       values.poll.options,
       values.poll.duration ?? POLL.DEFAULT_DURATION_MINUTES,
     );
+    if (pollError) return pollError;
+    if (!values.content.trim()) return POLL_CONTENT_REQUIRED_MESSAGE;
+  }
 
   return null;
 }

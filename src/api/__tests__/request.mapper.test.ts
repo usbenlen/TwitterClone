@@ -50,6 +50,26 @@ describe("API request mapping", () => {
     expect(payload).not.toHaveProperty("location");
   });
 
+  it("passes option media IDs through create and update without sending local files", () => {
+    const poll = {
+      options: [{ text: "Так 😀", mediaId: "photo" }, { text: "Ні" }],
+      duration: 60,
+    };
+
+    for (const map of [mapCreatePostRequest, mapUpdateRequest]) {
+      const payload = map({ content: "Питання", mediaIds: [], poll });
+
+      expect(payload.poll).toEqual({
+        options: poll.options,
+        endsAt: "2026-10-09T11:00:00.000Z",
+      });
+      expect(payload.mediaIds).toEqual([]);
+    }
+
+    expect(mapUpdateRequest({ content: "Текст" })).not.toHaveProperty("poll");
+    expect(mapUpdateRequest({ poll: null })).toMatchObject({ removePoll: true, });
+  });
+
   it("rejects conflicting update commands before sending a request", () => {
     expect(() =>
       mapUpdateRequest({

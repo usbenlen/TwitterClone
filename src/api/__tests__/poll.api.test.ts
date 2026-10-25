@@ -20,6 +20,29 @@ const poll = {
 };
 
 describe("live poll reads", () => {
+  it("preserves option photos through reads and vote responses", async () => {
+    const media = {
+      id: "photo",
+      type: "Image",
+      mimeType: "image/png",
+      url: "https://example.com/photo.png",
+      fileName: "photo.png",
+      sizeInBytes: 12,
+      sortOrder: 0,
+    };
+
+    const response = {
+      ...poll,
+      options: [{ ...poll.options[0], media }, poll.options[1]],
+    };
+
+    vi.spyOn(apiClient, "get").mockResolvedValue({ poll: response });
+    vi.spyOn(apiClient, "post").mockResolvedValue(response);
+
+    expect((await pollApi.get("post", "target"))?.options[1].media)
+      .toMatchObject({ id: "photo", type: "image", url: media.url });
+    expect((await pollApi.vote("post", "target", "b")).options[1].media?.id).toBe("photo");
+  });
   it.each(["post", "comment"] as const)(
     "reads a %s through its existing typed route",
     async (type) => {

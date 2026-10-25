@@ -5,10 +5,9 @@ import type {
   UpdateTweetRequest,
 } from "@/types/tweet";
 import type { LinkPreview } from "@/types/linkPreview";
+import type { PollRequest } from "@/types/poll";
 
-type ComposerPoll = { options: string[]; duration: number };
-
-const mapPoll = (poll: ComposerPoll) => ({
+const mapPoll = (poll: PollRequest) => ({
   options: poll.options,
   endsAt: new Date(Date.now() + poll.duration * 60_000).toISOString(),
 });

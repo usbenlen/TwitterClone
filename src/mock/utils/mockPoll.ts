@@ -1,6 +1,7 @@
 import { MILLISECONDS_PER_MINUTE, POLL } from "@/constants";
 
 import type { CreateTweetRequest, TweetPoll } from "@/types";
+import { mediaStore } from "@/mock/stores/mediaStore";
 
 export function createMockPoll(
   input: NonNullable<CreateTweetRequest["poll"]>,
@@ -14,13 +15,26 @@ export function createMockPoll(
       Date.now() + input.duration * MILLISECONDS_PER_MINUTE,
     ).toISOString(),
     options: input.options
-      .map((text) => text.trim())
-      .filter(Boolean)
-      .map((text, index) => ({
-        id: existing?.options[index]?.id ?? crypto.randomUUID(),
-        text,
-        votesCount: existing?.options[index]?.votesCount ?? 0,
-      })),
+      .map((option) =>
+        typeof option === "string"
+          ? { text: option.trim() }
+          : { ...option, text: option.text.trim() },
+      )
+      .filter((option) => option.text)
+      .map((option, index) => {
+        const mediaId = "mediaId" in option ? option.mediaId : undefined;
+        const media = mediaId ? mediaStore.get(mediaId) : undefined;
+
+        if (mediaId && !media) throw new Error("Фото варіанта відповіді не знайдено");
+        if (media && media.type !== "image") throw new Error("До варіанта відповіді можна додати лише фото");
+
+        return {
+          id: existing?.options[index]?.id ?? crypto.randomUUID(),
+          text: option.text,
+          votesCount: existing?.options[index]?.votesCount ?? 0,
+          ...(media ? { media: { ...media } } : {}),
+        };
+      }),
   };
 }
 

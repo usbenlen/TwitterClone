@@ -3,15 +3,9 @@ import { MEDIA_STATUS } from "@/constants/app";
 import type { Location } from "@/types/location";
 
 import type { LinkPreview } from "@/types/linkPreview";
+import type { PollRequest } from "@/types/poll";
 
-export type ComposerAction =
-  | "image"
-  | "gif"
-  | "video"
-  | "emoji"
-  | "poll"
-  | "location"
-  | "schedule";
+export type ComposerAction = "image" | "gif" | "video" | "emoji" | "poll" | "location" | "schedule";
 
 export type ComposerMediaStatus =
   (typeof MEDIA_STATUS)[keyof typeof MEDIA_STATUS];
@@ -39,10 +33,7 @@ export interface ComposerMediaError {
 export interface ComposerSubmitData {
   content: string;
   mediaIds: string[];
-  poll?: {
-    options: string[];
-    duration: number;
-  } | null;
+  poll?: PollRequest | null;
   location?: Location | null;
   linkPreview?: LinkPreview | null;
 }

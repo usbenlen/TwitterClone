@@ -22,6 +22,30 @@ const state = {
 };
 
 describe("composer rules", () => {
+  it.each(["", " \n\t "])(
+    "requires body text for a valid poll: %j",
+    (content) => {
+      expect(
+        getPostRulesError({
+          content,
+          media: [],
+          poll: { options: ["Так", "Ні"], duration: 60 },
+        }),
+      ).toBe("Додайте текст до опитування.");
+    },
+  );
+
+  it("accepts emoji as poll body text and keeps media-only posts valid", () => {
+    expect(
+      getPostRulesError({
+        content: " 😀 ",
+        media: [],
+        poll: { options: ["Так", "Ні"], duration: 60 },
+      }),
+    ).toBeNull();
+    expect(getPostRulesError({ content: "", media: [image] })).toBeNull();
+  });
+
   it("counts Unicode code points and actual URL length", () => {
     expect(countCharacters("ї😀𐐀")).toBe(3);
     expect(countCharacters("https://example.com")).toBe(19);

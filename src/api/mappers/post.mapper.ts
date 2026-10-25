@@ -39,6 +39,7 @@ export interface BackendPollOption {
   text: string;
   position: number;
   votesCount: number;
+  media?: BackendPostMedia | null;
 }
 
 export interface BackendPollResponse {
@@ -109,23 +110,27 @@ function normalizeMediaType(
   return "image";
 }
 
+function mapMediaAttachment(media: BackendPostMedia): MediaAttachment {
+  return {
+    id: media.id,
+    type: normalizeMediaType(media.type, media.mimeType),
+    url: media.url,
+    thumbnailUrl: media.thumbnailUrl,
+    width: media.width,
+    height: media.height,
+    duration: media.duration,
+    sizeInBytes: media.sizeInBytes,
+    mimeType: media.mimeType,
+  };
+}
+
 function mapMedia(post: BackendPost): MediaAttachment[] {
   const mediaItems = post.media ?? post.attachments;
 
   if (Array.isArray(mediaItems) && mediaItems.length > 0) {
     return [...mediaItems]
       .sort((a, b) => a.sortOrder - b.sortOrder)
-      .map((media) => ({
-        id: media.id,
-        type: normalizeMediaType(media.type, media.mimeType),
-        url: media.url,
-        thumbnailUrl: media.thumbnailUrl,
-        width: media.width,
-        height: media.height,
-        duration: media.duration,
-        sizeInBytes: media.sizeInBytes,
-        mimeType: media.mimeType,
-      }));
+      .map(mapMediaAttachment);
   }
 
   if (Array.isArray(post.mediaUrls)) {
@@ -152,6 +157,7 @@ export function mapBackendPollToTweetPoll(
         id: option.id,
         text: option.text,
         votesCount: option.votesCount,
+        ...(option.media ? { media: mapMediaAttachment(option.media) } : {}),
       })),
     totalVotes: poll.totalVotes,
     expiresAt: poll.endsAt ?? null,

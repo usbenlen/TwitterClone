@@ -69,6 +69,75 @@ function replacePoll(type: "post" | "comment", poll: typeof backend.post.poll) {
 }
 
 describe.each(["post", "comment"] as const)("mock %s poll voting", (type) => {
+  it("creates, edits, quotes and votes on image options without losing their media", async () => {
+    const { mediaStore } = await import("@/mock/stores/mediaStore");
+    const media = mediaStore.add({
+      id: "photo",
+      type: "image",
+      url: "blob:mock-photo",
+    });
+    const data = {
+      content: "Фото?",
+      mediaIds: [],
+      poll: {
+        options: [{ text: "Так 😀", mediaId: media.id }, { text: "Ні" }],
+        duration: 60,
+      },
+    };
+
+    const created =
+      type === "post"
+        ? await backend.tweetApi.create(data)
+        : await backend.commentApi.create({ ...data, postId: backend.post.id });
+
+    expect(created.attachments).toEqual([]);
+    expect(created.poll?.options[0]).toMatchObject({ text: "Так 😀", media });
+
+    const quoted = await backend.tweetApi.create({
+      content: "Цитата",
+      mediaIds: [],
+      ...(type === "post"
+        ? { quotedPostId: created.id }
+        : { quotedCommentId: created.id }),
+      quotedTargetVersionId: created.versionId,
+    });
+
+
+    expect(quoted.quote?.target?.poll?.options[0].media).toEqual(media);
+
+    const voted = await backend.pollApi.vote(
+      type,
+      created.id,
+      created.poll!.options[0].id,
+    );
+
+    expect(voted.options[0].media).toEqual(media);
+    expect(voted.options[0].votesCount).toBe(1);
+
+    const updated =
+      type === "post"
+        ? await backend.tweetApi.update(created.id, { content: "Оновлено" })
+        : await backend.commentApi.update(created.id, { content: "Оновлено" });
+
+    expect(updated.poll?.options[0].media).toEqual(media);
+
+    const withoutPhotos = {
+      content: "Без фото",
+      poll: { options: ["Так 😀", "Ні"], duration: 60 },
+    };
+
+    const removed =
+      type === "post"
+        ? await backend.tweetApi.update(created.id, withoutPhotos)
+        : await backend.commentApi.update(created.id, withoutPhotos);
+
+    expect(removed.poll?.options[0].media).toBeUndefined();
+    expect(quoted.quote?.target?.poll?.options[0].media).toEqual(media);
+
+    mediaStore.remove(media.id);
+
+    await expect(backend.tweetApi.create(data)).rejects.toThrow("Фото варіанта відповіді не знайдено");
+  });
   it("reads live choices rather than a versioned snapshot", async () => {
     const item = target(type);
     expect(await backend.pollApi.get(type, item.id)).toEqual(item.poll);
@@ -202,7 +271,7 @@ describe.each(["post", "comment"] as const)("mock %s poll voting", (type) => {
       ),
     ).rejects.toThrow(
       {
-        "missing-target": "Пост або коментар не знайдено.",
+        "missing-target": "Пост або коментар не знайдено",
         "missing-poll": "Опитування не знайдено.",
         "invalid-option": "Варіант відповіді не знайдено.",
         closed: "Опитування завершене.",

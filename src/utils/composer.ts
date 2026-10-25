@@ -29,7 +29,8 @@ export function isComposerPollValid(poll: ComposerPoll): boolean {
     getPollError(
       poll.options.map((option) => option.text),
       poll.duration,
-    ) === null
+    ) === null &&
+    !poll.options.some((option) => option.image && !option.text.trim())
   );
 }
 
@@ -45,6 +46,10 @@ export function getComposerRulesError(values: ComposerValues): string | null {
       : null,
   });
   if (error) return error;
+  if (values.poll?.options.some((option) => option.image && !option.text.trim()))
+    return "Додайте текст до варіанта з фото.";
+  if (values.poll?.options.some((option) => option.image && option.image.type !== "image"))
+    return "До варіанта відповіді можна додати лише фото.";
   if (values.scheduledAt && (values.poll || values.location))
     return "Запланований пост не може містити опитування чи локацію.";
   return null;
@@ -54,7 +59,12 @@ export function getComposerError(values: ComposerValues): string | null {
   const error = getComposerRulesError(values);
   if (error) return error;
   if (
-    values.media.some(
+    [
+      ...values.media,
+      ...(values.poll?.options.flatMap((option) =>
+        option.image ? [option.image] : [],
+      ) ?? []),
+    ].some(
       (item) => item.status !== MEDIA_STATUS.UPLOADED || !item.attachmentId,
     )
   )
@@ -80,9 +90,18 @@ export function buildComposerPayload(
     poll:
       poll && poll.options.some((option) => option.text.trim())
         ? {
-            options: poll.options
-              .map((option) => option.text.trim())
-              .filter(Boolean),
+            options: poll.options.some((option) => option.image)
+              ? poll.options
+                  .filter((option) => option.text.trim())
+                  .map((option) => ({
+                    text: option.text.trim(),
+                    ...(option.image
+                      ? { mediaId: option.image.attachmentId }
+                      : {}),
+                  }))
+              : poll.options
+                  .map((option) => option.text.trim())
+                  .filter(Boolean),
             duration: poll.duration,
           }
         : poll === null
@@ -125,7 +144,10 @@ function snapshot(values: ComposerValues) {
     poll: values.poll
       ? {
           duration: values.poll.duration,
-          options: values.poll.options.map((option) => option.text),
+          options: values.poll.options.map((option) => ({
+            text: option.text,
+            image: option.image?.attachmentId ?? option.image?.id,
+          })),
         }
       : null,
     location: values.location ?? null,
