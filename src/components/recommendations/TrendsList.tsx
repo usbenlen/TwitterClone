@@ -21,6 +21,7 @@ interface TrendsListProps {
   trends: TrendRecommendation[];
   isLoading?: boolean;
   error?: string | null;
+  feedbackError?: string;
   reload: () => unknown;
   numbered?: boolean;
   compact?: boolean;
@@ -33,6 +34,7 @@ export function TrendsList({
   trends,
   isLoading,
   error,
+  feedbackError,
   reload,
   numbered = false,
   compact = false,
@@ -83,6 +85,11 @@ export function TrendsList({
 
   return (
     <div ref={listRef}>
+      {feedbackError && (
+        <p role="alert" className="px-4 py-3 text-sm text-destructive">
+          {feedbackError}
+        </p>
+      )}
       {trends.map((trend, index) => (
         <div
           key={trend.id}

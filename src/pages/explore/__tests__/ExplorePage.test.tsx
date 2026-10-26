@@ -10,11 +10,13 @@ import { createAppStore } from "@/store";
 
 const hooks = vi.hoisted(() => ({
   trends: vi.fn(),
+  categories: vi.fn(),
   users: vi.fn(),
   posts: vi.fn(),
 }));
 vi.mock("@/hooks/useRecommendations", () => ({
   useTrends: hooks.trends,
+  useExploreTrends: hooks.categories,
   useRecommendedUsers: hooks.users,
 }));
 vi.mock("@/hooks/useRecommendedPosts", () => ({
@@ -76,6 +78,12 @@ beforeEach(() => {
     error: null,
     reload,
   });
+  hooks.categories.mockImplementation((category: string) => ({
+    trends: trends.filter((trend) => trend.id === ({ news: "n", sports: "s", entertainment: "e" })[category]),
+    isLoading: false,
+    error: null,
+    reload,
+  }));
   hooks.users.mockReturnValue({
     users: [{ id: "u1", username: "ada" }],
     isLoading: false,
@@ -123,6 +131,20 @@ function button(text: string) {
 }
 
 describe("Explore page", () => {
+  it("keeps popular topics visible when the independent news request fails", async () => {
+    hooks.categories.mockReturnValue({ trends: [], isLoading: false, error: "News offline", reload });
+    await render();
+    expect(host.querySelector('[role="alert"]')?.textContent).toBe("News offline");
+    expect(host.querySelectorAll('[data-actions-menu-trigger]')).toHaveLength(trends.length);
+    expect(host.textContent).toContain("Recommended post");
+  });
+
+  it("renders a server-selected topic whose title has no category keywords", async () => {
+    hooks.categories.mockReturnValue({ trends: [trends[3]], isLoading: false, error: null, reload });
+    await render("/explore?tab=sports");
+    expect(host.querySelector("section section a")?.textContent).toContain("React");
+  });
+
   it("combines existing features and keeps the tab strip independently scrollable", async () => {
     await render();
     expect(
@@ -134,7 +156,8 @@ describe("Explore page", () => {
     expect(host.textContent).toContain("Кого читати");
     expect(host.textContent).toContain("Recommended post");
     expect(host.querySelector('a[href="/follow"]')).not.toBeNull();
-    expect(hooks.trends).toHaveBeenCalledWith(20);
+    expect(hooks.trends).toHaveBeenCalledWith(20, false);
+    expect(hooks.categories).toHaveBeenCalledWith("news", 3, false);
     expect(button("Показати ще")).toBeUndefined();
     expect(loadMore).not.toHaveBeenCalled();
   });
@@ -143,12 +166,14 @@ describe("Explore page", () => {
     ["news", "Новини економіки"],
     ["sports", "Футбол"],
     ["entertainment", "Music"],
-  ])("opens %s directly with filtered topics", async (tab, title) => {
+  ])("opens %s directly with server-selected topics", async (tab, title) => {
     await render(`/explore?tab=${tab}`);
     const links = [...host.querySelectorAll("main a, section section a")];
     expect(links).toHaveLength(1);
     expect(links[0].textContent).toContain(title);
     expect(host.textContent).not.toContain("Recommended post");
+    expect(hooks.categories).toHaveBeenCalledWith(tab, 20, false);
+    expect(hooks.trends).toHaveBeenCalledWith(20, true);
   });
 
   it("preserves URL parameters and supports browser history", async () => {
@@ -193,7 +218,7 @@ describe("Explore page", () => {
   });
 
   it("distinguishes loading, empty categories and retryable errors", async () => {
-    hooks.trends.mockReturnValue({
+    hooks.categories.mockReturnValue({
       trends: [],
       isLoading: true,
       error: null,
@@ -203,7 +228,7 @@ describe("Explore page", () => {
     expect(
       host.querySelector('[aria-label="Завантаження тем"]'),
     ).not.toBeNull();
-    hooks.trends.mockReturnValue({
+    hooks.categories.mockReturnValue({
       trends: [],
       isLoading: false,
       error: null,
@@ -211,7 +236,7 @@ describe("Explore page", () => {
     });
     await render("/explore?tab=sports");
     expect(host.textContent).toContain("Поки що тем у цій категорії немає.");
-    hooks.trends.mockReturnValue({
+    hooks.categories.mockReturnValue({
       trends: [],
       isLoading: false,
       error: "offline",

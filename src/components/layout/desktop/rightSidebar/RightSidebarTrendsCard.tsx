@@ -10,24 +10,22 @@ import { SIDEBAR, APP_ROUTES } from "@/constants";
 
 import { useTrends } from "@/hooks";
 
-import { useAppDispatch } from "@/store/hooks";
-import { trendDismissed } from "@/store/trendFeedback";
+import { useTrendFeedback } from "@/hooks/useTrendFeedback";
 
 function TrendsListContent({
   result,
 }: {
   result: ReturnType<typeof useTrends>;
 }) {
-  const dispatch = useAppDispatch();
+  const { dismissTrend, feedbackError } = useTrendFeedback("sidebar");
   const contentRef = useRef<HTMLDivElement>(null);
   return (
     <div ref={contentRef} className="-mx-4" tabIndex={-1}>
       <TrendsList
         {...result}
         compact
-        onDismiss={(trendId, reason) =>
-          dispatch(trendDismissed({ trendId, reason }))
-        }
+        onDismiss={dismissTrend}
+        feedbackError={feedbackError}
         onEmptyFocus={() => contentRef.current?.focus()}
       />
     </div>

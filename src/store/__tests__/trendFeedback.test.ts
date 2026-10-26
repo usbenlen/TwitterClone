@@ -7,8 +7,8 @@ import { trendDismissed } from "@/store/trendFeedback";
 describe("temporary trend feedback", () => {
   it("records the selected reason and resets when a session changes", () => {
     const store = createAppStore();
-    store.dispatch(trendDismissed({ trendId: "topic-a", reason: "spam" }));
-    store.dispatch(trendDismissed({ trendId: "topic-b", reason: "duplicate" }));
+    store.dispatch(trendDismissed({ trendId: "topic-a", reason: "spam", requestId: "r1", source: "explore" }));
+    store.dispatch(trendDismissed({ trendId: "topic-b", reason: "duplicate", requestId: "r2", source: "sidebar" }));
     expect(store.getState().trendFeedback.hidden).toEqual({
       "topic-a": "spam",
       "topic-b": "duplicate",
@@ -20,7 +20,7 @@ describe("temporary trend feedback", () => {
   it("does not persist feedback into a fresh application store", () => {
     const store = createAppStore();
     store.dispatch(
-      trendDismissed({ trendId: "topic-a", reason: "not_interested" }),
+      trendDismissed({ trendId: "topic-a", reason: "not_interested", requestId: "r1", source: "explore" }),
     );
     expect(createAppStore().getState().trendFeedback.hidden).toEqual({});
     store.dispatch(sessionChanged());

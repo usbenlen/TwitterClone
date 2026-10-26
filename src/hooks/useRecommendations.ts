@@ -6,26 +6,48 @@ import { useAppSelector } from "@/store/hooks";
 import { errorMessage } from "@/store/postsApi";
 import {
   useGetTrendsQuery,
+  useGetExploreTrendsQuery,
   useGetRecommendedUsersInfiniteQuery,
 } from "@/store/sharedApi";
 
-import type { TrendRecommendation, UserShort } from "@/types";
+import type {
+  ExploreCategory,
+  TrendRecommendation,
+  TrendRecommendationsResponse,
+  UserShort,
+} from "@/types";
 
 const EMPTY_TRENDS: TrendRecommendation[] = [];
 const EMPTY_USERS: UserShort[] = [];
 
-export function useTrends(limit: number = SIDEBAR.TRENDS_LIMIT) {
-  const query = useGetTrendsQuery(limit);
+export function useTrends(limit: number = SIDEBAR.TRENDS_LIMIT, skip = false) {
+  const query = useGetTrendsQuery(limit, { skip });
+  return useVisibleTrends(query);
+}
+
+export function useExploreTrends(
+  category: ExploreCategory,
+  limit: number,
+  skip = false,
+) {
+  const query = useGetExploreTrendsQuery({ category, limit }, { skip });
+  return useVisibleTrends(query);
+}
+
+function useVisibleTrends(query: {
+  currentData?: TrendRecommendationsResponse;
+  isLoading: boolean;
+  isFetching: boolean;
+  error?: unknown;
+  refetch: () => unknown;
+}) {
   const hidden = useAppSelector((state) => state.trendFeedback.hidden);
   const trends = useMemo(
-    () => (query.data?.items ?? EMPTY_TRENDS).filter((trend) =>
-      !Object.hasOwn(hidden, trend.id),
-    ),
-    [query.data, hidden],
+    () => (query.currentData?.items ?? EMPTY_TRENDS).filter((trend) => !Object.hasOwn(hidden, trend.id)), [query.currentData, hidden],
   );
   return {
     trends,
-    isLoading: query.isLoading,
+    isLoading: query.isLoading || (query.isFetching && !query.currentData),
     error: query.error ? errorMessage(query.error) : null,
     reload: query.refetch,
   };

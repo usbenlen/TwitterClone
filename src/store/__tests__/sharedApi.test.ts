@@ -38,7 +38,7 @@ vi.mock("@/api/index", () => ({
     delete: vi.fn(),
     publishDue: vi.fn(),
   },
-  recommendationsApi: { trends: vi.fn(), users: vi.fn() },
+  recommendationsApi: { trends: vi.fn(), users: vi.fn(), explore: vi.fn(), feedback: vi.fn() },
 }));
 
 const ada: UserShort = {
@@ -87,6 +87,71 @@ beforeEach(() => {
 });
 
 describe("shared RTK Query data", () => {
+  it("caches category lists independently and refetches all topic lists after feedback", async () => {
+    const store = createAppStore();
+    vi.mocked(recommendationsApi.trends).mockResolvedValue({ items: [] });
+    vi.mocked(recommendationsApi.explore).mockResolvedValue({ items: [] });
+    vi.mocked(recommendationsApi.feedback).mockResolvedValue(undefined);
+    const queries = [
+      store.dispatch(sharedApi.endpoints.getTrends.initiate(4)),
+      store.dispatch(sharedApi.endpoints.getTrends.initiate(20)),
+      store.dispatch(sharedApi.endpoints.getExploreTrends.initiate({ category: "news", limit: 3 })),
+      store.dispatch(sharedApi.endpoints.getExploreTrends.initiate({ category: "sports", limit: 20 })),
+    ];
+    await Promise.all(queries);
+    const feedback = store.dispatch(sharedApi.endpoints.sendTrendFeedback.initiate({
+      trendId: "hashtag:Київ", reason: "not_interested", source: "sidebar",
+    }));
+    expect(store.getState().trendFeedback.pending["hashtag:Київ"]).toBe(feedback.requestId);
+    await feedback;
+    await Promise.all(store.dispatch(sharedApi.util.getRunningQueriesThunk()));
+    expect(recommendationsApi.feedback).toHaveBeenCalledWith({ trendId: "hashtag:Київ", reason: "not_interested" });
+    expect(recommendationsApi.trends).toHaveBeenCalledTimes(4);
+    expect(recommendationsApi.explore).toHaveBeenCalledTimes(4);
+    expect(store.getState().trendFeedback.hidden["hashtag:Київ"]).toBe("not_interested");
+    expect(store.getState().trendFeedback.pending).toEqual({});
+    queries.forEach((query) => query.unsubscribe());
+    store.dispatch(sessionChanged());
+  });
+
+  it("rolls back only the failed topic without invalidating other queries", async () => {
+    const store = createAppStore();
+    vi.mocked(recommendationsApi.feedback).mockImplementation(async ({ trendId }) => {
+      if (trendId === "failed") throw new ApiError(429, "Зачекайте", undefined, "30");
+    });
+    await Promise.all(["failed", "saved"].map((trendId) =>
+      store.dispatch(sharedApi.endpoints.sendTrendFeedback.initiate({ trendId, reason: "spam", source: "explore" })),
+    ));
+    expect(store.getState().trendFeedback.hidden).toEqual({ saved: "spam" });
+    expect(store.getState().trendFeedback.pending).toEqual({});
+    expect(store.getState().trendFeedback.errors).toEqual({ explore: "Не вдалося зберегти відгук. Зачекайте" });
+    store.dispatch(sessionChanged());
+  });
+
+  it.each(["success", "failure"])("ignores a late feedback %s after the session changes", async (outcome) => {
+    const store = createAppStore();
+    let finish!: () => void;
+    let fail!: (error: Error) => void;
+    vi.mocked(recommendationsApi.feedback).mockReturnValueOnce(new Promise<void>((resolve, reject) => {
+      finish = resolve;
+      fail = reject;
+    }));
+    const old = store.dispatch(sharedApi.endpoints.sendTrendFeedback.initiate({
+      trendId: "same", reason: "spam", source: "explore",
+    }));
+    store.dispatch(sessionChanged());
+    vi.mocked(recommendationsApi.feedback).mockResolvedValueOnce(undefined);
+    await store.dispatch(sharedApi.endpoints.sendTrendFeedback.initiate({
+      trendId: "same", reason: "duplicate", source: "sidebar",
+    }));
+    if (outcome === "success") finish();
+    else fail(new Error("Old session"));
+    await old;
+    await Promise.resolve();
+    expect(store.getState().trendFeedback).toEqual({ hidden: { same: "duplicate" }, pending: {}, errors: {} });
+    store.dispatch(sessionChanged());
+  });
+
   it("shares recommendation pages and stops when hasMore is false", async () => {
     const store = createAppStore();
     vi.mocked(recommendationsApi.users)

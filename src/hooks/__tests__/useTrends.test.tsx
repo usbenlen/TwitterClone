@@ -7,12 +7,12 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { createAppStore, type AppStore } from "@/store";
 import { sessionChanged } from "@/store/session";
 import { trendDismissed } from "@/store/trendFeedback";
-import { useTrends } from "@/hooks/useRecommendations";
-import { filterExploreTrends } from "@/utils/explore";
+import { useExploreTrends, useTrends } from "@/hooks/useRecommendations";
 
 const api = vi.hoisted(() => ({ trends: vi.fn() }));
 vi.mock("@/store/sharedApi", () => ({
   useGetTrendsQuery: api.trends,
+  useGetExploreTrendsQuery: api.trends,
   useGetRecommendedUsersInfiniteQuery: vi.fn(),
 }));
 
@@ -25,11 +25,12 @@ let root: Root;
 let store: AppStore;
 
 function Probe({ limit }: { limit: number }) {
-  const { trends } = useTrends(limit);
+  const popular = useTrends(limit);
+  const news = useExploreTrends("news", limit);
   return (
     <output data-limit={limit}>
-      {trends.map((trend) => trend.id).join(",")}:
-      {filterExploreTrends(trends, "news").length}
+      {popular.trends.map((trend) => trend.id).join(",")}:
+      {news.trends.length}
     </output>
   );
 }
@@ -49,7 +50,7 @@ beforeEach(() => {
   vi.stubGlobal("IS_REACT_ACT_ENVIRONMENT", true);
   store = createAppStore();
   api.trends.mockReturnValue({
-    data: { items: topics },
+    currentData: { items: topics },
     isLoading: false,
     refetch: vi.fn(),
   });
@@ -71,22 +72,22 @@ describe("visible trends across surfaces", () => {
   it("filters every limit and category without altering server data, even after a refetch", async () => {
     await render();
     await act(async () => {
-      store.dispatch(trendDismissed({ trendId: "a", reason: "spam" }));
+      store.dispatch(trendDismissed({ trendId: "a", reason: "spam", requestId: "r1", source: "explore" }));
     });
     expect(
       [...host.querySelectorAll("output")].map((output) => output.textContent),
-    ).toEqual(["b:0", "b:0"]);
+    ).toEqual(["b:1", "b:1"]);
     expect(topics).toHaveLength(2);
     api.trends.mockReturnValue({
-      data: { items: structuredClone(topics) },
+      currentData: { items: structuredClone(topics) },
       isLoading: false,
       refetch: vi.fn(),
     });
     await render();
-    expect(host.querySelector("output")?.textContent).toBe("b:0");
+    expect(host.querySelector("output")?.textContent).toBe("b:1");
     await act(async () => {
       store.dispatch(sessionChanged());
     });
-    expect(host.querySelector("output")?.textContent).toBe("a,b:1");
+    expect(host.querySelector("output")?.textContent).toBe("a,b:2");
   });
 });

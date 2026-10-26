@@ -7,6 +7,8 @@ import {
 
 import type {
   CreateScheduledPostRequest,
+  ExploreCategory,
+  TrendFeedbackRequest,
   PaginatedRecommendations,
   ScheduledPost,
   TrendRecommendationsResponse,
@@ -15,9 +17,15 @@ import type {
   UserShort,
 } from "@/types";
 
-import { request } from "@/store/api";
+import { errorMessage, request } from "@/store/api";
 import { postsApi } from "@/store/postsApi";
 import { sessionGeneration } from "@/store/session";
+import {
+  trendDismissed,
+  trendFeedbackCompleted,
+  trendFeedbackFailed,
+} from "@/store/trendFeedback";
+import type { TrendFeedbackSource } from "@/store/trendFeedback";
 
 const sorted = (posts: ScheduledPost[]) =>
   [...posts].sort(
@@ -128,11 +136,41 @@ export const sharedApi = postsApi.injectEndpoints({
       providesTags: [{ type: "Recommendation", id: "TRENDS" }],
     }),
 
-    getRecommendedUsers: build.infiniteQuery<
-      PaginatedRecommendations,
-      number,
-      string | null
-    >({
+    getExploreTrends: build.query<TrendRecommendationsResponse, { category: ExploreCategory; limit: number }>({
+      queryFn: ({ category, limit }) => request(() => recommendationsApi.explore(category, limit)),
+      providesTags: [{ type: "Recommendation", id: "TRENDS" }],
+    }),
+
+    sendTrendFeedback: build.mutation<void, TrendFeedbackRequest & { source: TrendFeedbackSource }>({
+      queryFn: ({ trendId, reason }) => request(() => recommendationsApi.feedback({ trendId, reason })),
+
+      async onQueryStarted({ trendId, reason, source }, lifecycle) {
+        const generation = sessionGeneration(lifecycle.getState());
+        const requestId = lifecycle.requestId;
+        lifecycle.dispatch(trendDismissed({ trendId, reason, source, requestId }));
+        try {
+          await lifecycle.queryFulfilled;
+          if (generation !== sessionGeneration(lifecycle.getState())) return;
+
+          lifecycle.dispatch(trendFeedbackCompleted({ trendId, requestId }));
+          lifecycle.dispatch(sharedApi.util.invalidateTags([{ type: "Recommendation", id: "TRENDS" }]));
+        } catch (failure) {
+          if (generation !== sessionGeneration(lifecycle.getState())) return;
+
+          const error = (failure as { error?: unknown }).error;
+          lifecycle.dispatch(
+            trendFeedbackFailed({
+              trendId,
+              requestId,
+              source,
+              message: `Не вдалося зберегти відгук. ${errorMessage(error)}`,
+            }),
+          );
+        }
+      },
+    }),
+
+    getRecommendedUsers: build.infiniteQuery<PaginatedRecommendations, number, string | null>({
       infiniteQueryOptions: {
         initialPageParam: null,
         getNextPageParam: (page) => page.hasMore ? page.nextCursor ?? undefined : undefined,
@@ -242,6 +280,7 @@ export const {
   useUnfollowUserMutation,
   useRemoveFollowerMutation,
   useGetTrendsQuery,
+  useGetExploreTrendsQuery,
   useGetRecommendedUsersInfiniteQuery,
   useGetScheduledPostsQuery,
   useCreateScheduledPostMutation,

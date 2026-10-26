@@ -16,18 +16,16 @@ import { TRENDS_PAGE_LIMIT } from "@/constants/recommendations";
 import { APP_ROUTES } from "@/constants/routes";
 import { DEFAULT_SEARCH_CRITERIA } from "@/constants/search";
 
-import { useTrends } from "@/hooks/useRecommendations";
-import { useAppDispatch } from "@/store/hooks";
-import { trendDismissed } from "@/store/trendFeedback";
+import { useExploreTrends, useTrends } from "@/hooks/useRecommendations";
+import { useTrendFeedback } from "@/hooks/useTrendFeedback";
 
 import { Tab } from "@/ui";
 
-import { filterExploreTrends, parseExploreTab } from "@/utils/explore";
+import { parseExploreTab } from "@/utils/explore";
 
-import type { ExploreTab, TrendFeedbackReason } from "@/types/recommendations";
+import type { ExploreTab } from "@/types/recommendations";
 
 export default function ExplorePage() {
-  const dispatch = useAppDispatch();
   const [params, setParams] = useSearchParams();
   const activeTab = parseExploreTab(params.get("tab"));
   const tabsRef = useRef<HTMLElement>(null);
@@ -38,11 +36,15 @@ export default function ExplorePage() {
       ?.scrollIntoView?.({ block: "nearest", inline: "nearest" });
   }, [activeTab]);
 
-  const result = useTrends(TRENDS_PAGE_LIMIT);
-  const news = filterExploreTrends(result.trends, "news");
-  const dismissTrend = (trendId: string, reason: TrendFeedbackReason) => {
-    dispatch(trendDismissed({ trendId, reason }));
-  };
+  const isPopular = activeTab === "overview" || activeTab === "trending";
+  const popular = useTrends(TRENDS_PAGE_LIMIT, !isPopular);
+  const category = useExploreTrends(
+    isPopular ? "news" : activeTab,
+    activeTab === "overview" ? EXPLORE_LIMITS.NEWS : TRENDS_PAGE_LIMIT,
+    activeTab === "trending",
+  );
+  const result = isPopular ? popular : category;
+  const { dismissTrend, feedbackError } = useTrendFeedback("explore");
   const focusActiveTab = () => {
     tabsRef.current
       ?.querySelector<HTMLButtonElement>('[aria-pressed="true"]')
@@ -95,14 +97,13 @@ export default function ExplorePage() {
           <ExploreSection
             title="Новини"
             moreTo={
-              !result.error && news.length
+              !category.error && category.trends.length
                 ? APP_ROUTES.explore("news")
                 : undefined
             }
           >
             <TrendsList
-              {...result}
-              trends={news.slice(0, EXPLORE_LIMITS.NEWS)}
+              {...category}
               emptyMessage="Поки що тем у цій категорії немає."
             />
           </ExploreSection>
@@ -118,6 +119,7 @@ export default function ExplorePage() {
               {...result}
               trends={result.trends.slice(0, SIDEBAR.TRENDS_LIMIT)}
               onDismiss={dismissTrend}
+              feedbackError={feedbackError}
               onEmptyFocus={focusActiveTab}
             />
           </ExploreSection>
@@ -134,12 +136,8 @@ export default function ExplorePage() {
             {...result}
             numbered={activeTab === "trending"}
             onDismiss={activeTab === "trending" ? dismissTrend : undefined}
+            feedbackError={activeTab === "trending" ? feedbackError : undefined}
             onEmptyFocus={focusActiveTab}
-            trends={
-              activeTab === "trending"
-                ? result.trends
-                : filterExploreTrends(result.trends, activeTab)
-            }
             emptyMessage={
               activeTab === "trending"
                 ? "Поки що популярних тем немає."
