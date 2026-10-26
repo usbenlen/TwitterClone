@@ -8,6 +8,7 @@ import { APP_ROUTES } from "@/constants/routes";
 import { Button, VerifiedBadge } from "@/ui";
 
 import { formatPostCount } from "@/utils/format";
+import { normalizeInlineDisplayText } from "@/utils/displayText";
 
 import type { User } from "@/types";
 
@@ -17,7 +18,7 @@ interface ProfileHeaderProps {
 
 export default function ProfileHeader({ user }: ProfileHeaderProps) {
   const navigate = useNavigate();
-  const displayName = user.displayName?.trim() || `@${user.username}`;
+  const displayName = normalizeInlineDisplayText(user.displayName?.trim() || `@${user.username}`);
 
   const searchUserPosts = () => {
     navigate(

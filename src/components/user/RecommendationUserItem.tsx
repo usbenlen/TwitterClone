@@ -9,6 +9,7 @@ import { Avatar, Button, VerifiedBadge } from "@/ui";
 import { APP_ROUTES } from "@/constants/routes";
 
 import { cn } from "@/utils/cn";
+import { normalizeDisplayText, normalizeInlineDisplayText } from "@/utils/displayText";
 
 import type { UserShort } from "@/types";
 
@@ -64,16 +65,16 @@ export default function RecommendationUserItem({
           <div className="min-w-0 flex-1">
             <div className="flex min-w-0 items-center gap-1">
               <span className="truncate font-bold text-foreground">
-                {user.displayName ?? user.username}
+                {normalizeInlineDisplayText(user.displayName ?? user.username)}
               </span>
               <VerifiedBadge user={user} size={17} />
             </div>
             <p className="truncate text-sm text-muted-foreground">
-              @{user.username}
+              @{normalizeInlineDisplayText(user.username)}
             </p>
             {!compact && user.bio && (
-              <p className="mt-1 text-sm leading-5 text-foreground">
-                {user.bio}
+              <p className="mt-1 min-w-0 overflow-hidden wrap-anywhere text-sm leading-5 text-foreground">
+                {normalizeDisplayText(user.bio)}
               </p>
             )}
           </div>

@@ -1,6 +1,7 @@
 import { MapPin } from "lucide-react";
 
 import { VerifiedBadge } from "@/ui/VerifiedBadge";
+import { normalizeDisplayText, normalizeInlineDisplayText } from "@/utils/displayText";
 
 import type { User } from "@/types/user";
 
@@ -12,18 +13,20 @@ export default function ProfileInfo({ user }: ProfileInfoProps) {
   return (
     <div className="px-4 pt-4">
       <div className="flex min-w-0 items-center gap-1">
-        <h2 className="min-w-0 wrap-break-word text-xl font-extrabold text-foreground">
-          {user.displayName}
+        <h2 className="min-w-0 overflow-hidden wrap-anywhere text-xl font-extrabold text-foreground">
+          {normalizeInlineDisplayText(user.displayName ?? "")}
         </h2>
 
         <VerifiedBadge user={user} size={20} />
       </div>
 
-      <p className="text-muted-foreground">@{user.username}</p>
+      <p className="min-w-0 overflow-hidden wrap-anywhere text-muted-foreground">
+        @{normalizeInlineDisplayText(user.username)}
+      </p>
 
       {user.bio && (
-        <p className="mt-3 whitespace-pre-wrap wrap-break-word text-foreground">
-          {user.bio}
+        <p className="mt-3 min-w-0 overflow-hidden whitespace-pre-wrap wrap-anywhere text-foreground">
+          {normalizeDisplayText(user.bio)}
         </p>
       )}
 

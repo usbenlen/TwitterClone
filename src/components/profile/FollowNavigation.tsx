@@ -5,6 +5,7 @@ import { PageHeader } from "@/components/layout/pageHeader/index";
 import Tab from "@/ui/Tab";
 
 import { APP_ROUTES } from "@/constants/routes";
+import { normalizeInlineDisplayText } from "@/utils/displayText";
 
 import type { User } from "@/types/user";
 
@@ -29,8 +30,8 @@ export default function FollowNavigation({ user }: FollowNavigationProps) {
 
   return (
     <PageHeader
-      title={user.displayName}
-      subtitle={`@${user.username}`}
+      title={normalizeInlineDisplayText(user.displayName ?? "")}
+      subtitle={`@${normalizeInlineDisplayText(user.username)}`}
       backTo={APP_ROUTES.profile(username)}
       backAriaLabel="Назад до профілю"
       footer={

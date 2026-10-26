@@ -6,6 +6,7 @@ import { Avatar } from "@/ui";
 import { useAuth } from "@/hooks/useAuth";
 
 import { APP_ROUTES } from "@/constants/routes";
+import { normalizeInlineDisplayText } from "@/utils/displayText";
 
 export default function LeftSidebarProfile() {
   const { user, logout } = useAuth();
@@ -26,10 +27,12 @@ export default function LeftSidebarProfile() {
         />
 
         <div className="min-w-0">
-          <p className="truncate font-semibold">{user.displayName}</p>
+          <p className="truncate font-semibold">
+            {normalizeInlineDisplayText(user.displayName ?? "")}
+          </p>
 
           <p className="truncate text-sm text-muted-foreground">
-            @{user.username}
+            @{normalizeInlineDisplayText(user.username)}
           </p>
         </div>
       </NavLink>

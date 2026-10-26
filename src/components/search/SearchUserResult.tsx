@@ -6,6 +6,7 @@ import { useAuth, useFollow } from "@/hooks";
 import { Avatar, Button } from "@/ui";
 
 import { APP_ROUTES } from "@/constants/routes";
+import { normalizeDisplayText, normalizeInlineDisplayText } from "@/utils/displayText";
 
 import type { User } from "@/types/user";
 
@@ -37,19 +38,19 @@ export default function SearchUserResult({ user }: SearchUserResultProps) {
         <div className="min-w-0">
           <div className="flex min-w-0 items-center gap-1">
             <p className="truncate font-semibold text-foreground">
-              {user.displayName}
+              {normalizeInlineDisplayText(user.displayName ?? "")}
             </p>
 
             <VerifiedBadge user={user} size={18} />
           </div>
 
           <p className="truncate text-sm text-muted-foreground">
-            @{user.username}
+            @{normalizeInlineDisplayText(user.username)}
           </p>
 
           {user.bio && (
-            <p className="mt-1 line-clamp-2 text-sm text-muted-foreground">
-              {user.bio}
+            <p className="mt-1 min-w-0 line-clamp-2 wrap-anywhere text-sm text-muted-foreground">
+              {normalizeDisplayText(user.bio)}
             </p>
           )}
 

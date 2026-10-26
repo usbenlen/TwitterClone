@@ -6,6 +6,7 @@ import { Avatar } from "@/ui";
 import { useAuth } from "@/hooks/useAuth";
 
 import { APP_ROUTES } from "@/constants/routes";
+import { normalizeInlineDisplayText } from "@/utils/displayText";
 
 interface MobileSidebarProfileProps {
   onClose?: () => void;
@@ -40,11 +41,11 @@ export default function MobileSidebarProfile({
 
         <div className="min-w-0">
           <h2 className="truncate text-base font-bold text-foreground">
-            {user.displayName}
+            {normalizeInlineDisplayText(user.displayName ?? "")}
           </h2>
 
           <p className="truncate text-sm text-muted-foreground">
-            @{user.username}
+            @{normalizeInlineDisplayText(user.username)}
           </p>
         </div>
       </NavLink>
