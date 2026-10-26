@@ -24,7 +24,7 @@ export default function TweetContent({
       {displayContent && (
         <TwemojiText
           text={displayContent}
-          className="mt-1 block min-w-0 overflow-hidden wrap-anywhere whitespace-pre-wrap"
+          className="block min-w-0 overflow-hidden wrap-anywhere whitespace-pre-wrap"
         />
       )}
 
