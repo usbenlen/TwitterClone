@@ -14,12 +14,13 @@ const discussions = [
   ["t7", 3],
   ["t9", 2],
   ["t11", 3],
+  ["t14", 4],
 ] as const;
 const newComments = discussions.flatMap(([postId]) => commentsByPostId[postId]);
 
 describe("mock discovery discussions", () => {
-  it("adds fifteen comments with distinct identities and preserves the original discussion", () => {
-    expect(newComments).toHaveLength(15);
+  it("adds nineteen comments with distinct identities and preserves the original discussion", () => {
+    expect(newComments).toHaveLength(19);
     expect(commentsByPostId.t1.map((comment) => comment.id)).toEqual([
       "c1",
       "c2",
@@ -40,7 +41,7 @@ describe("mock discovery discussions", () => {
     ).toBe(true);
     expect(
       newComments.filter((comment) => comment.parentCommentId),
-    ).toHaveLength(3);
+    ).toHaveLength(5);
     expect(
       newComments.some(
         (comment) =>

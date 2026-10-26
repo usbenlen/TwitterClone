@@ -34,13 +34,17 @@ function photo(id: string, photoId: string): MediaAttachment {
   };
 }
 
-function discoveryPoll(id: string, options: [string, number][]): TweetPoll {
+function discoveryPoll(
+  id: string,
+  options: [string, number, MediaAttachment?][],
+): TweetPoll {
   return {
     id,
-    options: options.map(([text, votesCount], index) => ({
+    options: options.map(([text, votesCount, media], index) => ({
       id: `${id}-option-${index + 1}`,
       text,
       votesCount,
+      ...(media ? { media } : {}),
     })),
     totalVotes: options.reduce((sum, [, votesCount]) => sum + votesCount, 0),
     expiresAt: pollExpiresAt,
@@ -60,6 +64,28 @@ const discoveryPostSeeds: DiscoveryPost[] = [
       title: "React 19: що нового в офіційному релізі",
       imageUrl: photoUrl("photo-1498050108023-c5249f4df085"),
     },
+  },
+  {
+    author: sampleAuthors[7],
+    content:
+      "Уявіть, що ми видаємо фантастичний роман «Останній сигнал» 📡 Тексту ще немає, зате вже обираємо обкладинку. Яке фото змусило б вас узяти книжку з полиці? Сюжет запропонуйте в коментарях.",
+    poll: discoveryPoll("t14-poll-last-signal", [
+      [
+        "Сигнал із лісу",
+        18,
+        photo("t14-poll-image-forest", "photo-1441974231531-c6227db76b6e"),
+      ],
+      [
+        "Орбіта мовчання",
+        26,
+        photo("t14-poll-image-orbit", "photo-1446776811953-b23d57bd21aa"),
+      ],
+      [
+        "За межами туманності",
+        12,
+        photo("t14-poll-image-nebula", "photo-1462331940025-496dfbfc7564"),
+      ],
+    ]),
   },
   {
     author: sampleAuthors[7],

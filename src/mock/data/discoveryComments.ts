@@ -142,4 +142,36 @@ export const discoveryCommentSeeds: Record<string, DiscoveryCommentSeed[]> = {
       likesCount: 2,
     },
   ],
+  t14: [
+    {
+      id: "c22",
+      author: sampleAuthors[2],
+      content:
+        "За ліс. Уявіть: сигнал іде з дерева, якому триста років, а передавач усередині — з майбутнього",
+      minutesAfterPost: 11,
+    },
+    {
+      id: "c23",
+      author: sampleAuthors[3],
+      content:
+        "Туманність! Екіпаж ловить сигнал, а це їхній власний голос із завтрашнього дня",
+      minutesAfterPost: 25,
+    },
+    {
+      id: "c24",
+      parentCommentId: "c22",
+      author: currentUser,
+      content:
+        "А кільця дерева — це журнал усіх попередніх повідомлень 👀",
+      minutesAfterPost: 39,
+    },
+    {
+      id: "c25",
+      parentCommentId: "c23",
+      author: sampleAuthors[7],
+      content:
+        "Беру цей сюжет. Тепер головне — не отримати від себе повідомлення з дедлайном 😅",
+      minutesAfterPost: 52,
+    },
+  ],
 };

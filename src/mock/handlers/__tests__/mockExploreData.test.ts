@@ -24,8 +24,8 @@ describe("Explore demonstration data", () => {
     );
   });
 
-  it("preserves the original posts and adds ten valid, distinct posts", () => {
-    expect(tweets).toHaveLength(13);
+  it("preserves the original posts and adds eleven valid, distinct posts", () => {
+    expect(tweets).toHaveLength(14);
     expect(tweets.slice(0, 3).map((post) => post.id)).toEqual([
       "t1",
       "t2",
@@ -83,7 +83,7 @@ describe("Explore demonstration data", () => {
 
   it("seeds votable polls with consistent counts and valid deadlines", () => {
     const posts = tweets.filter((post) => post.poll);
-    expect(posts).toHaveLength(2);
+    expect(posts).toHaveLength(3);
     expect(new Set(posts.map((post) => post.poll!.id)).size).toBe(posts.length);
     const optionIds = posts.flatMap((post) =>
       post.poll!.options.map((option) => option.id),
@@ -109,6 +109,37 @@ describe("Explore demonstration data", () => {
       expect(duration).toBeGreaterThanOrEqual(POLL.MIN_DURATION_MINUTES);
       expect(duration).toBeLessThanOrEqual(POLL.MAX_DURATION_MINUTES);
     }
+  });
+
+  it("offers three illustrated book covers without adding post attachments", () => {
+    const post = tweets.find((post) => post.id === "t14")!;
+    const options = post.poll!.options;
+    expect(post.content).toContain("«Останній сигнал»");
+    expect(post.attachments).toHaveLength(0);
+    expect(options.map((option) => option.text)).toEqual([
+      "Сигнал із лісу",
+      "Орбіта мовчання",
+      "За межами туманності",
+    ]);
+    expect(new Set(options.map((option) => option.media?.url)).size).toBe(3);
+    for (const option of options) {
+      expect(countCharacters(option.text)).toBeLessThanOrEqual(
+        POLL.MAX_OPTION_LENGTH,
+      );
+      expect(option.media?.type).toBe("image");
+      expect(new URL(option.media!.url).protocol).toBe("https:");
+      expect(option.media?.width).toBeGreaterThan(0);
+      expect(option.media?.height).toBeGreaterThan(0);
+    }
+    const media = tweets.flatMap((post) => [
+      ...post.attachments,
+      ...(post.poll?.options.flatMap((option) =>
+        option.media ? [option.media] : [],
+      ) ?? []),
+    ]);
+    expect(new Set(media.map((attachment) => attachment.id)).size).toBe(
+      media.length,
+    );
   });
 
   it.each(mockTrends)(
