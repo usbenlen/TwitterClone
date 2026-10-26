@@ -15,6 +15,7 @@ import {
 } from "@/constants/report";
 
 import { formatCount, formatDateTime } from "@/utils/format";
+import { normalizeDisplayText, normalizeInlineDisplayText } from "@/utils/displayText";
 
 import type { User } from "@/types/user";
 import type { ReportSignal } from "@/types/report";
@@ -35,10 +36,10 @@ export function DashboardReportSummary({
     <div className="min-w-0 space-y-2 py-3">
       <Link
         to={APP_ROUTES.adminModerationForTarget(row.targetType, row.targetId)}
-        className="block rounded-sm font-semibold wrap-break-word hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+        className="block overflow-hidden rounded-sm font-semibold wrap-anywhere hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
       >
         {REPORT_TARGETS[row.targetType]}
-        {subject && ` · @${subject.username}`}
+        {subject && ` · @${normalizeInlineDisplayText(subject.username)}`}
       </Link>
       {!row.target && (
         <p className="text-sm text-muted-foreground">Об’єкт недоступний</p>
@@ -77,11 +78,11 @@ export function UserSummary({
             to={APP_ROUTES.adminUser(user.id)}
             className="block truncate rounded-sm font-bold hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           >
-            {user.displayName || user.username}
+            {normalizeInlineDisplayText(user.displayName || user.username)}
           </Link>
         ) : (
           <p className="truncate font-bold">
-            {user.displayName || user.username}
+            {normalizeInlineDisplayText(user.displayName || user.username)}
           </p>
         )}
         <div className="flex flex-wrap items-baseline gap-x-2 text-sm text-muted-foreground">
@@ -89,7 +90,7 @@ export function UserSummary({
             to={APP_ROUTES.profile(user.username)}
             className="min-w-0 truncate rounded-sm text-primary hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           >
-            @{user.username}
+            @{normalizeInlineDisplayText(user.username)}
           </Link>
           <span>{user.isBlocked ? "Заблоковано" : "Активний"}</span>
         </div>
@@ -128,7 +129,7 @@ export function ReportSummary({
                 to={APP_ROUTES.profile(report.reporter.username)}
                 className="min-w-0 max-w-full truncate rounded-sm font-medium hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               >
-                @{report.reporter.username}
+                @{normalizeInlineDisplayText(report.reporter.username)}
               </Link>
             </>
           ) : (
@@ -144,7 +145,7 @@ export function ReportSummary({
               to={APP_ROUTES.profile(author.username)}
               className="min-w-0 max-w-full truncate rounded-sm font-medium hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             >
-              @{author.username}
+              @{normalizeInlineDisplayText(author.username)}
             </Link>
           ) : (
             <span className="text-muted-foreground">
@@ -174,10 +175,10 @@ export function ReportSummary({
         </span>
       </div>
       {!isCompact && (
-        <p className="text-sm wrap-break-word text-muted-foreground">
+        <p className="overflow-hidden text-sm wrap-anywhere text-muted-foreground">
           {report.source === "system"
             ? report.system?.label || "Системний сигнал"
-            : `Скарга від @${report.reporter?.username ?? "невідомий"}`}{" "}
+            : `Скарга від @${normalizeInlineDisplayText(report.reporter?.username ?? "невідомий")}`}{" "}
           · {formatDateTime(report.createdAt)}
         </p>
       )}
@@ -218,8 +219,8 @@ export function ReportPreview({
     return (
       <div className="min-w-0 space-y-3 rounded-xl bg-muted/40 p-4">
         <UserSummary user={target.data} />
-        <p className="text-sm wrap-break-word whitespace-pre-wrap">
-          {target.data.bio}
+        <p className="min-w-0 overflow-hidden text-sm wrap-anywhere whitespace-pre-wrap">
+          {normalizeDisplayText(target.data.bio ?? "")}
         </p>
         <p className="text-sm text-muted-foreground">
           {formatCount(target.data.followersCount)} читачів ·{" "}
@@ -240,7 +241,7 @@ export function ReportPreview({
           to={APP_ROUTES.profile(target.data.author.username)}
           className="min-w-0 truncate rounded-sm font-semibold hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
         >
-          @{target.data.author.username}
+          @{normalizeInlineDisplayText(target.data.author.username)}
         </Link>
       </div>
       <TweetContent tweet={target.data} />

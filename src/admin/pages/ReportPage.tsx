@@ -14,6 +14,7 @@ import { APP_ROUTES } from "@/constants/routes";
 import { REPORT_ACTION_LABELS } from "@/admin/constants";
 
 import { formatDateTime } from "@/utils/format";
+import { normalizeInlineDisplayText } from "@/utils/displayText";
 
 import type { ReportDecision } from "@/types/report";
 
@@ -57,9 +58,9 @@ export default function ReportPage() {
             <ReportSummary report={report} />
             <ReportPreview report={report} />
             {report.resolvedAt && (
-              <p className="text-sm wrap-break-word text-muted-foreground">
+              <p className="overflow-hidden text-sm wrap-anywhere text-muted-foreground">
                 Розглянуто {formatDateTime(report.resolvedAt)}
-                {report.resolvedBy ? ` · @${report.resolvedBy.username}` : ""}
+                {report.resolvedBy ? ` · @${normalizeInlineDisplayText(report.resolvedBy.username)}` : ""}
               </p>
             )}
             <ReportActions

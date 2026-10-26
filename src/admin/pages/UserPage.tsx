@@ -15,6 +15,7 @@ import { APP_ROUTES } from "@/constants/routes";
 import { USER_ACTION_LABELS } from "@/admin/constants";
 
 import { formatCount, formatDateTime } from "@/utils/format";
+import { normalizeDisplayText } from "@/utils/displayText";
 
 import type { UserAction } from "@/admin/types";
 
@@ -58,8 +59,8 @@ export default function UserPage() {
         {user && (
           <section className="space-y-5 overflow-hidden rounded-2xl border border-border p-5">
             <UserSummary user={user} linkName={false} />
-            <p className="wrap-break-word whitespace-pre-wrap">
-              {user.bio || "Опис відсутній."}
+            <p className="min-w-0 overflow-hidden wrap-anywhere whitespace-pre-wrap">
+              {normalizeDisplayText(user.bio || "Опис відсутній.")}
             </p>
             <dl className="grid grid-cols-1 gap-3 text-sm sm:grid-cols-2">
               <div>
