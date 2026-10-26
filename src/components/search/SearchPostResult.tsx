@@ -1,4 +1,5 @@
 import { Avatar } from "@/ui";
+import { normalizeDisplayText, normalizeInlineDisplayText } from "@/utils/displayText";
 
 import type { Tweet } from "@/types";
 
@@ -11,7 +12,7 @@ export default function SearchPostResult({
   tweet,
   onClick,
 }: SearchPostResultProps) {
-  const displayName = tweet.author.displayName?.trim() || tweet.author.username;
+  const displayName = normalizeInlineDisplayText(tweet.author.displayName?.trim() || tweet.author.username);
 
   return (
     <button
@@ -32,12 +33,12 @@ export default function SearchPostResult({
           <span className="truncate text-sm font-semibold">{displayName}</span>
 
           <span className="truncate text-xs text-muted-foreground">
-            @{tweet.author.username}
+            @{normalizeInlineDisplayText(tweet.author.username)}
           </span>
         </div>
 
-        <p className="mt-1 line-clamp-2 text-sm text-foreground">
-          {tweet.content}
+        <p className="mt-1 min-w-0 line-clamp-2 wrap-anywhere text-sm text-foreground">
+          {normalizeDisplayText(tweet.content)}
         </p>
       </div>
     </button>

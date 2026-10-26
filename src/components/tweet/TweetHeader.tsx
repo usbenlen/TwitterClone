@@ -8,6 +8,7 @@ import { VerifiedBadge } from "@/ui/VerifiedBadge";
 import { APP_ROUTES } from "@/constants/routes";
 
 import { formatRelativeTime } from "@/utils/format";
+import { normalizeInlineDisplayText } from "@/utils/displayText";
 
 import type { Tweet } from "@/types/tweet";
 
@@ -70,13 +71,13 @@ export default function TweetHeader({
             to={APP_ROUTES.profile(author.username)}
             className="min-w-0 max-w-full truncate font-bold text-foreground hover:underline"
           >
-            {author.displayName}
+            {normalizeInlineDisplayText(author.displayName ?? "")}
           </Link>
 
           <VerifiedBadge user={author} size={18} />
 
           <span className="truncate text-muted-foreground">
-            @{author.username}
+            @{normalizeInlineDisplayText(author.username)}
           </span>
 
           <span className="text-muted-foreground">·</span>
@@ -127,16 +128,16 @@ export default function TweetHeader({
       </div>
 
       {(replyToUsername || replyToFallbackHref) && (
-        <div className="w-full text-xs text-muted-foreground">
+        <div className="w-full min-w-0 text-xs text-muted-foreground">
           {replyToUsername ? (
             <>
               {replyToLabel}{" "}
               <Link
                 to={APP_ROUTES.profile(replyToUsername)}
                 onClick={(e) => e.stopPropagation()}
-                className="text-primary hover:underline focus-visible:rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                className="inline-block max-w-full overflow-hidden align-bottom wrap-anywhere text-primary hover:underline focus-visible:rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               >
-                @{replyToUsername}
+                @{normalizeInlineDisplayText(replyToUsername)}
               </Link>
             </>
           ) : replyToFallbackHref ? (

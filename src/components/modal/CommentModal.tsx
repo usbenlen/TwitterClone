@@ -9,6 +9,7 @@ import { ConfirmModal } from "@/components/modal/ConfirmModal";
 import { Avatar, TwemojiText } from "@/ui/index";
 
 import { getReplyingToUsernames } from "@/utils/ancestors";
+import { normalizeDisplayText, normalizeInlineDisplayText } from "@/utils/displayText";
 
 import type { ComposerSubmitData, Tweet } from "@/types";
 
@@ -63,8 +64,7 @@ function CommentModalInner({
 
   useBodyScrollLock(open);
 
-  const authorName =
-    displayedTweet.author.displayName || displayedTweet.author.username;
+  const authorName = normalizeInlineDisplayText(displayedTweet.author.displayName || displayedTweet.author.username);
   const replyingToUsernames = getReplyingToUsernames(tweet, replyTo);
 
   return createPortal(
@@ -105,7 +105,7 @@ function CommentModalInner({
                 <div className="flex items-center gap-1.5 text-[15px]">
                   <span className="truncate font-bold">{authorName}</span>
                   <span className="truncate text-muted-foreground">
-                    @{displayedTweet.author.username}
+                    @{normalizeInlineDisplayText(displayedTweet.author.username)}
                   </span>
                   <span className="text-muted-foreground">·</span>
                   <span className="text-sm text-muted-foreground">
@@ -113,8 +113,8 @@ function CommentModalInner({
                   </span>
                 </div>
 
-                <div className="mt-1 text-[15px] leading-normal">
-                  <TwemojiText text={displayedTweet.content} />
+                <div className="mt-1 min-w-0 overflow-hidden wrap-anywhere whitespace-pre-wrap text-[15px] leading-normal">
+                  <TwemojiText text={normalizeDisplayText(displayedTweet.content)} />
                 </div>
 
                 {replyingToUsernames.length > 0 && (
@@ -127,8 +127,8 @@ function CommentModalInner({
                             ? " and "
                             : " ")}
 
-                        <span className="cursor-pointer text-primary hover:underline">
-                          @{username}
+                        <span className="inline-block max-w-full cursor-pointer overflow-hidden align-bottom wrap-anywhere text-primary hover:underline">
+                          @{normalizeInlineDisplayText(username)}
                         </span>
                       </span>
                     ))}

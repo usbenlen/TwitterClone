@@ -14,6 +14,7 @@ import { useClickOrDrag } from "@/hooks";
 import { APP_ROUTES } from "@/constants/routes";
 
 import { cn, formatRelativeTime, removePreviewUrl } from "@/utils";
+import { normalizeDisplayText, normalizeInlineDisplayText } from "@/utils/displayText";
 
 import type { TweetQuote } from "@/types";
 
@@ -49,11 +50,8 @@ export default function QuotedTweetCard({
     );
   }
 
-  const authorName = target.author.displayName || target.author.username;
-  const displayContent = removePreviewUrl(
-    target.content,
-    target.linkPreview?.url,
-  );
+  const authorName = normalizeInlineDisplayText(target.author.displayName || target.author.username);
+  const displayContent = normalizeDisplayText(removePreviewUrl(target.content, target.linkPreview?.url));
   const savedReplyingToUsernames = quote.replyingToUsernames ?? [];
   const replyingToUsernames =
     savedReplyingToUsernames.length > 0
@@ -101,7 +99,7 @@ export default function QuotedTweetCard({
           </div>
 
           <span className="flex min-w-0 items-center gap-1 text-muted-foreground">
-            <span className="truncate">@{target.author.username}</span>
+            <span className="truncate">@{normalizeInlineDisplayText(target.author.username)}</span>
             <span aria-hidden="true">·</span>
             <span className="shrink-0">
               {formatRelativeTime(target.createdAt)}
@@ -110,7 +108,7 @@ export default function QuotedTweetCard({
         </div>
 
         {target.isComment && replyingToUsernames.length > 0 && (
-          <p className="mt-1 wrap-break-word text-sm text-muted-foreground">
+          <p className="mt-1 min-w-0 overflow-hidden wrap-anywhere text-sm text-muted-foreground">
             У відповідь{" "}
             {replyingToUsernames.map((username, index) => (
               <span key={username}>
@@ -120,7 +118,7 @@ export default function QuotedTweetCard({
                   to={APP_ROUTES.profile(username)}
                   className="text-primary hover:underline"
                 >
-                  @{username}
+                  @{normalizeInlineDisplayText(username)}
                 </Link>
               </span>
             ))}
@@ -130,7 +128,7 @@ export default function QuotedTweetCard({
         {displayContent && (
           <TwemojiText
             text={displayContent}
-            className="mt-1 wrap-break-word whitespace-pre-wrap text-[15px]"
+            className="mt-1 block min-w-0 overflow-hidden wrap-anywhere whitespace-pre-wrap text-[15px]"
           />
         )}
 

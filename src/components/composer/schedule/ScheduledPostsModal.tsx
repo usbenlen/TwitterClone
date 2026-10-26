@@ -11,6 +11,7 @@ import { useBodyScrollLock } from "@/hooks/useBodyScrollLock";
 import { Spinner, TwemojiText } from "@/ui/index";
 
 import { formatDateTime } from "@/utils/format";
+import { normalizeDisplayText } from "@/utils/displayText";
 
 import type { ScheduledPost } from "@/types";
 
@@ -104,9 +105,9 @@ export default function ScheduledPostsModal({
                     />
                   )}
                   <div className="min-w-0 flex-1">
-                    <div className="line-clamp-3 text-[15px]">
+                    <div className="min-w-0 line-clamp-3 wrap-anywhere whitespace-pre-wrap text-[15px]">
                       {post.content ? (
-                        <TwemojiText text={post.content} />
+                        <TwemojiText text={normalizeDisplayText(post.content)} />
                       ) : (
                         <span className="text-muted-foreground">
                           Медіадопис

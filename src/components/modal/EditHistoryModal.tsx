@@ -5,6 +5,7 @@ import { X } from "lucide-react";
 import { useBodyScrollLock } from "@/hooks/useBodyScrollLock";
 
 import { formatDateTime } from "@/utils/format";
+import { normalizeInlineDisplayText } from "@/utils/displayText";
 
 import { Avatar, Button, Spinner, VerifiedBadge } from "@/ui";
 
@@ -102,8 +103,7 @@ export default function EditHistoryModal({
                   : isFirst
                     ? "Початкова версія"
                     : `Версія ${index + 1}`;
-                const authorName =
-                  version.author.displayName || version.author.username;
+                const authorName = normalizeInlineDisplayText(version.author.displayName || version.author.username);
 
                 return (
                   <article key={version.versionId} className="px-4 py-5">
@@ -140,7 +140,7 @@ export default function EditHistoryModal({
                             className="size-4"
                           />
                           <span className="truncate text-muted-foreground">
-                            @{version.author.username}
+                            @{normalizeInlineDisplayText(version.author.username)}
                           </span>
                         </div>
                         <TweetContent tweet={version} readOnly />

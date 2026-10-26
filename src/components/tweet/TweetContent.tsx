@@ -6,6 +6,7 @@ import { QuotedTweetCard } from "@/components/tweet/quote/index";
 import type { Tweet } from "@/types/tweet";
 
 import { removePreviewUrl } from "@/utils/linkPreview";
+import { normalizeDisplayText } from "@/utils/displayText";
 
 interface TweetContentProps {
   tweet: Tweet;
@@ -16,17 +17,14 @@ export default function TweetContent({
   tweet,
   readOnly = false,
 }: TweetContentProps) {
-  const displayContent = removePreviewUrl(
-    tweet.content,
-    tweet.linkPreview?.url,
-  );
+  const displayContent = normalizeDisplayText(removePreviewUrl(tweet.content, tweet.linkPreview?.url));
 
   return (
     <div className="min-w-0">
       {displayContent && (
         <TwemojiText
           text={displayContent}
-          className="mt-1 wrap-break-word whitespace-pre-wrap"
+          className="mt-1 block min-w-0 overflow-hidden wrap-anywhere whitespace-pre-wrap"
         />
       )}
 

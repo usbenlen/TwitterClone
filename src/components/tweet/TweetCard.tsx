@@ -37,6 +37,7 @@ import {
 import { APP_ROUTES } from "@/constants/routes";
 import { mapMediaToComposerMedia, mapPollToComposerPoll, cn } from "@/utils";
 import { getReplyToUsername } from "@/utils/ancestors";
+import { normalizeInlineDisplayText } from "@/utils/displayText";
 
 import type { Tweet, ComposerSubmitData, User } from "@/types";
 
@@ -172,9 +173,11 @@ function TweetCard({
             <div className="min-w-0 pb-1 text-xs font-semibold text-muted-foreground">
               <Link
                 to={APP_ROUTES.profile(repostedBy.username)}
-                className="hover:underline"
+                className="inline-block max-w-full overflow-hidden align-bottom wrap-anywhere hover:underline"
               >
-                {repostedBy.displayName || `@${repostedBy.username}`} reposted
+                {normalizeInlineDisplayText(
+                  repostedBy.displayName || `@${repostedBy.username}`,
+                )} reposted
               </Link>
             </div>
           </>

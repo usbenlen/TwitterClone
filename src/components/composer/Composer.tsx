@@ -5,6 +5,7 @@ import { ComposerAttachments } from "@/components/composer/ComposerAttachments";
 import { ComposerInputsAndPopovers } from "@/components/composer/ComposerInputsAndPopovers";
 
 import { formatDateTime, cn } from "@/utils";
+import { normalizeInlineDisplayText } from "@/utils/displayText";
 
 import { useAuth, useTweetComposer, useDragAndDrop } from "@/hooks";
 
@@ -218,7 +219,9 @@ export default function Composer({
         {isExpanded && replyingToUsername && (
           <p className="mb-1 shrink-0 text-sm text-muted-foreground">
             Replying to{" "}
-            <span className="text-primary">@{replyingToUsername}</span>
+            <span className="inline-block max-w-full overflow-hidden align-bottom wrap-anywhere text-primary">
+              @{normalizeInlineDisplayText(replyingToUsername)}
+            </span>
           </p>
         )}
 
