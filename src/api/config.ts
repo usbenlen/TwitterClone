@@ -123,6 +123,8 @@ export const ENDPOINTS = {
     posts: "recommendations/posts",
     users: "recommendations/users",
     trends: "recommendations/trends",
+    explore: "recommendations/explore",
+    trendFeedback: "recommendations/trends/feedback",
   },
   follows: {
     follow: (userId: string) => `follows/${encodeURIComponent(userId)}`,

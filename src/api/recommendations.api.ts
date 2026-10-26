@@ -8,14 +8,18 @@ import { mockRecommendationsApi } from "@/mock/handlers";
 
 import type {
   CursorPage,
+  ExploreCategory,
   PaginatedRecommendedPosts,
   PaginatedRecommendations,
   TrendRecommendationsResponse,
+  TrendFeedbackRequest,
 } from "@/types";
 
 interface RecommendationsApi {
   posts(limit: number, cursor?: string | null): Promise<PaginatedRecommendedPosts>;
   trends(limit: number): Promise<TrendRecommendationsResponse>;
+  explore(category: ExploreCategory, limit: number): Promise<TrendRecommendationsResponse>;
+  feedback(payload: TrendFeedbackRequest): Promise<void>;
   users(
     limit: number,
     cursor?: string | null,
@@ -39,6 +43,13 @@ const realRecommendationsApi: RecommendationsApi = {
     apiClient.get<TrendRecommendationsResponse>(
       `${ENDPOINTS.recommendations.trends}?${new URLSearchParams({ limit: String(limit) })}`,
     ),
+
+  explore: (category, limit) =>
+    apiClient.get<TrendRecommendationsResponse>(
+      `${ENDPOINTS.recommendations.explore}?${new URLSearchParams({ category, limit: String(limit) })}`,
+    ),
+
+  feedback: (payload) => apiClient.post<void>(ENDPOINTS.recommendations.trendFeedback, payload),
 
   users: async (limit, cursor) => {
     const params = new URLSearchParams({

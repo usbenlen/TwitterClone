@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { recommendationsApi } from "@/api/recommendations.api";
 
-const client = vi.hoisted(() => ({ get: vi.fn() }));
+const client = vi.hoisted(() => ({ get: vi.fn(), post: vi.fn() }));
 vi.mock("@/api/client", () => ({ apiClient: client }));
 vi.mock("@/mock/config", () => ({ MOCK_ENABLED: false }));
 vi.mock("@/mock/handlers", () => ({ mockRecommendationsApi: {} }));
@@ -10,6 +10,36 @@ vi.mock("@/mock/handlers", () => ({ mockRecommendationsApi: {} }));
 beforeEach(() => vi.resetAllMocks());
 
 describe("real recommendation requests", () => {
+  it.each(["news", "sports", "entertainment"] as const)("requests the server category %s", async (category) => {
+    const response = { items: [{ id: "hashtag:Київ & світ", title: "#Київ", context: "Тема", query: "Київ" }] };
+    client.get.mockResolvedValue(response);
+    await expect(recommendationsApi.explore(category, 20)).resolves.toEqual(response);
+    const url = new URL(client.get.mock.calls[0][0], "https://example.com/");
+    expect(url.pathname).toBe("/recommendations/explore");
+    expect(url.searchParams.get("category")).toBe(category);
+    expect(url.searchParams.get("limit")).toBe("20");
+  });
+
+  it.each(["irrelevant_content", "spam", "abusive", "not_interested", "duplicate", "harmful_or_spam"] as const)(
+    "submits %s with the unchanged opaque trend ID and accepts 204", async (reason) => {
+      const payload = { trendId: "hashtag:Київ / & світ", reason };
+      client.post.mockResolvedValue(undefined);
+      await expect(recommendationsApi.feedback(payload)).resolves.toBeUndefined();
+      expect(client.post).toHaveBeenCalledWith("recommendations/trends/feedback", payload);
+    },
+  );
+
+  it("propagates category and feedback failures without fallback and permits retry", async () => {
+    const error = new Error("Unavailable");
+    client.get.mockRejectedValueOnce(error).mockResolvedValueOnce({ items: [] });
+    client.post.mockRejectedValueOnce(error).mockResolvedValueOnce(undefined);
+    await expect(recommendationsApi.explore("sports", 20)).rejects.toBe(error);
+    await expect(recommendationsApi.explore("sports", 20)).resolves.toEqual({ items: [] });
+    const payload = { trendId: "t1", reason: "spam" as const };
+    await expect(recommendationsApi.feedback(payload)).rejects.toBe(error);
+    await expect(recommendationsApi.feedback(payload)).resolves.toBeUndefined();
+  });
+
   it("maps recommended post DTOs and preserves the opaque page cursor", async () => {
     const cursor = "opaque+/=?&ю";
     client.get.mockResolvedValue({

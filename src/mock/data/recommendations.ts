@@ -1,4 +1,28 @@
-import type { TrendRecommendation } from "@/types";
+import type { ExploreCategory, TrendRecommendation } from "@/types";
+
+export const mockTrendCategories: Record<ExploreCategory, readonly string[]> = {
+  news: [
+    "trend-city-initiatives",
+    "trend-green-energy",
+    "trend-science-discoveries",
+    "trend-education",
+    "trend-digital-services",
+  ],
+  sports: [
+    "trend-football",
+    "trend-basketball",
+    "trend-cycling",
+    "trend-marathon",
+    "trend-tennis",
+  ],
+  entertainment: [
+    "trend-cinema",
+    "trend-live-music",
+    "trend-series",
+    "trend-board-games",
+    "trend-game-festival",
+  ],
+};
 
 export const mockTrends: TrendRecommendation[] = [
   {

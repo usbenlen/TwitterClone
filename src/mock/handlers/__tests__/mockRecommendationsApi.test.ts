@@ -4,6 +4,44 @@ vi.mock("@/mock/utils/delay", () => ({ delay: async () => {} }));
 beforeEach(() => vi.resetModules());
 
 describe("mock author recommendations", () => {
+  it("selects explicit category membership before limiting and excludes saved feedback", async () => {
+    const { mockTrends } = await import("@/mock/data");
+    const originalOrder = mockTrends.map((trend) => trend.id);
+    const { mockRecommendationsApi } = await import("@/mock/handlers/mockRecommendationsApi");
+    const first = await mockRecommendationsApi.explore("sports", 2);
+    expect(first.items.map((trend) => trend.id)).toEqual(["trend-football", "trend-basketball"]);
+    await expect(mockRecommendationsApi.feedback({ trendId: first.items[0].id, reason: "spam" })).resolves.toBeUndefined();
+    await mockRecommendationsApi.feedback({ trendId: first.items[0].id, reason: "not_interested" });
+    expect((await mockRecommendationsApi.explore("sports", 2)).items.map((trend) => trend.id)).toEqual(["trend-basketball", "trend-cycling"]);
+    expect((await mockRecommendationsApi.trends(50)).items.some((trend) => trend.id === first.items[0].id)).toBe(false);
+    expect(mockTrends.map((trend) => trend.id)).toEqual(originalOrder);
+  });
+
+  it("keeps feedback personal to the mock user", async () => {
+    const { currentUser } = await import("@/mock/data");
+    const { mockRecommendationsApi } = await import("@/mock/handlers/mockRecommendationsApi");
+    const userId = currentUser.id;
+    await mockRecommendationsApi.feedback({ trendId: "trend-football", reason: "spam" });
+    try {
+      currentUser.id = "another-user";
+      expect((await mockRecommendationsApi.explore("sports", 1)).items[0].id).toBe("trend-football");
+    } finally {
+      currentUser.id = userId;
+    }
+    expect((await mockRecommendationsApi.explore("sports", 1)).items[0].id).toBe("trend-basketball");
+  });
+
+  it("rejects unknown topics, invalid reasons and limits without hiding a topic", async () => {
+    const { mockRecommendationsApi } = await import("@/mock/handlers/mockRecommendationsApi");
+    await expect(mockRecommendationsApi.feedback({ trendId: "unknown", reason: "spam" })).rejects.toMatchObject({ status: 404 });
+    await expect(mockRecommendationsApi.feedback({ trendId: "trend-football", reason: "invalid" as "spam" })).rejects.toMatchObject({ status: 400 });
+    for (const limit of [0, 51, 1.5]) {
+      await expect(mockRecommendationsApi.explore("sports", limit)).rejects.toMatchObject({ status: 400 });
+    }
+    await expect(mockRecommendationsApi.explore("unknown" as "news", 20)).rejects.toMatchObject({ status: 400 });
+    expect((await mockRecommendationsApi.explore("sports", 1)).items[0].id).toBe("trend-football");
+  });
+
   it("paginates existing posts by date without mutating the fixture order", async () => {
     const { tweets } = await import("@/mock/data");
     const originalOrder = tweets.map((tweet) => tweet.id);

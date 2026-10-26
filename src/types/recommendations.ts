@@ -27,3 +27,8 @@ export type TrendFeedbackReason =
   | "not_interested"
   | "duplicate"
   | "harmful_or_spam";
+
+export interface TrendFeedbackRequest {
+  trendId: string;
+  reason: TrendFeedbackReason;
+}

@@ -6,7 +6,7 @@ import { DEFAULT_SEARCH_CRITERIA } from "@/constants/search";
 import { MAX_TWEET_LENGTH } from "@/constants/app";
 import { POLL } from "@/constants/poll";
 import { MILLISECONDS_PER_MINUTE } from "@/constants/date";
-import { filterExploreTrends } from "@/utils/explore";
+import { mockTrendCategories } from "@/mock/data/recommendations";
 import { countCharacters, getPostRulesError } from "@/utils/composerRules";
 
 vi.mock("@/mock/utils/delay", () => ({ delay: async () => {} }));
@@ -16,7 +16,7 @@ describe("Explore demonstration data", () => {
     expect(mockTrends).toHaveLength(20);
     for (const category of ["news", "sports", "entertainment"] as const) {
       expect(
-        filterExploreTrends(mockTrends.slice(0, 20), category),
+        mockTrends.filter((trend) => mockTrendCategories[category].includes(trend.id)),
       ).toHaveLength(5);
     }
     expect(new Set(mockTrends.map((trend) => trend.id)).size).toBe(
