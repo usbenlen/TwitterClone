@@ -54,6 +54,8 @@ export const appApi = createApi({
     "Followers",
     "Scheduled",
     "Recommendation",
+    "Notification",
+    "NotificationPreferences",
   ],
   refetchOnMountOrArgChange: true,
   endpoints: () => ({}),

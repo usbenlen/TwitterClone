@@ -1,5 +1,10 @@
 import { useEffect, useRef } from "react";
 import { skipToken } from "@reduxjs/toolkit/query/react";
+import { setupListeners } from "@reduxjs/toolkit/query";
+
+import { useNotificationPollingOptions } from "@/hooks/useNotificationPollingOptions";
+
+import { useGetUnreadNotificationsCountQuery } from "@/store/notificationsApi";
 
 import {
   SCHEDULE_CHECK_INTERVAL_MS,
@@ -32,6 +37,13 @@ export function AppEffects() {
   useGetFollowingQuery(user?.id ?? skipToken);
   useGetFollowersQuery(user?.id ?? skipToken);
   const scheduled = useGetScheduledPostsQuery(undefined, { skip: !user });
+  const notificationPolling = useNotificationPollingOptions();
+  useGetUnreadNotificationsCountQuery(undefined, {
+    ...notificationPolling,
+    skip: !user,
+  });
+
+  useEffect(() => setupListeners(dispatch), [dispatch]);
 
   useEffect(() => {
     setUnauthorizedHandler(() => {

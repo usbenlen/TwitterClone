@@ -109,8 +109,13 @@ export const postsApi = appApi.injectEndpoints({
       queryFn: ({ criteria, viewer }) => request(() => searchApi.users(criteria, viewer)),
     }),
 
-    getThread: build.query<ThreadResponse, string>({
-      queryFn: (id) => request(() => commentApi.getThread(id)),
+    getThread: build.query<ThreadResponse, string | Target>({
+      queryFn: (target) =>
+        request(() =>
+          typeof target === "string"
+            ? commentApi.getThread(target)
+            : commentApi.getThread(target.id, target.type),
+        ),
       providesTags: (data) =>
         data ? tagsFor([data.target, ...data.ancestors, ...data.replies]) : [],
     }),
