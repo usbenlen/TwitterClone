@@ -104,6 +104,14 @@ export const routes = createBrowserRouter([
             lazy: lazyPage(() => import("@/pages/explore/ExplorePage")),
           },
           {
+            path: APP_ROUTES.NOTIFICATIONS,
+            lazy: lazyPage(() => import("@/pages/notifications/NotificationsPage")),
+          },
+          {
+            path: APP_ROUTES.SETTINGS_NOTIFICATIONS,
+            lazy: lazyPage(() => import("@/pages/notifications/NotificationSettingsPage")),
+          },
+          {
             path: APP_ROUTES.BOOKMARKS,
             lazy: lazyPage(() => import("@/pages/bookmarks/BookmarksPage")),
           },

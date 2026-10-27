@@ -22,7 +22,7 @@ export default function MobileNavigationItem({
 }: Props) {
   const className = ({ isActive }: { isActive: boolean }) =>
     cn(
-      "rounded-full p-3 transition-colors dark:focus-visible:focus-indicator",
+      "inline-flex size-12 shrink-0 items-center justify-center rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring dark:focus-visible:focus-indicator",
       isActive
         ? "bg-primary text-primary-foreground dark:active:bg-primary-hover"
         : "text-muted-foreground hover:bg-muted dark:text-foreground dark:hover:bg-surface-hover dark:active:bg-muted",
@@ -30,7 +30,8 @@ export default function MobileNavigationItem({
 
   if (to) {
     return (
-      <NavLink to={to} end={end} className={className} aria-label={label}>
+      <NavLink to={to} end={end} className={className}>
+        <span className="sr-only">{label}</span>
         {icon}
       </NavLink>
     );
@@ -41,7 +42,7 @@ export default function MobileNavigationItem({
       type="button"
       onClick={onClick}
       aria-label={label}
-      className="rounded-full p-3 text-muted-foreground transition-colors hover:bg-muted dark:text-foreground dark:hover:bg-surface-hover dark:active:bg-muted dark:focus-visible:focus-indicator"
+      className="inline-flex size-12 shrink-0 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring dark:text-foreground dark:hover:bg-surface-hover dark:active:bg-muted dark:focus-visible:focus-indicator"
     >
       {icon}
     </button>

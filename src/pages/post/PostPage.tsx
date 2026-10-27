@@ -1,6 +1,6 @@
 import { useEffect, useRef, useMemo } from "react";
 import { skipToken } from "@reduxjs/toolkit/query/react";
-import { useParams } from "react-router";
+import { useParams, useSearchParams } from "react-router";
 
 import { useGetThreadQuery, useViewPostMutation } from "@/store/postsApi";
 
@@ -15,7 +15,15 @@ import { withAncestorContext } from "@/utils/ancestors";
 
 export default function PostPage() {
   const { postId } = useParams<{ postId: string }>();
-  const query = useGetThreadQuery(postId ?? skipToken);
+  const [params] = useSearchParams();
+  const targetType = params.get("targetType");
+  const query = useGetThreadQuery(
+    postId
+      ? targetType === "post" || targetType === "comment"
+        ? { id: postId, type: targetType }
+        : postId
+      : skipToken,
+  );
   const data = query.currentData;
   const thread = useMemo(
     () =>

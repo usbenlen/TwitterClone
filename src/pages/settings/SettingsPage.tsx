@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router";
-import { LockKeyhole, Palette, UserRound, ArrowRight } from "lucide-react";
+import { Bell, LockKeyhole, Palette, UserRound, ArrowRight } from "lucide-react";
 
 import { userApi, type UpdateProfileRequest } from "@/api";
 
@@ -56,6 +56,16 @@ export default function SettingsPage({
           </p>
 
           <div className="overflow-hidden rounded-2xl border border-border bg-background">
+            {variant === "main" && (
+              <Link to={APP_ROUTES.SETTINGS_NOTIFICATIONS} className="flex items-center gap-3 border-b border-border p-5 transition hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring">
+                <Bell className="size-5 shrink-0" aria-hidden="true" />
+                <div className="flex-1">
+                  <h2 className="font-semibold">Сповіщення</h2>
+                  <p className="text-sm text-muted-foreground">Оберіть, про які події отримувати сповіщення</p>
+                </div>
+                <ArrowRight className="size-4" aria-hidden="true" />
+              </Link>
+            )}
             {/* Appearance */}
             <section className="border-b border-border p-5">
               <div className="mb-4 flex items-center gap-3">

@@ -6,6 +6,7 @@ import {
   House,
   Bookmark,
   Search,
+  Bell,
 } from "lucide-react";
 
 import { APP_ROUTES } from "@/constants/routes";
@@ -34,6 +35,13 @@ export const MAIN_NAVIGATION: NavigationItem[] = [
     getPath: () => APP_ROUTES.EXPLORE,
     requiresAuth: true,
     mobilePlacement: ["more"],
+  },
+  {
+    label: "Сповіщення",
+    icon: Bell,
+    getPath: () => APP_ROUTES.NOTIFICATIONS,
+    requiresAuth: true,
+    mobilePlacement: ["bottom", "more"],
   },
   {
     label: "Профіль",

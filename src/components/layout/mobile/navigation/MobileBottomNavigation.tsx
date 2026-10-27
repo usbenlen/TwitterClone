@@ -2,6 +2,8 @@ import { APP_ROUTES } from "@/constants/routes";
 import { useState } from "react";
 import { Menu } from "lucide-react";
 
+import { NotificationBell } from "@/components/notifications/NotificationBell";
+
 import { useNavigation } from "@/hooks/useNavigation";
 
 import {
@@ -32,7 +34,7 @@ export default function MobileBottomNavigation() {
                 key={item.label}
                 label={item.label}
                 to={item.to}
-                icon={<Icon />}
+                icon={item.to === APP_ROUTES.NOTIFICATIONS ? <NotificationBell /> : <Icon />}
                 end={item.to === APP_ROUTES.HOME}
               />
             );

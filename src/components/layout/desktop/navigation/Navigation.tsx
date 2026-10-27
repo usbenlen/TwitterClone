@@ -2,6 +2,7 @@ import { APP_ROUTES } from "@/constants/routes";
 import { useNavigation } from "@/hooks/useNavigation";
 
 import NavigationItem from "@/components/layout/desktop/navigation/NavigationItem";
+import { NotificationBell } from "@/components/notifications/NotificationBell";
 
 interface NavigationProps {
   vertical?: boolean;
@@ -21,7 +22,7 @@ export default function Navigation({ vertical = false }: NavigationProps) {
           <NavigationItem
             key={item.label}
             to={item.to}
-            icon={<Icon />}
+            icon={item.to === APP_ROUTES.NOTIFICATIONS ? <NotificationBell /> : <Icon />}
             vertical={vertical}
             end={item.to === APP_ROUTES.HOME}
           >

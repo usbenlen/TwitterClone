@@ -1,5 +1,8 @@
 import { useNavigation } from "@/hooks/useNavigation";
 
+import { APP_ROUTES } from "@/constants/routes";
+
+import { NotificationBell } from "@/components/notifications/NotificationBell";
 import { MobileSidebarItem } from "@/components/layout/mobile/sidebar";
 
 interface MobileSidebarNavigationProps {
@@ -23,7 +26,7 @@ export default function MobileDrawerNavigation({
           <MobileSidebarItem
             key={item.label}
             to={item.to}
-            icon={<Icon />}
+            icon={item.to === APP_ROUTES.NOTIFICATIONS ? <NotificationBell /> : <Icon />}
             onClick={onNavigate}
           >
             {item.label}

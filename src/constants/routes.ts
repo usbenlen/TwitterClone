@@ -34,6 +34,7 @@ export const APP_ROUTES = {
   SEARCH: "/search",
   EXPLORE: "/explore",
   BOOKMARKS: "/bookmarks",
+  NOTIFICATIONS: "/notifications",
   FOLLOW_RECOMMENDATIONS: "/follow",
 
   POST: "/post/:postId",
@@ -43,6 +44,7 @@ export const APP_ROUTES = {
   FOLLOWERS: "/:username/followers",
 
   SETTINGS: "/settings",
+  SETTINGS_NOTIFICATIONS: "/settings/notifications",
   SETTINGS_THEME: "/settings/theme",
   SETTINGS_CHANGE_PASSWORD: "/settings/change-password",
   SETTINGS_CHANGE_PASSWORD_RESET: "/settings/change-password/reset",
@@ -59,7 +61,7 @@ export const APP_ROUTES = {
   explore: (tab: ExploreTab = "overview") =>
     tab === "overview" ? "/explore" : `/explore?${new URLSearchParams({ tab })}`,
 
-  post: (postId: string) => `/post/${postId}`,
+  post: (postId: string, targetType?: "post" | "comment") => `/post/${encodeURIComponent(postId)}${targetType ? `?targetType=${targetType}` : ""}`,
 
   search: (criteria: Partial<SearchCriteria> = {}) =>
     `/search?${serializeSearchCriteria({ ...DEFAULT_SEARCH_CRITERIA, ...criteria })}`,
