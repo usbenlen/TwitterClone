@@ -66,7 +66,12 @@ const realCommentApi = {
     return page.items.map(normalizeComment);
   },
 
-  getThread: async (id: string) => {
+  getThread: async (id: string, targetType?: "post" | "comment") => {
+    if (targetType === "comment") {
+      return normalizeCommentThread(
+        await apiClient.get<BackendThreadResponse>(ENDPOINTS.comments.thread(id)),
+      );
+    }
     try {
       const post = await apiClient.get<BackendPost>(ENDPOINTS.posts.byId(id));
       const replies = await apiClient.get<CursorPage<BackendPost>>(
@@ -84,6 +89,7 @@ const realCommentApi = {
       };
     } catch (error) {
       if (
+        targetType === "post" ||
         !(error instanceof Error) ||
         !("status" in error) ||
         (error as ApiError).status !== 404

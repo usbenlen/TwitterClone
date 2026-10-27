@@ -75,10 +75,10 @@ export const mockCommentApi = {
       .map((comment) => withAncestors(comment, rootPost, comments));
   },
 
-  async getThread(id: string): Promise<ThreadResponse> {
+  async getThread(id: string, targetType?: "post" | "comment"): Promise<ThreadResponse> {
     await delay(MOCK_DELAYS.COMMENT_READ);
 
-    const tweet = tweets.find((item) => item.id === id);
+    const tweet = targetType === "comment" ? undefined : tweets.find((item) => item.id === id);
 
     // Original post
     if (tweet) {
@@ -99,7 +99,7 @@ export const mockCommentApi = {
     }
 
     // Comment
-    const found = findComment(id);
+    const found = targetType === "post" ? null : findComment(id);
 
     if (!found) throw new Error("Пост або коментар не знайдено.");
 

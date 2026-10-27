@@ -18,6 +18,13 @@ export const API_BASE_URL = buildApiBaseUrl();
 
 // Ендпоінти API. Тут зібрано всі шляхи, щоб не дублювати рядки
 export const ENDPOINTS = {
+  notifications: {
+    list: "notifications",
+    unreadCount: "notifications/unread-count",
+    read: (id: string) => `notifications/${encodeURIComponent(id)}/read`,
+    readAll: "notifications/read-all",
+    preferences: "notifications/preferences",
+  },
   admin: {
     dashboard: {
       metrics: "admin/dashboard/metrics",
