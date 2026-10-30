@@ -1,9 +1,9 @@
 import { describe, expect, it, vi } from "vitest";
 
+import { getPostRulesError } from "@/features/content/lib/composer/composerRules";
 import { commentsByPostId } from "@/mock/data/comments";
 import { posts } from "@/mock/data/posts";
 import { mockCommentApi } from "@/mock/handlers/mockCommentApi";
-import { getPostRulesError } from "@/utils/composer/composerRules";
 
 vi.mock("@/mock/utils/delay", () => ({ delay: async () => {} }));
 

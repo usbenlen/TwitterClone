@@ -1,6 +1,6 @@
-import type { UserShort } from "@/types/user";
-
 import { sampleAuthors } from "@/mock/data/users";
+
+import type { UserShort } from "@/features/profiles/types";
 
 export const mockFollowing: Record<string, UserShort[]> = {
   u1: [

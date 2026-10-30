@@ -1,13 +1,10 @@
+import { ApiError } from "@/shared/api";
+import { commentsByPostId } from "@/mock/data/comments";
+import { posts, setPosts } from "@/mock/data/posts";
 import { MOCK_DELAYS } from "@/mock/mockConfig";
-
-import { ApiError } from "@/api/httpClient";
-
 import { delay } from "@/mock/utils/delay";
 
-import { posts, setPosts } from "@/mock/data/posts";
-import { commentsByPostId } from "@/mock/data/comments";
-
-import type { QuoteTargetType, PostPoll } from "@/types";
+import type { PostPoll, QuoteTargetType } from "@/features/content/types";
 
 function findTarget(targetType: QuoteTargetType, targetId: string) {
   const commentEntry =

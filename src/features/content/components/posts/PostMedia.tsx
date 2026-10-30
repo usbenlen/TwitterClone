@@ -1,0 +1,74 @@
+import { useState } from "react";
+
+import {
+  MediaGrid,
+  MediaItem,
+  MediaViewer,
+} from "@/features/content/components/media";
+
+import type { MediaAttachment } from "@/features/content/types";
+
+interface Props {
+  attachments?: MediaAttachment[] | null;
+  autoPlayVideos?: boolean;
+  variant?: "default" | "quote";
+}
+
+export default function PostMedia({
+  attachments,
+  autoPlayVideos = false,
+  variant = "default",
+}: Props) {
+  const [viewerIndex, setViewerIndex] = useState<number | null>(null);
+
+  const safeAttachments = Array.isArray(attachments) ? attachments : [];
+
+  const isSingleVideo =
+    safeAttachments.length === 1 && safeAttachments[0].type === "video";
+  const isQuote = variant === "quote";
+
+  const handleOpen = (index: number) => {
+    setViewerIndex(index);
+  };
+
+  if (safeAttachments.length === 0) return null;
+
+  return (
+    <>
+      <div data-post-interactive="true">
+        <MediaGrid
+          items={safeAttachments}
+          flush={isQuote}
+          bordered={!isQuote}
+          renderItem={(safeAttachment, index) => (
+            <MediaItem
+              attachment={safeAttachment}
+              onOpen={() => handleOpen(index)}
+              openOnClick={
+                !isSingleVideo &&
+                !(
+                  isQuote &&
+                  (safeAttachment.type === "video" ||
+                    safeAttachment.type === "gif")
+                )
+              }
+              autoPlayInline={
+                autoPlayVideos && safeAttachment.type === "video"
+              }
+            />
+          )}
+        />
+      </div>
+
+      {!isSingleVideo && (
+        <MediaViewer
+          attachments={safeAttachments}
+          currentIndex={viewerIndex ?? 0}
+          open={viewerIndex !== null}
+          onClose={() => setViewerIndex(null)}
+          onChange={setViewerIndex}
+        />
+      )}
+    </>
+  );
+}

@@ -1,17 +1,16 @@
-import { useEffect, useRef, useMemo } from "react";
 import { skipToken } from "@reduxjs/toolkit/query/react";
+import { useEffect, useMemo, useRef } from "react";
 import { useParams, useSearchParams } from "react-router";
 
-import { useGetThreadQuery, useViewPostMutation } from "@/store/posts/postQueries";
-
-import { Spinner } from "@/components/ui/Spinner";
-
-import PageHeader from "@/components/navigation/PageHeader";
-import PostCard from "@/components/posts/PostCard";
-
-import { APP_ROUTES } from "@/constants/routes";
-
-import { withAncestorContext } from "@/utils/posts/ancestors";
+import { PageHeader } from "@/widgets/navigation/pageHeader";
+import {
+  useGetThreadQuery,
+  useViewPostMutation,
+} from "@/features/content/api/postQueries";
+import { PostCard } from "@/features/content/components/posts";
+import { withAncestorContext } from "@/features/content/lib/posts/ancestors";
+import { APP_ROUTES } from "@/shared/config/routes";
+import { Spinner } from "@/shared/ui";
 
 export default function PostPage() {
   const { postId } = useParams<{ postId: string }>();

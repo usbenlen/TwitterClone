@@ -1,12 +1,14 @@
 // @vitest-environment happy-dom
 import { act } from "react";
-import { createRoot, type Root } from "react-dom/client";
+import { createRoot } from "react-dom/client";
 import { Provider } from "react-redux";
 import { MemoryRouter, useLocation, useNavigate } from "react-router";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
+import { createAppStore } from "@/app/store/store";
 import ExplorePage from "@/pages/explore/ExplorePage";
-import { createAppStore } from "@/store/store";
+
+import type { Root } from "react-dom/client";
 
 const hooks = vi.hoisted(() => ({
   trends: vi.fn(),
@@ -14,20 +16,20 @@ const hooks = vi.hoisted(() => ({
   users: vi.fn(),
   posts: vi.fn(),
 }));
-vi.mock("@/hooks/recommendations/useRecommendations", () => ({
+vi.mock("@/features/discovery/hooks/useRecommendations", () => ({
   useTrends: hooks.trends,
   useExploreTrends: hooks.categories,
   useRecommendedUsers: hooks.users,
 }));
-vi.mock("@/hooks/recommendations/useRecommendedPosts", () => ({
+vi.mock("@/features/discovery/hooks/useRecommendedPosts", () => ({
   useRecommendedPosts: hooks.posts,
 }));
-vi.mock("@/components/profiles/RecommendationUserItem", () => ({
+vi.mock("@/features/profiles/components/RecommendationUserItem", () => ({
   default: ({ user }: { user: { username: string } }) => (
     <a href={`/${user.username}`}>{user.username}</a>
   )
 }));
-vi.mock("@/components/posts/FeedList", () => ({
+vi.mock("@/widgets/feed/FeedList", () => ({
   default: ({ posts }: { posts: { id: string; content: string }[] }) => (
     <div>
       {posts.map((post) => (

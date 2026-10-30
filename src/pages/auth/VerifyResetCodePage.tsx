@@ -1,26 +1,24 @@
-import { useState, useEffect } from "react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useLocation, useNavigate } from "react-router";
 
-import { zodResolver } from "@hookform/resolvers/zod";
-
-import { AUTH_LIMITS } from "@/constants/auth";
-import { APP_ROUTES } from "@/constants/routes";
-
+import { authApi } from "@/features/auth/api";
+import { AuthShell, CodeInput } from "@/features/auth/components";
+import { AUTH_LIMITS } from "@/features/auth/constants/auth";
+import { useAuth } from "@/features/auth/hooks/useAuth";
 import {
   changePasswordSchema,
-  type ChangePasswordFormValues,
   verificationCodeSchema,
-  type VerificationCodeFormValues,
-} from "@/schemas/authSchema";
+} from "@/features/auth/schemas/authSchema";
+import { ApiError } from "@/shared/api";
+import { APP_ROUTES } from "@/shared/config/routes";
+import { Button, Input } from "@/shared/ui";
 
-import { authApi, ApiError } from "@/api";
-
-import { useAuth } from "@/hooks/auth/useAuth";
-
-import { Button, Input } from "@/components/ui";
-
-import { AuthShell, CodeInput } from "@/components/auth";
+import type {
+  ChangePasswordFormValues,
+  VerificationCodeFormValues,
+} from "@/features/auth/schemas/authSchema";
 
 interface LocationState {
   email?: string;

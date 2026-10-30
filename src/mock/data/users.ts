@@ -1,8 +1,7 @@
-import type { User } from "@/types/user";
-
+import { readMockUserRole } from "@/shared/config/env";
 import { locations } from "@/mock/data/locations";
 
-import { readMockUserRole } from "@/config/env";
+import type { User } from "@/features/profiles/types";
 
 export const currentUser: User = {
   role: readMockUserRole(

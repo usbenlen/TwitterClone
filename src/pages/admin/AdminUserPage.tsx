@@ -1,28 +1,23 @@
+import { skipToken } from "@reduxjs/toolkit/query/react";
 import { useNavigate, useParams } from "react-router";
 
-import BackButton from "@/components/navigation/BackButton";
-
-import { skipToken } from "@reduxjs/toolkit/query/react";
-
+import { BackButton } from "@/widgets/navigation/pageHeader";
 import {
-  useAdminUserQuery,
   useAdminUserActionMutation,
-} from "@/store/adminQueries";
-
+  useAdminUserQuery,
+} from "@/features/moderation/api/adminQueries";
 import {
-  useActionConfirmation,
-  UserSummary,
   QueryState,
   UserActions,
-} from "@/components/admin";
+  UserSummary,
+  useActionConfirmation,
+} from "@/features/moderation/components";
+import { USER_ACTION_LABELS } from "@/features/moderation/constants/admin";
+import { APP_ROUTES } from "@/shared/config/routes";
+import { normalizeDisplayText } from "@/shared/lib/displayText";
+import { formatCount, formatDateTime } from "@/shared/lib/format";
 
-import { APP_ROUTES } from "@/constants/routes";
-import { USER_ACTION_LABELS } from "@/constants/admin";
-
-import { formatCount, formatDateTime } from "@/utils/format";
-import { normalizeDisplayText } from "@/utils/displayText";
-
-import type { UserAction } from "@/types/admin";
+import type { UserAction } from "@/features/moderation/types";
 
 export default function AdminUserPage() {
   const { userId } = useParams();

@@ -1,34 +1,34 @@
-import { MOCK_DELAYS } from "@/mock/mockConfig";
-
-import { commentsByPostId } from "@/mock/data/comments";
-import { posts, setPosts, nextPostId } from "@/mock/data/posts";
-import { currentUser } from "@/mock/data/users";
-
-import type {
-  Post,
-  CreatePostRequest,
-  UpdatePostRequest,
-  PostQuote,
-} from "@/types/post";
-
-import { editHistoryStore } from "@/mock/stores/editHistoryStore";
-
-import {
-  toggleLikeInList,
-  toggleRepostInList,
-  toggleBookmarkInList,
-  incrementViewsInList,
-} from "@/mock/utils/mockPostActions";
-import { markQuotedTargetEdited } from "@/mock/utils/mockQuotes";
 import {
   getQuoteReplyingToUsernames,
   withAncestors,
-} from "@/utils/posts/ancestors";
+} from "@/features/content/lib/posts/ancestors";
+import { commentsByPostId } from "@/mock/data/comments";
+import { nextPostId, posts, setPosts } from "@/mock/data/posts";
+import { currentUser } from "@/mock/data/users";
+import { MOCK_DELAYS } from "@/mock/mockConfig";
+import { editHistoryStore } from "@/mock/stores/editHistoryStore";
 import { delay } from "@/mock/utils/delay";
-import { selectMockComments } from "@/mock/utils/selectMockComments";
-import { removeMockContent } from "@/mock/utils/removeMockContent";
 import { createMockPoll, updateMockPoll } from "@/mock/utils/mockPoll";
-import { resolveMockMedia, validateMockPost } from "@/mock/utils/validateMockPost";
+import {
+  incrementViewsInList,
+  toggleBookmarkInList,
+  toggleLikeInList,
+  toggleRepostInList,
+} from "@/mock/utils/mockPostActions";
+import { markQuotedTargetEdited } from "@/mock/utils/mockQuotes";
+import { removeMockContent } from "@/mock/utils/removeMockContent";
+import { selectMockComments } from "@/mock/utils/selectMockComments";
+import {
+  resolveMockMedia,
+  validateMockPost,
+} from "@/mock/utils/validateMockPost";
+
+import type {
+  CreatePostRequest,
+  Post,
+  PostQuote,
+  UpdatePostRequest,
+} from "@/features/content/types";
 
 function resolveQuote(payload: CreatePostRequest): PostQuote | null {
   if (payload.quotedPostId && payload.quotedCommentId)

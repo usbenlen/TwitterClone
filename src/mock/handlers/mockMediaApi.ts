@@ -1,7 +1,7 @@
-import type { MediaAttachment } from "@/types/media";
-
-import { mockUpload } from "@/mock/utils/mockUpload";
 import { mediaStore } from "@/mock/stores/mediaStore";
+import { mockUpload } from "@/mock/utils/mockUpload";
+
+import type { MediaAttachment } from "@/features/content/types";
 
 interface UploadMediaOptions {
   onProgress?: (progress: number) => void;

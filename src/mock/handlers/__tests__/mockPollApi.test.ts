@@ -1,17 +1,17 @@
 // @vitest-environment happy-dom
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-vi.mock("@/config/mockConfig", () => ({ MOCK_ENABLED: true }));
+vi.mock("@/shared/config/mockConfig", () => ({ MOCK_ENABLED: true }));
 vi.mock("@/mock/utils/delay", () => ({ delay: async () => {} }));
 
 async function load() {
-  const { pollApi } = await import("@/api/pollApi");
-const { postApi } = await import("@/api/postApi");
-const { commentApi } = await import("@/api/commentApi");
-  const { createAppStore } = await import("@/store/store");
-  const { postsApi } = await import("@/store/posts/postQueries");
-  const { runReaction } = await import("@/store/posts/runReaction");
-  const { sessionChanged } = await import("@/store/session");
+  const { pollApi } = await import("@/features/content/api/pollApi");
+const { postApi } = await import("@/features/content/api/postApi");
+const { commentApi } = await import("@/features/content/api/commentApi");
+  const { createAppStore } = await import("@/app/store/store");
+  const { postsApi } = await import("@/features/content/api/postQueries");
+  const { runReaction } = await import("@/features/content/model/runReaction");
+  const { sessionChanged } = await import("@/shared/store/session");
   const posts = await import("@/mock/data/posts");
   const { commentsByPostId } = await import("@/mock/data/comments");
   const data = {

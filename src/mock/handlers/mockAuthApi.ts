@@ -1,6 +1,7 @@
+import { GOOGLE_ID_TOKEN_MAX_LENGTH } from "@/features/auth/constants/auth";
+import { currentUser } from "@/mock/data/users";
 import { MOCK_DELAYS, MOCK_TOKEN_LIFETIME_MS } from "@/mock/mockConfig";
-
-import { GOOGLE_ID_TOKEN_MAX_LENGTH } from "@/constants/auth";
+import { delay } from "@/mock/utils/delay";
 
 import type {
   AuthResponse,
@@ -9,18 +10,14 @@ import type {
   GoogleLoginRequest,
   LoginRequest,
   MessageResponse,
-  ResetPasswordRequest,
   RegisterRequest,
-  VerifyResetCodeRequest,
-  VerifyEmailRequest,
   ResendVerificationCodeRequest,
+  ResetPasswordRequest,
   StartPasswordChangeRequest,
-  User,
-} from "@/types";
-
-import { currentUser } from "@/mock/data/users";
-
-import { delay } from "@/mock/utils/delay";
+  VerifyEmailRequest,
+  VerifyResetCodeRequest,
+} from "@/features/auth/types";
+import type { User } from "@/features/profiles/types";
 
 let pendingPasswordChange = false;
 

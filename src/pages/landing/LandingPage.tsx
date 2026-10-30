@@ -1,5 +1,3 @@
-import { useRef, useState } from "react";
-import { Link, useNavigate } from "react-router";
 import {
   ArrowRight,
   Image,
@@ -8,20 +6,16 @@ import {
   Search,
   UsersRound,
 } from "lucide-react";
+import { useRef, useState } from "react";
+import { Link, useNavigate } from "react-router";
 
-import RightSidebarFooterLinks from "@/components/navigation/desktop/RightSidebarFooterLinks";
-import { GoogleAuthButton } from "@/components/auth/GoogleAuthButton";
-
-import { HeartIcon, Avatar, Tooltip } from "@/components/ui";
-
-import { AppLogo } from "@/components/navigation/AppLogo";
-
-import { useAutosizeTextarea } from "@/hooks/useAutosizeTextarea";
-
-import { cn } from "@/utils/cn";
-
-import { APP_NAME } from "@/constants/app";
-import { APP_ROUTES } from "@/constants/routes";
+import { RightSidebarFooterLinks } from "@/widgets/navigation/desktop/rightSidebar";
+import { GoogleAuthButton } from "@/features/auth/components";
+import { APP_ROUTES } from "@/shared/config/routes";
+import { APP_NAME } from "@/shared/constants/app";
+import { useAutosizeTextarea } from "@/shared/hooks/useAutosizeTextarea";
+import { cn } from "@/shared/lib/cn";
+import { AppLogo, Avatar, HeartIcon, Tooltip } from "@/shared/ui";
 
 interface PreviewPostProps {
   name: string;

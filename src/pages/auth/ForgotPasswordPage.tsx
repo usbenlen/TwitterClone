@@ -1,18 +1,15 @@
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router";
-
-import { AuthShell } from "@/components/auth/AuthShell";
-
-import { Input, Button } from "@/components/ui";
-
-import { ApiError, authApi } from "@/api";
-
-import { AUTH_LIMITS } from "@/constants/auth";
-import { APP_ROUTES } from "@/constants/routes";
-
 import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
+
+import { authApi } from "@/features/auth/api";
+import { AuthShell } from "@/features/auth/components";
+import { AUTH_LIMITS } from "@/features/auth/constants/auth";
+import { ApiError } from "@/shared/api";
+import { APP_ROUTES } from "@/shared/config/routes";
+import { Button, Input } from "@/shared/ui";
 
 const forgotPasswordSchema = z.object({
   email: z.string().min(1, "Введіть email").email("Некоректний email"),

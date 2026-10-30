@@ -5,23 +5,20 @@ import {
   useAdminAnalyticsQuery,
   useAdminMetricsQuery,
   useAdminTablesQuery,
-} from "@/store/adminQueries";
-
+} from "@/features/moderation/api/adminQueries";
 import {
   AnalyticsChart,
+  DashboardReportSummary,
   QueryState,
   Select,
-  DashboardReportSummary,
   UserSummary,
-} from "@/components/admin";
+} from "@/features/moderation/components";
+import { DASHBOARD_TABLE_LIMIT } from "@/features/moderation/constants/admin";
+import { activitySeries } from "@/features/moderation/lib/analytics";
+import { APP_ROUTES } from "@/shared/config/routes";
+import { formatCompactCount } from "@/shared/lib/format";
 
-import { APP_ROUTES } from "@/constants/routes";
-import { DASHBOARD_TABLE_LIMIT } from "@/constants/admin";
-
-import { formatCompactCount } from "@/utils/format";
-import { activitySeries } from "@/utils/analytics";
-
-import type { AnalyticsPeriod, ContentType } from "@/types/admin";
+import type { AnalyticsPeriod, ContentType } from "@/features/moderation/types";
 
 export default function AdminDashboardPage() {
   const [period, setPeriod] = useState<AnalyticsPeriod>("30d");

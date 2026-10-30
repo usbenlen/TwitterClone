@@ -1,14 +1,12 @@
-import { Provider } from "react-redux";
 import ReactDOM from "react-dom/client";
+import { Provider } from "react-redux";
 import { RouterProvider } from "react-router";
 
-import "@/index.css";
+import { AppEffects } from "@/app/providers/AppEffects";
+import { routes } from "@/app/router/routes";
+import { store } from "@/app/store/store";
 
-import { routes } from "@/routes";
-
-import { AppEffects } from "@/providers/AppEffects";
-
-import { store } from "@/store/store";
+import "@/app/styles/index.css";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <Provider store={store}>

@@ -1,10 +1,13 @@
+import { toUserShort } from "@/features/profiles/lib/postAuthor";
+import { mockFollowers, mockFollowing } from "@/mock/data/follow";
 import { currentUser, sampleAuthors } from "@/mock/data/users";
-import { mockFollowing, mockFollowers } from "@/mock/data/follow";
-
-import type { FollowRequest, RemoveFollower, UserShort } from "@/types";
-
 import { delay } from "@/mock/utils/delay";
-import { toUserShort } from "@/utils/postAuthor";
+
+import type {
+  FollowRequest,
+  RemoveFollower,
+  UserShort,
+} from "@/features/profiles/types";
 
 export const mockFollowApi = {
   async follow({ targetUserId }: FollowRequest): Promise<void> {

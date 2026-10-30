@@ -1,14 +1,13 @@
-import type { Post, PostPoll, MediaAttachment } from "@/types";
-
 import {
   HOURS_PER_DAY,
   MILLISECONDS_PER_MINUTE,
   MINUTES_PER_HOUR,
-} from "@/constants/date";
-
-import { currentUser, sampleAuthors } from "@/mock/data/users";
-import { locations } from "@/mock/data/locations";
+} from "@/shared/constants/date";
 import { discoveryCommentSeeds } from "@/mock/data/discoveryComments";
+import { locations } from "@/mock/data/locations";
+import { currentUser, sampleAuthors } from "@/mock/data/users";
+
+import type { MediaAttachment, Post, PostPoll } from "@/features/content/types";
 
 type DiscoveryPost = Pick<Post, "author" | "content"> &
   Partial<Pick<Post, "attachments" | "poll" | "location" | "linkPreview">>;

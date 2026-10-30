@@ -1,36 +1,31 @@
 import { ListX } from "lucide-react";
 
+import { useAuth } from "@/features/auth/hooks/useAuth";
 import {
-  useAdminUsersQuery,
   useAdminUserActionMutation,
-} from "@/store/adminQueries";
-
+  useAdminUsersQuery,
+} from "@/features/moderation/api/adminQueries";
+import {
+  Pagination,
+  QueryState,
+  Select,
+  UserActions,
+  UserSummary,
+  useActionConfirmation,
+} from "@/features/moderation/components";
 import {
   USERS_DEFAULTS,
   USER_ACTION_ICONS,
   USER_ACTION_LABELS,
-} from "@/constants/admin";
-
+} from "@/features/moderation/constants/admin";
 import {
   useCorrectPage,
   useListParams,
   usePageSelection,
-} from "@/utils/adminListState";
+} from "@/features/moderation/lib/adminListState";
+import { Button, SearchBox } from "@/shared/ui";
 
-import {
-  useActionConfirmation,
-  Pagination,
-  QueryState,
-  Select,
-  UserSummary,
-  UserActions,
-} from "@/components/admin";
-
-import { useAuth } from "@/hooks/auth/useAuth";
-
-import { SearchBox, Button } from "@/components/ui";
-
-import type { UserAction } from "@/types/admin";
+import type { UserAction } from "@/features/moderation/types";
 
 const choices = {
   status: ["all", "active", "blocked"],

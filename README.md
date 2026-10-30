@@ -53,62 +53,58 @@ Chirp - вебзастосунок соціальної мережі у стил
 
 ```text
 src/
-├── components/
-│   ├── ui/             загальні UI-оболонки та іконки
-│   ├── auth/           авторизація
-│   ├── posts/          дописи, стрічка, коментарі й реакції
-│   ├── composer/       редактор, вкладення, GIF, локації й опитування
-│   ├── profiles/       профілі, користувачі та VerifiedBadge
-│   ├── search/         пошук і фільтри
-│   ├── recommendations/ рекомендації, тренди й огляд
-│   ├── notifications/  сповіщення
-│   ├── scheduling/     планування дописів
-│   ├── reports/        скарги
-│   ├── settings/       ThemeSwitch
-│   ├── admin/          адміністрування й модерація
-│   ├── navigation/     меню, сайдбари, заголовки й AppLogo
-│   └── routing/        ProtectedRoute, GuestRoute, AdminRoute
-├── hooks/              загальні хуки та групи auth, posts, composer тощо
-├── api/                HTTP-клієнт, адаптери й endpoints
-│   └── mappers/        перетворення запитів і відповідей
-├── store/              Redux, єдиний appApi, RTK Query й сесія
-│   └── posts/          запити дописів, кеш і координація реакцій
-├── types/              спільні моделі, API-контракти й окремі *.dto.ts
-├── constants/          обмеження, варіанти вибору й метадані UI
-├── schemas/            Zod-схеми та виведені з них типи форм
-├── utils/              загальні helpers, форматування й браузерні операції
-│   ├── composer/       валідація, побудова payload і перетворення чернеток
-│   ├── media/          підготовка, стиснення, кеш і перевірка медіа
-│   └── posts/          дерево коментарів і оновлення авторів
-├── config/             читання середовища й налаштування застосунку
-├── pages/              сторінки маршрутів, включно з admin/
-├── layouts/            лише макети сторінок
-├── providers/          глобальні ефекти життєвого циклу
-├── mock/               локальні handlers, fixtures і mock-сховища
+├── app/
+│   ├── router/         маршрути та lazy imports
+│   ├── providers/      глобальні ефекти життєвого циклу
+│   ├── store/          складання Redux store
+│   └── styles/         глобальні стилі й теми
+├── pages/              сторінки маршрутів
+├── widgets/            макети, навігація, стрічка й композиції профілю
+├── features/
+│   ├── auth/           авторизація, Google OAuth та guards
+│   ├── content/        дописи, коментарі, реакції, редактор і медіа
+│   ├── profiles/       користувачі, профілі та підписки
+│   ├── discovery/      пошук, рекомендації й тренди
+│   ├── scheduling/     планування та публікація дописів
+│   ├── moderation/     адміністрування, скарги й аналітика
+│   ├── preferences/    налаштування теми
+│   └── notifications/  сповіщення та їхні налаштування
+├── shared/
+│   ├── api/            HTTP-клієнт і endpoints
+│   ├── config/         читання середовища та маршрути URL
+│   ├── constants/      спільні обмеження й метадані
+│   ├── hooks/          загальні браузерні хуки
+│   ├── lib/            форматування, кеш зображень і browser helpers
+│   ├── store/          єдиний appApi, сесія та типізовані Redux-хуки
+│   ├── types/          загальні API-контракти й тема
+│   └── ui/             UI-примітиви, AppLogo та іконки
+├── mock/               локальні handlers, fixtures і сховища
 ├── main.tsx            точка входу
-├── routes.tsx          маршрути та lazy imports сторінок
-├── index.css           теми й глобальні стилі
 └── vite-env.d.ts        декларації Vite
 ```
 
-`components/ui` містить оболонки на кшталт Button, Input, Modal, Tooltip і Avatar. Вони отримують дані й callbacks через props та можуть керувати фокусом, відкриттям і відображенням. Авторизація, RTK Query й бізнес-дії належать прикладним компонентам і хукам. VerifiedBadge лежить у `components/profiles`, ThemeSwitch — у `components/settings`, AppLogo — у `components/navigation`.
+Структура наслідує шари [еталонного проєкту](https://github.com/IvanZacerkovnij/ASP-React-FinalProject-UI/tree/701231c931bc6496f826a513ec98ed77d2023716). Поточні Redux Toolkit/RTK Query, mock API та всі фічі збережені.
 
-Загальні браузерні хуки лежать безпосередньо в `hooks`; великі набори згруповані, наприклад `hooks/composer` і `hooks/posts`. Не створюємо підпапку для одного ізольованого хука чи однакову сітку функціональних груп у кожній категорії. API, типи й константи переважно пласкі. Усередині категорій не створюємо повторні `components/hooks/types` чи загальні `lib/model/common`.
+`app` складає застосунок; `pages` компонують `widgets`, фічі та спільні модулі. У `widgets` розміщені макети, меню, сайдбари, заголовки, Feed/FeedList, композиція Profile та ExplorePosts. `features` групує реалізації за доменом, `shared` містить спільні можливості. Не створюємо порожніх папок.
 
-HTTP-адаптери й мапери знаходяться в `api`, запити RTK Query, reducers, кеш і сесія — у `store`. Усі запити використовують єдиний `store/appApi.ts`; запити профілів, підписок, рекомендацій і планування залишаються окремими модулями. Типи моделей і контрактів зібрані в `types`: загальні — у `api.ts`, авторизація разом із refresh-відповіддю — в `auth.ts`, дописи — у `post.ts`. Серверні DTO відокремлені в `*.dto.ts` та не експортуються з адаптерів чи маперів. Props і приватні допоміжні типи залишаються біля реалізації; типи, виведені зі store та Zod-схем, — біля джерела.
+У фічах HTTP-адаптери, окремі RTK Query-модулі та мапери належать `api`/`api/mappers`; reducers, кеш і координація реакцій — `model`; компоненти — `components`; хуки — `hooks`; моделі й окремі серверні DTO — `types`; правила та helpers — `lib`; обмеження — `constants`; схеми форм — `schemas`. Props і приватні типи залишаються біля реалізації.
 
-У компонентах немає окремих файлів API, констант або helpers. Макети залишаються в `layouts`, а їхні меню, сайдбари й заголовки — у `components/navigation`. Сторінки залишаються в `pages`, глобальні ефекти — у `providers`. Mock API викликає локальні функції без HTTP-перехоплення. Тести лежать у локальних `__tests__` поруч із відповідною категорією коду.
+`shared/ui` містить Button, Input, Modal, Tooltip, Avatar та AppLogo. VerifiedBadge належить `features/profiles/components`, ThemeSwitch — `features/preferences/components`, а MediaGrid/MediaItem/MediaViewer — `features/content/components/media`. Редакторні діалоги планування лежать у `features/content/components/composer/schedule`; API та стан планування — у `features/scheduling`.
+
+Спільні браузерні хуки лежать у `shared/hooks`; пов'язані хуки редактора й дописів — у `features/content/hooks/composer` і `features/content/hooks/posts`. Усі запити розширюють єдиний `shared/store/appApi.ts`; `app/store/store.ts` збирає reducers і підключає endpoints. Mock API залишається прямим викликом локальних функцій.
+
+Це структурне перенесення зі збереженням реалізацій: наявні міждоменні залежності залишилися. Типізовані хуки `shared/store` імпортують типи store з `app`, HTTP-клієнт — тип refresh-відповіді з auth. Збережені наявні циклічні зв'язки PostCard ↔ PostComments та редактора з діалогами планування; використовуємо прямі імпорти, щоб не розширювати ці цикли фасадами.
+
+Тести лежать у локальних `__tests__` біля відповідного коду. Спільні перевірки кількох доменів — у `app/__tests__`.
 
 | Що потрібно знайти | Де шукати |
 |---|---|
-| Маршрут або сторінку | `routes.tsx`, `constants/routes.ts`, `pages/` |
-| Картку допису або його модель | `components/posts/PostCard.tsx`, `types/post.ts` |
-| HTTP-операції та кеш дописів | `api/postApi.ts`, `store/posts/postQueries.ts`, `store/posts/postCache.ts` |
-| Валідацію чи відправлення редактора | `utils/composer/composerRules.ts`, `utils/composer/composerPayload.ts`, `hooks/composer/useComposerSubmit.ts` |
-| Коментарі, реакції, опитування | `components/posts/`, `hooks/posts/`, `utils/posts/` |
-| Завантаження вкладень редактора | `hooks/composer/useMediaUpload.ts`, `utils/media/` |
-| Підписки | `api/followApi.ts`, `store/followQueries.ts`, `hooks/profiles/useFollow.ts` |
-| Транспорт, refresh токенів, помилки HTTP | `api/httpClient.ts`, `utils/tokenStorage.ts` |
+| Маршрути й URL | `app/router/routes.tsx`, `shared/config/routes.ts` |
+| Дописи, коментарі, редактор і медіа | `features/content/` |
+| Запити та кеш дописів | `features/content/api/postQueries.ts`, `features/content/model/postCache.ts` |
+| Профілі та підписки | `features/profiles/`, `widgets/profile/` |
+| Пошук і рекомендації | `features/discovery/`, `widgets/discovery/` |
+| Транспорт і токени | `shared/api/httpClient.ts`, `shared/lib/tokenStorage.ts` |
 
 Основні маршрути: `/` (landing), `/login`, `/register`, `/home`, `/explore`, `/search`, `/post/:postId`, `/:username`, `/:username/followers`, `/:username/following`, `/bookmarks`, `/follow`, `/settings`, `/admin`. `/admin` додатково перевіряє серверну роль `Admin` і стан облікового запису.
 
@@ -172,7 +168,7 @@ npm run test     # Vitest, одноразовий запуск усіх тест
 
 ## Інтеграція з backend
 
-HTTP-запити проходять через `src/api/httpClient.ts`; шляхи централізовано визначені в `src/api/apiEndpoints.ts`. Базова адреса утворюється як `VITE_PATH_TO_SERVER` + `VITE_PATH_TO_API`. Адаптери вибирають real або mock реалізацію, а UI працює зі спільними типами й моделями.
+HTTP-запити проходять через `src/shared/api/httpClient.ts`; шляхи централізовано визначені в `src/shared/api/apiEndpoints.ts`. Базова адреса утворюється як `VITE_PATH_TO_SERVER` + `VITE_PATH_TO_API`. Адаптери вибирають real або mock реалізацію, а UI працює зі спільними типами й моделями.
 
 Клієнт додає Bearer access token, а на `401` спільно для паралельних запитів оновлює пару access/refresh token і повторює запит один раз. Помилки API зберігають HTTP-статус, payload і `Retry-After`; для помилок RFC 7807 UI використовує серверне повідомлення. Запити з `FormData` не встановлюють multipart Content-Type вручну. Успішний `204` повертає `undefined`.
 
@@ -196,7 +192,7 @@ Callback URL обчислюється з origin сторінки, окрема �
 
 ```sh
 npm run test
-npm run test -- src/utils/composer/__tests__/composer.test.ts
+npm run test -- src/features/content/lib/composer/__tests__/composer.test.ts
 npm run lint
 npm run build
 ```
@@ -205,18 +201,15 @@ npm run build
 
 ## Розробка
 
-- Для локальних імпортів у `src` використовуйте alias `@/`; для типів - `import type`.
-- Для кількох компонентів або хуків з однієї групи використовуйте вибірковий `index.ts`, наприклад `import { Button, Input, Spinner } from "@/components/ui"`. Індекси містять явні іменовані реекспорти; default exports реалізацій зберігаються. Не використовуйте `export *`, ланцюжки індексів або загальний індекс застосунку.
-- `@/components/posts` надає `PostHeader`, `PostActions`, `PostComments`, `PostContent` та інші явно перелічені компоненти. Усередині групи залишайте прямі імпорти, якщо індекс експортує поточний модуль або транзитивно залежить від нього. Це стосується й наявного зв’язку `PostCard ↔ PostComments`: групування імпортів не повинно створювати нові цикли.
-- Спільні типи можна об’єднувати через `import type { Post, User, ComposerSubmitData } from "@/types"`; `types/index.ts` містить лише `export type`. Між файлами типів, для store, constants, utils, lazy imports сторінок і тестових моків зберігайте конкретні шляхи.
-- Спочатку обирайте роль файлу, потім функціональну групу: `components/posts/PostCard.tsx`, `hooks/posts/usePostLike.ts`, `api/postApi.ts`, `types/post.ts`, `constants/composer.ts`. Нові сторінки додавайте до `pages`, маршрути — до `constants/routes.ts` і `routes.tsx`.
-- Назва файлу має пояснювати роль: `PostCard.tsx`, `usePostComments.ts`, `postApi.ts` (адаптер), `postQueries.ts` (RTK Query), `types/post.ts`, `postMapper.ts`, `postCache.ts`.
-- Спільні моделі та API-контракти зберігайте в `types`, серверні DTO — окремо від UI-моделей. Правила й payload редактора належать `utils/composer`, медіаоперації — `utils/media`, дерево коментарів — `utils/posts`. Mock-реалізації залишайте в `mock`.
-- Власний код використовує назву `Post`. Наявні wire-поля, ключі сховищ і змінна `VITE_MAX_TWEET_LENGTH` збережені для сумісності.
-- Повторно використовуйте спільні типи, константи, UI-примітиви, API-адаптери й composer helpers.
-- Не дублюйте backend DTO як моделі UI: додавайте перетворення у відповідні мапери.
-- Зберігайте актуальні API-контракти, перевірки сесії, інвалідацію RTK Query та поведінку mock API.
-- Додавайте тести в модульну папку `__tests__`; назви тестів - `*.test.ts` або `*.test.tsx`.
+- Спочатку обирайте шар і домен, потім роль файлу: `features/content/components/posts/PostCard.tsx`, `features/content/api/postApi.ts`, `features/content/model/postCache.ts`.
+- Для локальних імпортів у `src` використовуйте `@/`; для типів — окремі `import type`. Порядок груп: зовнішні залежності, локальні значення за шарами app/pages/widgets/features/shared/mock, типи, побічні імпорти. Усередині груп сортуйте шляхи й іменовані імпорти; порядок побічних імпортів зберігайте.
+- Для кількох споріднених експортів використовуйте вибірковий `index.ts`, наприклад `import { Button, Input, Spinner } from "@/shared/ui"`. Індекси містять явні реекспорти; default exports реалізацій збережені. Не використовуйте `export *`, ланцюжки індексів або загальний індекс застосунку.
+- Імпорти всередині груп залишайте прямими, якщо фасад експортує поточний модуль або транзитивно залежить від нього. Для Redux, утиліт, констант, lazy imports та тестових моків використовуйте конкретні модулі. Об'єднуйте типи через доменні `types/index.ts`, які містять лише `export type`.
+- Сторінки належать `pages`, композиції та макети — `widgets`, глобальні ефекти — `app/providers`. Нові маршрути додавайте в `shared/config/routes.ts` і `app/router/routes.tsx` зі збереженням lazy loading.
+- Спільні моделі та контракти фіч зберігайте в їхніх `types`, серверні DTO — окремими `*.dto.ts`. Правила редактора належать `features/content/lib/composer`, медіаоперації — `features/content/lib/media`, дерево коментарів — `features/content/lib/posts`; загальний кеш зображень та object URL — `shared/lib`.
+- Використовуйте єдиний `shared/store/appApi.ts`; підтримуйте окремі доменні queries, інвалідацію, оптимістичний rollback і перевірки сесії. Mock-реалізації залишайте в `mock`.
+- Назви реалізацій, зокрема Post, збережені; wire-поля, ключі сховищ і `VITE_MAX_TWEET_LENGTH` не змінені. Повторно використовуйте чинні компоненти, типи, константи та helpers.
+- Тести додавайте до локальної папки `__tests__` з назвами `*.test.ts` або `*.test.tsx`.
 
 ## Пов’язані документи
 

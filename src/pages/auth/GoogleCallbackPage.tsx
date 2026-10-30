@@ -1,10 +1,8 @@
 import { Link } from "react-router";
 
-import { AuthShell } from "@/components/auth/AuthShell";
-
-import { useGoogleCallback } from "@/hooks/auth/useGoogleCallback";
-
-import { Button, Spinner } from "@/components/ui";
+import { AuthShell } from "@/features/auth/components";
+import { useGoogleCallback } from "@/features/auth/hooks/useGoogleCallback";
+import { Button, Spinner } from "@/shared/ui";
 
 export default function GoogleCallbackPage() {
   const { isBusy, error, context, canRetry, retry, backTo } =

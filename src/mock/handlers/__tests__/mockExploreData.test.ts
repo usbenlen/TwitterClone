@@ -1,14 +1,16 @@
 import { describe, expect, it, vi } from "vitest";
 
-import { mockTrends, mockTrendCategories } from "@/mock/data/recommendations";
+import { MAX_POST_LENGTH } from "@/features/content/constants/composer";
+import { POLL } from "@/features/content/constants/poll";
+import {
+  countCharacters,
+  getPostRulesError,
+} from "@/features/content/lib/composer/composerRules";
+import { DEFAULT_SEARCH_CRITERIA } from "@/features/discovery/constants/search";
+import { MILLISECONDS_PER_MINUTE } from "@/shared/constants/date";
 import { posts } from "@/mock/data/posts";
+import { mockTrendCategories, mockTrends } from "@/mock/data/recommendations";
 import { mockSearchApi } from "@/mock/handlers/mockSearchApi";
-import { DEFAULT_SEARCH_CRITERIA } from "@/constants/search";
-import { MAX_POST_LENGTH } from "@/constants/composer";
-import { POLL } from "@/constants/poll";
-import { MILLISECONDS_PER_MINUTE } from "@/constants/date";
-
-import { countCharacters, getPostRulesError } from "@/utils/composer/composerRules";
 
 vi.mock("@/mock/utils/delay", () => ({ delay: async () => {} }));
 

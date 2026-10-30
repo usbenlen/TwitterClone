@@ -1,4 +1,4 @@
-import type { QuoteTargetType, Post } from "@/types/post";
+import type { Post, QuoteTargetType } from "@/features/content/types";
 
 export function markQuotedTargetEdited(
   items: Post[],

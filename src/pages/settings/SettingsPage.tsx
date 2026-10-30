@@ -1,24 +1,27 @@
+import {
+  ArrowRight,
+  Bell,
+  LockKeyhole,
+  Palette,
+  UserRound,
+} from "lucide-react";
 import { useState } from "react";
 import { Link } from "react-router";
-import { Bell, LockKeyhole, Palette, UserRound, ArrowRight } from "lucide-react";
 
-import { userApi } from "@/api/profileApi";
+import { RightSidebarFooterLinks } from "@/widgets/navigation/desktop/rightSidebar";
+import { PageHeader } from "@/widgets/navigation/pageHeader";
+import { AccountConnections } from "@/features/auth/components/AccountConnections";
+import { useAuth } from "@/features/auth/hooks/useAuth";
+import { useTheme } from "@/features/preferences/hooks/useTheme";
+import { userApi } from "@/features/profiles/api";
+import EditProfileModal from "@/features/profiles/components/EditProfileModal";
+import { APP_ROUTES } from "@/shared/config/routes";
+import { APP_NAME } from "@/shared/constants/app";
+import { THEME_OPTIONS } from "@/shared/constants/theme";
+import { cn } from "@/shared/lib/cn";
+import { AppLogo } from "@/shared/ui";
 
-import type { UpdateProfileRequest } from "@/types/user";
-
-import { useAuth } from "@/hooks/auth/useAuth";
-import { useTheme } from "@/hooks/useTheme";
-
-import EditProfileModal from "@/components/profiles/EditProfileModal";
-import { PageHeader, AppLogo } from "@/components/navigation";
-import { AccountConnections } from "@/components/auth/AccountConnections";
-import RightSidebarFooterLinks from "@/components/navigation/desktop/RightSidebarFooterLinks";
-
-import { THEME_OPTIONS } from "@/constants/theme";
-import { APP_NAME } from "@/constants/app";
-import { APP_ROUTES } from "@/constants/routes";
-
-import { cn } from "@/utils/cn";
+import type { UpdateProfileRequest } from "@/features/profiles/types";
 
 export default function SettingsPage({
   variant = "main",

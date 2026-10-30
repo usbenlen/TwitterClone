@@ -1,26 +1,36 @@
 // @vitest-environment happy-dom
 import { act } from "react";
-import { createRoot, type Root } from "react-dom/client";
+import { createRoot } from "react-dom/client";
 import { Provider } from "react-redux";
-import { MemoryRouter, Route, Routes, useLocation, useNavigate } from "react-router";
+import {
+  MemoryRouter,
+  Route,
+  Routes,
+  useLocation,
+  useNavigate,
+} from "react-router";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { notificationsApi } from "@/api/notificationApi";
-import { NotificationBell } from "@/components/notifications/NotificationBell";
-import { DEFAULT_NOTIFICATION_PREFERENCES } from "@/constants/notification";
-import { APP_ROUTES } from "@/constants/routes";
-import { MAIN_NAVIGATION } from "@/constants/navigation";
-import NotificationsPage from "@/pages/notifications/NotificationsPage";
-import NotificationSettingsPage from "@/pages/notifications/NotificationSettingsPage";
-import { createAppStore, type AppStore } from "@/store/store";
-import { notificationsQueryApi } from "@/store/notificationQueries";
-import { sessionChanged } from "@/store/session";
-import type { ChirpNotification } from "@/types/notification";
 
-vi.mock("@/config/mockConfig", () => ({ MOCK_ENABLED: true }));
-vi.mock("@/hooks/auth/useAuth", () => ({
+import { createAppStore } from "@/app/store/store";
+import NotificationSettingsPage from "@/pages/notifications/NotificationSettingsPage";
+import NotificationsPage from "@/pages/notifications/NotificationsPage";
+import { MAIN_NAVIGATION } from "@/widgets/navigation/constants/navigation";
+import { notificationsApi } from "@/features/notifications/api/notificationApi";
+import { notificationsQueryApi } from "@/features/notifications/api/notificationQueries";
+import { NotificationBell } from "@/features/notifications/components/NotificationBell";
+import { DEFAULT_NOTIFICATION_PREFERENCES } from "@/features/notifications/constants/notification";
+import { APP_ROUTES } from "@/shared/config/routes";
+import { sessionChanged } from "@/shared/store/session";
+
+import type { Root } from "react-dom/client";
+import type { AppStore } from "@/app/store/store";
+import type { ChirpNotification } from "@/features/notifications/types/notification";
+
+vi.mock("@/shared/config/mockConfig", () => ({ MOCK_ENABLED: true }));
+vi.mock("@/features/auth/hooks/useAuth", () => ({
   useAuth: () => ({ user: { id: "viewer" } }),
 }));
-vi.mock("@/api/notificationApi", () => ({
+vi.mock("@/features/notifications/api/notificationApi", () => ({
   notificationsApi: {
     list: vi.fn(),
     unreadCount: vi.fn(),

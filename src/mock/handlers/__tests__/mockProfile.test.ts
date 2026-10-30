@@ -1,6 +1,10 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { authReady, authReducer, authUserUpdated } from "@/store/authState";
+import {
+  authReady,
+  authReducer,
+  authUserUpdated,
+} from "@/features/auth/model/authState";
 
 vi.mock("@/mock/utils/delay", () => ({ delay: async () => {} }));
 

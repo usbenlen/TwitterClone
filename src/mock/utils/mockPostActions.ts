@@ -3,7 +3,7 @@ import type {
   ToggleBookmarkResponse,
   ToggleLikeResponse,
   ToggleRepostResponse,
-} from "@/types/post";
+} from "@/features/content/types";
 
 function updatePostInList(
   items: Post[],

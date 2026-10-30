@@ -1,9 +1,9 @@
 import type {
   EditHistoryResponse,
-  QuoteTargetType,
   Post,
   PostBase,
-} from "@/types/post";
+  QuoteTargetType,
+} from "@/features/content/types";
 
 const histories = new Map<string, PostBase[]>();
 

@@ -10,7 +10,7 @@ import {
   escapeHtml,
   readAppIdentity,
   readNumericEnv,
-} from "./src/config/env.js";
+} from "./src/shared/config/env.js";
 
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), "VITE_");

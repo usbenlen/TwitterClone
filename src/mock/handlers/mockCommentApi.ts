@@ -1,32 +1,34 @@
+import {
+  getCommentAncestors,
+  withAncestors,
+} from "@/features/content/lib/posts/ancestors";
+import { toPostAuthor } from "@/features/profiles/lib/postAuthor";
+import { commentsByPostId, nextCommentId } from "@/mock/data/comments";
+import { posts, setPosts } from "@/mock/data/posts";
+import { currentUser } from "@/mock/data/users";
 import { MOCK_DELAYS } from "@/mock/mockConfig";
+import { editHistoryStore } from "@/mock/stores/editHistoryStore";
+import { delay } from "@/mock/utils/delay";
+import { createMockPoll, updateMockPoll } from "@/mock/utils/mockPoll";
+import {
+  incrementViewsInList,
+  toggleBookmarkInList,
+  toggleLikeInList,
+  toggleRepostInList,
+} from "@/mock/utils/mockPostActions";
+import { markQuotedTargetEdited } from "@/mock/utils/mockQuotes";
+import { removeMockContent } from "@/mock/utils/removeMockContent";
+import {
+  resolveMockMedia,
+  validateMockPost,
+} from "@/mock/utils/validateMockPost";
 
 import type {
   CreateCommentRequest,
   Post,
   ThreadResponse,
   UpdateCommentRequest,
-} from "@/types/post";
-
-import { posts, setPosts } from "@/mock/data/posts";
-import { commentsByPostId, nextCommentId } from "@/mock/data/comments";
-import { currentUser } from "@/mock/data/users";
-
-import { delay } from "@/mock/utils/delay";
-import { removeMockContent } from "@/mock/utils/removeMockContent";
-import { createMockPoll, updateMockPoll } from "@/mock/utils/mockPoll";
-import { resolveMockMedia, validateMockPost } from "@/mock/utils/validateMockPost";
-import { toPostAuthor } from "@/utils/postAuthor";
-import { getCommentAncestors, withAncestors } from "@/utils/posts/ancestors";
-
-import { editHistoryStore } from "@/mock/stores/editHistoryStore";
-
-import {
-  toggleLikeInList,
-  toggleRepostInList,
-  toggleBookmarkInList,
-  incrementViewsInList,
-} from "@/mock/utils/mockPostActions";
-import { markQuotedTargetEdited } from "@/mock/utils/mockQuotes";
+} from "@/features/content/types";
 
 function findComment(id: string) {
   for (const [postId, comments] of Object.entries(commentsByPostId)) {

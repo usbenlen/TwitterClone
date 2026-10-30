@@ -1,7 +1,7 @@
 import type {
   ExploreCategory,
   TrendRecommendation,
-} from "@/types/recommendation";
+} from "@/features/discovery/types";
 
 export const mockTrendCategories: Record<ExploreCategory, readonly string[]> = {
   news: [

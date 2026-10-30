@@ -1,23 +1,21 @@
 import {
   DEFAULT_NOTIFICATION_PREFERENCES,
   NOTIFICATION_PREFERENCE_KEYS,
-} from "@/constants/notification";
-
-import { currentUser, sampleAuthors } from "@/mock/data/users";
-import { posts } from "@/mock/data/posts";
+} from "@/features/notifications/constants/notification";
+import { toUserShort } from "@/features/profiles/lib/postAuthor";
 import { commentsByPostId } from "@/mock/data/comments";
-
+import { posts } from "@/mock/data/posts";
+import { currentUser, sampleAuthors } from "@/mock/data/users";
 import { delay } from "@/mock/utils/delay";
-import { toUserShort } from "@/utils/postAuthor";
 
 import type {
   ChirpNotification,
   NotificationPreferences,
-  NotificationsApi,
   NotificationTarget,
   NotificationType,
-  UserShort,
-} from "@/types";
+  NotificationsApi,
+} from "@/features/notifications/types";
+import type { UserShort } from "@/features/profiles/types";
 
 export interface MockNotificationEvent {
   id: string;

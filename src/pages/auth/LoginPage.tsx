@@ -1,20 +1,17 @@
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Link, useLocation, useNavigate } from "react-router";
 
-import { ApiError } from "@/api/httpClient";
+import { AuthShell, GoogleAuthButton } from "@/features/auth/components";
+import { useAuth } from "@/features/auth/hooks/useAuth";
+import { loginSchema } from "@/features/auth/schemas/authSchema";
+import { ApiError } from "@/shared/api";
+import { APP_ROUTES } from "@/shared/config/routes";
+import { APP_NAME } from "@/shared/constants/app";
+import { Button, Input } from "@/shared/ui";
 
-import { zodResolver } from "@hookform/resolvers/zod";
-import { loginSchema, type LoginFormValues } from "@/schemas/authSchema";
-
-import { useAuth } from "@/hooks/auth/useAuth";
-
-import { Input, Button } from "@/components/ui";
-
-import { APP_NAME } from "@/constants/app";
-import { APP_ROUTES } from "@/constants/routes";
-
-import { AuthShell, GoogleAuthButton } from "@/components/auth";
+import type { LoginFormValues } from "@/features/auth/schemas/authSchema";
 
 interface LocationState {
   from?: { pathname: string };

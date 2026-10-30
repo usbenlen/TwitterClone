@@ -1,7 +1,8 @@
-import type { Post, User } from "@/types";
-
-import { currentUser, sampleAuthors } from "@/mock/data/users";
 import { locations } from "@/mock/data/locations";
+import { currentUser, sampleAuthors } from "@/mock/data/users";
+
+import type { Post } from "@/features/content/types";
+import type { User } from "@/features/profiles/types";
 
 type DiscoveryCommentSeed = Pick<Post, "id" | "content"> &
   Partial<

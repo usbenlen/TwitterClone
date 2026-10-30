@@ -1,8 +1,11 @@
+import { getPostRulesError } from "@/features/content/lib/composer/composerRules";
 import { mediaStore } from "@/mock/stores/mediaStore";
 
-import { getPostRulesError } from "@/utils/composer/composerRules";
-
-import type { CreatePostRequest, MediaAttachment, PostPoll } from "@/types";
+import type {
+  CreatePostRequest,
+  MediaAttachment,
+  PostPoll,
+} from "@/features/content/types";
 
 export function resolveMockMedia(ids: string[]): MediaAttachment[] {
   const media = mediaStore.getMany(ids);

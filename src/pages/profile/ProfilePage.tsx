@@ -1,18 +1,15 @@
 import { useParams, useSearchParams } from "react-router";
 
-import { userApi } from "@/api/profileApi";
+import { PageHeader } from "@/widgets/navigation/pageHeader";
+import Profile from "@/widgets/profile/Profile";
+import { useAuth } from "@/features/auth/hooks/useAuth";
+import { userApi } from "@/features/profiles/api";
+import { useProfile } from "@/features/profiles/hooks/useProfile";
+import { APP_ROUTES } from "@/shared/config/routes";
+import { Spinner } from "@/shared/ui";
 
-import type { UpdateProfileRequest, ProfileTab } from "@/types";
-
-import { useAuth } from "@/hooks/auth/useAuth";
-import { useProfile } from "@/hooks/profiles/useProfile";
-
-import { Spinner } from "@/components/ui/Spinner";
-
-import Profile from "@/components/profiles/Profile";
-import PageHeader from "@/components/navigation/PageHeader";
-
-import { APP_ROUTES } from "@/constants/routes";
+import type { ProfileTab } from "@/features/content/types";
+import type { UpdateProfileRequest } from "@/features/profiles/types";
 
 export default function ProfilePage() {
   const { username } = useParams<{ username: string }>();

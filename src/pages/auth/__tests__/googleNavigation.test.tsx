@@ -1,33 +1,40 @@
 // @vitest-environment happy-dom
-import { act, StrictMode } from "react";
-import { createRoot, type Root } from "react-dom/client";
+import { StrictMode, act } from "react";
+import { createRoot } from "react-dom/client";
 import { Provider } from "react-redux";
 import { MemoryRouter, Route, Routes } from "react-router";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { ApiError } from "@/api/httpClient";
-import { AccountConnections } from "@/components/auth/AccountConnections";
+
+import { createAppStore } from "@/app/store/store";
 import GoogleCallbackPage from "@/pages/auth/GoogleCallbackPage";
-import LandingPage from "@/pages/landing/LandingPage";
 import LoginPage from "@/pages/auth/LoginPage";
 import RegisterPage from "@/pages/auth/RegisterPage";
-import { authReady, authCleared } from "@/store/authState";
-import { createAppStore, type AppStore } from "@/store/store";
-import { sessionChanged } from "@/store/session";
-import { APP_ROUTES } from "@/constants/routes";
-import { STORAGE_KEYS } from "@/constants/storage";
-import { createGoogleRedirectUrl } from "@/utils/googleRedirect";
-import { tokenStorage } from "@/utils/tokenStorage";
-import type { GoogleAuthMode, GoogleRedirectContext } from "@/types/auth";
-import type { User } from "@/types/user";
+import LandingPage from "@/pages/landing/LandingPage";
+import { AccountConnections } from "@/features/auth/components/AccountConnections";
+import { createGoogleRedirectUrl } from "@/features/auth/lib/googleRedirect";
+import { authCleared, authReady } from "@/features/auth/model/authState";
+import { ApiError } from "@/shared/api/httpClient";
+import { APP_ROUTES } from "@/shared/config/routes";
+import { STORAGE_KEYS } from "@/shared/constants/storage";
+import { tokenStorage } from "@/shared/lib/tokenStorage";
+import { sessionChanged } from "@/shared/store/session";
+
+import type { Root } from "react-dom/client";
+import type { AppStore } from "@/app/store/store";
+import type {
+  GoogleAuthMode,
+  GoogleRedirectContext,
+} from "@/features/auth/types/auth";
+import type { User } from "@/features/profiles/types/user";
 
 const api = vi.hoisted(() => ({
   loginWithGoogle: vi.fn(),
   linkGoogle: vi.fn(),
   me: vi.fn(),
 }));
-vi.mock("@/api/authApi", () => ({ authApi: api }));
-vi.mock("@/constants/auth", async (importOriginal) => ({
-  ...(await importOriginal<typeof import("@/constants/auth")>()),
+vi.mock("@/features/auth/api/authApi", () => ({ authApi: api }));
+vi.mock("@/features/auth/constants/auth", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@/features/auth/constants/auth")>()),
   GOOGLE_CLIENT_ID: "test-client",
   GOOGLE_ID_TOKEN_MAX_LENGTH: 8192,
   GOOGLE_REDIRECT_MAX_AGE_MS: 900000,

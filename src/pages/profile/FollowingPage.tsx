@@ -1,12 +1,11 @@
 import { skipToken } from "@reduxjs/toolkit/query/react";
 import { useParams } from "react-router";
 
-import { useGetProfileQuery } from "@/store/profileQueries";
-import { useGetFollowingQuery } from "@/store/followQueries";
-
-import { Spinner } from "@/components/ui/Spinner";
-
-import { FollowNavigation, UserListItem } from "@/components/profiles";
+import { FollowNavigation } from "@/widgets/profile";
+import { useGetFollowingQuery } from "@/features/profiles/api/followQueries";
+import { useGetProfileQuery } from "@/features/profiles/api/profileQueries";
+import { UserListItem } from "@/features/profiles/components";
+import { Spinner } from "@/shared/ui";
 
 export default function FollowingPage() {
   const { username } = useParams<{

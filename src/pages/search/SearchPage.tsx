@@ -1,29 +1,26 @@
-import { useMemo, useState } from "react";
 import { SlidersHorizontal } from "lucide-react";
+import { useMemo, useState } from "react";
 import { useLocation, useNavigate, useSearchParams } from "react-router";
 
-import { useSearch } from "@/hooks/useSearch";
-
-import { Spinner, Tab } from "@/components/ui";
-
-import { AdvancedSearchModal, SearchPageSearchBox } from "@/components/search";
-
-import PageHeader from "@/components/navigation/PageHeader";
-import PostCard from "@/components/posts/PostCard";
-import UserListItem from "@/components/profiles/UserListItem";
-
-import { APP_ROUTES } from "@/constants/routes";
-
-import { useAuth } from "@/hooks/auth/useAuth";
-
+import { PageHeader } from "@/widgets/navigation/pageHeader";
+import { useAuth } from "@/features/auth/hooks/useAuth";
+import { PostCard } from "@/features/content/components/posts";
+import {
+  AdvancedSearchModal,
+  SearchPageSearchBox,
+} from "@/features/discovery/components/search";
+import { useSearch } from "@/features/discovery/hooks/useSearch";
 import {
   criteriaForType,
   hasActiveSearchCriteria,
   hasNonDefaultFilters,
   parseSearchCriteria,
-} from "@/utils/searchCriteria";
+} from "@/features/discovery/lib/searchCriteria";
+import { UserListItem } from "@/features/profiles/components";
+import { APP_ROUTES } from "@/shared/config/routes";
+import { Spinner, Tab } from "@/shared/ui";
 
-import type { SearchCriteria, SearchType } from "@/types/search";
+import type { SearchCriteria, SearchType } from "@/features/discovery/types";
 
 const SEARCH_TYPES: Array<{ value: SearchType; label: string }> = [
   { value: "posts", label: "Пости" },

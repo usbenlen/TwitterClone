@@ -1,12 +1,10 @@
-import type { Post } from "@/types/post";
-
-import { currentUser, sampleAuthors } from "@/mock/data/users";
-import { posts } from "@/mock/data/posts";
+import { toPostAuthor } from "@/features/profiles/lib/postAuthor";
+import { MILLISECONDS_PER_MINUTE } from "@/shared/constants/date";
 import { discoveryCommentSeeds } from "@/mock/data/discoveryComments";
+import { posts } from "@/mock/data/posts";
+import { currentUser, sampleAuthors } from "@/mock/data/users";
 
-import { MILLISECONDS_PER_MINUTE } from "@/constants/date";
-
-import { toPostAuthor } from "@/utils/postAuthor";
+import type { Post } from "@/features/content/types";
 
 const author = toPostAuthor;
 

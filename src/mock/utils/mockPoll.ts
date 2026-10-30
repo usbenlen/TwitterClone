@@ -1,9 +1,8 @@
-import { MILLISECONDS_PER_MINUTE } from "@/constants/date";
-import { POLL } from "@/constants/poll";
-
-import type { CreatePostRequest, PostPoll } from "@/types";
-
+import { POLL } from "@/features/content/constants/poll";
+import { MILLISECONDS_PER_MINUTE } from "@/shared/constants/date";
 import { mediaStore } from "@/mock/stores/mediaStore";
+
+import type { CreatePostRequest, PostPoll } from "@/features/content/types";
 
 export function createMockPoll(
   input: NonNullable<CreatePostRequest["poll"]>,

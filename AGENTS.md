@@ -39,42 +39,36 @@ configuration, whose default is `uk-UA`.
 
 ## Repository map
 
-Choose the file's role first, then a functional group when there are enough
-related files. The hybrid structure is:
+Use the app/pages/widgets/features/shared layers. Choose the owning domain,
+then the file's role. The reference is
+[ASP-React-FinalProject-UI](https://github.com/IvanZacerkovnij/ASP-React-FinalProject-UI/tree/701231c931bc6496f826a513ec98ed77d2023716).
+This checkout retains Redux Toolkit/RTK Query, mock mode and all existing features.
 
 ```text
 src/
-├── components/          UI and application components
-│   ├── ui/              generic wrappers and icons
-│   ├── auth/, posts/, composer/, profiles/, search/, recommendations/
-│   ├── notifications/, scheduling/, reports/, settings/, admin/
-│   ├── navigation/      menus, sidebars, headers and AppLogo
-│   └── routing/         access guards
-├── hooks/               generic hooks and substantial functional groups
-├── api/                 HTTP client, adapters and endpoint paths
-│   └── mappers/         request/response adaptation
-├── store/               Redux, the single appApi, RTK Query and session
-│   └── posts/           post queries, cache and reaction coordination
-├── types/               shared models, API contracts and separate *.dto.ts
-├── constants/           limits, choices and UI metadata
-├── schemas/             form schemas and schema-derived types
-├── utils/               generic helpers, formatting and browser operations
-│   ├── composer/        validation, payloads and draft conversions
-│   ├── media/           preparation, compression, caching and validation
-│   └── posts/           comment trees and author updates
-├── config/              environment readers and application configuration
-├── pages/               route screens, including admin/
-├── layouts/             page layouts only
-├── providers/           global lifecycle effects
-├── mock/                local handlers, fixtures and persistence
-├── main.tsx
-├── routes.tsx
-├── index.css
+├── app/                router/, providers/, store/, styles/, __tests__/
+├── pages/              route screens, including admin and notifications
+├── widgets/            layouts, navigation, feed, profile and discovery compositions
+├── features/
+│   ├── auth/           authentication, Google OAuth and access guards
+│   ├── content/        posts, comments, reactions, composer, polls and media
+│   ├── profiles/       users, editing and follows
+│   ├── discovery/      search, recommendations, trends and feedback
+│   ├── scheduling/     scheduled API, queries, state and publication
+│   ├── moderation/     administration, reports, analytics and AdminRoute
+│   ├── preferences/    theme selection and state
+│   └── notifications/  inbox, preferences, queries and polling hooks
+├── shared/             api/, config/, constants/, hooks/, lib/, store/, types/, ui/
+├── mock/               local handlers, fixtures and persistence
+├── main.tsx            entry point
 └── vite-env.d.ts
 ```
 
-Tests live in local `__tests__` directories next to the relevant category of
-implementation. Consult [README.md](README.md) for test organization and mock admin setup.
+Features use api (including RTK Query), api/mappers, components, hooks, model,
+types, constants, schemas and lib only where implementations require them.
+Reducers, cache and reaction coordination belong in model. Tests remain in
+local __tests__ directories; mixed-domain tests belong in app/__tests__.
+Consult [README.md](README.md) for the full map and mock admin setup.
 
 ## Setup and commands
 
@@ -89,7 +83,7 @@ use a Node version supported by the installed toolchain.
 | `npm run build` | Run `tsc -b` and create the Vite production build |
 | `npm run lint` | Run ESLint without rewriting files |
 | `npm run test` | Run the Vitest suite once |
-| `npm run test -- src/utils/composer/__tests__/composer.test.ts` | Run a specific test file |
+| `npm run test -- src/features/content/lib/composer/__tests__/composer.test.ts` | Run a specific test file |
 | `npm run preview` | Serve an existing production build locally |
 
 Prettier is installed, but there is no formatting npm script. Follow the style of
@@ -109,7 +103,7 @@ are exposed to the browser and must not contain server secrets.
 - Feature flags cover image/video upload, link previews, GIFs, polls and location.
   Existing flag readers enable a feature only for the string `"true"`.
 
-Numeric environment validation lives in [src/config/env.ts](src/config/env.ts)
+Numeric environment validation lives in [src/shared/config/env.ts](src/shared/config/env.ts)
 and runs during Vite configuration and application constant initialization.
 Preserve positive/finite checks, integer requirements and the image quality range.
 When adding an environment setting, update its reader, consumers, example and
@@ -117,77 +111,74 @@ relevant declarations/tests. Do not scatter new `import.meta.env` parsing into U
 
 ## Code conventions and module boundaries
 
-- Choose the file's role first, then a functional group. Components belong in
-  `components`, hooks in `hooks`, HTTP adapters in `api`, mappers in
-  `api/mappers`, and RTK Query, reducers, cache and session in `store`.
-  Preserve the single `appApi` and separate profile, follow, recommendation and
-  scheduling queries. API, types and constants should remain mostly flat.
-- Keep generic browser hooks directly in `hooks`. Group substantial related sets
-  such as `hooks/composer` and `hooks/posts`; do not create a folder for one
-  isolated hook or mirror every functional group in every category. Inside a
-  category, do not repeat `components/hooks/types` or add generic `lib/model/common`.
-- Keep UI wrappers in `components/ui`: data and callbacks arrive through props;
-  focus, opening and display state are allowed. Authentication, RTK Query and
-  business actions belong to application components and hooks. VerifiedBadge is
-  in `components/profiles`, ThemeSwitch in `components/settings`, and AppLogo in
-  `components/navigation`. Do not store separate API, constants or helper files
-  under components.
-- Keep route screens in `pages`, page layouts only in `layouts`, navigation
-  details in `components/navigation`, guards in `components/routing`, global
-  lifecycle effects in `providers`, and all mock implementations in `mock`.
-- Shared models and API contracts belong in `types`: generic contracts in
-  `types/api.ts`, authentication including refresh in `types/auth.ts`, and posts
-  in `types/post.ts`. Keep server DTOs separate in files such as `post.dto.ts`;
-  do not export shared DTOs from adapters or mappers. Keep component Props and
-  private helper types near their implementation, and store/schema-derived types
-  near their source.
-- Put composer validation and payload builders in `utils/composer`, media
-  operations in `utils/media`, comment trees in `utils/posts`, and generic cn,
-  formatting and browser helpers in `utils`. Limits, choices and UI metadata
-  belong in `constants`, form schemas in `schemas`, and environment readers in
-  `config`.
-- Use selective `index.ts` facades for component, hook and API groups when consumers
-  import multiple sibling modules. Use explicit named re-exports, including
-  `export { default as PostHeader } from "@/components/posts/PostHeader"`.
-  Keep implementation exports unchanged. Do not use `export *`, chained facades,
-  an application-wide facade, or compatibility modules for former locations.
-- Keep internal imports direct whenever the facade exports the importing module
-  or transitively depends on it; do not introduce runtime import cycles.
-  `PostCard` and `PostComments` retain their direct mutual imports.
-- `types/index.ts` contains only explicit `export type` declarations. Consumers
-  can combine contracts with `import type`; imports between type implementation
-  files stay direct. External consumers can combine public adapters and transport
-  exports through `@/api`; imports inside `api` and its mappers stay direct.
-  Store, constants, utils, lazy page imports and test mocks keep concrete module paths.
-- Use descriptive role names such as `postApi.ts` (adapter), `postQueries.ts`
-  (RTK Query), `types/post.ts`, `postMapper.ts` and `postCache.ts`.
-- Internal content names use `Post`. Preserve existing wire fields, storage keys
-  and environment names such as `VITE_MAX_TWEET_LENGTH` for compatibility.
-- Within `src`, use `@/` for local imports. ESLint enforces this for static imports,
-  dynamic imports and local paths passed to Vitest/Jest mocking helpers.
-  For example: `import { cn } from "@/utils/cn"` and
-  `vi.mock("@/api/httpClient", ...)`. Root tooling may use its existing relative imports.
-- Use `import type` for type-only dependencies. Respect `verbatimModuleSyntax`,
-  unused-variable checks and `erasableSyntaxOnly` in the TypeScript configuration.
-  The current configs do not explicitly enable `strict`; do not describe it as a
-  current requirement or change compiler settings as part of an unrelated task.
-- Match surrounding formatting. Most application files use double quotes,
-  semicolons and multiline trailing commas. Components use PascalCase names,
-  hooks use `use...`, and helpers use descriptive camelCase names.
-- Reuse domain types and shared constants. Avoid duplicating validation limits,
-  route strings, API paths or state representations in components.
-- Preserve existing export conventions: route pages commonly have default exports;
-  shared helpers/components commonly have named exports.
-- Keep JSX focused on rendering and interaction. Put feature orchestration in
-  hooks, request/response adaptation in API modules, shared cache behavior in the
-  store, and reusable calculations/validation in utilities or schemas.
-- Reuse React Hook Form and Zod patterns for forms. Derive form types with `z.infer`
-  where a schema already defines their shape.
+- Choose the layer, domain and role. Keep domain implementations together in
+  features/auth, content, profiles, discovery, scheduling, moderation, preferences
+  or notifications; do not introduce empty category folders or duplicate helpers.
+- Keep route screens in pages, layouts and reusable application compositions in
+  widgets, global effects in app/providers, router configuration in app/router,
+  global styles in app/styles and store assembly in app/store.
+- widgets/feed owns Feed and FeedList; widgets/profile owns Profile and its
+  header/hero/info/stats/tabs and FollowNavigation; widgets/discovery owns
+  ExplorePosts. Navigation belongs in widgets/navigation, with admin and
+  information navigation beside their corresponding layouts.
+- Keep generic UI wrappers and icons in shared/ui. Data and callbacks arrive
+  through props; local focus, opening and display state are allowed. AppLogo is
+  shared/ui; VerifiedBadge belongs to profiles/components; ThemeSwitch belongs
+  to preferences/components. Domain media components belong to content/components/media.
+- Generic browser hooks belong in shared/hooks. Domain hooks belong to the feature,
+  with substantial composer and posts groups inside content/hooks. Do not create
+  a folder for one isolated hook. useNavigation stays with widgets/navigation.
+- HTTP adapters, mappers and separate RTK Query modules belong to each feature's
+  api. Use the single shared/store/appApi.ts. Keep profile, follow, recommendation
+  and scheduling queries separate; reducers and cache helpers belong to model.
+- Keep domain models and API contracts in feature types, with server DTOs in
+  separate *.dto.ts files. Shared API contracts and theme definitions are in
+  shared/types. Keep component Props and private helper types near implementation,
+  and store/schema-derived types near their source. Do not export shared DTOs
+  from adapters or mappers.
+- Composer rules and payloads belong in content/lib/composer, media preparation
+  in content/lib/media, comment trees in content/lib/posts. Common formatting,
+  browser operations, IndexedDB, image caching and object URLs belong in shared/lib.
+  Scheduled-date rules belong to scheduling/lib. All mock implementations remain in mock.
+- App composes pages, widgets and features; widgets compose features and shared.
+  This was a structural migration: retain existing cross-feature dependencies
+  rather than rewriting behavior incidentally. Known exceptions are type-only
+  shared/store/hooks imports of app store types, the shared transport's auth
+  refresh-response type, and feature adapters' imports of mock implementations.
+  Existing PostCard/PostComments and composer/scheduled-dialog runtime cycles
+  remain; use direct imports and do not expand them through barrels.
+- Use selective index.ts facades for related component, hook, API and type groups
+  when consumers combine sibling exports. Use explicit named re-exports, including
+  default aliases; preserve implementation exports. Do not use export *, chained
+  facades, application-wide API/types barrels or old-path compatibility modules.
+- Keep imports direct inside a group whenever its facade exports the importer or
+  transitively depends on it. Redux modules, constants, utilities, lazy page imports
+  and test mocks use concrete paths. Domain types/index.ts files contain only
+  explicit export type declarations; imports between type implementations stay direct.
+- Within src, use @/ for local imports, dynamic imports and Vitest/Jest mock paths.
+  Use separate import type declarations. Group external values, local values by
+  app/pages/widgets/features/shared/mock, types, then side-effect imports. Sort
+  module paths and named bindings within groups; preserve side-effect import order.
+- Match surrounding implementation formatting. Import blocks use double quotes,
+  semicolons and multiline trailing commas. Avoid unrelated formatting changes.
+  Components use PascalCase, hooks use use..., helpers use descriptive camelCase.
+- Respect verbatimModuleSyntax, unused-variable checks and erasableSyntaxOnly.
+  The current configs do not explicitly enable strict; do not describe it as a
+  current requirement or change compiler settings as incidental cleanup.
+- Use descriptive role names such as postApi.ts, postQueries.ts, postMapper.ts
+  and postCache.ts. Internal content names use Post. Preserve wire fields,
+  storage keys and environment names such as VITE_MAX_TWEET_LENGTH.
+- Reuse domain types, constants, route strings and endpoints. Keep JSX focused
+  on rendering and interaction; put orchestration in hooks, adaptation in api,
+  cache behavior in model and reusable calculations in lib or schemas.
+- Preserve existing exports: route pages commonly use default exports and shared
+  helpers/components commonly use named exports. Reuse React Hook Form and Zod
+  patterns and derive form types with z.infer where schemas already exist.
 
 ## API adapters and backend compatibility
 
-Use [src/api/httpClient.ts](src/api/httpClient.ts) for application HTTP operations and
-`ENDPOINTS` from `src/api/apiEndpoints.ts` for endpoint paths. Feature adapters choose
+Use [src/shared/api/httpClient.ts](src/shared/api/httpClient.ts) for application HTTP operations and
+`ENDPOINTS` from `src/shared/api/apiEndpoints.ts` for endpoint paths. Feature adapters choose
 real or mock implementations through `MOCK_ENABLED`; components should consume
 the shared interfaces rather than branch on mock mode themselves.
 
@@ -242,7 +233,7 @@ The shared `appApi` uses `fakeBaseQuery` and the `request` wrapper around API
 adapters. Posts, profiles, follows, recommendations, scheduling, notifications,
 reports and admin queries inject endpoints into this API. Extend the existing
 pattern rather than introducing a parallel server
-state cache. Use typed hooks from `src/store/hooks.ts` and the existing store types.
+state cache. Use typed hooks from `src/shared/store/hooks.ts` and the existing store types.
 Use `createAppStore()` when a test needs an isolated store.
 
 - Maintain query tags and invalidation for affected entities and lists. Profile
@@ -268,7 +259,7 @@ setting is only for mock mode. Server authorization remains authoritative.
 
 ## Composer, polls, media and scheduling
 
-Reuse [src/utils/composer/composerRules.ts](src/utils/composer/composerRules.ts), composer payload
+Reuse [src/features/content/lib/composer/composerRules.ts](src/features/content/lib/composer/composerRules.ts), composer payload
 helpers and the decomposed composer hooks across posts, comments, quotes and edits.
 Do not reimplement slightly different validation in each modal.
 
@@ -305,10 +296,10 @@ client-side real-server publication or claim parity without a backend contract.
 
 ## UI, routing and accessibility
 
-Reuse existing `src/components/ui` primitives, `cn`, Button variants, Spinner, Avatar and
+Reuse existing `src/shared/ui` primitives, `cn`, Button variants, Spinner, Avatar and
 shared icons. Use semantic Tailwind classes such as `bg-background`,
 `text-foreground` and `border-border` so light and dark themes remain consistent.
-Tailwind 4 is integrated through Vite and `src/index.css`; do not assume a separate
+Tailwind 4 is integrated through Vite and `src/app/styles/index.css`; do not assume a separate
 Tailwind configuration file exists.
 
 - Themes are `dark`, `light` and `system`, applied through `data-theme`. For a new

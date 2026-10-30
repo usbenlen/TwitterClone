@@ -1,0 +1,107 @@
+import { useState } from "react";
+
+import {
+  useCreateCommentMutation,
+  useDeletePostMutation,
+  useGetPostsQuery,
+  useUpdatePostMutation,
+} from "@/features/content/api/postQueries";
+import { errorMessage } from "@/shared/store/appApi";
+
+import type { ComposerSubmitData, Post } from "@/features/content/types";
+
+interface UsePostCommentsOptions {
+  postId: string;
+  parentCommentId?: string | null;
+  initialCount: number;
+  initiallyOpen?: boolean;
+}
+const EMPTY: Post[] = [];
+
+export function usePostComments({
+  postId,
+  parentCommentId = null,
+  initialCount,
+  initiallyOpen = false,
+}: UsePostCommentsOptions) {
+  const [open, setOpen] = useState(initiallyOpen);
+  const [requested, setRequested] = useState(initiallyOpen);
+  const query = useGetPostsQuery(
+    { kind: "comments", postId },
+    { skip: !requested },
+  );
+
+  const [create, creating] = useCreateCommentMutation();
+  const [update, updating] = useUpdatePostMutation();
+  const [remove, removing] = useDeletePostMutation();
+  const comments = query.currentData ?? EMPTY;
+  const mutationError = creating.error ?? updating.error ?? removing.error;
+  const clearErrors = () => {
+    creating.reset();
+    updating.reset();
+    removing.reset();
+  };
+
+  return {
+    open,
+    comments,
+    commentsCount: initialCount,
+    isLoading: query.isLoading,
+    isSubmitting: creating.isLoading,
+    error:
+      mutationError || query.error
+        ? errorMessage(mutationError ?? query.error)
+        : null,
+
+    toggleOpen: () => {
+      setOpen(!open);
+      if (!open) setRequested(true);
+    },
+
+    loadComments: () => {
+      if (requested) void query.refetch();
+      else setRequested(true);
+    },
+
+    createComment: async (
+      data: ComposerSubmitData,
+      childParentCommentId?: string | null,
+    ) => {
+      if (creating.isLoading) return false;
+      clearErrors();
+      try {
+        await create({
+          postId,
+          parentCommentId:
+            childParentCommentId === undefined
+              ? parentCommentId
+              : childParentCommentId,
+          ...data,
+          poll: data.poll ?? undefined,
+        }).unwrap();
+        return true;
+      } catch {
+        return false;
+      }
+    },
+
+    deleteComment: async (id: string) => {
+      clearErrors();
+      await remove({ id, type: "comment" }).unwrap();
+    },
+
+    updateComment: async (id: string, data: ComposerSubmitData | string) => {
+      clearErrors();
+      try {
+        await update({
+          id,
+          type: "comment",
+          data: typeof data === "string" ? { content: data } : data,
+        }).unwrap();
+        return true;
+      } catch {
+        return false;
+      }
+    },
+  };
+}

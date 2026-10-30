@@ -1,32 +1,30 @@
-import { ApiError } from "@/api/httpClient";
-
-import { ADMIN_PAGE_SIZE } from "@/constants/admin";
-import { REPORT_REASONS } from "@/constants/report";
+import { ADMIN_PAGE_SIZE } from "@/features/moderation/constants/admin";
+import { REPORT_REASONS } from "@/features/moderation/constants/report";
+import { ApiError } from "@/shared/api";
+import { commentsByPostId } from "@/mock/data/comments";
+import { mockFollowers, mockFollowing } from "@/mock/data/follow";
+import { posts } from "@/mock/data/posts";
+import { currentUser, sampleAuthors } from "@/mock/data/users";
+import { MOCK_DELAYS } from "@/mock/mockConfig";
+import { delay } from "@/mock/utils/delay";
+import { removeMockContent } from "@/mock/utils/removeMockContent";
 
 import type {
   AdminUser,
   AnalyticsPeriod,
+  CreateReportRequest,
   DashboardAnalytics,
   DashboardMetric,
   DashboardTables,
   ModerationParams,
   Paginated,
-  UserAction,
-  UsersParams,
-  CreateReportRequest,
   ReportDecision,
   ReportSignal,
   ReportTarget,
   ReportTargetType,
-} from "@/types";
-
-import { currentUser, sampleAuthors } from "@/mock/data/users";
-import { posts } from "@/mock/data/posts";
-import { commentsByPostId } from "@/mock/data/comments";
-import { mockFollowers, mockFollowing } from "@/mock/data/follow";
-import { MOCK_DELAYS } from "@/mock/mockConfig";
-import { delay } from "@/mock/utils/delay";
-import { removeMockContent } from "@/mock/utils/removeMockContent";
+  UserAction,
+  UsersParams,
+} from "@/features/moderation/types";
 
 type StoredReport = Omit<ReportSignal, "target">;
 

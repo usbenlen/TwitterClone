@@ -1,35 +1,31 @@
 import { useEffect, useRef } from "react";
 import { useSearchParams } from "react-router";
 
-import PageHeader from "@/components/navigation/PageHeader";
-import SearchPageSearchBox from "@/components/search/SearchPageSearchBox";
+import { ExplorePosts } from "@/widgets/discovery";
+import { PageHeader } from "@/widgets/navigation/pageHeader";
 import {
-  TrendsList,
-  ExploreSection,
   ExploreAuthors,
-  ExplorePosts,
-} from "@/components/recommendations";
-
+  ExploreSection,
+  TrendsList,
+} from "@/features/discovery/components/recommendations";
+import { SearchPageSearchBox } from "@/features/discovery/components/search";
 import {
   EXPLORE_LIMITS,
   EXPLORE_TABS,
-} from "@/constants/explore";
-import { SIDEBAR } from "@/constants/layout";
-import { TRENDS_PAGE_LIMIT } from "@/constants/recommendation";
-import { APP_ROUTES } from "@/constants/routes";
-import { DEFAULT_SEARCH_CRITERIA } from "@/constants/search";
-
+} from "@/features/discovery/constants/explore";
+import { TRENDS_PAGE_LIMIT } from "@/features/discovery/constants/recommendation";
+import { DEFAULT_SEARCH_CRITERIA } from "@/features/discovery/constants/search";
 import {
   useExploreTrends,
-  useTrends,
   useTrendFeedback,
-} from "@/hooks/recommendations";
+  useTrends,
+} from "@/features/discovery/hooks";
+import { parseExploreTab } from "@/features/discovery/lib/explore";
+import { APP_ROUTES } from "@/shared/config/routes";
+import { SIDEBAR } from "@/shared/constants/layout";
+import { Tab } from "@/shared/ui";
 
-import Tab from "@/components/ui/Tab";
-
-import { parseExploreTab } from "@/utils/explore";
-
-import type { ExploreTab } from "@/types/recommendation";
+import type { ExploreTab } from "@/features/discovery/types";
 
 export default function ExplorePage() {
   const [params, setParams] = useSearchParams();

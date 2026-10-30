@@ -1,15 +1,14 @@
-import { MOCK_DELAYS } from "@/mock/mockConfig";
-
-import type { User, Post, UpdateProfileRequest } from "@/types";
-
-import { sampleAuthors, currentUser } from "@/mock/data/users";
-import { posts } from "@/mock/data/posts";
+import { withAncestors } from "@/features/content/lib/posts/ancestors";
+import { updatePostAuthors } from "@/features/content/lib/posts/updatePostAuthors";
 import { commentsByPostId } from "@/mock/data/comments";
-
-import { withAncestors } from "@/utils/posts/ancestors";
-import { updatePostAuthors } from "@/utils/posts/updatePostAuthors";
+import { posts } from "@/mock/data/posts";
+import { currentUser, sampleAuthors } from "@/mock/data/users";
+import { MOCK_DELAYS } from "@/mock/mockConfig";
 import { delay } from "@/mock/utils/delay";
 import { selectMockComments } from "@/mock/utils/selectMockComments";
+
+import type { Post } from "@/features/content/types";
+import type { UpdateProfileRequest, User } from "@/features/profiles/types";
 
 const likedPostsByUsername: Record<string, string[]> = {
   [currentUser.username]: ["t2"],

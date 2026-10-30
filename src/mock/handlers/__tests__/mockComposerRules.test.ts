@@ -1,11 +1,11 @@
 // @vitest-environment happy-dom
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
+import type { MediaAttachment } from "@/features/content/types/media";
 import type {
   CreateScheduledPostRequest,
   ScheduledMediaInput,
-} from "@/types/schedule";
-import type { MediaAttachment } from "@/types/media";
+} from "@/features/scheduling/types/schedule";
 
 const mocks = vi.hoisted(() => ({
   stored: new Map<

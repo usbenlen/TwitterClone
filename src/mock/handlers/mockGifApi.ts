@@ -1,4 +1,4 @@
-import type { Gif } from "@/types/gif";
+import type { Gif } from "@/features/content/types";
 
 export const mockGifApi = {
   available: false,

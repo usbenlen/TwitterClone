@@ -4,40 +4,35 @@ import { Link } from "react-router";
 import {
   useAdminReportsQuery,
   useResolveReportMutation,
-} from "@/store/adminQueries";
-
+} from "@/features/moderation/api/adminQueries";
+import {
+  Pagination,
+  QueryState,
+  ReportActions,
+  ReportPreview,
+  ReportSummary,
+  Select,
+  useActionConfirmation,
+} from "@/features/moderation/components";
 import {
   MODERATION_DEFAULTS,
   REPORT_ACTION_ICONS,
   REPORT_ACTION_LABELS,
-} from "@/constants/admin";
-
+} from "@/features/moderation/constants/admin";
+import {
+  REPORT_DECISIONS,
+  REPORT_STATUSES,
+  REPORT_TARGETS,
+} from "@/features/moderation/constants/report";
 import {
   useCorrectPage,
   useListParams,
   usePageSelection,
-} from "@/utils/adminListState";
+} from "@/features/moderation/lib/adminListState";
+import { APP_ROUTES } from "@/shared/config/routes";
+import { Button, SearchBox } from "@/shared/ui";
 
-import {
-  useActionConfirmation,
-  Pagination,
-  QueryState,
-  Select,
-  ReportSummary,
-  ReportPreview,
-  ReportActions,
-} from "@/components/admin";
-
-import {
-  REPORT_TARGETS,
-  REPORT_STATUSES,
-  REPORT_DECISIONS,
-} from "@/constants/report";
-
-import { SearchBox, Button } from "@/components/ui";
-import { APP_ROUTES } from "@/constants/routes";
-
-import type { ReportDecision, ReportSignal } from "@/types/report";
+import type { ReportDecision, ReportSignal } from "@/features/moderation/types";
 
 const choices = {
   type: ["all", "posts", "comments", "users"],

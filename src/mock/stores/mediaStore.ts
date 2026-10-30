@@ -1,4 +1,4 @@
-import type { MediaAttachment } from "@/types/media";
+import type { MediaAttachment } from "@/features/content/types";
 
 const media = new Map<string, MediaAttachment>();
 

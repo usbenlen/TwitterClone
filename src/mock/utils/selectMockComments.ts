@@ -1,9 +1,8 @@
+import { withAncestors } from "@/features/content/lib/posts/ancestors";
 import { commentsByPostId } from "@/mock/data/comments";
 import { posts } from "@/mock/data/posts";
 
-import { withAncestors } from "@/utils/posts/ancestors";
-
-import type { Post } from "@/types/post";
+import type { Post } from "@/features/content/types";
 
 export function selectMockComments(predicate: (comment: Post) => boolean): Post[] {
   return Object.entries(commentsByPostId).flatMap(([postId, comments]) => {

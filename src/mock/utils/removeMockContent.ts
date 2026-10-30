@@ -1,10 +1,8 @@
-import { posts, setPosts } from "@/mock/data/posts";
 import { commentsByPostId } from "@/mock/data/comments";
+import { posts, setPosts } from "@/mock/data/posts";
 import { sampleAuthors } from "@/mock/data/users";
-
-import { markQuotedTargetUnavailable } from "@/mock/utils/mockQuotes";
-
 import { editHistoryStore } from "@/mock/stores/editHistoryStore";
+import { markQuotedTargetUnavailable } from "@/mock/utils/mockQuotes";
 
 // Shared by owner deletion and moderation so threads and quotes stay consistent.
 export function removeMockContent(type: "post" | "comment", id: string) {

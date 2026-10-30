@@ -1,4 +1,4 @@
-import type { Location } from "@/types/location";
+import type { Location } from "@/features/content/types";
 
 export const locations: Location[] = [
   {

@@ -1,28 +1,24 @@
+import { skipToken } from "@reduxjs/toolkit/query/react";
 import { useParams } from "react-router";
 
-import { skipToken } from "@reduxjs/toolkit/query/react";
-
+import { BackButton } from "@/widgets/navigation/pageHeader";
 import {
   useAdminReportQuery,
   useResolveReportMutation,
-} from "@/store/adminQueries";
-
-import BackButton from "@/components/navigation/BackButton";
+} from "@/features/moderation/api/adminQueries";
 import {
-  useActionConfirmation,
   QueryState,
-  ReportSummary,
-  ReportPreview,
   ReportActions,
-} from "@/components/admin";
+  ReportPreview,
+  ReportSummary,
+  useActionConfirmation,
+} from "@/features/moderation/components";
+import { REPORT_ACTION_LABELS } from "@/features/moderation/constants/admin";
+import { APP_ROUTES } from "@/shared/config/routes";
+import { normalizeInlineDisplayText } from "@/shared/lib/displayText";
+import { formatDateTime } from "@/shared/lib/format";
 
-import { APP_ROUTES } from "@/constants/routes";
-import { REPORT_ACTION_LABELS } from "@/constants/admin";
-
-import { formatDateTime } from "@/utils/format";
-import { normalizeInlineDisplayText } from "@/utils/displayText";
-
-import type { ReportDecision } from "@/types/report";
+import type { ReportDecision } from "@/features/moderation/types";
 
 export default function AdminReportPage() {
   const { reportId } = useParams();

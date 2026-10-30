@@ -1,8 +1,8 @@
 import { describe, expect, it, vi } from "vitest";
-import {
-  createMockNotificationsApi,
-  type MockNotificationEvent,
-} from "@/mock/handlers/mockNotificationsApi";
+
+import { createMockNotificationsApi } from "@/mock/handlers/mockNotificationsApi";
+
+import type { MockNotificationEvent } from "@/mock/handlers/mockNotificationsApi";
 
 vi.mock("@/mock/utils/delay", () => ({ delay: () => Promise.resolve() }));
 

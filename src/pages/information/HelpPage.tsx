@@ -1,9 +1,8 @@
 import { Link } from "react-router";
 
-import { APP_NAME } from "@/constants/app";
-import { APP_ROUTES } from "@/constants/routes";
-
 import { InformationPage } from "@/pages/information/InformationPage";
+import { APP_ROUTES } from "@/shared/config/routes";
+import { APP_NAME } from "@/shared/constants/app";
 
 const linkClassName = "rounded-sm text-primary hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring";
 

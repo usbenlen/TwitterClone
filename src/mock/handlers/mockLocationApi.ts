@@ -1,10 +1,8 @@
-import { MOCK_DELAYS } from "@/mock/mockConfig";
-
 import { locations } from "@/mock/data/locations";
-
-import type { Location } from "@/types/location";
-
+import { MOCK_DELAYS } from "@/mock/mockConfig";
 import { delay } from "@/mock/utils/delay";
+
+import type { Location } from "@/features/content/types";
 
 export const mockLocationApi = {
   async search(query: string, signal?: AbortSignal): Promise<Location[]> {

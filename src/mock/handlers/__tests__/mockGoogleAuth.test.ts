@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { mockAuthApi } from "@/mock/handlers/mockAuthApi";
 import { currentUser } from "@/mock/data/users";
+import { mockAuthApi } from "@/mock/handlers/mockAuthApi";
 
 vi.mock("@/mock/utils/delay", () => ({ delay: async () => {} }));
 beforeEach(() => vi.clearAllMocks());

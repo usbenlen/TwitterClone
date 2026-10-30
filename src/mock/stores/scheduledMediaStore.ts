@@ -1,6 +1,7 @@
-import { createIndexedDbStore } from "@/utils/indexedDb";
+import { createIndexedDbStore } from "@/shared/lib/indexedDb";
 
-import type { MediaAttachment, ScheduledMediaInput } from "@/types";
+import type { MediaAttachment } from "@/features/content/types";
+import type { ScheduledMediaInput } from "@/features/scheduling/types";
 
 const runTransaction = createIndexedDbStore({
   database: "twitterclone-scheduled-media",

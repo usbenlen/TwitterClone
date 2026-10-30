@@ -1,25 +1,21 @@
-import { MOCK_DELAYS } from "@/mock/mockConfig";
-
-import { ApiError } from "@/api/httpClient";
-
-import { TREND_FEEDBACK_OPTIONS } from "@/constants/trendFeedback";
-
-import { currentUser, sampleAuthors } from "@/mock/data/users";
-import { mockTrends, mockTrendCategories } from "@/mock/data/recommendations";
-import { posts } from "@/mock/data/posts";
+import { TREND_FEEDBACK_OPTIONS } from "@/features/discovery/constants/trendFeedback";
+import { toUserShort } from "@/features/profiles/lib/postAuthor";
+import { ApiError } from "@/shared/api";
 import { mockFollowing } from "@/mock/data/follow";
-
+import { posts } from "@/mock/data/posts";
+import { mockTrendCategories, mockTrends } from "@/mock/data/recommendations";
+import { currentUser, sampleAuthors } from "@/mock/data/users";
+import { MOCK_DELAYS } from "@/mock/mockConfig";
 import { delay } from "@/mock/utils/delay";
-import { toUserShort } from "@/utils/postAuthor";
 
 import type {
-  PaginatedRecommendations,
   ExploreCategory,
-  TrendFeedbackRequest,
+  PaginatedRecommendations,
   PaginatedRecommendedPosts,
+  TrendFeedbackRequest,
   TrendRecommendationsResponse,
-  User,
-} from "@/types";
+} from "@/features/discovery/types";
+import type { User } from "@/features/profiles/types";
 
 const feedbackByUser = new Map<
   string,

@@ -1,21 +1,16 @@
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useLocation, useNavigate } from "react-router";
 
-import { authApi, ApiError } from "@/api";
+import { authApi } from "@/features/auth/api";
+import { AuthShell } from "@/features/auth/components";
+import { resetPasswordSchema } from "@/features/auth/schemas/authSchema";
+import { ApiError } from "@/shared/api";
+import { APP_ROUTES } from "@/shared/config/routes";
+import { Button, Input } from "@/shared/ui";
 
-import { zodResolver } from "@hookform/resolvers/zod";
-
-import {
-  resetPasswordSchema,
-  type ResetPasswordFormValues,
-} from "@/schemas/authSchema";
-
-import { APP_ROUTES } from "@/constants/routes";
-
-import { Input, Button } from "@/components/ui";
-
-import { AuthShell } from "@/components/auth/AuthShell";
+import type { ResetPasswordFormValues } from "@/features/auth/schemas/authSchema";
 
 interface LocationState {
   email?: string;

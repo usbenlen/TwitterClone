@@ -1,6 +1,5 @@
-import { APP_NAME } from "@/constants/app";
-
 import { InformationPage } from "@/pages/information/InformationPage";
+import { APP_NAME } from "@/shared/constants/app";
 
 export default function TermsPage() {
   return (

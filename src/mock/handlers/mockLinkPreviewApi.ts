@@ -1,9 +1,8 @@
+import { getDisplayDomain } from "@/features/content/lib/composer/linkPreview";
 import { MOCK_DELAYS } from "@/mock/mockConfig";
-
-import type { LinkPreview } from "@/types/linkPreview";
-
 import { delay } from "@/mock/utils/delay";
-import { getDisplayDomain } from "@/utils/composer/linkPreview";
+
+import type { LinkPreview } from "@/features/content/types";
 
 function getYoutubeId(url: URL) {
   if (url.hostname === "youtu.be") return url.pathname.split("/")[1] || null;

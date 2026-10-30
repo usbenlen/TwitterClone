@@ -1,4 +1,4 @@
-import { MILLISECONDS_PER_MINUTE } from "@/constants/date";
+import { MILLISECONDS_PER_MINUTE } from "@/shared/constants/date";
 
 export const MOCK_DELAYS = {
   DEFAULT: 500,

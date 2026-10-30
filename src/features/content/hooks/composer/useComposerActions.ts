@@ -1,0 +1,85 @@
+import { useRef } from "react";
+
+import { useComposerGif } from "@/features/content/hooks/composer/useComposerGif";
+import { useComposerLocation } from "@/features/content/hooks/composer/useComposerLocation";
+import { useComposerPoll } from "@/features/content/hooks/composer/useComposerPoll";
+import { useComposerPopup } from "@/features/content/hooks/composer/useComposerPopup";
+
+import type { ComposerAction, ComposerPoll } from "@/features/content/types";
+
+export function useComposerActions(initialPoll?: ComposerPoll | null) {
+  const imageInputRef = useRef<HTMLInputElement>(null);
+  const videoInputRef = useRef<HTMLInputElement>(null);
+
+  const buttonRefs: Partial<
+    Record<ComposerAction, React.RefObject<HTMLButtonElement | null>>
+  > = {
+    emoji: useRef<HTMLButtonElement>(null),
+    gif: useRef<HTMLButtonElement>(null),
+    poll: useRef<HTMLButtonElement>(null),
+    location: useRef<HTMLButtonElement>(null),
+    schedule: useRef<HTMLButtonElement>(null),
+  };
+
+  const closeAllPopups = () => {
+    emoji.close();
+    gif.close();
+    location.close();
+    schedule.close();
+  };
+
+  const emoji = useComposerPopup();
+  const gif = useComposerGif();
+  const poll = useComposerPoll(initialPoll);
+  const location = useComposerLocation();
+  const schedule = useComposerPopup();
+
+  const handleAction = (action: ComposerAction) => {
+    switch (action) {
+      case "image":
+        imageInputRef.current?.click();
+        break;
+
+      case "video":
+        videoInputRef.current?.click();
+        break;
+
+      case "gif":
+        gif.toggle();
+        break;
+
+      case "emoji":
+        emoji.toggle();
+        break;
+
+      case "poll":
+        closeAllPopups();
+        poll.activate();
+        break;
+
+      case "location":
+        location.toggle();
+        break;
+
+      case "schedule":
+        schedule.toggle();
+        break;
+    }
+  };
+
+  return {
+    imageInputRef,
+    videoInputRef,
+
+    buttonRefs,
+
+    handleAction,
+    closeAllPopups,
+
+    emoji,
+    gif,
+    poll,
+    location,
+    schedule,
+  };
+}

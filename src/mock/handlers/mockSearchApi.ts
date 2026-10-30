@@ -1,20 +1,16 @@
+import { SEARCH_NEARBY_RADIUS_KM } from "@/features/discovery/constants/search";
+import { toUserShort } from "@/features/profiles/lib/postAuthor";
+import { posts } from "@/mock/data/posts";
+import { sampleAuthors } from "@/mock/data/users";
 import { MOCK_DELAYS } from "@/mock/mockConfig";
+import { delay } from "@/mock/utils/delay";
 
-import { SEARCH_NEARBY_RADIUS_KM } from "@/constants/search";
-
+import type { Location, Post } from "@/features/content/types";
 import type {
-  Location,
   SearchCriteria,
   SearchViewerContext,
-  Post,
-  UserShort,
-} from "@/types";
-
-import { sampleAuthors } from "@/mock/data/users";
-import { posts } from "@/mock/data/posts";
-
-import { delay } from "@/mock/utils/delay";
-import { toUserShort } from "@/utils/postAuthor";
+} from "@/features/discovery/types";
+import type { UserShort } from "@/features/profiles/types";
 
 function words(value: string) {
   return value

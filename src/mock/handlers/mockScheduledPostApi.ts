@@ -1,22 +1,17 @@
-import { STORAGE_KEYS } from "@/constants/storage";
-
+import { getPostRulesError } from "@/features/content/lib/composer/composerRules";
+import { STORAGE_KEYS } from "@/shared/constants/storage";
 import { currentUser } from "@/mock/data/users";
-
 import { mockPostApi } from "@/mock/handlers/mockPostApi";
-
 import { mediaStore } from "@/mock/stores/mediaStore";
 import { scheduledMediaStore } from "@/mock/stores/scheduledMediaStore";
-
 import { validateMockPost } from "@/mock/utils/validateMockPost";
-import { getPostRulesError } from "@/utils/composer/composerRules";
 
+import type { MediaAttachment, Post } from "@/features/content/types";
 import type {
   CreateScheduledPostRequest,
   ScheduledPost,
   UpdateScheduledPostRequest,
-  MediaAttachment,
-  Post,
-} from "@/types";
+} from "@/features/scheduling/types";
 
 type StoredScheduledPost = Omit<ScheduledPost, "media">;
 

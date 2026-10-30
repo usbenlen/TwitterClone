@@ -1,23 +1,28 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { mockAdminApi, moderationSignals, paginate } from "@/mock/handlers/mockAdminApi";
-import { currentUser, sampleAuthors } from "@/mock/data/users";
-import { posts, setPosts } from "@/mock/data/posts";
+import { createAppStore } from "@/app/store/store";
+import { postsApi } from "@/features/content/api/postQueries";
+import { adminQueries } from "@/features/moderation/api/adminQueries";
+import { reportsApi } from "@/features/moderation/api/reportQueries";
+import {
+  MODERATION_DEFAULTS,
+  USERS_DEFAULTS,
+} from "@/features/moderation/constants/admin";
+import { appApi } from "@/shared/store/appApi";
+import { sessionChanged } from "@/shared/store/session";
 import { commentsByPostId } from "@/mock/data/comments";
 import { mockFollowers, mockFollowing } from "@/mock/data/follow";
+import { posts, setPosts } from "@/mock/data/posts";
+import { currentUser, sampleAuthors } from "@/mock/data/users";
+import {
+  mockAdminApi,
+  moderationSignals,
+  paginate,
+} from "@/mock/handlers/mockAdminApi";
 
-import { MODERATION_DEFAULTS, USERS_DEFAULTS } from "@/constants/admin";
+import type { User } from "@/features/profiles/types/user";
 
-import { createAppStore } from "@/store/store";
-import { adminQueries } from "@/store/adminQueries";
-import { reportsApi } from "@/store/reportQueries";
-import { postsApi } from "@/store/posts/postQueries";
-import { appApi } from "@/store/appApi";
-import { sessionChanged } from "@/store/session";
-
-import type { User } from "@/types/user";
-
-vi.mock("@/config/mockConfig", () => ({ MOCK_ENABLED: true }));
+vi.mock("@/shared/config/mockConfig", () => ({ MOCK_ENABLED: true }));
 vi.mock("@/mock/utils/delay", () => ({ delay: async () => {} }));
 
 const initial = structuredClone({

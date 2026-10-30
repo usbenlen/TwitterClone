@@ -1,7 +1,6 @@
-import { useBookmarks } from "@/hooks/posts/useBookmarks";
-
-import FeedList from "@/components/posts/FeedList";
-import PageHeader from "@/components/navigation/PageHeader";
+import FeedList from "@/widgets/feed/FeedList";
+import { PageHeader } from "@/widgets/navigation/pageHeader";
+import { useBookmarks } from "@/features/content/hooks/posts/useBookmarks";
 
 export default function BookmarksPage() {
   const { posts, isLoading, error } = useBookmarks();
