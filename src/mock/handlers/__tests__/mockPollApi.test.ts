@@ -1,27 +1,29 @@
 // @vitest-environment happy-dom
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-vi.mock("@/mock/config", () => ({ MOCK_ENABLED: true }));
+vi.mock("@/config/mockConfig", () => ({ MOCK_ENABLED: true }));
 vi.mock("@/mock/utils/delay", () => ({ delay: async () => {} }));
 
 async function load() {
-  const { pollApi, tweetApi, commentApi } = await import("@/api");
-  const { createAppStore } = await import("@/store");
-  const { postsApi } = await import("@/store/postsApi");
-  const { runReaction } = await import("@/store/reactions");
+  const { pollApi } = await import("@/api/pollApi");
+const { postApi } = await import("@/api/postApi");
+const { commentApi } = await import("@/api/commentApi");
+  const { createAppStore } = await import("@/store/store");
+  const { postsApi } = await import("@/store/posts/postQueries");
+  const { runReaction } = await import("@/store/posts/runReaction");
   const { sessionChanged } = await import("@/store/session");
-  const posts = await import("@/mock/data/tweets");
+  const posts = await import("@/mock/data/posts");
   const { commentsByPostId } = await import("@/mock/data/comments");
   const data = {
     content: "Питання",
     poll: { options: ["Так", "Ні"], duration: 60 },
     mediaIds: [],
   };
-  const post = await tweetApi.create(data);
+  const post = await postApi.create(data);
   const comment = await commentApi.create({ ...data, postId: post.id });
   return {
     pollApi,
-    tweetApi,
+    postApi,
     commentApi,
     postsApi,
     runReaction,
@@ -54,8 +56,8 @@ function target(type: "post" | "comment") {
 function replacePoll(type: "post" | "comment", poll: typeof backend.post.poll) {
   const item = target(type);
   if (type === "post") {
-    backend.posts.setTweets(
-      backend.posts.tweets.map((post) =>
+    backend.posts.setPosts(
+      backend.posts.posts.map((post) =>
         post.id === item.id ? { ...post, poll } : post,
       ),
     );
@@ -87,13 +89,13 @@ describe.each(["post", "comment"] as const)("mock %s poll voting", (type) => {
 
     const created =
       type === "post"
-        ? await backend.tweetApi.create(data)
+        ? await backend.postApi.create(data)
         : await backend.commentApi.create({ ...data, postId: backend.post.id });
 
     expect(created.attachments).toEqual([]);
     expect(created.poll?.options[0]).toMatchObject({ text: "Так 😀", media });
 
-    const quoted = await backend.tweetApi.create({
+    const quoted = await backend.postApi.create({
       content: "Цитата",
       mediaIds: [],
       ...(type === "post"
@@ -116,7 +118,7 @@ describe.each(["post", "comment"] as const)("mock %s poll voting", (type) => {
 
     const updated =
       type === "post"
-        ? await backend.tweetApi.update(created.id, { content: "Оновлено" })
+        ? await backend.postApi.update(created.id, { content: "Оновлено" })
         : await backend.commentApi.update(created.id, { content: "Оновлено" });
 
     expect(updated.poll?.options[0].media).toEqual(media);
@@ -128,7 +130,7 @@ describe.each(["post", "comment"] as const)("mock %s poll voting", (type) => {
 
     const removed =
       type === "post"
-        ? await backend.tweetApi.update(created.id, withoutPhotos)
+        ? await backend.postApi.update(created.id, withoutPhotos)
         : await backend.commentApi.update(created.id, withoutPhotos);
 
     expect(removed.poll?.options[0].media).toBeUndefined();
@@ -136,7 +138,7 @@ describe.each(["post", "comment"] as const)("mock %s poll voting", (type) => {
 
     mediaStore.remove(media.id);
 
-    await expect(backend.tweetApi.create(data)).rejects.toThrow("Фото варіанта відповіді не знайдено");
+    await expect(backend.postApi.create(data)).rejects.toThrow("Фото варіанта відповіді не знайдено");
   });
   it("reads live choices rather than a versioned snapshot", async () => {
     const item = target(type);
@@ -206,7 +208,7 @@ describe.each(["post", "comment"] as const)("mock %s poll voting", (type) => {
     });
     const reread =
       type === "post"
-        ? await backend.tweetApi.getById(item.id)
+        ? await backend.postApi.getById(item.id)
         : (await backend.commentApi.getByPostId(post.id)).find(
             (entry) => entry.id === item.id,
           )!;
@@ -261,7 +263,7 @@ describe.each(["post", "comment"] as const)("mock %s poll voting", (type) => {
         ...item.poll!,
         expiresAt: new Date(Date.now() - 1000).toISOString(),
       });
-    const beforePosts = structuredClone(backend.posts.tweets);
+    const beforePosts = structuredClone(backend.posts.posts);
     const beforeComments = structuredClone(backend.commentsByPostId);
     await expect(
       backend.pollApi.vote(
@@ -278,7 +280,7 @@ describe.each(["post", "comment"] as const)("mock %s poll voting", (type) => {
         expired: "Опитування завершене.",
       }[reason],
     );
-    expect(backend.posts.tweets).toEqual(beforePosts);
+    expect(backend.posts.posts).toEqual(beforePosts);
     expect(backend.commentsByPostId).toEqual(beforeComments);
   });
 });
@@ -306,6 +308,6 @@ it("keeps a post and comment with the same ID separate", async () => {
     votedOptionId: comment.poll!.options[1].id,
   });
   expect(
-    backend.posts.tweets.find((item) => item.id === post.id)?.poll,
+    backend.posts.posts.find((item) => item.id === post.id)?.poll,
   ).toEqual(votedPost);
 });

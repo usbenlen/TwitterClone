@@ -1,9 +1,13 @@
 import type { ReactNode } from "react";
+
 import { GOOGLE_CLIENT_ID } from "@/constants/auth";
-import { useGoogleAuth } from "@/hooks/useGoogleAuth";
-import { GoogleIcon } from "@/shared/icons/services";
+
+import { useGoogleAuth } from "@/hooks/auth/useGoogleAuth";
+
+import { GoogleIcon, Button, Spinner } from "@/components/ui";
+
 import type { GoogleAuthMode } from "@/types/auth";
-import { Button, Spinner } from "@/ui";
+
 import { cn } from "@/utils/cn";
 
 interface GoogleAuthButtonProps {

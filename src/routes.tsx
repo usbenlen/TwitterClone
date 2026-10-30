@@ -3,13 +3,11 @@ import { createBrowserRouter } from "react-router";
 
 import MainLayout from "@/layouts/MainLayout";
 
-import AdminRoute from "@/admin/AdminRoute";
-
-import { ProtectedRoute, GuestRoute } from "@/components/routeGuards/index";
-
 import { APP_ROUTES } from "@/constants/routes";
 
-import { Spinner } from "@/ui/Spinner";
+import { AdminRoute, ProtectedRoute, GuestRoute } from "@/components/routing";
+
+import { Spinner } from "@/components/ui/Spinner";
 
 type PageModule = { default: ComponentType };
 
@@ -54,31 +52,31 @@ export const routes = createBrowserRouter([
         children: [
           {
             path: APP_ROUTES.ADMIN,
-            lazy: lazyPage(() => import("@/admin/AdminLayout")),
+            lazy: lazyPage(() => import("@/layouts/AdminLayout")),
             children: [
               {
                 index: true,
-                lazy: lazyPage(() => import("@/admin/pages/DashboardPage")),
+                lazy: lazyPage(() => import("@/pages/admin/AdminDashboardPage")),
               },
               {
                 path: APP_ROUTES.ADMIN_USERS,
-                lazy: lazyPage(() => import("@/admin/pages/UsersPage")),
+                lazy: lazyPage(() => import("@/pages/admin/AdminUsersPage")),
               },
               {
                 path: APP_ROUTES.ADMIN_USER,
-                lazy: lazyPage(() => import("@/admin/pages/UserPage")),
+                lazy: lazyPage(() => import("@/pages/admin/AdminUserPage")),
               },
               {
                 path: APP_ROUTES.ADMIN_MODERATION,
-                lazy: lazyPage(() => import("@/admin/pages/ModerationPage")),
+                lazy: lazyPage(() => import("@/pages/admin/AdminModerationPage")),
               },
               {
                 path: APP_ROUTES.ADMIN_REPORT,
-                lazy: lazyPage(() => import("@/admin/pages/ReportPage")),
+                lazy: lazyPage(() => import("@/pages/admin/AdminReportPage")),
               },
               {
                 path: APP_ROUTES.ADMIN_SETTINGS,
-                lazy: lazyPage(() => import("@/admin/pages/SettingsPage")),
+                lazy: lazyPage(() => import("@/pages/admin/AdminSettingsPage")),
               },
             ],
           },

@@ -9,3 +9,13 @@ export interface MediaAttachment {
   sizeInBytes?: number;
   mimeType?: string;
 }
+
+export type MediaValidationResult =
+  | {
+      valid: true;
+      type: "image" | "video" | "gif";
+    }
+  | {
+      valid: false;
+      message: string;
+    };

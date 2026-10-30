@@ -1,11 +1,10 @@
 import { GoogleAuthButton } from "@/components/auth/GoogleAuthButton";
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router";
-import { useAuth } from "@/hooks/useAuth";
 
-import { AppleIcon, GithubIcon } from "@/shared/icons/services";
+import { useAuth } from "@/hooks/auth/useAuth";
 
-import { Button } from "@/ui";
+import { AppleIcon, GithubIcon, Button } from "@/components/ui";
 
 export function AccountConnections() {
   const { user } = useAuth();

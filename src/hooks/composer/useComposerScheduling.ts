@@ -1,13 +1,11 @@
 import { useState } from "react";
 
-import { useScheduledPosts, type useComposerPopup } from "@/hooks";
+import { useScheduledPosts } from "@/hooks/useScheduledPosts";
+import { type useComposerPopup } from "@/hooks/composer/useComposerPopup";
 
-import {
-  buildScheduledPostPayload,
-  type ComposerValues,
-} from "@/utils/composer";
+import { buildScheduledPostPayload } from "@/utils/composer/composerPayload";
 
-import type { UpdateScheduledPostRequest } from "@/types";
+import type { ComposerValues, UpdateScheduledPostRequest } from "@/types";
 
 interface SchedulingOptions {
   popup: ReturnType<typeof useComposerPopup>;

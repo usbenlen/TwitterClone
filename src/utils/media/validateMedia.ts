@@ -1,14 +1,6 @@
-import { BYTES_PER_MEGABYTE, MEDIA } from "@/constants";
+import type { MediaValidationResult } from "@/types/media";
 
-export type MediaValidationResult =
-  | {
-      valid: true;
-      type: "image" | "video" | "gif";
-    }
-  | {
-      valid: false;
-      message: string;
-    };
+import { BYTES_PER_MEGABYTE, MEDIA } from "@/constants/media";
 
 export function validateMedia(file: File): MediaValidationResult {
   const isImage = MEDIA.IMAGE.ALLOWED_TYPES.includes(file.type);

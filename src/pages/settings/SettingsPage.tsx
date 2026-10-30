@@ -2,17 +2,21 @@ import { useState } from "react";
 import { Link } from "react-router";
 import { Bell, LockKeyhole, Palette, UserRound, ArrowRight } from "lucide-react";
 
-import { userApi, type UpdateProfileRequest } from "@/api";
+import { userApi } from "@/api/profileApi";
 
-import { useAuth, useTheme } from "@/hooks";
+import type { UpdateProfileRequest } from "@/types/user";
 
-import { EditProfileModal } from "@/components/modal/index";
-import { PageHeader } from "@/components/layout/pageHeader/index";
+import { useAuth } from "@/hooks/auth/useAuth";
+import { useTheme } from "@/hooks/useTheme";
+
+import EditProfileModal from "@/components/profiles/EditProfileModal";
+import { PageHeader, AppLogo } from "@/components/navigation";
 import { AccountConnections } from "@/components/auth/AccountConnections";
-import { RightSidebarFooterLinks } from "@/components/layout/desktop/rightSidebar";
+import RightSidebarFooterLinks from "@/components/navigation/desktop/RightSidebarFooterLinks";
 
-import { THEME_OPTIONS, APP_NAME, APP_ROUTES } from "@/constants";
-import { AppLogo } from "@/ui";
+import { THEME_OPTIONS } from "@/constants/theme";
+import { APP_NAME } from "@/constants/app";
+import { APP_ROUTES } from "@/constants/routes";
 
 import { cn } from "@/utils/cn";
 

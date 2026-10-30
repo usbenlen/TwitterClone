@@ -13,7 +13,7 @@ import { APP_ROUTES } from "@/constants/routes";
 
 import type { User } from "@/types/user";
 
-export interface NavigationItem {
+export interface DesktopNavigationItem {
   label: string;
   icon: ComponentType;
   getPath: (user?: User | null) => string;
@@ -21,7 +21,7 @@ export interface NavigationItem {
   mobilePlacement?: Array<"bottom" | "more">;
 }
 
-export const MAIN_NAVIGATION: NavigationItem[] = [
+export const MAIN_NAVIGATION: DesktopNavigationItem[] = [
   {
     label: "Головна",
     icon: House,

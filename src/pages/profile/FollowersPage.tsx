@@ -2,17 +2,17 @@ import { useState } from "react";
 import { skipToken } from "@reduxjs/toolkit/query/react";
 import { useParams } from "react-router";
 
-import { useAuth, useFollow } from "@/hooks";
+import { useAuth } from "@/hooks/auth/useAuth";
+import { useFollow } from "@/hooks/profiles/useFollow";
 
-import { useGetProfileQuery, useGetFollowersQuery } from "@/store/sharedApi";
+import { useGetProfileQuery } from "@/store/profileQueries";
+import { useGetFollowersQuery } from "@/store/followQueries";
 
-import { Spinner } from "@/ui";
+import { Spinner, ConfirmModal } from "@/components/ui";
 
-import { FollowNavigation } from "@/components/profile/index";
-import { UserListItem } from "@/components/user/index";
-import { ConfirmModal } from "@/components/modal";
+import { FollowNavigation, UserListItem } from "@/components/profiles";
 
-import type { UserShort } from "@/types";
+import type { UserShort } from "@/types/user";
 
 export default function FollowersPage() {
   const { username } = useParams<{

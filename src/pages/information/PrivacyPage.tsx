@@ -1,4 +1,4 @@
-import { APP_NAME } from "@/constants";
+import { APP_NAME } from "@/constants/app";
 
 import { InformationPage } from "@/pages/information/InformationPage";
 

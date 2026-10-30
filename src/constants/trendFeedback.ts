@@ -1,4 +1,4 @@
-import type { TrendFeedbackReason } from "@/types/recommendations";
+import type { TrendFeedbackReason } from "@/types/recommendation";
 
 export const TREND_FEEDBACK_OPTIONS: ReadonlyArray<{
   reason: TrendFeedbackReason;

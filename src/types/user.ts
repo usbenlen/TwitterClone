@@ -39,3 +39,22 @@ export interface UserShort {
   avatarUrl?: string | null;
   isVerified: boolean;
 }
+
+export interface UpdateProfileRequest {
+  displayName?: string | null;
+  bio?: string | null;
+
+  location?: Location | null;
+  removeLocation?: boolean;
+
+  birthDate?: string | null;
+  birthDateVisibility?: BirthDateVisibility;
+  birthYearVisibility?: BirthDateVisibility;
+  removeBirthDate?: boolean;
+
+  avatar?: File | null;
+  removeAvatar?: boolean;
+
+  banner?: File | null;
+  removeBanner?: boolean;
+}

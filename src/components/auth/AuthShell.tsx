@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 
-import { AppLogo } from "@/ui";
+import { AppLogo } from "@/components/navigation/AppLogo";
+
 import { APP_ROUTES } from "@/constants/routes";
 
 interface AuthShellProps {

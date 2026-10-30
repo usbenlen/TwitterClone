@@ -1,21 +1,23 @@
-// Client and configuration
-export * from "@/api/client";
-export * from "@/api/config";
-
-// Response mappers
-export * from "@/api/mappers/post.mapper";
-
-// Domain APIs
-export * from "@/api/auth.api";
-export * from "@/api/comment.api";
-export * from "@/api/follow.api";
-export * from "@/api/gif.api";
-export * from "@/api/linkPreview.api";
-export * from "@/api/location.api";
-export * from "@/api/media.api";
-export * from "@/api/poll.api";
-export * from "@/api/recommendations.api";
-export * from "@/api/scheduledPost.api";
-export * from "@/api/search.api";
-export * from "@/api/tweet.api";
-export * from "@/api/user.api";
+export { adminApi } from "@/api/adminApi";
+export { API_BASE_URL, ENDPOINTS } from "@/api/apiEndpoints";
+export { authApi } from "@/api/authApi";
+export { commentApi } from "@/api/commentApi";
+export { followApi } from "@/api/followApi";
+export { gifApi } from "@/api/gifApi";
+export {
+  apiClient,
+  ApiError,
+  clearUnauthorizedHandler,
+  setUnauthorizedHandler,
+} from "@/api/httpClient";
+export { linkPreviewApi } from "@/api/linkPreviewApi";
+export { locationApi } from "@/api/locationApi";
+export { mediaApi } from "@/api/mediaApi";
+export { notificationsApi } from "@/api/notificationApi";
+export { pollApi } from "@/api/pollApi";
+export { postApi } from "@/api/postApi";
+export { userApi } from "@/api/profileApi";
+export { recommendationsApi } from "@/api/recommendationApi";
+export { reportApi } from "@/api/reportApi";
+export { scheduledPostApi } from "@/api/scheduledPostApi";
+export { searchApi } from "@/api/searchApi";

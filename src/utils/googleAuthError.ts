@@ -1,4 +1,4 @@
-import { ApiError } from "@/api/client";
+import { ApiError } from "@/api/httpClient";
 
 export function googleAuthError(error: unknown, isLinking: boolean): string {
   if (error instanceof ApiError) {

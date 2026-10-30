@@ -1,4 +1,5 @@
-import { MOCK_DELAYS, MOCK_TOKEN_LIFETIME_MS } from "@/mock/constants";
+import { MOCK_DELAYS, MOCK_TOKEN_LIFETIME_MS } from "@/mock/mockConfig";
+
 import { GOOGLE_ID_TOKEN_MAX_LENGTH } from "@/constants/auth";
 
 import type {
@@ -14,8 +15,8 @@ import type {
   VerifyEmailRequest,
   ResendVerificationCodeRequest,
   StartPasswordChangeRequest,
-} from "@/types/auth";
-import type { User } from "@/types/user";
+  User,
+} from "@/types";
 
 import { currentUser } from "@/mock/data/users";
 

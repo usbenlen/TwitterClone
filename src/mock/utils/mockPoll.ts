@@ -1,12 +1,14 @@
-import { MILLISECONDS_PER_MINUTE, POLL } from "@/constants";
+import { MILLISECONDS_PER_MINUTE } from "@/constants/date";
+import { POLL } from "@/constants/poll";
 
-import type { CreateTweetRequest, TweetPoll } from "@/types";
+import type { CreatePostRequest, PostPoll } from "@/types";
+
 import { mediaStore } from "@/mock/stores/mediaStore";
 
 export function createMockPoll(
-  input: NonNullable<CreateTweetRequest["poll"]>,
-  existing?: TweetPoll,
-): TweetPoll {
+  input: NonNullable<CreatePostRequest["poll"]>,
+  existing?: PostPoll,
+): PostPoll {
   return {
     id: existing?.id ?? crypto.randomUUID(),
     totalVotes: existing?.totalVotes ?? 0,
@@ -39,9 +41,9 @@ export function createMockPoll(
 }
 
 export function updateMockPoll(
-  input: CreateTweetRequest["poll"] | null,
-  existing?: TweetPoll,
-): TweetPoll | undefined {
+  input: CreatePostRequest["poll"] | null,
+  existing?: PostPoll,
+): PostPoll | undefined {
   if (input === null) return undefined;
 
   return input?.options.length

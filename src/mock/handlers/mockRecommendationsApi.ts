@@ -1,15 +1,16 @@
-import { MOCK_DELAYS } from "@/mock/constants";
+import { MOCK_DELAYS } from "@/mock/mockConfig";
 
-import { ApiError } from "@/api/client";
+import { ApiError } from "@/api/httpClient";
 
 import { TREND_FEEDBACK_OPTIONS } from "@/constants/trendFeedback";
 
-import { currentUser, mockTrends, sampleAuthors, tweets } from "@/mock/data";
+import { currentUser, sampleAuthors } from "@/mock/data/users";
+import { mockTrends, mockTrendCategories } from "@/mock/data/recommendations";
+import { posts } from "@/mock/data/posts";
 import { mockFollowing } from "@/mock/data/follow";
-import { mockTrendCategories } from "@/mock/data/recommendations";
 
 import { delay } from "@/mock/utils/delay";
-import { toUserShort } from "@/utils/user";
+import { toUserShort } from "@/utils/postAuthor";
 
 import type {
   PaginatedRecommendations,
@@ -57,7 +58,7 @@ export const mockRecommendationsApi = {
     await delay(MOCK_DELAYS.RECOMMENDATIONS);
 
     const start = Math.max(0, Number.parseInt(cursor ?? "0", 10) || 0);
-    const sorted = [...tweets].sort(
+    const sorted = [...posts].sort(
       (a, b) =>
         Date.parse(b.createdAt) - Date.parse(a.createdAt) ||
         a.id.localeCompare(b.id),

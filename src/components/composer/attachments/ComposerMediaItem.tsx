@@ -1,0 +1,69 @@
+import { X } from "lucide-react";
+
+import ComposerMediaStatus from "@/components/composer/attachments/ComposerMediaStatus";
+
+import { MEDIA_STATUS } from "@/constants/media";
+
+import { cn } from "@/utils/cn";
+
+import type { ComposerMedia } from "@/types/composer";
+
+interface ComposerMediaItemProps {
+  media: ComposerMedia;
+  className?: string;
+  onRemove: (id: string) => void;
+  disabled?: boolean;
+}
+
+export default function ComposerMediaItem({
+  media,
+  className,
+  onRemove,
+  disabled = false,
+}: ComposerMediaItemProps) {
+  const isImage = media.type === "image" || media.type === "gif";
+
+  return (
+    <div
+      className={cn(
+        "group relative size-full overflow-hidden rounded-2xl border border-border bg-muted",
+        className,
+      )}
+    >
+      <button
+        type="button"
+        onClick={() => onRemove(media.id)}
+        disabled={disabled}
+        aria-label={`Видалити ${media.name}`}
+        className={cn(
+          "absolute right-3 top-3 z-content flex size-8 items-center justify-center rounded-full bg-black/70 text-white transition-opacity duration-200 disabled:opacity-50",
+          media.status === MEDIA_STATUS.UPLOADING ||
+            media.status === MEDIA_STATUS.COMPRESSING
+            ? "opacity-100"
+            : "opacity-0 group-hover:opacity-100",
+        )}
+      >
+        <X size={16} />
+      </button>
+
+      {isImage ? (
+        <img
+          src={media.previewUrl}
+          alt={media.name}
+          className="size-full object-cover"
+        />
+      ) : (
+        <video
+          src={media.previewUrl}
+          controls
+          className="size-full object-cover"
+        />
+      )}
+
+      <ComposerMediaStatus
+        status={media.status}
+        progress={media.progress}
+      />
+    </div>
+  );
+}

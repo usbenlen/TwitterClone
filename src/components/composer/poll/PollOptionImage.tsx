@@ -1,7 +1,9 @@
 import { useRef } from "react";
 import { ImagePlus, LoaderCircle, RotateCw, X } from "lucide-react";
 
-import { ENABLE_IMAGE_UPLOAD, MEDIA } from "@/constants/app";
+import { ENABLE_IMAGE_UPLOAD } from "@/config/featureFlags";
+
+import { MEDIA } from "@/constants/media";
 
 import type { ComposerMedia } from "@/types/composer";
 

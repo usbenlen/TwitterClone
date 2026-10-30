@@ -1,12 +1,11 @@
-import type { Tweet } from "@/types/tweet";
-import type { User } from "@/types/user";
+import type { Post, User } from "@/types";
 
 import { currentUser, sampleAuthors } from "@/mock/data/users";
 import { locations } from "@/mock/data/locations";
 
-type DiscoveryCommentSeed = Pick<Tweet, "id" | "content"> &
+type DiscoveryCommentSeed = Pick<Post, "id" | "content"> &
   Partial<
-    Pick<Tweet, "parentCommentId" | "attachments" | "location" | "likesCount">
+    Pick<Post, "parentCommentId" | "attachments" | "location" | "likesCount">
   > & {
     author: User;
     minutesAfterPost: number;

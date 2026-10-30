@@ -1,7 +1,7 @@
 import { Bell } from "lucide-react";
 
 import { useAppSelector } from "@/store/hooks";
-import { notificationsQueryApi } from "@/store/notificationsApi";
+import { notificationsQueryApi } from "@/store/notificationQueries";
 
 const selectCount = notificationsQueryApi.endpoints.getUnreadNotificationsCount.select();
 

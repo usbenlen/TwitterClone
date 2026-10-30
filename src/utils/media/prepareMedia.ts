@@ -1,4 +1,6 @@
-import { compressImage, createPreview, validateMedia } from "@/utils/media";
+import { compressImage } from "@/utils/media/compressImage";
+import { createPreview } from "@/utils/media/createPreview";
+import { validateMedia } from "@/utils/media/validateMedia";
 
 import type { ComposerMedia } from "@/types/composer";
 

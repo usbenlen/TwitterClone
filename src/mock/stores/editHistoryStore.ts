@@ -1,40 +1,40 @@
 import type {
   EditHistoryResponse,
   QuoteTargetType,
-  Tweet,
-  TweetBase,
-} from "@/types";
+  Post,
+  PostBase,
+} from "@/types/post";
 
-const histories = new Map<string, TweetBase[]>();
+const histories = new Map<string, PostBase[]>();
 
 const keyFor = (targetType: QuoteTargetType, targetId: string) => `${targetType}:${targetId}`;
 
-function cloneSnapshot<T extends TweetBase>(tweet: T): T {
-  return structuredClone(tweet);
+function cloneSnapshot<T extends PostBase>(post: T): T {
+  return structuredClone(post);
 }
 
 function ensureInitialVersion(
   targetType: QuoteTargetType,
-  tweet: TweetBase,
-): TweetBase[] {
-  const key = keyFor(targetType, tweet.id);
+  post: PostBase,
+): PostBase[] {
+  const key = keyFor(targetType, post.id);
   const existing = histories.get(key);
   if (existing) return existing;
 
-  const versions = [cloneSnapshot(tweet)];
+  const versions = [cloneSnapshot(post)];
   histories.set(key, versions);
   return versions;
 }
 
 export const editHistoryStore = {
-  recordCreation(targetType: QuoteTargetType, tweet: TweetBase) {
-    histories.set(keyFor(targetType, tweet.id), [cloneSnapshot(tweet)]);
+  recordCreation(targetType: QuoteTargetType, post: PostBase) {
+    histories.set(keyFor(targetType, post.id), [cloneSnapshot(post)]);
   },
 
   recordEdit(
     targetType: QuoteTargetType,
-    previous: TweetBase,
-    updated: TweetBase,
+    previous: PostBase,
+    updated: PostBase,
   ) {
     const versions = ensureInitialVersion(targetType, previous);
     versions.push(cloneSnapshot(updated));
@@ -42,9 +42,9 @@ export const editHistoryStore = {
 
   getVersion(
     targetType: QuoteTargetType,
-    current: Tweet,
+    current: Post,
     versionId: string | null | undefined,
-  ): TweetBase | null {
+  ): PostBase | null {
     const versions = ensureInitialVersion(targetType, current);
     const version = versionId
       ? versions.find((item) => item.versionId === versionId)
@@ -53,7 +53,7 @@ export const editHistoryStore = {
     return version ? cloneSnapshot(version) : null;
   },
 
-  getHistory(targetType: QuoteTargetType, current: Tweet): EditHistoryResponse {
+  getHistory(targetType: QuoteTargetType, current: Post): EditHistoryResponse {
     const versions = ensureInitialVersion(targetType, current);
 
     return {

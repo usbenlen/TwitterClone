@@ -1,14 +1,16 @@
 import { useParams, useSearchParams } from "react-router";
 
-import { userApi, type UpdateProfileRequest } from "@/api";
+import { userApi } from "@/api/profileApi";
 
-import { useAuth, useProfile } from "@/hooks";
-import type { ProfileTab } from "@/hooks/useProfile";
+import type { UpdateProfileRequest, ProfileTab } from "@/types";
 
-import { Spinner } from "@/ui";
+import { useAuth } from "@/hooks/auth/useAuth";
+import { useProfile } from "@/hooks/profiles/useProfile";
 
-import { Profile } from "@/components/profile/index";
-import { PageHeader } from "@/components/layout/pageHeader/index";
+import { Spinner } from "@/components/ui/Spinner";
+
+import Profile from "@/components/profiles/Profile";
+import PageHeader from "@/components/navigation/PageHeader";
 
 import { APP_ROUTES } from "@/constants/routes";
 
@@ -23,7 +25,7 @@ export default function ProfilePage() {
       ? tabParam
       : "posts";
 
-  const { user, tweets, isLoading, isTabLoading, notFound, tabError } =
+  const { user, posts, isLoading, isTabLoading, notFound, tabError } =
     useProfile(username, activeTab);
 
   const handleUpdateProfile = async (data: UpdateProfileRequest) => {
@@ -63,7 +65,7 @@ export default function ProfilePage() {
   return (
     <Profile
       user={user}
-      tweets={tweets}
+      posts={posts}
       activeTab={activeTab}
       isTabLoading={isTabLoading}
       tabError={tabError}

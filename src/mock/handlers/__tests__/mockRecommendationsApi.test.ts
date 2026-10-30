@@ -5,7 +5,7 @@ beforeEach(() => vi.resetModules());
 
 describe("mock author recommendations", () => {
   it("selects explicit category membership before limiting and excludes saved feedback", async () => {
-    const { mockTrends } = await import("@/mock/data");
+    const { mockTrends } = await import("@/mock/data/recommendations");
     const originalOrder = mockTrends.map((trend) => trend.id);
     const { mockRecommendationsApi } = await import("@/mock/handlers/mockRecommendationsApi");
     const first = await mockRecommendationsApi.explore("sports", 2);
@@ -18,7 +18,7 @@ describe("mock author recommendations", () => {
   });
 
   it("keeps feedback personal to the mock user", async () => {
-    const { currentUser } = await import("@/mock/data");
+    const { currentUser } = await import("@/mock/data/users");
     const { mockRecommendationsApi } = await import("@/mock/handlers/mockRecommendationsApi");
     const userId = currentUser.id;
     await mockRecommendationsApi.feedback({ trendId: "trend-football", reason: "spam" });
@@ -43,8 +43,8 @@ describe("mock author recommendations", () => {
   });
 
   it("paginates existing posts by date without mutating the fixture order", async () => {
-    const { tweets } = await import("@/mock/data");
-    const originalOrder = tweets.map((tweet) => tweet.id);
+    const { posts } = await import("@/mock/data/posts");
+    const originalOrder = posts.map((post) => post.id);
     const { mockRecommendationsApi } =
       await import("@/mock/handlers/mockRecommendationsApi");
     const first = await mockRecommendationsApi.posts(2);
@@ -57,7 +57,7 @@ describe("mock author recommendations", () => {
       expect(next.items.length).toBeGreaterThan(0);
       expect(next.items.length).toBeLessThanOrEqual(2);
       pages.push(next);
-      expect(pages.length).toBeLessThanOrEqual(Math.ceil(tweets.length / 2));
+      expect(pages.length).toBeLessThanOrEqual(Math.ceil(posts.length / 2));
     }
     expect(first.items).toHaveLength(2);
     expect(first.hasMore).toBe(true);
@@ -65,11 +65,11 @@ describe("mock author recommendations", () => {
     expect(pages.at(-1)!.nextCursor).toBeNull();
     expect(
       new Set(pages.flatMap((page) => page.items).map((post) => post.id)).size,
-    ).toBe(tweets.length);
+    ).toBe(posts.length);
     expect(Date.parse(first.items[0].createdAt)).toBeGreaterThanOrEqual(
       Date.parse(first.items[1].createdAt),
     );
-    expect(tweets.map((tweet) => tweet.id)).toEqual(originalOrder);
+    expect(posts.map((post) => post.id)).toEqual(originalOrder);
   });
 
   it("paginates one list without duplicates and ends with a complete envelope", async () => {

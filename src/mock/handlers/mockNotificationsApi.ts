@@ -1,14 +1,14 @@
 import {
   DEFAULT_NOTIFICATION_PREFERENCES,
   NOTIFICATION_PREFERENCE_KEYS,
-} from "@/constants/notifications";
+} from "@/constants/notification";
 
 import { currentUser, sampleAuthors } from "@/mock/data/users";
-import { tweets } from "@/mock/data/tweets";
+import { posts } from "@/mock/data/posts";
 import { commentsByPostId } from "@/mock/data/comments";
-import { delay } from "@/mock/utils/delay";
 
-import { toUserShort } from "@/utils/user";
+import { delay } from "@/mock/utils/delay";
+import { toUserShort } from "@/utils/postAuthor";
 
 import type {
   ChirpNotification,
@@ -16,8 +16,8 @@ import type {
   NotificationsApi,
   NotificationTarget,
   NotificationType,
-} from "@/types/notification";
-import type { UserShort } from "@/types/user";
+  UserShort,
+} from "@/types";
 
 export interface MockNotificationEvent {
   id: string;
@@ -240,7 +240,7 @@ export function createMockNotificationsApi(
 function fixtureEvents(now: number): MockNotificationEvent[] {
   const authors = sampleAuthors.filter((user) => user.id !== currentUser.id);
   const comments = Object.values(commentsByPostId).flat();
-  const ownContent = [...tweets, ...comments].filter((item) => item.author.id === currentUser.id);
+  const ownContent = [...posts, ...comments].filter((item) => item.author.id === currentUser.id);
   const types: NotificationType[] = [
     "reply",
     "like",
@@ -257,7 +257,7 @@ function fixtureEvents(now: number): MockNotificationEvent[] {
     const incoming =
       type === "reply"
         ? comments.filter((item) => item.author.id !== currentUser.id)
-        : tweets.filter((item) => item.author.id !== currentUser.id);
+        : posts.filter((item) => item.author.id !== currentUser.id);
 
     const content = (
       type === "like" || type === "repost" ? ownContent : incoming

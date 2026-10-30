@@ -2,19 +2,18 @@ import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useLocation, useNavigate } from "react-router";
 
-import { authApi } from "@/api/auth.api";
-import { ApiError } from "@/api/client";
+import { authApi, ApiError } from "@/api";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import {
   resetPasswordSchema,
   type ResetPasswordFormValues,
-} from "@/schemas/auth.schema";
+} from "@/schemas/authSchema";
 
-import { APP_ROUTES } from "@/constants";
+import { APP_ROUTES } from "@/constants/routes";
 
-import { Input, Button } from "@/ui";
+import { Input, Button } from "@/components/ui";
 
 import { AuthShell } from "@/components/auth/AuthShell";
 

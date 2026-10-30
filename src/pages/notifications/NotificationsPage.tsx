@@ -1,20 +1,20 @@
 import { Bell, CheckCheck, Settings } from "lucide-react";
 import { Link, useSearchParams } from "react-router";
 
-import { PageHeader } from "@/components/layout/pageHeader";
+import PageHeader from "@/components/navigation/PageHeader";
 import { NotificationRow } from "@/components/notifications/NotificationRow";
 
 import { APP_ROUTES } from "@/constants/routes";
 
-import { useNotifications } from "@/hooks/useNotifications";
+import { useNotifications } from "@/hooks/notifications/useNotifications";
 
-import { errorMessage } from "@/store/api";
+import { errorMessage } from "@/store/appApi";
 import {
   useMarkAllNotificationsReadMutation,
   useMarkNotificationReadMutation,
-} from "@/store/notificationsApi";
+} from "@/store/notificationQueries";
 
-import { Button, Spinner, Tab, Tooltip } from "@/ui";
+import { Button, Spinner, Tab, Tooltip } from "@/components/ui";
 
 export default function NotificationsPage() {
   const [params] = useSearchParams();

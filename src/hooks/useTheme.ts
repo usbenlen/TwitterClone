@@ -1,7 +1,7 @@
 import { useCallback } from "react";
 
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import { systemTheme, themeChanged } from "@/store/theme";
+import { systemTheme, themeChanged } from "@/store/themeState";
 
 import type { Theme } from "@/types/theme";
 

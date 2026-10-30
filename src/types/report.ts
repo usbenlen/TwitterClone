@@ -1,11 +1,12 @@
-import type { Tweet, User } from "@/types";
+import type { Post } from "@/types/post";
+import type { User } from "@/types/user";
 
 export type ReportTargetType = "posts" | "comments" | "users";
 export type ReportReason = "spam" | "harassment" | "misinformation" | "violence" | "hate" | "other";
 export type ReportDecision = "kept" | "deleted" | "blocked";
 export type ReportStatus = "pending" | "resolved";
 export type ReportSource = "user" | "system";
-export type ReportTarget = { type: "users"; data: User } | { type: "posts" | "comments"; data: Tweet };
+export type ReportTarget = { type: "users"; data: User } | { type: "posts" | "comments"; data: Post };
 
 export interface ReportSignal {
   id: string;

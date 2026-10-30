@@ -1,4 +1,7 @@
-import { ComposerPopover, EmojiPicker, GifPicker, LocationPicker } from "@/components/composer";
+import ComposerPopover from "@/components/composer/ComposerPopover";
+import EmojiPicker from "@/components/composer/emoji/EmojiPicker";
+import GifPicker from "@/components/composer/gifs/GifPicker";
+import LocationPicker from "@/components/composer/location/LocationPicker";
 
 import type { Gif, Location } from "@/types";
 

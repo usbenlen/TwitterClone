@@ -1,14 +1,15 @@
 import { Navigate, useSearchParams } from "react-router";
 import { Loader2 } from "lucide-react";
 
-import { PageHeader } from "@/components/layout/pageHeader/index";
-import { RecommendationUserItem } from "@/components/user/index";
+import PageHeader from "@/components/navigation/PageHeader";
+import RecommendationUserItem from "@/components/profiles/RecommendationUserItem";
 
-import { useRecommendedUsers } from "@/hooks";
+import { useRecommendedUsers } from "@/hooks/recommendations/useRecommendations";
 
-import { Button } from "@/ui";
+import { Button } from "@/components/ui/Button";
 
-import { APP_ROUTES, RECOMMENDATIONS_PAGE_LIMIT } from "@/constants";
+import { APP_ROUTES } from "@/constants/routes";
+import { RECOMMENDATIONS_PAGE_LIMIT } from "@/constants/recommendation";
 
 export default function FollowRecommendationsPage() {
   const [searchParams] = useSearchParams();

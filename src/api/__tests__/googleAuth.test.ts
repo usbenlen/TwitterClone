@@ -1,11 +1,11 @@
 // @vitest-environment happy-dom
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { authApi } from "@/api/auth.api";
-import { ApiError } from "@/api/client";
-import { tokenStorage } from "@/utils/storage";
+import { authApi } from "@/api/authApi";
+import { ApiError } from "@/api/httpClient";
+import { tokenStorage } from "@/utils/tokenStorage";
 
-vi.mock("@/mock/config", () => ({ MOCK_ENABLED: false }));
+vi.mock("@/config/mockConfig", () => ({ MOCK_ENABLED: false }));
 
 const tokens = {
   userId: "u1",

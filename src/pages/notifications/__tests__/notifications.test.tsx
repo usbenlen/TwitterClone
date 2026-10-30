@@ -2,31 +2,25 @@
 import { act } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { Provider } from "react-redux";
-import {
-  MemoryRouter,
-  Route,
-  Routes,
-  useLocation,
-  useNavigate,
-} from "react-router";
+import { MemoryRouter, Route, Routes, useLocation, useNavigate } from "react-router";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { notificationsApi } from "@/api/notifications.api";
+import { notificationsApi } from "@/api/notificationApi";
 import { NotificationBell } from "@/components/notifications/NotificationBell";
-import { DEFAULT_NOTIFICATION_PREFERENCES } from "@/constants/notifications";
+import { DEFAULT_NOTIFICATION_PREFERENCES } from "@/constants/notification";
 import { APP_ROUTES } from "@/constants/routes";
 import { MAIN_NAVIGATION } from "@/constants/navigation";
 import NotificationsPage from "@/pages/notifications/NotificationsPage";
 import NotificationSettingsPage from "@/pages/notifications/NotificationSettingsPage";
-import { createAppStore, type AppStore } from "@/store";
-import { notificationsQueryApi } from "@/store/notificationsApi";
+import { createAppStore, type AppStore } from "@/store/store";
+import { notificationsQueryApi } from "@/store/notificationQueries";
 import { sessionChanged } from "@/store/session";
 import type { ChirpNotification } from "@/types/notification";
 
-vi.mock("@/mock/config", () => ({ MOCK_ENABLED: true }));
-vi.mock("@/hooks/useAuth", () => ({
+vi.mock("@/config/mockConfig", () => ({ MOCK_ENABLED: true }));
+vi.mock("@/hooks/auth/useAuth", () => ({
   useAuth: () => ({ user: { id: "viewer" } }),
 }));
-vi.mock("@/api/notifications.api", () => ({
+vi.mock("@/api/notificationApi", () => ({
   notificationsApi: {
     list: vi.fn(),
     unreadCount: vi.fn(),

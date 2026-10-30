@@ -1,9 +1,3 @@
-export interface ApiResponse<T> {
-  success: boolean;
-  message?: string;
-  data: T;
-}
-
 export interface ProblemDetails {
   type?: string;
   title?: string;
@@ -17,4 +11,10 @@ export interface CursorPage<T> {
   items: T[];
   nextCursor: string | null;
   hasMore: boolean;
+}
+
+export interface QueryError {
+  message: string;
+  status?: number;
+  retryAfter?: string | null;
 }

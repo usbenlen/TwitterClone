@@ -1,6 +1,6 @@
 import imageCompression from "browser-image-compression";
 
-import { MEDIA } from "@/constants/app";
+import { MEDIA } from "@/constants/media";
 
 interface CompressImageOptions {
   maxSizeMB?: number;

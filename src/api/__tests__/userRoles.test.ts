@@ -1,29 +1,42 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { authApi, userApi, realFollowApi, searchApi, recommendationsApi, commentApi } from "@/api";
-import { normalizeUserRole, mapUserRole } from "@/api/mappers/user.mapper";
-import {
-  mapPostToTweet,
-  mapEditHistoryResponse,
-  mapRepostToTweet,
-  type BackendPost,
-} from "@/api/mappers/post.mapper";
+import { authApi } from "@/api/authApi";
+import { userApi } from "@/api/profileApi";
+import { realFollowApi } from "@/api/followApi";
+import { searchApi } from "@/api/searchApi";
+import { recommendationsApi } from "@/api/recommendationApi";
+import { commentApi } from "@/api/commentApi";
+import { normalizeUserRole, mapUserRole } from "@/api/mappers/profileMapper";
+import { mapBackendPost, mapEditHistoryResponse, mapRepostToPost } from "@/api/mappers/postMapper";
+import type { BackendPost } from "@/types/post.dto";
 
-import { DEFAULT_SEARCH_CRITERIA } from "@/utils/search";
+import { DEFAULT_SEARCH_CRITERIA } from "@/constants/search";
 
-import type { User } from "@/types";
+import type { User } from "@/types/user";
 
 const client = vi.hoisted(() => ({ get: vi.fn(), put: vi.fn() }));
-vi.mock("@/api/client", () => ({ apiClient: client }));
-vi.mock("@/mock/config", () => ({ MOCK_ENABLED: false }));
-vi.mock("@/mock/handlers", () => ({
-  MOCK_ENABLED: false,
-  mockAuthApi: {},
-  mockUserApi: {},
-  mockFollowApi: {},
-  mockSearchApi: {},
-  mockRecommendationsApi: {},
-  mockCommentApi: {},
+vi.mock("@/api/httpClient", () => ({ apiClient: client }));
+vi.mock("@/config/mockConfig", () => ({ MOCK_ENABLED: false }));
+vi.mock("@/config/mockConfig", () => ({
+  MOCK_ENABLED: false
+}));
+vi.mock("@/mock/handlers/mockAuthApi", () => ({
+  mockAuthApi: {}
+}));
+vi.mock("@/mock/handlers/mockUserApi", () => ({
+  mockUserApi: {}
+}));
+vi.mock("@/mock/handlers/mockFollowApi", () => ({
+  mockFollowApi: {}
+}));
+vi.mock("@/mock/handlers/mockSearchApi", () => ({
+  mockSearchApi: {}
+}));
+vi.mock("@/mock/handlers/mockRecommendationsApi", () => ({
+  mockRecommendationsApi: {}
+}));
+vi.mock("@/mock/handlers/mockCommentApi", () => ({
+  mockCommentApi: {}
 }));
 
 const user = { id: "u1", username: "admin", role: "ADMIN", isVerified: false };
@@ -112,7 +125,7 @@ describe("server user roles", () => {
         target: { ...post, id: "quoted" },
       },
     };
-    const mapped = mapPostToTweet(quotedPost);
+    const mapped = mapBackendPost(quotedPost);
     expect(mapped.author).toMatchObject({ role: "Admin", isVerified: false });
     expect(mapped.quote?.target?.author.role).toBe("Admin");
     const history = mapEditHistoryResponse({
@@ -121,9 +134,9 @@ describe("server user roles", () => {
       versions: [quotedPost],
     });
     expect(history.versions[0].quote?.target?.author.role).toBe("Admin");
-    expect(mapRepostToTweet(post).author.role).toBe("Admin");
+    expect(mapRepostToPost(post).author.role).toBe("Admin");
     expect(
-      mapRepostToTweet({
+      mapRepostToPost({
         ...mapped,
         author: { ...mapped.author, role: "ADMIN" as User["role"] },
       }).author.role,

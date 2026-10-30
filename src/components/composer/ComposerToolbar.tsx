@@ -1,5 +1,6 @@
 import { COMPOSER_ACTIONS } from "@/constants/composer";
-import { Tooltip } from "@/ui/Tooltip";
+
+import { Tooltip } from "@/components/ui/Tooltip";
 
 import type { ComposerAction } from "@/types/composer";
 

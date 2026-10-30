@@ -1,8 +1,9 @@
-import { MEDIA_STATUS } from "@/constants/app";
-
+import type { ComposerPoll } from "@/types/pollDraft";
+import type { LinkPreview } from "@/types/linkPreview";
 import type { Location } from "@/types/location";
 
-import type { LinkPreview } from "@/types/linkPreview";
+import type { MEDIA_STATUS } from "@/constants/media";
+
 import type { PollRequest } from "@/types/poll";
 
 export type ComposerAction = "image" | "gif" | "video" | "emoji" | "poll" | "location" | "schedule";
@@ -36,4 +37,17 @@ export interface ComposerSubmitData {
   poll?: PollRequest | null;
   location?: Location | null;
   linkPreview?: LinkPreview | null;
+}
+
+export interface ComposerValues {
+  content: string;
+  media: ComposerMedia[];
+  poll?: ComposerPoll | null;
+  location?: Location | null;
+  linkPreview?: LinkPreview | null;
+  scheduledAt?: string | null;
+}
+
+export interface MediaKind {
+  type: "image" | "video" | "gif";
 }

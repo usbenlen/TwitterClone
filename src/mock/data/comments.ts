@@ -1,21 +1,21 @@
-import type { Tweet } from "@/types";
+import type { Post } from "@/types/post";
 
 import { currentUser, sampleAuthors } from "@/mock/data/users";
-import { tweets } from "@/mock/data/tweets";
+import { posts } from "@/mock/data/posts";
 import { discoveryCommentSeeds } from "@/mock/data/discoveryComments";
 
 import { MILLISECONDS_PER_MINUTE } from "@/constants/date";
 
-import { toTweetAuthor } from "@/utils/user";
+import { toPostAuthor } from "@/utils/postAuthor";
 
-const author = toTweetAuthor;
+const author = toPostAuthor;
 
-const discoveryCommentsByPostId: Record<string, Tweet[]> = Object.fromEntries(
+const discoveryCommentsByPostId: Record<string, Post[]> = Object.fromEntries(
   Object.entries(discoveryCommentSeeds).map(([postId, seeds]) => {
-    const post = tweets.find((tweet) => tweet.id === postId)!;
+    const post = posts.find((post) => post.id === postId)!;
     return [
       postId,
-      seeds.map(({ minutesAfterPost, ...seed }): Tweet => {
+      seeds.map(({ minutesAfterPost, ...seed }): Post => {
         const parent = seeds.find(
           (comment) => comment.id === seed.parentCommentId,
         );
@@ -48,7 +48,7 @@ const discoveryCommentsByPostId: Record<string, Tweet[]> = Object.fromEntries(
   }),
 );
 
-export const commentsByPostId: Record<string, Tweet[]> = {
+export const commentsByPostId: Record<string, Post[]> = {
   t1: [
     {
       id: "c1",

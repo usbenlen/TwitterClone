@@ -1,4 +1,4 @@
-import { MOCK_DELAYS } from "@/mock/constants";
+import { MOCK_DELAYS } from "@/mock/mockConfig";
 
 import { locations } from "@/mock/data/locations";
 

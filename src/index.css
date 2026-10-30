@@ -17,7 +17,7 @@
  * Система тем.
  * Кожна тема — окремий блок [data-theme="..."].
  * Щоб додати нову тему: скопіюйте блок, змініть значення змінних
- * і додайте назву у THEMES у файлі src/types/theme.ts.
+ * і додайте назву у THEMES у файлі src/constants/theme.ts.
  */
 
 @theme inline {
@@ -174,7 +174,7 @@
 
 }
 
-@utility tweet-action-icon {
+@utility post-action-icon {
   position: relative;
   isolation: isolate;
   display: flex;
@@ -197,18 +197,18 @@
   }
 }
 
-@utility tweet-action {
-  &:focus-visible:not(:disabled) .tweet-action-icon::before {
+@utility post-action {
+  &:focus-visible:not(:disabled) .post-action-icon::before {
     opacity: 0.15;
   }
 
   @media (hover: hover) {
-    &:hover:not(:disabled) .tweet-action-icon::before {
+    &:hover:not(:disabled) .post-action-icon::before {
       opacity: 0.15;
     }
   }
 
-  &:active:not(:disabled) .tweet-action-icon::before {
+  &:active:not(:disabled) .post-action-icon::before {
     opacity: 0.25;
   }
 }

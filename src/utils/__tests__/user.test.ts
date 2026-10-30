@@ -1,9 +1,10 @@
 import { describe, expect, it } from "vitest";
 
-import type { Tweet, User } from "@/types";
+import type { Post } from "@/types/post";
+import type { User } from "@/types/user";
 
-import { toTweetAuthor, toUserShort } from "@/utils/user";
-import { updateTweetAuthors } from "@/utils/updateTweetAuthors";
+import { toPostAuthor, toUserShort } from "@/utils/postAuthor";
+import { updatePostAuthors } from "@/utils/posts/updatePostAuthors";
 
 const user: User = {
   id: "admin",
@@ -17,7 +18,7 @@ const user: User = {
   createdAt: "2026-10-01T12:00:00Z",
 };
 
-function tweet(id: string, author = toTweetAuthor(user)): Tweet {
+function createPost(id: string, author = toPostAuthor(user)): Post {
   return {
     id,
     versionId: `${id}-v1`,
@@ -37,17 +38,17 @@ function tweet(id: string, author = toTweetAuthor(user)): Tweet {
 
 describe("user roles in author data", () => {
   it("preserves admin role without marking the user as ordinarily verified", () => {
-    expect(toTweetAuthor(user)).toMatchObject({ role: "Admin", isVerified: false });
+    expect(toPostAuthor(user)).toMatchObject({ role: "Admin", isVerified: false });
     expect(toUserShort(user)).toMatchObject({ role: "Admin", isVerified: false });
   });
 
   it.each(["Admin", "User", undefined] satisfies User["role"][])(
     "updates role to %s in cached posts, ancestors, and quotes",
     (role) => {
-      const post = tweet("post");
-      const ancestor = tweet("ancestor");
-      const quoted = tweet("quoted");
-      const other = tweet("other", {
+      const post = createPost("post");
+      const ancestor = createPost("ancestor");
+      const quoted = createPost("quoted");
+      const other = createPost("other", {
         id: "reader",
         username: "reader",
         role: "User",
@@ -63,7 +64,7 @@ describe("user roles in author data", () => {
         target: quoted,
       };
       const otherAuthor = { ...other.author };
-      updateTweetAuthors([post], { ...user, role, displayName: "Updated" });
+      updatePostAuthors([post], { ...user, role, displayName: "Updated" });
 
       for (const item of [post, ancestor, quoted]) {
         expect(item.author.role).toBe(role);

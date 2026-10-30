@@ -1,18 +1,18 @@
 import { useEffect, useId, useRef, type RefObject } from "react";
 import { Plus, X } from "lucide-react";
 
-import PollCard from "@/components/tweet/poll/PollCard";
+import PollCard from "@/components/posts/PollCard";
 import PollOptionImage from "@/components/composer/poll/PollOptionImage";
 
-import { Tooltip } from "@/ui/Tooltip";
+import { Tooltip } from "@/components/ui/Tooltip";
 
 import { POLL } from "@/constants/poll";
 import { HOURS_PER_DAY, MINUTES_PER_HOUR } from "@/constants/date";
 
-import { countCharacters, getPollError } from "@/utils/composerRules";
+import { countCharacters, getPollError } from "@/utils/composer/composerRules";
 import { cn } from "@/utils/cn";
 
-import type { ComposerPoll } from "@/types/poll";
+import type { ComposerPoll } from "@/types/pollDraft";
 
 interface PollComposerProps {
   poll: ComposerPoll;

@@ -1,8 +1,7 @@
 import { Outlet } from "react-router";
 
-import { LeftSidebar } from "@/components/layout/desktop/leftSidebar/index";
-import { RightSidebar } from "@/components/layout/desktop/rightSidebar/index";
-import { MobileBottomNavigation } from "@/components/layout/mobile/index";
+import { LeftSidebar, RightSidebar } from "@/components/navigation/desktop";
+import MobileBottomNavigation from "@/components/navigation/mobile/MobileBottomNavigation";
 
 export default function MainLayout() {
   return (

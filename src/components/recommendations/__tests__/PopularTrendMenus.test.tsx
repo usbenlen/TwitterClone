@@ -1,3 +1,4 @@
+import { recommendationQueries } from "@/store/recommendationQueries";
 // @vitest-environment happy-dom
 import { act } from "react";
 import { createRoot, type Root } from "react-dom/client";
@@ -6,14 +7,14 @@ import { MemoryRouter } from "react-router";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import ExplorePage from "@/pages/explore/ExplorePage";
-import RightSidebarTrendsCard from "@/components/layout/desktop/rightSidebar/RightSidebarTrendsCard";
-import { createAppStore, type AppStore } from "@/store";
-import { sharedApi } from "@/store/sharedApi";
+import RightSidebarTrendsCard from "@/components/navigation/desktop/RightSidebarTrendsCard";
+import { createAppStore, type AppStore } from "@/store/store";
+
 import { sessionChanged } from "@/store/session";
-import { useTrendFeedback } from "@/hooks/useTrendFeedback";
+import { useTrendFeedback } from "@/hooks/recommendations/useTrendFeedback";
 
 const api = vi.hoisted(() => ({ trends: vi.fn(), feedback: vi.fn(), explore: vi.fn() }));
-vi.mock("@/api/recommendations.api", () => ({
+vi.mock("@/api/recommendationApi", () => ({
   recommendationsApi: {
     trends: api.trends,
     feedback: api.feedback,
@@ -42,7 +43,7 @@ beforeEach(async () => {
   await Promise.all(
     [4, 20].map((limit) =>
       store.dispatch(
-        sharedApi.endpoints.getTrends.initiate(limit, { subscribe: false }),
+        recommendationQueries.endpoints.getTrends.initiate(limit, { subscribe: false }),
       ),
     ),
   );

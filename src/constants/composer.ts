@@ -6,7 +6,11 @@ import {
   ENABLE_LOCATION,
   ENABLE_POLLS,
   ENABLE_VIDEO_UPLOAD,
-} from "@/constants/app";
+} from "@/config/featureFlags";
+
+import { numericEnv } from "@/constants/app";
+
+export const MAX_POST_LENGTH = numericEnv.VITE_MAX_TWEET_LENGTH;
 
 export const COMPOSER_POPOVER = { OFFSET: 8, VIEWPORT_PADDING: 12 } as const;
 export const LINK_PREVIEW_DEBOUNCE_MS = 450;

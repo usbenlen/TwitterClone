@@ -4,12 +4,12 @@ import { Link, useNavigate } from "react-router";
 
 import { AuthShell } from "@/components/auth/AuthShell";
 
-import { Input, Button } from "@/ui";
+import { Input, Button } from "@/components/ui";
 
-import { ApiError } from "@/api/client";
-import { authApi } from "@/api";
+import { ApiError, authApi } from "@/api";
 
-import { AUTH_LIMITS, APP_ROUTES } from "@/constants";
+import { AUTH_LIMITS } from "@/constants/auth";
+import { APP_ROUTES } from "@/constants/routes";
 
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";

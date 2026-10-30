@@ -1,4 +1,4 @@
-import { MOCK_DELAYS } from "@/mock/constants";
+import { MOCK_DELAYS } from "@/mock/mockConfig";
 
 export function delay(
   ms: number = MOCK_DELAYS.DEFAULT,

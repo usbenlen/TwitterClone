@@ -1,12 +1,12 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { apiClient } from "@/api/client";
-import { ENDPOINTS } from "@/api/config";
-import { tweetApi } from "@/api/tweet.api";
-import { userApi } from "@/api/user.api";
-import type { BackendPost } from "@/api/mappers/post.mapper";
+import { apiClient } from "@/api/httpClient";
+import { ENDPOINTS } from "@/api/apiEndpoints";
+import { postApi } from "@/api/postApi";
+import { userApi } from "@/api/profileApi";
+import type { BackendPost } from "@/types/post.dto";
 
-vi.mock("@/mock/config", () => ({ MOCK_ENABLED: false }));
+vi.mock("@/config/mockConfig", () => ({ MOCK_ENABLED: false }));
 afterEach(() => vi.restoreAllMocks());
 
 const post: BackendPost = {
@@ -23,7 +23,7 @@ const post: BackendPost = {
 
 describe("real mixed interaction collections", () => {
   it.each([
-    { name: "bookmarks", load: () => tweetApi.getBookmarked(), path: ENDPOINTS.posts.bookmarked },
+    { name: "bookmarks", load: () => postApi.getBookmarked(), path: ENDPOINTS.posts.bookmarked },
     { name: "likes", load: () => userApi.getLikes("author"), path: ENDPOINTS.users.likes("author") },
     { name: "reposts", load: () => userApi.getReposts("author"), path: ENDPOINTS.users.reposts("author") },
   ])("reads posts and comments with one request for $name", async ({ load, path }) => {

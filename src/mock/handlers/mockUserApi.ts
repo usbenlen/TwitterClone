@@ -1,27 +1,23 @@
-import { MOCK_DELAYS } from "@/mock/constants";
+import { MOCK_DELAYS } from "@/mock/mockConfig";
 
-import type { User, Tweet } from "@/types";
+import type { User, Post, UpdateProfileRequest } from "@/types";
 
-import type { UpdateProfileRequest } from "@/api";
+import { sampleAuthors, currentUser } from "@/mock/data/users";
+import { posts } from "@/mock/data/posts";
+import { commentsByPostId } from "@/mock/data/comments";
 
-import {
-  sampleAuthors,
-  tweets,
-  currentUser,
-  commentsByPostId,
-} from "@/mock/data";
-
-import { withAncestors, updateTweetAuthors } from "@/utils";
+import { withAncestors } from "@/utils/posts/ancestors";
+import { updatePostAuthors } from "@/utils/posts/updatePostAuthors";
 import { delay } from "@/mock/utils/delay";
 import { selectMockComments } from "@/mock/utils/selectMockComments";
 
-const likedTweetsByUsername: Record<string, string[]> = {
+const likedPostsByUsername: Record<string, string[]> = {
   [currentUser.username]: ["t2"],
   [sampleAuthors[1].username]: ["t1", "t3"],
   [sampleAuthors[2].username]: ["t1"],
 };
 
-const repostedTweetsByUsername: Record<string, string[]> = {
+const repostedPostsByUsername: Record<string, string[]> = {
   [sampleAuthors[1].username]: ["t3"],
   [sampleAuthors[2].username]: ["t2"],
 };
@@ -56,52 +52,52 @@ export const mockUserApi = {
     return { ...found };
   },
 
-  async getPosts(username: string): Promise<Tweet[]> {
+  async getPosts(username: string): Promise<Post[]> {
     await delay();
 
-    return tweets.filter((tweet) => tweet.author.username === username);
+    return posts.filter((post) => post.author.username === username);
   },
 
-  async getLikes(username: string): Promise<Tweet[]> {
+  async getLikes(username: string): Promise<Post[]> {
     await delay();
 
     if (username === currentUser.username)
       return [
-        ...tweets.filter((tweet) => tweet.likedByMe),
+        ...posts.filter((post) => post.likedByMe),
         ...selectMockComments((comment) => comment.likedByMe),
       ];
 
-    const likedIds = likedTweetsByUsername[username] ?? [];
+    const likedIds = likedPostsByUsername[username] ?? [];
 
-    return tweets.filter((tweet) => likedIds.includes(tweet.id));
+    return posts.filter((post) => likedIds.includes(post.id));
   },
 
-  async getReposts(username: string): Promise<Tweet[]> {
+  async getReposts(username: string): Promise<Post[]> {
     await delay();
 
     if (username === currentUser.username) {
       return [
-        ...tweets.filter((tweet) => tweet.repostedByMe),
+        ...posts.filter((post) => post.repostedByMe),
         ...selectMockComments((comment) => comment.repostedByMe),
       ];
     }
 
-    const repostedIds = repostedTweetsByUsername[username] ?? [];
+    const repostedIds = repostedPostsByUsername[username] ?? [];
     const repostedCommentIds = repostedCommentsByUsername[username] ?? [];
 
     return [
-      ...tweets.filter((tweet) => repostedIds.includes(tweet.id)),
+      ...posts.filter((post) => repostedIds.includes(post.id)),
       ...selectMockComments((comment) => repostedCommentIds.includes(comment.id)),
     ];
   },
 
-  async getReplies(username: string): Promise<Tweet[]> {
+  async getReplies(username: string): Promise<Post[]> {
     await delay();
 
-    const result: Tweet[] = [];
+    const result: Post[] = [];
 
     for (const [postId, comments] of Object.entries(commentsByPostId)) {
-      const rootPost = tweets.find((tweet) => tweet.id === postId);
+      const rootPost = posts.find((post) => post.id === postId);
 
       const userComments = comments.filter(
         (comment) => comment.author.username === username,
@@ -161,8 +157,8 @@ export const mockUserApi = {
     if (data.removeBanner) user.bannerUrl = null;
     else if (data.banner) user.bannerUrl = URL.createObjectURL(data.banner);
 
-    updateTweetAuthors(
-      [...tweets, ...Object.values(commentsByPostId).flat()],
+    updatePostAuthors(
+      [...posts, ...Object.values(commentsByPostId).flat()],
       user,
     );
 

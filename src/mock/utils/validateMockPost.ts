@@ -1,8 +1,8 @@
 import { mediaStore } from "@/mock/stores/mediaStore";
 
-import { getPostRulesError } from "@/utils/composerRules";
+import { getPostRulesError } from "@/utils/composer/composerRules";
 
-import type { CreateTweetRequest, MediaAttachment, TweetPoll } from "@/types";
+import type { CreatePostRequest, MediaAttachment, PostPoll } from "@/types";
 
 export function resolveMockMedia(ids: string[]): MediaAttachment[] {
   const media = mediaStore.getMany(ids);
@@ -14,7 +14,7 @@ export function resolveMockMedia(ids: string[]): MediaAttachment[] {
 export function validateMockPost(
   content: string,
   media: MediaAttachment[],
-  poll?: CreateTweetRequest["poll"] | TweetPoll | null,
+  poll?: CreatePostRequest["poll"] | PostPoll | null,
 ): void {
   const error = getPostRulesError({
     content,

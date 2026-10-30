@@ -1,12 +1,16 @@
-import { VerifiedBadge } from "@/ui/VerifiedBadge";
+import { VerifiedBadge } from "@/components/profiles/VerifiedBadge";
 import { Link } from "react-router";
 
-import { useAuth, useFollow } from "@/hooks";
+import { useAuth } from "@/hooks/auth/useAuth";
+import { useFollow } from "@/hooks/profiles/useFollow";
 
-import { Avatar, Button } from "@/ui";
+import { Avatar, Button } from "@/components/ui";
 
 import { APP_ROUTES } from "@/constants/routes";
-import { normalizeDisplayText, normalizeInlineDisplayText } from "@/utils/displayText";
+import {
+  normalizeDisplayText,
+  normalizeInlineDisplayText,
+} from "@/utils/displayText";
 
 import type { User } from "@/types/user";
 

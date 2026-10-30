@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { useLocation, useNavigate } from "react-router";
 
-import { SearchBox } from "@/ui/index";
+import SearchBox from "@/components/ui/SearchBox";
 
 import { APP_ROUTES } from "@/constants/routes";
 
-import type { SearchCriteria } from "@/types";
+import type { SearchCriteria } from "@/types/search";
 
 interface SearchPageSearchBoxProps {
   query: string;

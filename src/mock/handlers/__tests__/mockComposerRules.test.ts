@@ -3,9 +3,9 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import type {
   CreateScheduledPostRequest,
-  MediaAttachment,
   ScheduledMediaInput,
-} from "@/types";
+} from "@/types/schedule";
+import type { MediaAttachment } from "@/types/media";
 
 const mocks = vi.hoisted(() => ({
   stored: new Map<
@@ -30,11 +30,11 @@ vi.mock("@/mock/stores/scheduledMediaStore", () => ({
 }));
 
 async function load() {
-  const { mockTweetApi } = await import("@/mock/handlers/mockTweetApi");
+  const { mockPostApi } = await import("@/mock/handlers/mockPostApi");
   const { mockCommentApi } = await import("@/mock/handlers/mockCommentApi");
   const { mockScheduledPostApi } = await import("@/mock/handlers/mockScheduledPostApi");
   const { mediaStore } = await import("@/mock/stores/mediaStore");
-  const posts = await import("@/mock/data/tweets");
+  const posts = await import("@/mock/data/posts");
 
   for (const [id, type] of [
     ["image", "image"],
@@ -51,7 +51,7 @@ async function load() {
   }
 
   return {
-    mockTweetApi,
+    mockPostApi,
     mockCommentApi,
     mockScheduledPostApi,
     mediaStore,
@@ -88,7 +88,7 @@ describe("mock composer validation", () => {
   it.each([false, true])(
     "rejects empty body text for post/comment polls with photos=%s",
     async (withPhoto) => {
-      const { mockTweetApi, mockCommentApi, posts } = await load();
+      const { mockPostApi, mockCommentApi, posts } = await load();
       const selectedPoll = withPhoto
         ? {
             duration: 60,
@@ -96,16 +96,16 @@ describe("mock composer validation", () => {
           }
         : poll;
 
-      const parent = await mockTweetApi.create({
+      const parent = await mockPostApi.create({
         content: "Оригінал",
         mediaIds: [],
       });
 
       for (const content of ["", " \n\t "]) {
-        const before = posts.tweets;
+        const before = posts.posts;
 
         await expect(
-          mockTweetApi.create({
+          mockPostApi.create({
             content,
             mediaIds: [],
             poll: selectedPoll,
@@ -114,7 +114,7 @@ describe("mock composer validation", () => {
           }),
         ).rejects.toThrow("Додайте текст до опитування.");
 
-        expect(posts.tweets).toBe(before);
+        expect(posts.posts).toBe(before);
 
         await expect(
           mockCommentApi.create({
@@ -128,7 +128,7 @@ describe("mock composer validation", () => {
         expect(await mockCommentApi.getByPostId(parent.id)).toEqual([]);
       }
 
-      const post = await mockTweetApi.create({
+      const post = await mockPostApi.create({
         content: "😀",
         mediaIds: [],
         poll: selectedPoll,
@@ -140,7 +140,7 @@ describe("mock composer validation", () => {
       });
 
       for (const content of ["", " \n\t "]) {
-        await expect(mockTweetApi.update(post.id, { content })).rejects.toThrow(
+        await expect(mockPostApi.update(post.id, { content })).rejects.toThrow(
           "Додайте текст до опитування.",
         );
 
@@ -148,10 +148,10 @@ describe("mock composer validation", () => {
           mockCommentApi.update(comment.id, { content }),
         ).rejects.toThrow("Додайте текст до опитування.");
 
-        expect(await mockTweetApi.getById(post.id)).toEqual(post);
+        expect(await mockPostApi.getById(post.id)).toEqual(post);
         expect((await mockCommentApi.getThread(comment.id)).target.content).toBe("Питання");
       }
-      expect((await mockTweetApi.update(post.id, { location })).content).toBe(
+      expect((await mockPostApi.update(post.id, { location })).content).toBe(
         "😀",
       );
     },
@@ -174,27 +174,27 @@ describe("mock composer validation", () => {
     "rejects an invalid direct post request before storing it: %j",
     async (request) => {
       const backend = await load();
-      const before = backend.posts.tweets;
-      await expect(backend.mockTweetApi.create(request)).rejects.toThrow();
-      expect(backend.posts.tweets).toBe(before);
+      const before = backend.posts.posts;
+      await expect(backend.mockPostApi.create(request)).rejects.toThrow();
+      expect(backend.posts.posts).toBe(before);
     },
   );
 
   it("allows media/quote/location and poll/quote/location with one quoted target", async () => {
-    const { mockTweetApi } = await load();
-    const target = await mockTweetApi.create({
+    const { mockPostApi } = await load();
+    const target = await mockPostApi.create({
       content: "Original",
       mediaIds: [],
     });
 
-    const mediaQuote = await mockTweetApi.create({
+    const mediaQuote = await mockPostApi.create({
       content: "",
       mediaIds: ["image", "video"],
       quotedPostId: target.id,
       location,
     });
 
-    const pollQuote = await mockTweetApi.create({
+    const pollQuote = await mockPostApi.create({
       content: "Питання до цитати",
       mediaIds: [],
       quotedPostId: target.id,
@@ -209,7 +209,7 @@ describe("mock composer validation", () => {
     expect(pollQuote.quote?.targetId).toBe(target.id);
 
     await expect(
-      mockTweetApi.create({
+      mockPostApi.create({
         content: "",
         mediaIds: [],
         quotedPostId: target.id,
@@ -219,30 +219,30 @@ describe("mock composer validation", () => {
   });
 
   it("validates the complete post after partial edits and preserves it on rejection", async () => {
-    const { mockTweetApi } = await load();
-    const created = await mockTweetApi.create({
+    const { mockPostApi } = await load();
+    const created = await mockPostApi.create({
       content: "",
       mediaIds: ["image"],
     });
 
-    await expect(mockTweetApi.update(created.id, { poll })).rejects.toThrow(
+    await expect(mockPostApi.update(created.id, { poll })).rejects.toThrow(
       "Медіа та опитування",
     );
 
-    expect(await mockTweetApi.getById(created.id)).toEqual(created);
+    expect(await mockPostApi.getById(created.id)).toEqual(created);
 
-    const withPoll = await mockTweetApi.update(created.id, {
+    const withPoll = await mockPostApi.update(created.id, {
       content: "Питання",
       mediaIds: [],
       poll,
     });
 
     await expect(
-      mockTweetApi.update(created.id, { mediaIds: ["video"] }),
+      mockPostApi.update(created.id, { mediaIds: ["video"] }),
     ).rejects.toThrow("Медіа та опитування");
-    expect(await mockTweetApi.getById(created.id)).toEqual(withPoll);
+    expect(await mockPostApi.getById(created.id)).toEqual(withPoll);
 
-    const withVideo = await mockTweetApi.update(created.id, {
+    const withVideo = await mockPostApi.update(created.id, {
       mediaIds: ["video"],
       poll: null,
     });
@@ -252,8 +252,8 @@ describe("mock composer validation", () => {
   });
 
   it("applies the same validation to comment creation and partial updates", async () => {
-    const { mockTweetApi, mockCommentApi } = await load();
-    const root = await mockTweetApi.create({
+    const { mockPostApi, mockCommentApi } = await load();
+    const root = await mockPostApi.create({
       content: "Original",
       mediaIds: [],
     });
@@ -296,8 +296,8 @@ describe("mock composer validation", () => {
   });
 
   it("accepts Unicode boundaries and trims/discards blank poll options", async () => {
-    const { mockTweetApi } = await load();
-    const created = await mockTweetApi.create({
+    const { mockPostApi } = await load();
+    const created = await mockPostApi.create({
       content: "😀".repeat(280),
       mediaIds: [],
       poll: { duration: 10080, options: [" 😀 ", "Ні", "", " "] },
@@ -309,7 +309,7 @@ describe("mock composer validation", () => {
     ]);
 
     await expect(
-      mockTweetApi.update(created.id, {
+      mockPostApi.update(created.id, {
         poll: { options: ["Yes", "No"], duration: 0 },
       }),
     ).rejects.toThrow("Тривалість");

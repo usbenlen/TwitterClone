@@ -7,7 +7,7 @@ import type { User } from "@/types/user";
 
 const state = vi.hoisted(() => ({ user: null as User | null }));
 
-vi.mock("@/hooks/useAuth", () => ({
+vi.mock("@/hooks/auth/useAuth", () => ({
   useAuth: () => ({ user: state.user }),
 }));
 
@@ -23,7 +23,7 @@ const user: User = {
   createdAt: "2026-01-01",
 };
 
-function Navigation() {
+function DesktopNavigation() {
   return (
     <nav>
       {useNavigation().map((item) => (
@@ -43,7 +43,7 @@ describe("navigation role access", () => {
   it("shows the admin panel for the Admin role", () => {
     state.user = { ...user, role: "Admin" };
 
-    const html = renderToStaticMarkup(<Navigation />);
+    const html = renderToStaticMarkup(<DesktopNavigation />);
 
     expect(html).toContain('href="/admin"');
     expect(html).toContain("Адмін-панель");
@@ -52,7 +52,7 @@ describe("navigation role access", () => {
   it("does not show the admin panel for the User role", () => {
     state.user = user;
 
-    const html = renderToStaticMarkup(<Navigation />);
+    const html = renderToStaticMarkup(<DesktopNavigation />);
 
     expect(html).not.toContain('href="/admin"');
     expect(html).not.toContain("Адмін-панель");

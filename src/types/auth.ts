@@ -33,12 +33,6 @@ export interface AuthResponse {
   accessTokenExpiresAt?: string;
 }
 
-export interface RefreshResponse {
-  accessToken: string;
-  refreshToken: string;
-  accessTokenExpiresAt?: string;
-}
-
 export interface StartPasswordChangeRequest {
   currentPassword: string;
   newPassword: string;
@@ -74,4 +68,10 @@ export interface VerifyEmailRequest {
 
 export interface ResendVerificationCodeRequest {
   email: string;
+}
+
+export interface RefreshResponse {
+  accessToken: string;
+  refreshToken: string;
+  accessTokenExpiresAt?: string;
 }

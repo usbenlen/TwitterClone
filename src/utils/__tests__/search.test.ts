@@ -6,9 +6,9 @@ import {
   parseSearchCriteria,
   serializeSearchCriteria,
   serializeSearchApiCriteria,
-} from "@/utils/search";
+} from "@/utils/searchCriteria";
 
-import type { SearchCriteria } from "@/types";
+import type { SearchCriteria } from "@/types/search";
 
 describe("search API serialization", () => {
   const criteria: SearchCriteria = {

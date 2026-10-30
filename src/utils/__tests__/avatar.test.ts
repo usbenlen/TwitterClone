@@ -2,9 +2,9 @@ import { renderToString } from "react-dom/server";
 import { createElement } from "react";
 import { describe, expect, it } from "vitest";
 
-import { Avatar } from "@/ui/Avatar";
+import { Avatar } from "@/components/ui/Avatar";
 
-import { getAvatarGradient, getAvatarInitials } from "@/utils/avatar";
+import { getAvatarGradient, getAvatarInitials } from "@/utils/avatarAppearance";
 
 describe("avatar fallbacks", () => {
   it.each([

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 
-import { imageCache, createObjectUrlOwner } from "@/utils";
+import { imageCache } from "@/utils/media/imageCache";
+import { createObjectUrlOwner } from "@/utils/media/objectUrl";
 
 export async function invalidateImageCache(url: string | null | undefined) {
   if (url) await imageCache.remove(url);

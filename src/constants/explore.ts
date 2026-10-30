@@ -1,4 +1,4 @@
-import type { ExploreTab } from "@/types/recommendations";
+import type { ExploreTab } from "@/types/recommendation";
 
 export const EXPLORE_TABS: ReadonlyArray<{ value: ExploreTab; label: string }> =
   [

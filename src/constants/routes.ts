@@ -1,9 +1,8 @@
-import type { ExploreTab, SearchCriteria } from "@/types";
-import type { ReportTargetType } from "@/types/report";
-import {
-  DEFAULT_SEARCH_CRITERIA,
-  serializeSearchCriteria,
-} from "@/utils/search";
+import type { ExploreTab, SearchCriteria, ReportTargetType } from "@/types";
+
+import { DEFAULT_SEARCH_CRITERIA } from "@/constants/search";
+
+import { serializeSearchCriteria } from "@/utils/searchCriteria";
 
 export const APP_ROUTES = {
   ADMIN: "/admin",

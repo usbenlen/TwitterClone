@@ -1,11 +1,11 @@
-import { scheduledPostApi } from "@/api";
+import { scheduledPostApi } from "@/api/scheduledPostApi";
 
-import type { AppStore } from "@/store/index";
-import { postsApi, publishPosts } from "@/store/postsApi";
+import type { AppStore } from "@/store/store";
+import { postsApi, publishPosts } from "@/store/posts/postQueries";
 import {
   scheduledErrorCleared,
   scheduledErrorSet,
-} from "@/store/scheduledStatus";
+} from "@/store/scheduleState";
 import { sessionGeneration } from "@/store/session";
 
 export async function publishScheduled(

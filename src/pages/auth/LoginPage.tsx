@@ -2,19 +2,19 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Link, useLocation, useNavigate } from "react-router";
 
-import { ApiError } from "@/api/client";
+import { ApiError } from "@/api/httpClient";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { loginSchema, type LoginFormValues } from "@/schemas/auth.schema";
+import { loginSchema, type LoginFormValues } from "@/schemas/authSchema";
 
-import { useAuth } from "@/hooks/useAuth";
+import { useAuth } from "@/hooks/auth/useAuth";
 
-import { Input, Button } from "@/ui";
+import { Input, Button } from "@/components/ui";
 
-import { APP_NAME, APP_ROUTES } from "@/constants";
+import { APP_NAME } from "@/constants/app";
+import { APP_ROUTES } from "@/constants/routes";
 
-import { AuthShell } from "@/components/auth";
-import { GoogleAuthButton } from "@/components/auth/GoogleAuthButton";
+import { AuthShell, GoogleAuthButton } from "@/components/auth";
 
 interface LocationState {
   from?: { pathname: string };

@@ -1,12 +1,12 @@
-import type { useTweetComposer } from "@/hooks/composer/useTweetComposer";
+import type { usePostComposer } from "@/hooks/composer/usePostComposer";
 
 import ComposerPopovers from "@/components/composer/ComposerPopovers";
-import { TweetComposerFileInputs } from "@/components/tweet/TweetComposer/index";
+import ComposerFileInputs from "@/components/composer/attachments/ComposerFileInputs";
 
 export function ComposerInputsAndPopovers({
   composer,
 }: {
-  composer: ReturnType<typeof useTweetComposer>;
+  composer: ReturnType<typeof usePostComposer>;
 }) {
   return (
     <>
@@ -16,7 +16,7 @@ export function ComposerInputsAndPopovers({
         location={composer.popovers.location}
       />
 
-      <TweetComposerFileInputs
+      <ComposerFileInputs
         imageRef={composer.imageInputRef}
         videoRef={composer.videoInputRef}
         onFilesSelected={composer.onFilesSelected}

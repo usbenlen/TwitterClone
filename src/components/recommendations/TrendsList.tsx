@@ -2,12 +2,11 @@ import { useEffect, useRef } from "react";
 import { Link } from "react-router";
 import { Frown } from "lucide-react";
 
-import { ActionsMenu } from "@/ui/ActionsMenu";
+import { ActionsMenu, Spinner } from "@/components/ui";
+
 import { TREND_FEEDBACK_OPTIONS } from "@/constants/trendFeedback";
 
 import { APP_ROUTES } from "@/constants/routes";
-
-import { Spinner } from "@/ui/Spinner";
 
 import { formatCompactCount } from "@/utils/format";
 import { cn } from "@/utils/cn";
@@ -15,7 +14,7 @@ import { cn } from "@/utils/cn";
 import type {
   TrendFeedbackReason,
   TrendRecommendation,
-} from "@/types/recommendations";
+} from "@/types/recommendation";
 
 interface TrendsListProps {
   trends: TrendRecommendation[];

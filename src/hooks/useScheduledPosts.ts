@@ -5,16 +5,16 @@ import {
   useCreateScheduledPostMutation,
   useUpdateScheduledPostMutation,
   useDeleteScheduledPostMutation,
-} from "@/store/sharedApi";
-import { errorMessage } from "@/store/postsApi";
+} from "@/store/scheduleQueries";
+import { errorMessage } from "@/store/appApi";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import { scheduledErrorCleared } from "@/store/scheduledStatus";
+import { scheduledErrorCleared } from "@/store/scheduleState";
 
 import type {
   CreateScheduledPostRequest,
   ScheduledPost,
   UpdateScheduledPostRequest,
-} from "@/types";
+} from "@/types/schedule";
 
 const EMPTY: ScheduledPost[] = [];
 

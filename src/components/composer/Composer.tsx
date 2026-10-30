@@ -1,30 +1,33 @@
 import { useState } from "react";
 import { CalendarClock, X } from "lucide-react";
 
-import { ComposerAttachments } from "@/components/composer/ComposerAttachments";
-import { ComposerInputsAndPopovers } from "@/components/composer/ComposerInputsAndPopovers";
+import {
+  ComposerAttachments,
+  ComposerInputsAndPopovers,
+} from "@/components/composer";
 
-import { formatDateTime, cn } from "@/utils";
+import { formatDateTime } from "@/utils/format";
+import { cn } from "@/utils/cn";
 import { normalizeInlineDisplayText } from "@/utils/displayText";
 
-import { useAuth, useTweetComposer, useDragAndDrop } from "@/hooks";
+import { useAuth } from "@/hooks/auth/useAuth";
+import { useDragAndDrop, type usePostComposer } from "@/hooks/composer";
 
-import { Avatar, Button } from "@/ui";
+import { Avatar, Button } from "@/components/ui";
 
-import ComposerToolbar from "@/components/composer/ComposerToolbar";
-import ScheduleModal from "@/components/composer/schedule/ScheduleModal";
-import ScheduledPostsModal from "@/components/composer/schedule/ScheduledPostsModal";
+import { ScheduleModal, ScheduledPostsModal } from "@/components/scheduling";
 import {
-  TweetComposerEditor,
-  TweetComposerFooter,
-  TweetComposerDropOverlay,
-  TweetComposerErrors,
-} from "@/components/tweet/TweetComposer";
+  ComposerToolbar,
+  PostComposerEditor,
+  PostComposerFooter,
+  PostComposerErrors,
+} from "@/components/composer";
+import ComposerDropOverlay from "@/components/composer/attachments/ComposerDropOverlay";
 
-import type { TweetQuote } from "@/types";
+import type { PostQuote } from "@/types/post";
 
 interface ComposerProps {
-  composer: ReturnType<typeof useTweetComposer>;
+  composer: ReturnType<typeof usePostComposer>;
   className?: string;
   placeholder?: string;
   submitLabel?: string;
@@ -32,7 +35,7 @@ interface ComposerProps {
   onSuccess?: () => void;
   variant?: "default" | "comment";
   replyingToUsername?: string;
-  quotedTweet?: TweetQuote | null;
+  quotedPost?: PostQuote | null;
 }
 
 export default function Composer({
@@ -44,7 +47,7 @@ export default function Composer({
   onSuccess,
   variant = "default",
   replyingToUsername,
-  quotedTweet,
+  quotedPost,
 }: ComposerProps) {
   const { user } = useAuth();
   const [isExpanded, setIsExpanded] = useState(false);
@@ -94,9 +97,9 @@ export default function Composer({
         )}
 
         <div className="flex min-w-0 flex-1 flex-col">
-          <TweetComposerDropOverlay visible={drag.isDragging} />
+          <ComposerDropOverlay visible={drag.isDragging} />
 
-          <TweetComposerEditor
+          <PostComposerEditor
             value={composer.content}
             onChange={composer.setContent}
             editorRef={composer.editorRef}
@@ -106,7 +109,7 @@ export default function Composer({
             className="max-h-160 text-lg"
           />
 
-          <ComposerAttachments composer={composer} quotedTweet={quotedTweet} />
+          <ComposerAttachments composer={composer} quotedPost={quotedPost} />
 
           {composer.scheduling.scheduledAt && (
             <div className="mt-3 flex items-center justify-between rounded-xl border border-border px-3 py-2 text-sm">
@@ -128,7 +131,7 @@ export default function Composer({
             </div>
           )}
 
-          <TweetComposerErrors errors={composer.errors} />
+          <PostComposerErrors errors={composer.errors} />
 
           <div className="flex min-w-0 items-center justify-between gap-2 pt-3">
             <div
@@ -145,7 +148,7 @@ export default function Composer({
                 className="w-max shrink-0 flex-nowrap"
               />
             </div>
-            <TweetComposerFooter
+            <PostComposerFooter
               remaining={composer.remaining}
               canSubmit={composer.canSubmit}
               isPosting={composer.isPosting}
@@ -214,7 +217,7 @@ export default function Composer({
       )}
 
       <div className="relative min-w-0 flex-1 flex-col">
-        <TweetComposerDropOverlay visible={drag.isDragging} />
+        <ComposerDropOverlay visible={drag.isDragging} />
 
         {isExpanded && replyingToUsername && (
           <p className="mb-1 shrink-0 text-sm text-muted-foreground">
@@ -226,7 +229,7 @@ export default function Composer({
         )}
 
         <div className="flex items-center gap-3">
-          <TweetComposerEditor
+          <PostComposerEditor
             value={composer.content}
             onChange={composer.setContent}
             editorRef={composer.editorRef}
@@ -254,12 +257,9 @@ export default function Composer({
         {/* Expanded state */}
         {isExpanded && (
           <div>
-            <ComposerAttachments
-              composer={composer}
-              quotedTweet={quotedTweet}
-            />
+            <ComposerAttachments composer={composer} quotedPost={quotedPost} />
 
-            <TweetComposerErrors errors={composer.errors} />
+            <PostComposerErrors errors={composer.errors} />
 
             {/* Toolbar + Reply */}
             <div className="flex min-w-0 items-center justify-between gap-2 pt-3">
@@ -277,7 +277,7 @@ export default function Composer({
                   className="w-max shrink-0 flex-nowrap"
                 />
               </div>
-              <TweetComposerFooter
+              <PostComposerFooter
                 remaining={composer.remaining}
                 canSubmit={composer.canSubmit}
                 isPosting={composer.isPosting}

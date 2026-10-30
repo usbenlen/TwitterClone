@@ -8,7 +8,7 @@ import { routes } from "@/routes";
 
 import { AppEffects } from "@/providers/AppEffects";
 
-import { store } from "@/store";
+import { store } from "@/store/store";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <Provider store={store}>

@@ -1,4 +1,4 @@
-import { tweets, setTweets } from "@/mock/data/tweets";
+import { posts, setPosts } from "@/mock/data/posts";
 import { commentsByPostId } from "@/mock/data/comments";
 import { sampleAuthors } from "@/mock/data/users";
 
@@ -11,7 +11,7 @@ export function removeMockContent(type: "post" | "comment", id: string) {
   const removedComments = new Set<string>();
 
   if (type === "post") {
-    const post = tweets.find((item) => item.id === id);
+    const post = posts.find((item) => item.id === id);
     if (!post) throw new Error("Допис не знайдено.");
 
     const author = sampleAuthors.find((user) => user.id === post.author.id);
@@ -21,7 +21,7 @@ export function removeMockContent(type: "post" | "comment", id: string) {
 
     delete commentsByPostId[id];
 
-    setTweets(tweets.filter((post) => post.id !== id));
+    setPosts(posts.filter((post) => post.id !== id));
   } else {
     const entry = Object.entries(commentsByPostId).find(([, comments]) =>
       comments.some((comment) => comment.id === id),
@@ -44,8 +44,8 @@ export function removeMockContent(type: "post" | "comment", id: string) {
       (comment) => !removedComments.has(comment.id),
     );
 
-    setTweets(
-      tweets.map((post) =>
+    setPosts(
+      posts.map((post) =>
         post.id === postId
           ? {
               ...post,
@@ -68,7 +68,7 @@ export function removeMockContent(type: "post" | "comment", id: string) {
     targetType: "post" | "comment",
     targetId: string,
   ) => {
-    setTweets(markQuotedTargetUnavailable(tweets, targetType, targetId));
+    setPosts(markQuotedTargetUnavailable(posts, targetType, targetId));
 
     for (const [postId, comments] of Object.entries(commentsByPostId))
       commentsByPostId[postId] = markQuotedTargetUnavailable(

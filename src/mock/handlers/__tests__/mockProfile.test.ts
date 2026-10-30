@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { authReady, authReducer, authUserUpdated } from "@/store/auth";
+import { authReady, authReducer, authUserUpdated } from "@/store/authState";
 
 vi.mock("@/mock/utils/delay", () => ({ delay: async () => {} }));
 
@@ -19,7 +19,7 @@ describe("mock profile saves with Redux auth state", () => {
   it("refreshes existing deep replies, ancestors and quotes on every profile save", async () => {
     const { currentUser, mockUserApi } = await loadBackend();
     const { mockCommentApi } = await import("@/mock/handlers/mockCommentApi");
-    const { tweets, setTweets } = await import("@/mock/data/tweets");
+    const { posts, setPosts } = await import("@/mock/data/posts");
     const { commentsByPostId } = await import("@/mock/data/comments");
     const { editHistoryStore } = await import("@/mock/stores/editHistoryStore");
 
@@ -41,10 +41,10 @@ describe("mock profile saves with Redux auth state", () => {
     const history = editHistoryStore.getHistory("comment", before.target);
     const quotedComment = structuredClone(before.target);
 
-    setTweets([
-      ...tweets,
+    setPosts([
+      ...posts,
       {
-        ...structuredClone(tweets[1]),
+        ...structuredClone(posts[1]),
         id: "profile-quote",
         quote: {
           targetId: quotedComment.id,
@@ -88,9 +88,9 @@ describe("mock profile saves with Redux auth state", () => {
       expect(updated.target.repliesCount).toBe(before.target.repliesCount);
       expect(commentsByPostId.t1[0].author).toEqual(otherAuthor);
 
-      const { tweets: refreshedTweets } = await import("@/mock/data/tweets");
+      const { posts: refreshedPosts } = await import("@/mock/data/posts");
 
-      expect(refreshedTweets.at(-1)?.quote?.target?.author.displayName).toBe(
+      expect(refreshedPosts.at(-1)?.quote?.target?.author.displayName).toBe(
         "Updated deep author",
       );
       expect(editHistoryStore.getHistory("comment", updated.target)).toEqual(

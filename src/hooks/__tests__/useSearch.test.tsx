@@ -4,17 +4,17 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { DEFAULT_SEARCH_CRITERIA } from "@/constants/search";
 
-import type { SearchCriteria } from "@/types";
+import type { SearchCriteria } from "@/types/search";
 
 import { useSearch } from "@/hooks/useSearch";
 
 const api = vi.hoisted(() => ({ posts: vi.fn(), users: vi.fn() }));
-vi.mock("@/hooks/useAuth", () => ({ useAuth: () => ({ user: null }) }));
-vi.mock("@/hooks/useFollow", () => ({ useFollow: () => ({ following: [] }) }));
+vi.mock("@/hooks/auth/useAuth", () => ({ useAuth: () => ({ user: null }) }));
+vi.mock("@/hooks/profiles/useFollow", () => ({ useFollow: () => ({ following: [] }) }));
 vi.mock("@/hooks/useDebouncedValue", () => ({
   useDebouncedValue: (value: unknown) => value,
 }));
-vi.mock("@/store/postsApi", () => ({
+vi.mock("@/store/posts/postQueries", () => ({
   useGetPostsQuery: api.posts,
   useGetSearchUsersQuery: api.users,
   errorMessage: (error: { message: string }) => error.message,

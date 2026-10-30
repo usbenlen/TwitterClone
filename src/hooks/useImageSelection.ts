@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, type ChangeEvent } from "react";
 
-import { createObjectUrlOwner } from "@/utils/objectUrl";
+import { createObjectUrlOwner } from "@/utils/media/objectUrl";
 
 export function useImageSelection(initialUrl?: string | null) {
   const owner = useRef(createObjectUrlOwner());

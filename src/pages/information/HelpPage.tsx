@@ -1,6 +1,7 @@
 import { Link } from "react-router";
 
-import { APP_NAME, APP_ROUTES } from "@/constants";
+import { APP_NAME } from "@/constants/app";
+import { APP_ROUTES } from "@/constants/routes";
 
 import { InformationPage } from "@/pages/information/InformationPage";
 

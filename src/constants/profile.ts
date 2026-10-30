@@ -1,5 +1,10 @@
-import type { BirthDateVisibility } from "@/types";
-import type { ProfileTab } from "@/hooks/useProfile";
+import { numericEnv } from "@/constants/app";
+
+import type { BirthDateVisibility, ProfileTab } from "@/types";
+
+export const MAX_NAME_LENGTH = numericEnv.VITE_MAX_NAME_LENGTH;
+
+export const MAX_BIO_LENGTH = numericEnv.VITE_MAX_BIO_LENGTH;
 
 export const BIRTH_DATE_MIN_YEAR = 1900;
 export const DEFAULT_BIRTH_DATE_VISIBILITY: BirthDateVisibility = "only_me";

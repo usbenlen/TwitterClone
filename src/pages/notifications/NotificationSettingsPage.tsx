@@ -1,22 +1,22 @@
 import { useForm } from "react-hook-form";
 
-import { PageHeader } from "@/components/layout/pageHeader";
+import PageHeader from "@/components/navigation/PageHeader";
 
-import { NOTIFICATION_PREFERENCE_LABELS } from "@/constants/notifications";
+import { NOTIFICATION_PREFERENCE_LABELS } from "@/constants/notification";
 import { APP_ROUTES } from "@/constants/routes";
 import { APP_NAME } from "@/constants/app";
 
-import { useAuth } from "@/hooks/useAuth";
+import { useAuth } from "@/hooks/auth/useAuth";
 
-import { errorMessage } from "@/store/api";
+import { errorMessage } from "@/store/appApi";
 
 import {
   useGetNotificationPreferencesQuery,
   useUpdateNotificationPreferencesMutation,
-} from "@/store/notificationsApi";
+} from "@/store/notificationQueries";
 import type { NotificationPreferences } from "@/types/notification";
 
-import { Button, Spinner } from "@/ui";
+import { Button, Spinner } from "@/components/ui";
 
 function PreferencesForm({ initial }: { initial: NotificationPreferences }) {
   const {

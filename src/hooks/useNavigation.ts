@@ -1,14 +1,14 @@
 import { Shield } from "lucide-react";
 
-import { useAuth } from "@/hooks/useAuth";
+import { useAuth } from "@/hooks/auth/useAuth";
 
-import { MAIN_NAVIGATION, type NavigationItem } from "@/constants/navigation";
+import { MAIN_NAVIGATION, type DesktopNavigationItem } from "@/constants/navigation";
 import { APP_ROUTES } from "@/constants/routes";
 
 export function useNavigation() {
   const { user } = useAuth();
 
-  const navigation: NavigationItem[] =
+  const navigation: DesktopNavigationItem[] =
     user?.role === "Admin"
       ? [
           ...MAIN_NAVIGATION,

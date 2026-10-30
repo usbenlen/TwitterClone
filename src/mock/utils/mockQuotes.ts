@@ -1,10 +1,10 @@
-import type { QuoteTargetType, Tweet } from "@/types";
+import type { QuoteTargetType, Post } from "@/types/post";
 
 export function markQuotedTargetEdited(
-  items: Tweet[],
+  items: Post[],
   targetType: QuoteTargetType,
   targetId: string,
-): Tweet[] {
+): Post[] {
   return items.map((item) =>
     item.quote?.targetType === targetType && item.quote.targetId === targetId
       ? {
@@ -19,10 +19,10 @@ export function markQuotedTargetEdited(
 }
 
 export function markQuotedTargetUnavailable(
-  items: Tweet[],
+  items: Post[],
   targetType: QuoteTargetType,
   targetId: string,
-): Tweet[] {
+): Post[] {
   return items.map((item) =>
     item.quote?.targetType === targetType && item.quote.targetId === targetId
       ? { ...item, quote: { ...item.quote, target: null } }

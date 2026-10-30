@@ -3,7 +3,8 @@ import { act } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { MemoryRouter } from "react-router";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { AccountConnections, GoogleAuthButton } from "@/components/auth";
+import { AccountConnections } from "@/components/auth/AccountConnections";
+import { GoogleAuthButton } from "@/components/auth/GoogleAuthButton";
 import type { User } from "@/types/user";
 
 const mocks = vi.hoisted(() => ({
@@ -12,7 +13,7 @@ const mocks = vi.hoisted(() => ({
   user: null as User | null,
   isLoading: false,
 }));
-vi.mock("@/hooks/useAuth", () => ({
+vi.mock("@/hooks/auth/useAuth", () => ({
   useAuth: () => ({ user: mocks.user, isLoading: mocks.isLoading }),
 }));
 vi.mock("@/utils/googleRedirect", () => ({ startGoogleRedirect: mocks.start }));

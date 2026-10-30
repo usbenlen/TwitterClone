@@ -1,5 +1,6 @@
-import { AUTH_LIMITS } from "@/constants/app";
 import { useRef, useState } from "react";
+
+import { AUTH_LIMITS } from "@/constants/auth";
 
 interface CodeInputProps {
   value: string;

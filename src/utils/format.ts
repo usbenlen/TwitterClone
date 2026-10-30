@@ -1,10 +1,10 @@
+import { APP_LOCALE } from "@/constants/app";
 import {
-  APP_LOCALE,
   MILLISECONDS_PER_SECOND,
   SECONDS_PER_MINUTE,
   MINUTES_PER_HOUR,
   HOURS_PER_DAY,
-} from "@/constants";
+} from "@/constants/date";
 
 // Відносний час "2 хв", "3 год", "5 дн".
 export function formatRelativeTime(iso: string): string {

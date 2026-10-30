@@ -1,4 +1,4 @@
-import { MEDIA_STATUS } from "@/constants/app";
+import { MEDIA_STATUS } from "@/constants/media";
 
 import type { ComposerMedia } from "@/types/composer";
 

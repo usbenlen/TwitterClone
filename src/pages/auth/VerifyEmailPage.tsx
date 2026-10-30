@@ -4,21 +4,21 @@ import { useLocation, useNavigate } from "react-router";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 
-import { authApi } from "@/api/auth.api";
-import { ApiError } from "@/api/client";
+import { authApi, ApiError } from "@/api";
 
-import { useAuth } from "@/hooks";
+import { useAuth } from "@/hooks/auth/useAuth";
 
-import { Button } from "@/ui";
+import { Button } from "@/components/ui/Button";
 
-import { AUTH_LIMITS, APP_ROUTES } from "@/constants";
+import { AUTH_LIMITS } from "@/constants/auth";
+import { APP_ROUTES } from "@/constants/routes";
 
-import { AuthShell, CodeInput } from "@/components/auth/index";
+import { AuthShell, CodeInput } from "@/components/auth";
 
 import {
   verificationCodeSchema,
   type VerificationCodeFormValues,
-} from "@/schemas/auth.schema";
+} from "@/schemas/authSchema";
 
 interface LocationState {
   email?: string;

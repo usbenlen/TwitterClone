@@ -1,12 +1,13 @@
 import { commentsByPostId } from "@/mock/data/comments";
-import { tweets } from "@/mock/data/tweets";
-import { withAncestors } from "@/utils/ancestors";
+import { posts } from "@/mock/data/posts";
 
-import type { Tweet } from "@/types";
+import { withAncestors } from "@/utils/posts/ancestors";
 
-export function selectMockComments(predicate: (comment: Tweet) => boolean): Tweet[] {
+import type { Post } from "@/types/post";
+
+export function selectMockComments(predicate: (comment: Post) => boolean): Post[] {
   return Object.entries(commentsByPostId).flatMap(([postId, comments]) => {
-    const rootPost = tweets.find((tweet) => tweet.id === postId);
+    const rootPost = posts.find((post) => post.id === postId);
 
     return comments.filter(predicate).map((comment) => {
       const reply = withAncestors(

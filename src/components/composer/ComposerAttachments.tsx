@@ -1,36 +1,34 @@
-import type { useTweetComposer } from "@/hooks/composer/useTweetComposer";
+import type { usePostComposer } from "@/hooks/composer/usePostComposer";
 
-import type { TweetQuote } from "@/types";
+import type { PostQuote } from "@/types/post";
 
-import {
-  TweetComposerMediaPreview,
-  TweetComposerLocationPreview,
-  TweetComposerLinkPreview,
-} from "@/components/tweet/TweetComposer/index";
-import { QuotedTweetCard } from "@/components/tweet/quote/index";
+import ComposerMediaPreview from "@/components/composer/attachments/ComposerMediaPreview";
+import ComposerLocationPreview from "@/components/composer/location/ComposerLocationPreview";
+import ComposerLinkPreview from "@/components/composer/links/ComposerLinkPreview";
+import QuotedPostCard from "@/components/posts/QuotedPostCard";
 import PollComposer from "@/components/composer/poll/PollComposer";
 
 interface ComposerAttachmentsProps {
-  composer: ReturnType<typeof useTweetComposer>;
-  quotedTweet?: TweetQuote | null;
+  composer: ReturnType<typeof usePostComposer>;
+  quotedPost?: PostQuote | null;
 }
 
 export function ComposerAttachments({
   composer,
-  quotedTweet,
+  quotedPost,
 }: ComposerAttachmentsProps) {
   return (
     <>
       {composer.pollEditor.visible && <PollComposer {...composer.pollEditor} />}
 
-      <TweetComposerMediaPreview
+      <ComposerMediaPreview
         media={composer.media}
         onRemove={composer.removeMedia}
         disabled={composer.isPosting}
       />
 
       {composer.linkPreview.visible && (
-        <TweetComposerLinkPreview
+        <ComposerLinkPreview
           preview={composer.linkPreview.preview}
           loading={composer.linkPreview.loading}
           onRemove={composer.linkPreview.onRemove}
@@ -38,13 +36,13 @@ export function ComposerAttachments({
         />
       )}
 
-      {quotedTweet && (
-        <QuotedTweetCard quote={quotedTweet} allowVoting={false} />
+      {quotedPost && (
+        <QuotedPostCard quote={quotedPost} allowVoting={false} />
       )}
 
       {composer.locationPreview.visible &&
         composer.locationPreview.location && (
-          <TweetComposerLocationPreview
+          <ComposerLocationPreview
             location={composer.locationPreview.location}
             onRemove={composer.locationPreview.onRemove}
             disabled={composer.isPosting}

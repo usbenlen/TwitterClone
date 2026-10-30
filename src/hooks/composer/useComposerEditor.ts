@@ -1,5 +1,6 @@
 import { useRef } from "react";
-import { countCharacters } from "@/utils/composerRules";
+
+import { countCharacters } from "@/utils/composer/composerRules";
 
 export function useComposerEditor() {
   const editorRef = useRef<HTMLTextAreaElement>(null);

@@ -4,28 +4,26 @@ import { useLocation, useNavigate, useSearchParams } from "react-router";
 
 import { useSearch } from "@/hooks/useSearch";
 
-import { Spinner, Tab } from "@/ui/index";
+import { Spinner, Tab } from "@/components/ui";
 
-import {
-  AdvancedSearchModal,
-  SearchPageSearchBox,
-} from "@/components/search/index";
-import { PageHeader } from "@/components/layout/pageHeader/index";
-import { TweetCard } from "@/components/tweet/index";
-import { UserListItem } from "@/components/user/index";
+import { AdvancedSearchModal, SearchPageSearchBox } from "@/components/search";
+
+import PageHeader from "@/components/navigation/PageHeader";
+import PostCard from "@/components/posts/PostCard";
+import UserListItem from "@/components/profiles/UserListItem";
 
 import { APP_ROUTES } from "@/constants/routes";
 
-import { useAuth } from "@/hooks";
+import { useAuth } from "@/hooks/auth/useAuth";
 
 import {
   criteriaForType,
   hasActiveSearchCriteria,
   hasNonDefaultFilters,
   parseSearchCriteria,
-} from "@/utils/search";
+} from "@/utils/searchCriteria";
 
-import type { SearchCriteria, SearchType } from "@/types";
+import type { SearchCriteria, SearchType } from "@/types/search";
 
 const SEARCH_TYPES: Array<{ value: SearchType; label: string }> = [
   { value: "posts", label: "Пости" },
@@ -113,8 +111,8 @@ export default function SearchPage() {
         </p>
       ) : activeType === "posts" ? (
         <div className="divide-y divide-border">
-          {posts.map((tweet) => (
-            <TweetCard key={tweet.id} tweet={tweet} />
+          {posts.map((post) => (
+            <PostCard key={post.id} post={post} />
           ))}
         </div>
       ) : (

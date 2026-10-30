@@ -11,7 +11,7 @@ export function useClickOrDrag(
 ) {
   const {
     threshold = 5,
-    ignoreSelector = 'button, a, textarea, input, video, [data-tweet-interactive="true"]',
+    ignoreSelector = 'button, a, textarea, input, video, [data-post-interactive="true"]',
   } = options;
 
   const isDragging = useRef(false);

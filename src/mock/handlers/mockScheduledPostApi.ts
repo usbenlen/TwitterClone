@@ -1,21 +1,21 @@
 import { STORAGE_KEYS } from "@/constants/storage";
 
-import { currentUser } from "@/mock/data";
+import { currentUser } from "@/mock/data/users";
 
-import { mockTweetApi } from "@/mock/handlers/mockTweetApi";
+import { mockPostApi } from "@/mock/handlers/mockPostApi";
 
 import { mediaStore } from "@/mock/stores/mediaStore";
 import { scheduledMediaStore } from "@/mock/stores/scheduledMediaStore";
 
 import { validateMockPost } from "@/mock/utils/validateMockPost";
-import { getPostRulesError } from "@/utils/composerRules";
+import { getPostRulesError } from "@/utils/composer/composerRules";
 
 import type {
   CreateScheduledPostRequest,
-  MediaAttachment,
   ScheduledPost,
-  Tweet,
   UpdateScheduledPostRequest,
+  MediaAttachment,
+  Post,
 } from "@/types";
 
 type StoredScheduledPost = Omit<ScheduledPost, "media">;
@@ -62,8 +62,8 @@ async function resolveMedia(ids: string[]): Promise<MediaAttachment[]> {
   );
 }
 
-async function hydrate(post: StoredScheduledPost): Promise<ScheduledPost> {
-  return { ...post, media: await resolveMedia(post.mediaIds) };
+async function hydrate(scheduledPost: StoredScheduledPost): Promise<ScheduledPost> {
+  return { ...scheduledPost, media: await resolveMedia(scheduledPost.mediaIds) };
 }
 
 async function validateRequest(request: CreateScheduledPostRequest) {
@@ -146,7 +146,7 @@ export const mockScheduledPostApi = {
   ): Promise<ScheduledPost> {
     const posts = readPosts();
 
-    const index = posts.findIndex((post) => post.id === id);
+    const index = posts.findIndex((scheduledPost) => scheduledPost.id === id);
     if (index < 0) throw new Error("Запланований допис не знайдено.");
 
     const previous = posts[index];
@@ -179,35 +179,35 @@ export const mockScheduledPostApi = {
 
   async delete(id: string): Promise<void> {
     const posts = readPosts();
-    const target = posts.find((post) => post.id === id);
+    const target = posts.find((scheduledPost) => scheduledPost.id === id);
     if (!target) return;
 
-    writePosts(posts.filter((post) => post.id !== id));
+    writePosts(posts.filter((scheduledPost) => scheduledPost.id !== id));
     await scheduledMediaStore.removeMany(target.mediaIds);
   },
 
-  async publishDue(): Promise<Tweet[]> {
+  async publishDue(): Promise<Post[]> {
     const now = Date.now();
     const due = readPosts().filter(
-      (post) => new Date(post.scheduledAt).getTime() <= now,
+      (scheduledPost) => new Date(scheduledPost.scheduledAt).getTime() <= now,
     );
-    const published: Tweet[] = [];
+    const published: Post[] = [];
 
-    for (const post of due) {
-      const media = await resolveMedia(post.mediaIds);
-      if (media.length !== post.mediaIds.length) throw new Error("Медіавкладення не знайдено.");
+    for (const scheduledPost of due) {
+      const media = await resolveMedia(scheduledPost.mediaIds);
+      if (media.length !== scheduledPost.mediaIds.length) throw new Error("Медіавкладення не знайдено.");
 
-      validateMockPost(post.content, media);
+      validateMockPost(scheduledPost.content, media);
 
-      const tweet = await mockTweetApi.create({
-        content: post.content,
-        mediaIds: post.mediaIds,
-        linkPreview: post.linkPreview,
+      const publishedPost = await mockPostApi.create({
+        content: scheduledPost.content,
+        mediaIds: scheduledPost.mediaIds,
+        linkPreview: scheduledPost.linkPreview,
       });
-      published.push(tweet);
+      published.push(publishedPost);
 
-      writePosts(readPosts().filter((item) => item.id !== post.id));
-      await scheduledMediaStore.removeMany(post.mediaIds);
+      writePosts(readPosts().filter((item) => item.id !== scheduledPost.id));
+      await scheduledMediaStore.removeMany(scheduledPost.mediaIds);
     }
 
     return published;

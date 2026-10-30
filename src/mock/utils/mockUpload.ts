@@ -1,4 +1,4 @@
-import { MOCK_UPLOAD } from "@/mock/constants";
+import { MOCK_UPLOAD } from "@/mock/mockConfig";
 
 interface MockUploadOptions {
   onProgress?: (progress: number) => void;

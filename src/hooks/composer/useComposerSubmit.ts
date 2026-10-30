@@ -1,17 +1,18 @@
 import { useState } from "react";
 
-import { buildComposerPayload, type ComposerValues } from "@/utils/composer";
-
-import { useCreatePostMutation } from "@/store/postsApi";
+import { buildComposerPayload } from "@/utils/composer/composerPayload";
 
 import type {
-  Tweet,
+  ComposerValues,
+  Post,
   ComposerMedia,
+  ComposerSubmitData,
   ComposerPoll,
   Location,
   LinkPreview,
-  ComposerSubmitData,
 } from "@/types";
+
+import { useCreatePostMutation } from "@/store/posts/postQueries";
 
 interface UseComposerSubmitProps {
   content: string;
@@ -23,7 +24,7 @@ interface UseComposerSubmitProps {
   clearMedia: () => void;
   clearErrors: () => void;
 
-  onCreated?: (tweet: Tweet) => void;
+  onCreated?: (post: Post) => void;
   onSubmit?: (data: ComposerSubmitData) => Promise<unknown>;
 }
 
@@ -67,7 +68,7 @@ export function useComposerSubmit({
         }).unwrap();
       }
 
-      if (result && typeof result === "object") onCreated?.(result as Tweet);
+      if (result && typeof result === "object") onCreated?.(result as Post);
 
       if (result !== false) {
         clearMedia();

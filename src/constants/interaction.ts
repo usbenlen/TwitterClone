@@ -1,0 +1,3 @@
+export const SEARCH_DEBOUNCE_MS = 350;
+
+export const LOCATION_SEARCH_DEBOUNCE_MS = 200;

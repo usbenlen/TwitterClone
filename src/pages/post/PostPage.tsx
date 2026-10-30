@@ -2,16 +2,16 @@ import { useEffect, useRef, useMemo } from "react";
 import { skipToken } from "@reduxjs/toolkit/query/react";
 import { useParams, useSearchParams } from "react-router";
 
-import { useGetThreadQuery, useViewPostMutation } from "@/store/postsApi";
+import { useGetThreadQuery, useViewPostMutation } from "@/store/posts/postQueries";
 
-import { Spinner } from "@/ui";
+import { Spinner } from "@/components/ui/Spinner";
 
-import { PageHeader } from "@/components/layout/pageHeader/index";
-import { TweetCard } from "@/components/tweet/index";
+import PageHeader from "@/components/navigation/PageHeader";
+import PostCard from "@/components/posts/PostCard";
 
 import { APP_ROUTES } from "@/constants/routes";
 
-import { withAncestorContext } from "@/utils/ancestors";
+import { withAncestorContext } from "@/utils/posts/ancestors";
 
 export default function PostPage() {
   const { postId } = useParams<{ postId: string }>();
@@ -90,7 +90,7 @@ export default function PostPage() {
           {/* Ancestors thread */}
           <div className="relative">
             {thread.target.ancestors?.map((ancestor) => {
-              const tweet = withAncestorContext(
+              const post = withAncestorContext(
                 ancestor,
                 thread.target.ancestors ?? [],
               );
@@ -99,8 +99,8 @@ export default function PostPage() {
                 <div key={ancestor.id} className="relative">
                   <div className="pointer-events-none absolute left-[35px] top-[59px] bottom-[-9px] z-thread w-0.5 rounded-full bg-[color-mix(in_oklab,var(--border)_95%,black)]" />
 
-                  <TweetCard
-                    tweet={tweet}
+                  <PostCard
+                    post={post}
                     variant="feed"
                     navigateToPost={true}
                     className="relative border-b-0"
@@ -112,8 +112,8 @@ export default function PostPage() {
 
           {/* Target Tweet / Comment */}
           <div ref={targetRef} className="relative scroll-mt-14">
-            <TweetCard
-              tweet={thread.target}
+            <PostCard
+              post={thread.target}
               navigateToPost={false}
               variant="post"
               commentsInitiallyOpen={true}

@@ -3,12 +3,12 @@ import { act } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { Provider } from "react-redux";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { notificationsApi } from "@/api/notifications.api";
-import { useNotifications } from "@/hooks/useNotifications";
+import { notificationsApi } from "@/api/notificationApi";
+import { useNotifications } from "@/hooks/notifications/useNotifications";
 import { AppEffects } from "@/providers/AppEffects";
-import { createAppStore, type AppStore } from "@/store";
-import { authCleared, authReady } from "@/store/auth";
-import { appApi } from "@/store/api";
+import { createAppStore, type AppStore } from "@/store/store";
+import { authCleared, authReady } from "@/store/authState";
+import { appApi } from "@/store/appApi";
 import { sessionChanged } from "@/store/session";
 import type { User } from "@/types/user";
 
@@ -16,18 +16,20 @@ const fixtures = vi.hoisted(() => ({
   user: { id: "viewer", username: "viewer" } as User,
   scheduled: { data: [] },
 }));
-vi.mock("@/mock/config", () => ({ MOCK_ENABLED: true }));
-vi.mock("@/api/notifications.api", () => ({
+vi.mock("@/config/mockConfig", () => ({ MOCK_ENABLED: true }));
+vi.mock("@/api/notificationApi", () => ({
   notificationsApi: { list: vi.fn(), unreadCount: vi.fn() },
 }));
-vi.mock("@/api/auth.api", () => ({
+vi.mock("@/api/authApi", () => ({
   authApi: { me: async () => fixtures.user },
 }));
-vi.mock("@/utils/storage", () => ({ tokenStorage: { hasTokens: () => true } }));
-vi.mock("@/store/sharedApi", () => ({
+vi.mock("@/utils/tokenStorage", () => ({ tokenStorage: { hasTokens: () => true } }));
+vi.mock("@/store/followQueries", () => ({
   useGetFollowingQuery: () => undefined,
-  useGetFollowersQuery: () => undefined,
-  useGetScheduledPostsQuery: () => fixtures.scheduled,
+  useGetFollowersQuery: () => undefined
+}));
+vi.mock("@/store/scheduleQueries", () => ({
+  useGetScheduledPostsQuery: () => fixtures.scheduled
 }));
 vi.mock("@/store/publishScheduled", () => ({ publishScheduled: vi.fn() }));
 

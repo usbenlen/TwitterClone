@@ -2,31 +2,34 @@ import { useEffect, useRef } from "react";
 import { skipToken } from "@reduxjs/toolkit/query/react";
 import { setupListeners } from "@reduxjs/toolkit/query";
 
-import { useNotificationPollingOptions } from "@/hooks/useNotificationPollingOptions";
+import { useNotificationPollingOptions } from "@/hooks/notifications/useNotificationPollingOptions";
 
-import { useGetUnreadNotificationsCountQuery } from "@/store/notificationsApi";
+import { useGetUnreadNotificationsCountQuery } from "@/store/notificationQueries";
 
 import {
   SCHEDULE_CHECK_INTERVAL_MS,
   SCHEDULE_MIN_CHECK_DELAY_MS,
 } from "@/constants/schedule";
 
-import { authApi } from "@/api/auth.api";
-import { clearUnauthorizedHandler, setUnauthorizedHandler } from "@/api/client";
+import {
+  authApi,
+  clearUnauthorizedHandler,
+  setUnauthorizedHandler,
+} from "@/api";
 
 import { useAppDispatch, useAppSelector, useAppStore } from "@/store/hooks";
-import { authCleared, authReady } from "@/store/auth";
-import { postsApi } from "@/store/postsApi";
+import { authCleared, authReady } from "@/store/authState";
+import { postsApi } from "@/store/posts/postQueries";
 import { publishScheduled } from "@/store/publishScheduled";
 import { sessionChanged, sessionGeneration } from "@/store/session";
+import { useGetScheduledPostsQuery } from "@/store/scheduleQueries";
 import {
-  useGetScheduledPostsQuery,
   useGetFollowingQuery,
   useGetFollowersQuery,
-} from "@/store/sharedApi";
-import { systemTheme, THEME_STORAGE_KEY } from "@/store/theme";
+} from "@/store/followQueries";
+import { systemTheme, THEME_STORAGE_KEY } from "@/store/themeState";
 
-import { tokenStorage } from "@/utils/storage";
+import { tokenStorage } from "@/utils/tokenStorage";
 
 export function AppEffects() {
   const dispatch = useAppDispatch();

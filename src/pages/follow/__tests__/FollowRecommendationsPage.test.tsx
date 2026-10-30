@@ -1,28 +1,23 @@
 // @vitest-environment happy-dom
 import { act } from "react";
 import { createRoot, type Root } from "react-dom/client";
-import {
-  MemoryRouter,
-  Route,
-  Routes,
-  useLocation,
-  useNavigate,
-} from "react-router";
+import { MemoryRouter, Route, Routes, useLocation, useNavigate } from "react-router";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import FollowRecommendationsPage from "@/pages/follow/FollowRecommendationsPage";
 
-import { APP_ROUTES, RECOMMENDATIONS_PAGE_LIMIT } from "@/constants";
+import { APP_ROUTES } from "@/constants/routes";
+import { RECOMMENDATIONS_PAGE_LIMIT } from "@/constants/recommendation";
 
 const hooks = vi.hoisted(() => ({ users: vi.fn(), trends: vi.fn() }));
-vi.mock("@/hooks", () => ({
+vi.mock("@/hooks/recommendations/useRecommendations", () => ({
   useRecommendedUsers: hooks.users,
-  useTrends: hooks.trends,
+  useTrends: hooks.trends
 }));
-vi.mock("@/components/user/index", () => ({
-  RecommendationUserItem: ({ user }: { user: { username: string } }) => (
+vi.mock("@/components/profiles/RecommendationUserItem", () => ({
+  default: ({ user }: { user: { username: string } }) => (
     <a href={APP_ROUTES.profile(user.username)}>@{user.username}</a>
-  ),
+  )
 }));
 
 let host: HTMLDivElement;

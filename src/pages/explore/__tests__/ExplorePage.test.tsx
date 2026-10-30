@@ -6,7 +6,7 @@ import { MemoryRouter, useLocation, useNavigate } from "react-router";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import ExplorePage from "@/pages/explore/ExplorePage";
-import { createAppStore } from "@/store";
+import { createAppStore } from "@/store/store";
 
 const hooks = vi.hoisted(() => ({
   trends: vi.fn(),
@@ -14,23 +14,23 @@ const hooks = vi.hoisted(() => ({
   users: vi.fn(),
   posts: vi.fn(),
 }));
-vi.mock("@/hooks/useRecommendations", () => ({
+vi.mock("@/hooks/recommendations/useRecommendations", () => ({
   useTrends: hooks.trends,
   useExploreTrends: hooks.categories,
   useRecommendedUsers: hooks.users,
 }));
-vi.mock("@/hooks/useRecommendedPosts", () => ({
+vi.mock("@/hooks/recommendations/useRecommendedPosts", () => ({
   useRecommendedPosts: hooks.posts,
 }));
-vi.mock("@/components/user/index", () => ({
-  RecommendationUserItem: ({ user }: { user: { username: string } }) => (
+vi.mock("@/components/profiles/RecommendationUserItem", () => ({
+  default: ({ user }: { user: { username: string } }) => (
     <a href={`/${user.username}`}>{user.username}</a>
-  ),
+  )
 }));
-vi.mock("@/components/feed/FeedList", () => ({
-  default: ({ tweets }: { tweets: { id: string; content: string }[] }) => (
+vi.mock("@/components/posts/FeedList", () => ({
+  default: ({ posts }: { posts: { id: string; content: string }[] }) => (
     <div>
-      {tweets.map((post) => (
+      {posts.map((post) => (
         <p key={post.id}>{post.content}</p>
       ))}
     </div>
@@ -91,7 +91,7 @@ beforeEach(() => {
     reload: reloadUsers,
   });
   hooks.posts.mockReturnValue({
-    tweets: [{ id: "p1", content: "Recommended post" }],
+    posts: [{ id: "p1", content: "Recommended post" }],
     isLoading: false,
     isLoadingMore: false,
     hasMore: true,

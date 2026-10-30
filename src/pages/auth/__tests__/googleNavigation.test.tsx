@@ -4,19 +4,19 @@ import { createRoot, type Root } from "react-dom/client";
 import { Provider } from "react-redux";
 import { MemoryRouter, Route, Routes } from "react-router";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { ApiError } from "@/api/client";
+import { ApiError } from "@/api/httpClient";
 import { AccountConnections } from "@/components/auth/AccountConnections";
 import GoogleCallbackPage from "@/pages/auth/GoogleCallbackPage";
 import LandingPage from "@/pages/landing/LandingPage";
 import LoginPage from "@/pages/auth/LoginPage";
 import RegisterPage from "@/pages/auth/RegisterPage";
-import { authReady, authCleared } from "@/store/auth";
-import { createAppStore, type AppStore } from "@/store";
+import { authReady, authCleared } from "@/store/authState";
+import { createAppStore, type AppStore } from "@/store/store";
 import { sessionChanged } from "@/store/session";
 import { APP_ROUTES } from "@/constants/routes";
 import { STORAGE_KEYS } from "@/constants/storage";
 import { createGoogleRedirectUrl } from "@/utils/googleRedirect";
-import { tokenStorage } from "@/utils/storage";
+import { tokenStorage } from "@/utils/tokenStorage";
 import type { GoogleAuthMode, GoogleRedirectContext } from "@/types/auth";
 import type { User } from "@/types/user";
 
@@ -25,8 +25,9 @@ const api = vi.hoisted(() => ({
   linkGoogle: vi.fn(),
   me: vi.fn(),
 }));
-vi.mock("@/api/auth.api", () => ({ authApi: api }));
-vi.mock("@/constants/auth", () => ({
+vi.mock("@/api/authApi", () => ({ authApi: api }));
+vi.mock("@/constants/auth", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@/constants/auth")>()),
   GOOGLE_CLIENT_ID: "test-client",
   GOOGLE_ID_TOKEN_MAX_LENGTH: 8192,
   GOOGLE_REDIRECT_MAX_AGE_MS: 900000,

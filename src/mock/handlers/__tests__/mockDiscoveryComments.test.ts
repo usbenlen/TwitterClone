@@ -1,9 +1,9 @@
 import { describe, expect, it, vi } from "vitest";
 
 import { commentsByPostId } from "@/mock/data/comments";
-import { tweets } from "@/mock/data/tweets";
+import { posts } from "@/mock/data/posts";
 import { mockCommentApi } from "@/mock/handlers/mockCommentApi";
-import { getPostRulesError } from "@/utils/composerRules";
+import { getPostRulesError } from "@/utils/composer/composerRules";
 
 vi.mock("@/mock/utils/delay", () => ({ delay: async () => {} }));
 
@@ -29,7 +29,7 @@ describe("mock discovery discussions", () => {
       "c5",
       "c6",
     ]);
-    const allContent = [...tweets, ...Object.values(commentsByPostId).flat()];
+    const allContent = [...posts, ...Object.values(commentsByPostId).flat()];
     expect(new Set(allContent.map((item) => item.id)).size).toBe(
       allContent.length,
     );
@@ -53,7 +53,7 @@ describe("mock discovery discussions", () => {
   it.each(discussions)(
     "keeps %s counts, authors and chronology consistent with its %i comments",
     (postId, count) => {
-      const post = tweets.find((item) => item.id === postId)!;
+      const post = posts.find((item) => item.id === postId)!;
       const comments = commentsByPostId[postId];
       expect(comments).toHaveLength(count);
       expect(post.repliesCount).toBe(count);
@@ -91,7 +91,7 @@ describe("mock discovery discussions", () => {
     expect(new URL(media[0].url).protocol).toBe("https:");
     expect(media[0].width).toBeGreaterThan(0);
     expect(media[0].height).toBeGreaterThan(0);
-    const allMedia = [...tweets, ...newComments].flatMap(
+    const allMedia = [...posts, ...newComments].flatMap(
       (item) => item.attachments,
     );
     expect(new Set(allMedia.map((item) => item.id)).size).toBe(allMedia.length);

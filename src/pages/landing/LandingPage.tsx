@@ -9,19 +9,19 @@ import {
   UsersRound,
 } from "lucide-react";
 
-import { RightSidebarFooterLinks } from "@/components/layout/desktop/rightSidebar/index";
-import { GoogleAuthButton } from "@/components/auth";
+import RightSidebarFooterLinks from "@/components/navigation/desktop/RightSidebarFooterLinks";
+import { GoogleAuthButton } from "@/components/auth/GoogleAuthButton";
 
-import { HeartIcon } from "@/shared/icons";
+import { HeartIcon, Avatar, Tooltip } from "@/components/ui";
 
-import { AppLogo, Avatar } from "@/ui";
-import { Tooltip } from "@/ui/Tooltip";
+import { AppLogo } from "@/components/navigation/AppLogo";
 
 import { useAutosizeTextarea } from "@/hooks/useAutosizeTextarea";
 
 import { cn } from "@/utils/cn";
 
-import { APP_NAME, APP_ROUTES } from "@/constants";
+import { APP_NAME } from "@/constants/app";
+import { APP_ROUTES } from "@/constants/routes";
 
 interface PreviewPostProps {
   name: string;
@@ -65,9 +65,9 @@ function PreviewPost({
               type="button"
               onClick={() => navigate(APP_ROUTES.LOGIN)}
               aria-label="Коментувати"
-              className="tweet-action flex items-center gap-1.5 rounded-full p-0.5 text-xs transition-colors hover:text-primary focus-visible:text-primary focus-visible:focus-indicator"
+              className="post-action flex items-center gap-1.5 rounded-full p-0.5 text-xs transition-colors hover:text-primary focus-visible:text-primary focus-visible:focus-indicator"
             >
-              <span className="tweet-action-icon" aria-hidden="true">
+              <span className="post-action-icon" aria-hidden="true">
                 <MessageCircle className="size-4" />
               </span>
               {replies}
@@ -80,11 +80,11 @@ function PreviewPost({
               aria-label={repostLabel}
               aria-pressed={reposted}
               className={cn(
-                "tweet-action flex items-center gap-1.5 rounded-full p-0.5 text-xs transition-colors hover:text-emerald-500 focus-visible:text-emerald-500 focus-visible:focus-indicator",
+                "post-action flex items-center gap-1.5 rounded-full p-0.5 text-xs transition-colors hover:text-emerald-500 focus-visible:text-emerald-500 focus-visible:focus-indicator",
                 reposted && "text-emerald-500",
               )}
             >
-              <span className="tweet-action-icon" aria-hidden="true">
+              <span className="post-action-icon" aria-hidden="true">
                 <Repeat2 className="size-4" />
               </span>
               {reposts + Number(reposted)}
@@ -97,11 +97,11 @@ function PreviewPost({
               aria-label={likeLabel}
               aria-pressed={liked}
               className={cn(
-                "tweet-action flex items-center gap-1.5 rounded-full p-0.5 text-xs transition-colors hover:text-rose-500 focus-visible:text-rose-500 focus-visible:focus-indicator",
+                "post-action flex items-center gap-1.5 rounded-full p-0.5 text-xs transition-colors hover:text-rose-500 focus-visible:text-rose-500 focus-visible:focus-indicator",
                 liked && "text-rose-500",
               )}
             >
-              <span className="tweet-action-icon" aria-hidden="true">
+              <span className="post-action-icon" aria-hidden="true">
                 <HeartIcon className="size-4" filled={liked} />
               </span>
               {likes + Number(liked)}
@@ -228,9 +228,9 @@ export default function LandingPage() {
                           type="button"
                           onClick={() => navigate(APP_ROUTES.LOGIN)}
                           aria-label="Додати зображення"
-                          className="tweet-action flex size-5 shrink-0 cursor-pointer items-center justify-center rounded-full text-primary focus-visible:focus-indicator"
+                          className="post-action flex size-5 shrink-0 cursor-pointer items-center justify-center rounded-full text-primary focus-visible:focus-indicator"
                         >
-                          <span className="tweet-action-icon" aria-hidden="true">
+                          <span className="post-action-icon" aria-hidden="true">
                             <Image className="size-5" />
                           </span>
                         </button>

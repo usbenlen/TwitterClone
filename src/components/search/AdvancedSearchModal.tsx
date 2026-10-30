@@ -4,7 +4,7 @@ import { X } from "lucide-react";
 
 import { useBodyScrollLock } from "@/hooks/useBodyScrollLock";
 
-import { Button, Input, RadioOption } from "@/ui";
+import { Button, Input, RadioOption } from "@/components/ui";
 
 import {
   DEFAULT_SEARCH_CRITERIA,
@@ -15,7 +15,7 @@ import type {
   SearchCriteria,
   SearchLocation,
   SearchPeople,
-} from "@/types";
+} from "@/types/search";
 
 interface AdvancedSearchModalProps {
   criteria: SearchCriteria;

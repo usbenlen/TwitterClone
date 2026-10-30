@@ -1,0 +1,198 @@
+import { ListX } from "lucide-react";
+
+import {
+  useAdminUsersQuery,
+  useAdminUserActionMutation,
+} from "@/store/adminQueries";
+
+import {
+  USERS_DEFAULTS,
+  USER_ACTION_ICONS,
+  USER_ACTION_LABELS,
+} from "@/constants/admin";
+
+import {
+  useCorrectPage,
+  useListParams,
+  usePageSelection,
+} from "@/utils/adminListState";
+
+import {
+  useActionConfirmation,
+  Pagination,
+  QueryState,
+  Select,
+  UserSummary,
+  UserActions,
+} from "@/components/admin";
+
+import { useAuth } from "@/hooks/auth/useAuth";
+
+import { SearchBox, Button } from "@/components/ui";
+
+import type { UserAction } from "@/types/admin";
+
+const choices = {
+  status: ["all", "active", "blocked"],
+  sort: ["newest", "oldest"],
+};
+
+export default function AdminUsersPage() {
+  const { user: viewer } = useAuth();
+  const state = useListParams(USERS_DEFAULTS, choices);
+  const query = useAdminUsersQuery(state.queryParams, {
+    skip: state.isSearching,
+  });
+  const data = query.currentData;
+  useCorrectPage(data?.pagination.page, state.params.page, state.correctPage);
+  const users = data?.items ?? [];
+  const selection = usePageSelection(
+    users.filter((user) => user.id !== viewer?.id).map((user) => user.id),
+    JSON.stringify(state.params),
+  );
+  const [mutate] = useAdminUserActionMutation();
+  const confirmation = useActionConfirmation();
+
+  const act = (ids: string[], action: UserAction) =>
+    confirmation.ask({
+      label: USER_ACTION_LABELS[action],
+      tasks: ids.map((id) => ({
+        id,
+        run: () => mutate({ id, action }).unwrap(),
+      })),
+      onDone: selection.set,
+    });
+
+  return (
+    <>
+      <header>
+        <h1 className="text-xl font-bold sm:text-2xl">Користувачі</h1>
+        <p className="mt-1 hidden text-muted-foreground sm:block">
+          Керуйте акаунтами та їхнім доступом.
+        </p>
+      </header>
+      <div className="flex flex-wrap items-end gap-3">
+        <SearchBox
+          value={state.params.search}
+          onChange={(value) => state.update("search", value, true)}
+          placeholder="Пошук користувачів"
+          className="min-w-48 flex-1"
+        />
+        <Select
+          label="Статус"
+          value={state.params.status}
+          options={{ all: "Усі", active: "Активні", blocked: "Заблоковані" }}
+          onChange={(value) => state.update("status", value)}
+        />
+        <Select
+          label="Сортування"
+          value={state.params.sort}
+          options={{ newest: "Спочатку нові", oldest: "Спочатку старі" }}
+          onChange={(value) => state.update("sort", value)}
+        />
+      </div>
+      <QueryState
+        loading={state.isSearching || (query.isFetching && !data)}
+        error={query.error}
+        empty={users.length === 0}
+        retry={query.refetch}
+      >
+        <div
+          className="space-y-4"
+          aria-busy={query.isFetching || confirmation.busy}
+        >
+          <div className="hidden flex-wrap items-center gap-3 sm:flex">
+            <label className="flex items-center gap-2 text-sm">
+              <input
+                type="checkbox"
+                checked={selection.all}
+                disabled={confirmation.busy || query.isFetching}
+                onChange={selection.toggleAll}
+                className="accent-primary"
+              />
+              Вибрати сторінку
+            </label>
+            {selection.selected.length > 0 && (
+              <>
+                <span className="text-sm">
+                  Вибрано: {selection.selected.length}
+                </span>
+                {(Object.keys(USER_ACTION_LABELS) as UserAction[]).map(
+                  (action) => {
+                    const Icon = USER_ACTION_ICONS[action];
+                    return (
+                      <Button
+                        key={action}
+                        size="comfortable"
+                        shape="rounded"
+                        variant={
+                          action === "delete" ? "destructive" : "outline"
+                        }
+                        disabled={confirmation.busy || query.isFetching}
+                        onClick={() => act(selection.selected, action)}
+                      >
+                        <Icon
+                          className="size-4.5 shrink-0"
+                          aria-hidden="true"
+                        />
+                        {USER_ACTION_LABELS[action]}
+                      </Button>
+                    );
+                  },
+                )}
+                <Button
+                  variant="ghost"
+                  size="comfortable"
+                  shape="rounded"
+                  onClick={() => selection.set([])}
+                >
+                  <ListX className="size-4.5 shrink-0" aria-hidden="true" />
+                  Зняти виділення
+                </Button>
+              </>
+            )}
+          </div>
+          <div className="divide-y divide-border overflow-hidden rounded-2xl border border-border">
+            {users.map((user) => (
+              <article
+                key={user.id}
+                className="grid grid-cols-1 items-center gap-2 p-3 sm:grid-cols-[auto_minmax(0,1fr)] sm:gap-4 sm:p-5 xl:grid-cols-[auto_minmax(0,1fr)_auto]"
+              >
+                <input
+                  type="checkbox"
+                  aria-label={`Вибрати @${user.username}`}
+                  disabled={
+                    confirmation.busy ||
+                    query.isFetching ||
+                    user.id === viewer?.id
+                  }
+                  checked={selection.selected.includes(user.id)}
+                  onChange={() => selection.toggle(user.id)}
+                  className="hidden accent-primary sm:block"
+                />
+                <div className="min-w-0 flex-1">
+                  <UserSummary user={user} />
+                </div>
+                <div className="hidden sm:col-span-2 sm:block xl:col-span-1">
+                  <UserActions
+                    user={user}
+                    busy={confirmation.busy || query.isFetching}
+                    onAction={(action) => act([user.id], action)}
+                  />
+                </div>
+              </article>
+            ))}
+          </div>
+        </div>
+      </QueryState>
+      {data && (
+        <Pagination
+          {...data.pagination}
+          busy={query.isFetching || confirmation.busy}
+          onChange={(page) => state.update("page", page)}
+        />
+      )}
+      {confirmation.modal}
+    </>
+  );
+}

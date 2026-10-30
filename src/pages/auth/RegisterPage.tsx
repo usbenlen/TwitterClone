@@ -2,18 +2,17 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router";
 
-import { authApi } from "@/api/auth.api";
-import { ApiError } from "@/api/client";
+import { authApi, ApiError } from "@/api";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { registerSchema, type RegisterFormValues } from "@/schemas/auth.schema";
+import { registerSchema, type RegisterFormValues } from "@/schemas/authSchema";
 
-import { Input, Button } from "@/ui";
+import { APP_NAME } from "@/constants/app";
+import { APP_ROUTES } from "@/constants/routes";
 
-import { APP_NAME, APP_ROUTES } from "@/constants";
+import { Input, Button } from "@/components/ui";
 
-import { AuthShell } from "@/components/auth/AuthShell";
-import { GoogleAuthButton } from "@/components/auth/GoogleAuthButton";
+import { AuthShell, GoogleAuthButton } from "@/components/auth";
 
 export default function RegisterPage() {
   const navigate = useNavigate();

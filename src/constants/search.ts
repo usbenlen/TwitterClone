@@ -1,4 +1,4 @@
-import type { SearchCriteria } from "@/types";
+import type { SearchCriteria } from "@/types/search";
 
 export const SEARCH_NEARBY_RADIUS_KM = 50;
 

@@ -1,13 +1,13 @@
-import { MOCK_DELAYS } from "@/mock/constants";
+import { MOCK_DELAYS } from "@/mock/mockConfig";
+
+import { ApiError } from "@/api/httpClient";
 
 import { delay } from "@/mock/utils/delay";
 
-import { tweets, setTweets } from "@/mock/data/tweets";
+import { posts, setPosts } from "@/mock/data/posts";
 import { commentsByPostId } from "@/mock/data/comments";
-import { ApiError } from "@/api/client";
 
-import type { QuoteTargetType } from "@/types/tweet";
-import type { TweetPoll } from "@/types/poll";
+import type { QuoteTargetType, PostPoll } from "@/types";
 
 function findTarget(targetType: QuoteTargetType, targetId: string) {
   const commentEntry =
@@ -16,7 +16,7 @@ function findTarget(targetType: QuoteTargetType, targetId: string) {
           comments.some((comment) => comment.id === targetId),
         )
       : undefined;
-  const items = targetType === "post" ? tweets : (commentEntry?.[1] ?? []);
+  const items = targetType === "post" ? posts : (commentEntry?.[1] ?? []);
   const target = items.find((item) => item.id === targetId);
   if (!target) throw new ApiError(404, "Пост або коментар не знайдено");
 
@@ -27,7 +27,7 @@ export const mockPollApi = {
   async get(
     targetType: QuoteTargetType,
     targetId: string,
-  ): Promise<TweetPoll | null> {
+  ): Promise<PostPoll | null> {
     await delay(MOCK_DELAYS.READ);
     return findTarget(targetType, targetId).target.poll ?? null;
   },
@@ -36,7 +36,7 @@ export const mockPollApi = {
     targetType: QuoteTargetType,
     targetId: string,
     optionId: string,
-  ): Promise<TweetPoll> {
+  ): Promise<PostPoll> {
     await delay(MOCK_DELAYS.READ);
 
     const { target, items, commentEntry } = findTarget(targetType, targetId);
@@ -54,7 +54,7 @@ export const mockPollApi = {
       throw new Error("Опитування завершене.");
     }
 
-    const updatedPoll: TweetPoll = {
+    const updatedPoll: PostPoll = {
       ...poll,
       votedOptionId: optionId,
       totalVotes: poll.totalVotes + 1,
@@ -68,7 +68,7 @@ export const mockPollApi = {
       item.id === targetId ? { ...item, poll: updatedPoll } : item,
     );
     if (commentEntry) commentsByPostId[commentEntry[0]] = updatedItems;
-    else setTweets(updatedItems);
+    else setPosts(updatedItems);
 
     return updatedPoll;
   },

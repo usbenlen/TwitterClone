@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest";
 
-import { createAppStore } from "@/store";
+import { createAppStore } from "@/store/store";
 import { sessionChanged } from "@/store/session";
-import { trendDismissed } from "@/store/trendFeedback";
+import { trendDismissed } from "@/store/trendFeedbackState";
 
 describe("temporary trend feedback", () => {
   it("records the selected reason and resets when a session changes", () => {

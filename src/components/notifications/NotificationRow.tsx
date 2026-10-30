@@ -11,13 +11,18 @@ import { Link } from "react-router";
 import { APP_ROUTES } from "@/constants/routes";
 import { APP_LOCALE } from "@/constants/app";
 
-import { Avatar, Button, TwemojiText, VerifiedBadge } from "@/ui";
+import { Avatar, Button, TwemojiText } from "@/components/ui";
+
+import { VerifiedBadge } from "@/components/profiles/VerifiedBadge";
 
 import { cn } from "@/utils/cn";
 import { formatRelativeTime } from "@/utils/format";
 import { normalizeInlineDisplayText } from "@/utils/displayText";
 
-import type { ChirpNotification, NotificationType } from "@/types/notification";
+import type {
+  ChirpNotification,
+  NotificationType,
+} from "@/types/notification";
 
 const eventIcons = {
   like: Heart,

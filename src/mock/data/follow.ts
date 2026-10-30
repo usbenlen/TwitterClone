@@ -1,4 +1,4 @@
-import type { UserShort } from "@/types";
+import type { UserShort } from "@/types/user";
 
 import { sampleAuthors } from "@/mock/data/users";
 

@@ -1,23 +1,22 @@
-import { MOCK_DELAYS } from "@/mock/constants";
+import { MOCK_DELAYS } from "@/mock/mockConfig";
 
 import type {
   CreateCommentRequest,
-  Tweet,
+  Post,
   ThreadResponse,
   UpdateCommentRequest,
-} from "@/types";
+} from "@/types/post";
 
-import { tweets, setTweets } from "@/mock/data/tweets";
-import { commentsByPostId, nextCommentId, currentUser } from "@/mock/data";
+import { posts, setPosts } from "@/mock/data/posts";
+import { commentsByPostId, nextCommentId } from "@/mock/data/comments";
+import { currentUser } from "@/mock/data/users";
 
 import { delay } from "@/mock/utils/delay";
 import { removeMockContent } from "@/mock/utils/removeMockContent";
 import { createMockPoll, updateMockPoll } from "@/mock/utils/mockPoll";
-import {
-  resolveMockMedia,
-  validateMockPost,
-} from "@/mock/utils/validateMockPost";
-import { toTweetAuthor, getCommentAncestors, withAncestors } from "@/utils";
+import { resolveMockMedia, validateMockPost } from "@/mock/utils/validateMockPost";
+import { toPostAuthor } from "@/utils/postAuthor";
+import { getCommentAncestors, withAncestors } from "@/utils/posts/ancestors";
 
 import { editHistoryStore } from "@/mock/stores/editHistoryStore";
 
@@ -26,7 +25,7 @@ import {
   toggleRepostInList,
   toggleBookmarkInList,
   incrementViewsInList,
-} from "@/mock/utils/mockTweetActions";
+} from "@/mock/utils/mockPostActions";
 import { markQuotedTargetEdited } from "@/mock/utils/mockQuotes";
 
 function findComment(id: string) {
@@ -47,25 +46,25 @@ function findComment(id: string) {
 }
 
 function updateCommentCount(postId: string, delta: number) {
-  setTweets(
-    tweets.map((tweet) =>
-      tweet.id === postId
+  setPosts(
+    posts.map((post) =>
+      post.id === postId
         ? {
-            ...tweet,
-            repliesCount: Math.max(0, tweet.repliesCount + delta),
+            ...post,
+            repliesCount: Math.max(0, post.repliesCount + delta),
           }
-        : tweet,
+        : post,
     ),
   );
 }
 
 export const mockCommentApi = {
-  async getByPostId(postId: string): Promise<Tweet[]> {
+  async getByPostId(postId: string): Promise<Post[]> {
     await delay(MOCK_DELAYS.COMMENT_READ);
 
     const comments = commentsByPostId[postId] ?? [];
 
-    const rootPost = tweets.find((tweet) => tweet.id === postId);
+    const rootPost = posts.find((post) => post.id === postId);
 
     return [...comments]
       .sort(
@@ -78,22 +77,22 @@ export const mockCommentApi = {
   async getThread(id: string, targetType?: "post" | "comment"): Promise<ThreadResponse> {
     await delay(MOCK_DELAYS.COMMENT_READ);
 
-    const tweet = targetType === "comment" ? undefined : tweets.find((item) => item.id === id);
+    const post = targetType === "comment" ? undefined : posts.find((item) => item.id === id);
 
     // Original post
-    if (tweet) {
-      const comments = commentsByPostId[tweet.id] ?? [];
+    if (post) {
+      const comments = commentsByPostId[post.id] ?? [];
 
       const replies = comments
         .filter((comment) => !comment.parentCommentId)
         .map((comment) => ({
-          ...withAncestors(comment, tweet, comments),
-          replyToUsername: tweet.author.username,
+          ...withAncestors(comment, post, comments),
+          replyToUsername: post.author.username,
         }));
 
       return {
         ancestors: [],
-        target: tweet,
+        target: post,
         replies,
       };
     }
@@ -105,7 +104,7 @@ export const mockCommentApi = {
 
     const targetComment = found.comment;
 
-    const rootPost = tweets.find((tweet) => tweet.id === targetComment.postId);
+    const rootPost = posts.find((post) => post.id === targetComment.postId);
 
     const ancestors = getCommentAncestors(
       targetComment,
@@ -113,7 +112,7 @@ export const mockCommentApi = {
       found.comments,
     );
 
-    const target: Tweet = {
+    const target: Post = {
       ...targetComment,
       ancestors,
       replyToUsername:
@@ -134,7 +133,7 @@ export const mockCommentApi = {
     };
   },
 
-  async getBookmarked(): Promise<Tweet[]> {
+  async getBookmarked(): Promise<Post[]> {
     await delay(MOCK_DELAYS.REACTION);
 
     return Object.values(commentsByPostId)
@@ -143,13 +142,13 @@ export const mockCommentApi = {
       .map((comment) => {
         const comments = commentsByPostId[comment.postId ?? ""] ?? [];
 
-        const rootPost = tweets.find((tweet) => tweet.id === comment.postId);
+        const rootPost = posts.find((post) => post.id === comment.postId);
 
         return withAncestors(comment, rootPost, comments);
       });
   },
 
-  async create(data: CreateCommentRequest): Promise<Tweet> {
+  async create(data: CreateCommentRequest): Promise<Post> {
     await delay(MOCK_DELAYS.COMMENT_CREATE);
 
     const attachments = data.mediaIds ? resolveMockMedia(data.mediaIds) : [];
@@ -161,14 +160,14 @@ export const mockCommentApi = {
       ? findComment(data.parentCommentId)?.comment
       : undefined;
 
-    const post = tweets.find((tweet) => tweet.id === data.postId);
+    const post = posts.find((post) => post.id === data.postId);
 
-    const comment: Tweet = {
+    const comment: Post = {
       id: nextCommentId(),
       versionId: crypto.randomUUID(),
       content: data.content.trim(),
 
-      author: toTweetAuthor(currentUser),
+      author: toPostAuthor(currentUser),
 
       attachments,
       poll,
@@ -203,12 +202,12 @@ export const mockCommentApi = {
     updateCommentCount(data.postId, 1);
 
     const comments = commentsByPostId[data.postId] ?? [];
-    const rootPost = tweets.find((tweet) => tweet.id === data.postId);
+    const rootPost = posts.find((post) => post.id === data.postId);
 
     return withAncestors(comment, rootPost, comments);
   },
 
-  async update(id: string, data: UpdateCommentRequest): Promise<Tweet> {
+  async update(id: string, data: UpdateCommentRequest): Promise<Post> {
     await delay(MOCK_DELAYS.COMMENT_READ);
 
     const found = findComment(id);
@@ -231,7 +230,7 @@ export const mockCommentApi = {
     );
     const poll = updateMockPoll(data.poll, existing.poll);
 
-    const updated: Tweet = {
+    const updated: Post = {
       ...existing,
       versionId: crypto.randomUUID(),
 
@@ -252,10 +251,10 @@ export const mockCommentApi = {
     };
 
     found.comments[found.index] = updated;
-    setTweets(markQuotedTargetEdited(tweets, "comment", updated.id));
+    setPosts(markQuotedTargetEdited(posts, "comment", updated.id));
     editHistoryStore.recordEdit("comment", existing, updated);
 
-    const rootPost = tweets.find((tweet) => tweet.id === updated.postId);
+    const rootPost = posts.find((post) => post.id === updated.postId);
 
     return withAncestors(updated, rootPost, found.comments);
   },

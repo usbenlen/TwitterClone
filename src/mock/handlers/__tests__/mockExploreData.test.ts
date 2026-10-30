@@ -1,13 +1,14 @@
 import { describe, expect, it, vi } from "vitest";
 
-import { mockTrends, tweets } from "@/mock/data";
+import { mockTrends, mockTrendCategories } from "@/mock/data/recommendations";
+import { posts } from "@/mock/data/posts";
 import { mockSearchApi } from "@/mock/handlers/mockSearchApi";
 import { DEFAULT_SEARCH_CRITERIA } from "@/constants/search";
-import { MAX_TWEET_LENGTH } from "@/constants/app";
+import { MAX_POST_LENGTH } from "@/constants/composer";
 import { POLL } from "@/constants/poll";
 import { MILLISECONDS_PER_MINUTE } from "@/constants/date";
-import { mockTrendCategories } from "@/mock/data/recommendations";
-import { countCharacters, getPostRulesError } from "@/utils/composerRules";
+
+import { countCharacters, getPostRulesError } from "@/utils/composer/composerRules";
 
 vi.mock("@/mock/utils/delay", () => ({ delay: async () => {} }));
 
@@ -25,19 +26,19 @@ describe("Explore demonstration data", () => {
   });
 
   it("preserves the original posts and adds eleven valid, distinct posts", () => {
-    expect(tweets).toHaveLength(14);
-    expect(tweets.slice(0, 3).map((post) => post.id)).toEqual([
+    expect(posts).toHaveLength(14);
+    expect(posts.slice(0, 3).map((post) => post.id)).toEqual([
       "t1",
       "t2",
       "t3",
     ]);
-    expect(new Set(tweets.map((post) => post.id)).size).toBe(tweets.length);
-    expect(new Set(tweets.map((post) => post.versionId)).size).toBe(
-      tweets.length,
+    expect(new Set(posts.map((post) => post.id)).size).toBe(posts.length);
+    expect(new Set(posts.map((post) => post.versionId)).size).toBe(
+      posts.length,
     );
-    for (const post of tweets.slice(3)) {
+    for (const post of posts.slice(3)) {
       expect(countCharacters(post.content)).toBeLessThanOrEqual(
-        MAX_TWEET_LENGTH,
+        MAX_POST_LENGTH,
       );
       expect(Number.isFinite(Date.parse(post.createdAt))).toBe(true);
       expect(post.author.id).toBeTruthy();
@@ -54,12 +55,12 @@ describe("Explore demonstration data", () => {
   });
 
   it("provides distinct image attachments, a gallery and HTTPS link previews", () => {
-    const attachments = tweets.flatMap((post) => post.attachments);
-    const previews = tweets.flatMap((post) =>
+    const attachments = posts.flatMap((post) => post.attachments);
+    const previews = posts.flatMap((post) =>
       post.linkPreview ? [post.linkPreview] : [],
     );
     expect(attachments).toHaveLength(5);
-    expect(tweets.some((post) => post.attachments.length === 2)).toBe(true);
+    expect(posts.some((post) => post.attachments.length === 2)).toBe(true);
     expect(new Set(attachments.map((attachment) => attachment.id)).size).toBe(
       attachments.length,
     );
@@ -82,14 +83,14 @@ describe("Explore demonstration data", () => {
   });
 
   it("seeds votable polls with consistent counts and valid deadlines", () => {
-    const posts = tweets.filter((post) => post.poll);
-    expect(posts).toHaveLength(3);
-    expect(new Set(posts.map((post) => post.poll!.id)).size).toBe(posts.length);
-    const optionIds = posts.flatMap((post) =>
+    const pollPosts = posts.filter((post) => post.poll);
+    expect(pollPosts).toHaveLength(3);
+    expect(new Set(pollPosts.map((post) => post.poll!.id)).size).toBe(pollPosts.length);
+    const optionIds = pollPosts.flatMap((post) =>
       post.poll!.options.map((option) => option.id),
     );
     expect(new Set(optionIds).size).toBe(optionIds.length);
-    for (const post of posts) {
+    for (const post of pollPosts) {
       const poll = post.poll!;
       expect(post.attachments).toHaveLength(0);
       expect(poll.isClosed).toBe(false);
@@ -112,7 +113,7 @@ describe("Explore demonstration data", () => {
   });
 
   it("offers three illustrated book covers without adding post attachments", () => {
-    const post = tweets.find((post) => post.id === "t14")!;
+    const post = posts.find((post) => post.id === "t14")!;
     const options = post.poll!.options;
     expect(post.content).toContain("«Останній сигнал»");
     expect(post.attachments).toHaveLength(0);
@@ -131,7 +132,7 @@ describe("Explore demonstration data", () => {
       expect(option.media?.width).toBeGreaterThan(0);
       expect(option.media?.height).toBeGreaterThan(0);
     }
-    const media = tweets.flatMap((post) => [
+    const media = posts.flatMap((post) => [
       ...post.attachments,
       ...(post.poll?.options.flatMap((option) =>
         option.media ? [option.media] : [],

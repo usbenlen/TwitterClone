@@ -1,16 +1,9 @@
-// Core
-export { default as Composer } from "@/components/composer/Composer";
+export { default as CommentModal } from "@/components/composer/CommentModal";
 export { ComposerAttachments } from "@/components/composer/ComposerAttachments";
 export { ComposerInputsAndPopovers } from "@/components/composer/ComposerInputsAndPopovers";
-export { default as ComposerPopover } from "@/components/composer/ComposerPopover";
-export { default as ComposerPopovers } from "@/components/composer/ComposerPopovers";
 export { default as ComposerToolbar } from "@/components/composer/ComposerToolbar";
-
-// Features
-export { default as EmojiPicker } from "@/components/composer/emoji/EmojiPicker";
-export * from "@/components/composer/gif/index";
-export { default as LocationPicker } from "@/components/composer/location/LocationPicker";
-export { default as PollComposer } from "@/components/composer/poll/PollComposer";
-export { default as ScheduledPostEditModal } from "@/components/composer/schedule/ScheduledPostEditModal";
-export { default as ScheduledPostsModal } from "@/components/composer/schedule/ScheduledPostsModal";
-export { default as ScheduleModal } from "@/components/composer/schedule/ScheduleModal";
+export { default as EditPostModal } from "@/components/composer/EditPostModal";
+export { default as PostComposerEditor } from "@/components/composer/PostComposerEditor";
+export { default as PostComposerErrors } from "@/components/composer/PostComposerErrors";
+export { default as PostComposerFooter } from "@/components/composer/PostComposerFooter";
+export { default as QuoteModal } from "@/components/composer/QuoteModal";

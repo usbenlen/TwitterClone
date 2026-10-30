@@ -1,18 +1,20 @@
-import { MOCK_DELAYS } from "@/mock/constants";
+import { MOCK_DELAYS } from "@/mock/mockConfig";
+
 import { SEARCH_NEARBY_RADIUS_KM } from "@/constants/search";
 
 import type {
   Location,
   SearchCriteria,
   SearchViewerContext,
-  Tweet,
+  Post,
   UserShort,
 } from "@/types";
 
-import { sampleAuthors, tweets } from "@/mock/data";
+import { sampleAuthors } from "@/mock/data/users";
+import { posts } from "@/mock/data/posts";
 
 import { delay } from "@/mock/utils/delay";
-import { toUserShort } from "@/utils/user";
+import { toUserShort } from "@/utils/postAuthor";
 
 function words(value: string) {
   return value
@@ -89,7 +91,7 @@ export const mockSearchApi = {
   async posts(
     criteria: SearchCriteria,
     viewer?: SearchViewerContext,
-  ): Promise<Tweet[]> {
+  ): Promise<Post[]> {
     await delay(MOCK_DELAYS.SEARCH);
 
     const from = criteria.from.toLowerCase().replace(/^@+/, "");
@@ -100,20 +102,20 @@ export const mockSearchApi = {
       ? new Date(`${criteria.toDate}T23:59:59.999`).getTime()
       : undefined;
 
-    return tweets.filter((tweet) => {
-      const createdAt = new Date(tweet.createdAt).getTime();
+    return posts.filter((post) => {
+      const createdAt = new Date(post.createdAt).getTime();
 
       return (
-        matchesText(tweet.content, criteria) &&
-        (!from || tweet.author.username.toLowerCase() === from) &&
-        (criteria.people !== "following" || viewer?.followingIds.includes(tweet.author.id)) &&
-        (criteria.location !== "near" || isNearViewer(tweet.location, viewer)) &&
-        (criteria.minReplies === undefined || tweet.repliesCount >= criteria.minReplies) &&
-        (criteria.minLikes === undefined || tweet.likesCount >= criteria.minLikes) &&
-        (criteria.minReposts === undefined || tweet.retweetsCount >= criteria.minReposts) &&
+        matchesText(post.content, criteria) &&
+        (!from || post.author.username.toLowerCase() === from) &&
+        (criteria.people !== "following" || viewer?.followingIds.includes(post.author.id)) &&
+        (criteria.location !== "near" || isNearViewer(post.location, viewer)) &&
+        (criteria.minReplies === undefined || post.repliesCount >= criteria.minReplies) &&
+        (criteria.minLikes === undefined || post.likesCount >= criteria.minLikes) &&
+        (criteria.minReposts === undefined || post.retweetsCount >= criteria.minReposts) &&
         (start === undefined || createdAt >= start) &&
         (end === undefined || createdAt <= end) &&
-        (!criteria.hasMedia || tweet.attachments.length > 0)
+        (!criteria.hasMedia || post.attachments.length > 0)
       );
     });
   },

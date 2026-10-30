@@ -4,7 +4,7 @@ import { createRoot, type Root } from "react-dom/client";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import PollComposer from "@/components/composer/poll/PollComposer";
-import { useComposerPoll } from "@/hooks/composer/poll/useComposerPoll";
+import { useComposerPoll } from "@/hooks/composer/useComposerPoll";
 import { POLL } from "@/constants/poll";
 
 let root: Root;
