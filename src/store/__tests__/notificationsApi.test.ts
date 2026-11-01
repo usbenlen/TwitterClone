@@ -56,6 +56,23 @@ async function settleQueries() {
 }
 
 describe("notification cache and sessions", () => {
+  it("refreshes server counts after reading one or all notifications without markers", async () => {
+    vi.mocked(notificationsApi.list).mockResolvedValue({ items: [], nextCursor: null, hasMore: false });
+    await store.dispatch(endpoints.getNotifications.initiate("all"));
+    await store.dispatch(endpoints.getUnreadNotificationsCount.initiate());
+    vi.mocked(notificationsApi.read).mockResolvedValue(undefined);
+    vi.mocked(notificationsApi.readAll).mockResolvedValue(undefined);
+    await store.dispatch(endpoints.markNotificationRead.initiate({ id: "server-id" }));
+    await settleQueries();
+    expect(notificationsApi.read).toHaveBeenCalledWith("server-id", undefined);
+    vi.mocked(notificationsApi.unreadCount).mockResolvedValue({ count: 0 });
+    await store.dispatch(endpoints.markAllNotificationsRead.initiate(undefined));
+    await settleQueries();
+    expect(notificationsApi.readAll).toHaveBeenCalledWith(undefined);
+    expect(endpoints.getUnreadNotificationsCount.select()(store.getState()).data).toEqual({ count: 0 });
+    expect(notificationsApi.list).toHaveBeenCalledTimes(3);
+  });
+
   it("keeps tab pages independent and uses the returned opaque cursor", async () => {
     vi.mocked(notificationsApi.list)
       .mockResolvedValueOnce({

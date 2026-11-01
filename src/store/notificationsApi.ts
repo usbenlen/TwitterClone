@@ -33,12 +33,12 @@ export const notificationsQueryApi = appApi.injectEndpoints({
     }),
     markNotificationRead: build.mutation<
       void,
-      { id: string; readThrough: string }
+      { id: string; readThrough?: string }
     >({
       queryFn: ({ id, readThrough }) => request(() => notificationsApi.read(id, readThrough)),
       invalidatesTags: (_data, error) => (error ? [] : ["Notification"]),
     }),
-    markAllNotificationsRead: build.mutation<void, string>({
+    markAllNotificationsRead: build.mutation<void, string | undefined>({
       queryFn: (readThrough) => request(() => notificationsApi.readAll(readThrough)),
       invalidatesTags: (_data, error) => (error ? [] : ["Notification"]),
     }),

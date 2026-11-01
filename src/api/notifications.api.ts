@@ -1,33 +1,44 @@
 import { apiClient } from "@/api/client";
 import { ENDPOINTS } from "@/api/config";
-import {
-  mapNotification,
-  type BackendNotification,
-} from "@/api/mappers/notification.mapper";
+import { mapNotification } from "@/api/mappers/notification.mapper";
 
 import { MOCK_ENABLED } from "@/mock/config";
 import { mockNotificationsApi } from "@/mock/handlers/mockNotificationsApi";
 
-import type { NotificationsApi, NotificationsPage } from "@/types/notification";
+import type { CursorPage } from "@/types/api";
+import type { NotificationsApi } from "@/types/notification";
+import type {
+  BackendNotification,
+  BackendUnreadNotificationCount,
+} from "@/types/notification.dto";
 
 const realNotificationsApi: NotificationsApi = {
   async list(tab, limit, cursor) {
-    const params = new URLSearchParams({ tab, limit: String(limit) });
+    if (tab === "mentions")
+      throw new Error("Фільтр згадок поки не підтримується сервером.");
+
+    const params = new URLSearchParams({ limit: String(limit) });
 
     if (cursor) params.set("cursor", cursor);
 
-    const page = await apiClient.get<
-      Omit<NotificationsPage, "items"> & { items: BackendNotification[] }
-    >(`${ENDPOINTS.notifications.list}?${params}`);
+    const page = await apiClient.get<CursorPage<BackendNotification>>(
+      `${ENDPOINTS.notifications.list}?${params}`,
+    );
 
     return { ...page, items: page.items.map(mapNotification) };
   },
 
-  unreadCount: () => apiClient.get(ENDPOINTS.notifications.unreadCount),
-  read: (id, readThrough) => apiClient.post<void>(ENDPOINTS.notifications.read(id), { readThrough }),
-  readAll: (readThrough) => apiClient.post<void>(ENDPOINTS.notifications.readAll, { readThrough }),
+  unreadCount: async () => {
+    const response = await apiClient.get<BackendUnreadNotificationCount>(
+      ENDPOINTS.notifications.unreadCount,
+    );
+    return { count: response.unreadCount };
+  },
+  read: (id) => apiClient.patch<void>(ENDPOINTS.notifications.read(id)),
+  readAll: () => apiClient.patch<void>(ENDPOINTS.notifications.readAll),
   preferences: () => apiClient.get(ENDPOINTS.notifications.preferences),
-  updatePreferences: (patch) => apiClient.patch(ENDPOINTS.notifications.preferences, patch),
+  updatePreferences: (patch) =>
+    apiClient.patch(ENDPOINTS.notifications.preferences, patch),
 };
 
 export const notificationsApi: NotificationsApi = MOCK_ENABLED

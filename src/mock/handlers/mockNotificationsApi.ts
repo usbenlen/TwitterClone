@@ -196,7 +196,7 @@ export function createMockNotificationsApi(
 
     async read(id, readThrough) {
       await delay();
-      const through = throughSequence(readThrough);
+      const through = throughSequence(readThrough ?? `mock:${events.length}`);
 
       if (!events.some((item) => groupId(item) === id)) throw new Error("Сповіщення не знайдено.");
 
@@ -205,7 +205,7 @@ export function createMockNotificationsApi(
     },
     async readAll(readThrough) {
       await delay();
-      const through = throughSequence(readThrough);
+      const through = throughSequence(readThrough ?? `mock:${events.length}`);
 
       for (const event of events) {
         if (event.sequence > through) continue;

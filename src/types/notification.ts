@@ -23,7 +23,7 @@ export interface ChirpNotification {
 }
 
 export interface NotificationsPage extends CursorPage<ChirpNotification> {
-  readThrough: string;
+  readThrough?: string;
 }
 
 export interface NotificationPreferences {
@@ -42,8 +42,8 @@ export interface NotificationsApi {
     cursor?: string | null,
   ): Promise<NotificationsPage>;
   unreadCount(): Promise<{ count: number }>;
-  read(id: string, readThrough: string): Promise<void>;
-  readAll(readThrough: string): Promise<void>;
+  read(id: string, readThrough?: string): Promise<void>;
+  readAll(readThrough?: string): Promise<void>;
   preferences(): Promise<NotificationPreferences>;
   updatePreferences(patch: Partial<NotificationPreferences>): Promise<NotificationPreferences>;
 }

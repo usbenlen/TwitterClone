@@ -129,6 +129,31 @@ function button(text: string) {
 }
 
 describe("notification pages", () => {
+  it("keeps both read actions available for server pages without readThrough", async () => {
+    vi.mocked(notificationsApi.list).mockResolvedValue({ items: [notification], nextCursor: null, hasMore: false });
+    await render();
+    const readAll = host.querySelector<HTMLButtonElement>('button[aria-label="Позначити всі прочитаними"]')!;
+    expect(readAll.disabled).toBe(false);
+    await act(async () => readAll.click());
+    expect(notificationsApi.readAll).toHaveBeenCalledWith(undefined);
+    await act(async () => host.querySelector<HTMLAnchorElement>('a[href="/post/same?targetType=comment"]')!.click());
+    expect(notificationsApi.read).toHaveBeenCalledWith("group1", undefined);
+  });
+
+  it("keeps mentions and settings visible and shows unsupported-server errors", async () => {
+    vi.mocked(notificationsApi.list).mockRejectedValue(new Error("Фільтр згадок поки не підтримується сервером."));
+    await render("/notifications?tab=mentions");
+    expect(host.textContent).toContain("Згадки");
+    expect(host.querySelector('[role="alert"]')?.textContent).toContain("Фільтр згадок");
+    expect(host.querySelector("article")).toBeNull();
+    const settings = host.querySelector<HTMLAnchorElement>('a[aria-label="Налаштування сповіщень"]')!;
+    expect(settings).not.toBeNull();
+    vi.mocked(notificationsApi.preferences).mockRejectedValue(new Error("Помилка запиту (404)"));
+    await act(async () => settings.click());
+    await flush();
+    expect(host.querySelector('[role="alert"]')?.textContent).toContain("404");
+  });
+
   it("shows groups, unread labels, settings and does not read on page entry", async () => {
     await render();
     expect(host.querySelector("h1")?.textContent).toBe("Сповіщення");
