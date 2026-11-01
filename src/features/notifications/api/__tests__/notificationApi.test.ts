@@ -1,8 +1,14 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { commentApi } from "@/features/content/api/commentApi";
+import { mapNotification } from "@/features/notifications/api/mappers/notificationMapper";
 import { notificationsApi } from "@/features/notifications/api/notificationApi";
 import { DEFAULT_NOTIFICATION_PREFERENCES } from "@/features/notifications/constants/notification";
+
+import type {
+  BackendNotification,
+  BackendNotificationType,
+} from "@/features/notifications/types/notification.dto";
 
 const client = vi.hoisted(() => ({
   get: vi.fn(),
@@ -14,74 +20,118 @@ vi.mock("@/shared/config/mockConfig", () => ({ MOCK_ENABLED: false }));
 vi.mock("@/mock/handlers/mockNotificationsApi", () => ({
   mockNotificationsApi: {},
 }));
-vi.mock("@/mock/handlers/mockCommentApi", () => ({
-  mockCommentApi: {}
-}));
+vi.mock("@/mock/handlers/mockCommentApi", () => ({ mockCommentApi: {} }));
 
 beforeEach(() => vi.resetAllMocks());
 
+function notification(
+  type: BackendNotificationType = "CommentLike",
+): BackendNotification {
+  return {
+    id: "notification-id",
+    type,
+    actor: { id: "u2", username: "ada", isVerified: true, role: "ADMIN" },
+    sourceId: "new-source",
+    postId: "parent-post",
+    commentId: "parent-comment",
+    createdAt: "2026-10-31T10:00:00Z",
+    readAt: null,
+  };
+}
+
 describe("notifications HTTP contract", () => {
-  it("maps actors and retains grouped data, snapshot and opaque cursor", async () => {
+  it("maps the real DTO and preserves server ordering and the opaque cursor without a read marker", async () => {
     client.get.mockResolvedValue({
-      items: [
-        {
-          id: "group:1",
-          type: "like",
-          actors: [{ id: "u2", username: "ada", role: "ADMIN" }],
-          actorCount: 4,
-          target: { id: "same", type: "comment", preview: null },
-          isRead: false,
-          isMention: false,
-        },
-      ],
+      items: [notification(), { ...notification("Follow"), id: "second" }],
       nextCursor: "server-next",
       hasMore: true,
-      readThrough: "snapshot:42",
     });
     const cursor = "opaque+/=?&ю";
-    const page = await notificationsApi.list("mentions", 20, cursor);
+    const page = await notificationsApi.list("all", 20, cursor);
+    expect(page.items.map((item) => item.id)).toEqual([
+      "notification-id",
+      "second",
+    ]);
     expect(page).toMatchObject({
       items: [
         {
           actors: [{ role: "Admin" }],
-          actorCount: 4,
-          target: { type: "comment", id: "same" },
+          actorCount: 1,
+          target: { type: "comment", id: "parent-comment", preview: null },
+          isRead: false,
+          updatedAt: "2026-10-31T10:00:00Z",
         },
+        { type: "follow", target: null },
       ],
       nextCursor: "server-next",
       hasMore: true,
-      readThrough: "snapshot:42",
     });
+    expect(page).not.toHaveProperty("readThrough");
     const url = new URL(client.get.mock.calls[0][0], "https://example.com");
     expect(url.pathname).toBe("/notifications");
-    expect(url.searchParams.get("tab")).toBe("mentions");
+    expect(url.searchParams.has("tab")).toBe(false);
     expect(url.searchParams.get("limit")).toBe("20");
     expect(url.searchParams.get("cursor")).toBe(cursor);
   });
 
-  it("sends read markers without changing them and accepts 204", async () => {
-    client.post.mockResolvedValue(undefined);
-    await expect(
-      notificationsApi.read("group /?&", "opaque-marker"),
-    ).resolves.toBeUndefined();
-    expect(client.post).toHaveBeenLastCalledWith(
-      "notifications/group%20%2F%3F%26/read",
-      { readThrough: "opaque-marker" },
+  it.each([
+    ["Follow", "follow", null, null],
+    ["PostLike", "like", "post", "parent-post"],
+    ["CommentLike", "like", "comment", "parent-comment"],
+    ["PostRepost", "repost", "post", "parent-post"],
+    ["CommentRepost", "repost", "comment", "parent-comment"],
+    ["PostComment", "reply", "comment", "new-source"],
+    ["CommentReply", "reply", "comment", "new-source"],
+    ["Quote", "quote", "post", "new-source"],
+  ] as const)(
+    "maps %s to its correct event and navigation target",
+    (backendType, type, targetType, id) => {
+      const result = mapNotification(notification(backendType));
+      expect(result.type).toBe(type);
+      expect(result.target).toEqual(
+        targetType ? { type: targetType, id, preview: null } : null,
+      );
+    },
+  );
+
+  it("derives read state without reordering the notification and tolerates absent user roles", () => {
+    const dto = notification();
+    delete dto.actor.role;
+    const result = mapNotification({ ...dto, readAt: "2026-10-31T11:00:00Z" });
+    expect(result.isRead).toBe(true);
+    expect(result.updatedAt).toBe(dto.createdAt);
+    expect(result.actors[0].isVerified).toBe(true);
+    expect(result.isMention).toBe(false);
+    expect(() => mapNotification({ ...dto, type: "Unknown" as never })).toThrow(
+      "Невідомий тип",
     );
-    await expect(
-      notificationsApi.readAll("opaque-marker"),
-    ).resolves.toBeUndefined();
-    expect(client.post).toHaveBeenLastCalledWith("notifications/read-all", {
-      readThrough: "opaque-marker",
-    });
   });
 
-  it("loads counts/preferences and patches only requested settings", async () => {
+  it("uses PATCH without a body for both read actions and accepts 204", async () => {
+    client.patch.mockResolvedValue(undefined);
+    await expect(
+      notificationsApi.read("notification /?&"),
+    ).resolves.toBeUndefined();
+    expect(client.patch).toHaveBeenLastCalledWith(
+      "notifications/notification%20%2F%3F%26/read",
+    );
+    await expect(notificationsApi.readAll()).resolves.toBeUndefined();
+    expect(client.patch).toHaveBeenLastCalledWith("notifications/read-all");
+    await notificationsApi.read("id", "mock-only-marker");
+    expect(client.patch).toHaveBeenLastCalledWith("notifications/id/read");
+    await notificationsApi.readAll("mock-only-marker");
+    expect(client.patch).toHaveBeenLastCalledWith("notifications/read-all");
+    expect(client.post).not.toHaveBeenCalled();
+  });
+
+  it("maps unreadCount, including zero, and retains existing preference requests", async () => {
     client.get
-      .mockResolvedValueOnce({ count: 8 })
+      .mockResolvedValueOnce({ unreadCount: 8 })
+      .mockResolvedValueOnce({ unreadCount: 0 })
       .mockResolvedValueOnce(DEFAULT_NOTIFICATION_PREFERENCES);
     expect(await notificationsApi.unreadCount()).toEqual({ count: 8 });
     expect(client.get).toHaveBeenLastCalledWith("notifications/unread-count");
+    expect(await notificationsApi.unreadCount()).toEqual({ count: 0 });
     expect(await notificationsApi.preferences()).toEqual(
       DEFAULT_NOTIFICATION_PREFERENCES,
     );
@@ -98,23 +148,30 @@ describe("notifications HTTP contract", () => {
     });
   });
 
-  it("propagates failures and allows retry without a mock fallback", async () => {
-    const error = Object.assign(new Error("Not implemented"), { status: 404 });
+  it("does not substitute all events for the unsupported mentions filter", async () => {
+    await expect(notificationsApi.list("mentions", 20)).rejects.toThrow(
+      "Фільтр згадок поки не підтримується сервером.",
+    );
+    expect(client.get).not.toHaveBeenCalled();
+  });
+
+  it("propagates failures and permits retry without a mock fallback", async () => {
+    const error = Object.assign(new Error("Unavailable"), { status: 404 });
     client.get
       .mockRejectedValueOnce(error)
-      .mockResolvedValueOnce({
-        items: [],
-        nextCursor: null,
-        hasMore: false,
-        readThrough: "r",
-      });
+      .mockResolvedValueOnce({ items: [], nextCursor: null, hasMore: false });
     await expect(notificationsApi.list("all", 20)).rejects.toBe(error);
-    await expect(notificationsApi.list("all", 20)).resolves.toMatchObject({
+    await expect(notificationsApi.list("all", 20)).resolves.toEqual({
       items: [],
+      nextCursor: null,
+      hasMore: false,
     });
-    client.post.mockRejectedValue(error);
-    client.patch.mockRejectedValue(error);
-    await expect(notificationsApi.readAll("r")).rejects.toBe(error);
+    client.patch
+      .mockRejectedValueOnce(error)
+      .mockResolvedValueOnce(undefined)
+      .mockRejectedValueOnce(error);
+    await expect(notificationsApi.readAll()).rejects.toBe(error);
+    await expect(notificationsApi.readAll()).resolves.toBeUndefined();
     await expect(
       notificationsApi.updatePreferences({ likes: false }),
     ).rejects.toBe(error);

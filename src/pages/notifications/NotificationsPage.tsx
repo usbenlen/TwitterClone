@@ -18,6 +18,7 @@ export default function NotificationsPage() {
   const {
     items,
     readThrough,
+    canMarkAllRead,
     isLoading,
     isFetching,
     isLoadingMore,
@@ -46,8 +47,8 @@ export default function NotificationsPage() {
                 variant="ghost"
                 size="icon"
                 aria-label="Позначити всі прочитаними"
-                disabled={!readThrough || allState.isLoading}
-                onClick={() => void readAll(readThrough!)}
+                disabled={!canMarkAllRead || allState.isLoading}
+                onClick={() => void readAll(readThrough)}
               >
                 <CheckCheck className="size-5" aria-hidden="true" />
               </Button>

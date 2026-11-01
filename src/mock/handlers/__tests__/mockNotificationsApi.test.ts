@@ -30,6 +30,16 @@ function memoryStorage() {
 }
 
 describe("mock notification inbox", () => {
+  it("reads the current inbox without a marker while keeping marker-based reads available", async () => {
+    const api = createMockNotificationsApi("viewer", [event("1"), event("reply", { type: "reply" })]);
+    const page = await api.list("all", 20);
+    await api.read(page.items[0].id);
+    expect(await api.unreadCount()).toEqual({ count: 1 });
+    api.add(event("new", { type: "mention" }));
+    await api.readAll();
+    expect(await api.unreadCount()).toEqual({ count: 0 });
+  });
+
   it("groups distinct actors by kind, target type and UTC day, and deduplicates retries", async () => {
     const first = event("1");
     const api = createMockNotificationsApi("viewer", [

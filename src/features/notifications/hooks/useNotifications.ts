@@ -60,6 +60,7 @@ export function useNotifications(tab: NotificationTab) {
   return {
     items,
     readThrough: query.currentData?.pages[0]?.readThrough,
+    canMarkAllRead: Boolean(query.currentData),
     isLoading: query.isFetching && !query.currentData,
     isFetching: query.isFetching,
     isLoadingMore: query.isFetchingNextPage,
