@@ -1,249 +1,334 @@
-import { createPortal } from "react-dom";
-import { CalendarClock, X } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useRef, useState, type KeyboardEvent, type RefObject } from "react";
+import { ChevronLeft, ChevronRight, Clock3, Pencil } from "lucide-react";
 
-import { useBodyScrollLock } from "@/hooks/useBodyScrollLock";
-
+import { APP_LOCALE, HOURS_PER_DAY, MINUTES_PER_HOUR } from "@/constants";
 import {
-  MONTH_OPTIONS,
-  HOURS_PER_DAY,
-  MINUTES_PER_HOUR,
-  SCHEDULE,
-} from "@/constants";
-
-import {
+  cn,
   daysInMonth,
-  nextScheduledMinute,
-  maximumScheduleDate,
   isScheduleDateValid,
+  maximumScheduleDate,
+  nextScheduledMinute,
   padDatePart,
-  formatDateTime,
 } from "@/utils";
-
-import { Button } from "@/ui";
+import { Button, Modal } from "@/ui";
 
 interface ScheduleModalProps {
   open: boolean;
   initialAt?: string | null;
   title?: string;
+  returnFocus?: RefObject<HTMLElement | null>;
   onClose: () => void;
-  onApply: (scheduledAt: string) => void | Promise<void>;
+  onApply: (scheduledAt: string) => void;
   onClear?: () => void;
-  onOpenScheduledPosts?: (draftAt: string) => void;
+  onOpenScheduledPosts?: (draftAt: string | null) => void;
 }
 
-function SelectField({
-  label,
-  value,
-  onChange,
-  children,
-}: {
-  label: string;
-  value: number;
-  onChange: (value: number) => void;
-  children: React.ReactNode;
-}) {
-  return (
-    <label className="flex min-w-0 flex-1 flex-col rounded-md border border-border px-3 py-2 focus-within:border-primary focus-within:ring-1 focus-within:ring-primary dark:border-control-border dark:focus-within:border-primary">
-      <span className="text-xs text-muted-foreground">{label}</span>
-      <select
-        value={value}
-        onChange={(event) => onChange(Number(event.target.value))}
-        className="h-8 min-w-0 bg-background text-base outline-none"
-      >
-        {children}
-      </select>
-    </label>
-  );
+const weekLength = 7;
+const monthFormat = new Intl.DateTimeFormat(APP_LOCALE, {
+  month: "long",
+  year: "numeric",
+});
+const dayFormat = new Intl.DateTimeFormat(APP_LOCALE, { dateStyle: "long" });
+const weekdayFormat = new Intl.DateTimeFormat(APP_LOCALE, { weekday: "short" });
+const weekdays = Array.from({ length: weekLength }, (_, index) =>
+  weekdayFormat.format(new Date(2024, 0, index + 1)),
+);
+const dayArrowOffsets: Record<string, number> = {
+  ArrowLeft: -1,
+  ArrowRight: 1,
+  ArrowUp: -weekLength,
+  ArrowDown: weekLength,
+};
+const timeInputClass = "h-12 w-11 rounded-md bg-transparent text-center text-[22px] font-semibold tabular-nums focus-visible:focus-indicator";
+
+function dayStart(date: Date) {
+  return new Date(date.getFullYear(), date.getMonth(), date.getDate());
 }
 
 export default function ScheduleModal({
   open,
   initialAt,
-  title = "Запланувати",
+  title = "Запланувати допис",
+  returnFocus,
   onClose,
   onApply,
   onClear,
   onOpenScheduledPosts,
 }: ScheduleModalProps) {
-  const initial = initialAt ? new Date(initialAt) : nextScheduledMinute();
-  const [year, setYear] = useState(initial.getFullYear());
-  const [month, setMonth] = useState(initial.getMonth() + 1);
-  const [day, setDay] = useState(initial.getDate());
-  const [hour, setHour] = useState(initial.getHours());
-  const [minute, setMinute] = useState(initial.getMinutes());
-  const [isSaving, setIsSaving] = useState(false);
-  const [openedAt] = useState(() => Date.now());
+  const [{ openedAt, earliest, latest, initial }] = useState(() => {
+    const openedAt = Date.now();
+    const earliest = nextScheduledMinute(openedAt);
+    const latest = maximumScheduleDate(new Date(openedAt));
+    const existing = initialAt ? new Date(initialAt) : earliest;
+    return {
+      openedAt,
+      earliest: dayStart(earliest),
+      latest,
+      initial: isScheduleDateValid(existing, openedAt, latest)
+        ? existing
+        : earliest,
+    };
+  });
+  const [day, setDay] = useState(() => dayStart(initial));
+  const [month, setMonth] = useState(() => new Date(initial.getFullYear(), initial.getMonth(), 1));
+  const [hour, setHour] = useState(() => padDatePart(initial.getHours()));
+  const [minute, setMinute] = useState(() => padDatePart(initial.getMinutes()));
+  const [focusedDay, setFocusedDay] = useState<number>();
+  const [expired, setExpired] = useState(false);
+  const hourInput = useRef<HTMLInputElement>(null);
+  const minuteInput = useRef<HTMLInputElement>(null);
 
-  const selectedDate = useMemo(
-    () => new Date(year, month - 1, day, hour, minute, 0, 0),
-    [year, month, day, hour, minute],
+  const year = month.getFullYear();
+  const monthIndex = month.getMonth();
+  const offset = (month.getDay() + weekLength - 1) % weekLength;
+  const lastDay = daysInMonth(year, monthIndex + 1);
+  const latestDay = dayStart(latest);
+  const previousMonth = new Date(year, monthIndex - 1, 1);
+  const nextMonth = new Date(year, monthIndex + 1, 1);
+  const firstEnabledDay = month < earliest ? earliest.getDate() : 1;
+  const lastEnabledDay = nextMonth > latestDay ? latest.getDate() : lastDay;
+  const tabStop = focusedDay ?? (day >= month && day < nextMonth ? day.getDate() : firstEnabledDay);
+
+  const selected = new Date(
+    day.getFullYear(),
+    day.getMonth(),
+    day.getDate(),
+    Number(hour),
+    Number(minute),
   );
-  const maximumDate = useMemo(() => maximumScheduleDate(), []);
-  const isValid = isScheduleDateValid(selectedDate, openedAt, maximumDate);
-  const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-  const dateLabel = formatDateTime(selectedDate, "full");
+  const valid =
+    hour !== "" &&
+    minute !== "" &&
+    Number(hour) < HOURS_PER_DAY &&
+    Number(minute) < MINUTES_PER_HOUR &&
+    selected.getHours() === Number(hour) &&
+    selected.getMinutes() === Number(minute) &&
+    isScheduleDateValid(selected, openedAt, latest);
 
-  const changeMonth = (value: number) => {
-    setMonth(value);
-    setDay((current) => Math.min(current, daysInMonth(year, value)));
-  };
-  const changeYear = (value: number) => {
-    setYear(value);
-    setDay((current) => Math.min(current, daysInMonth(value, month)));
-  };
+  function showMonth(date: Date) {
+    setMonth(date);
+    setFocusedDay(undefined);
+  }
 
-  useBodyScrollLock(open);
+  function moveDayFocus(event: KeyboardEvent<HTMLButtonElement>, number: number) {
+    const offset = dayArrowOffsets[event.key];
+    if (!offset) return;
+    event.preventDefault();
+    const next = Math.max(firstEnabledDay, Math.min(lastEnabledDay, number + offset));
+    event.currentTarget.parentElement
+      ?.querySelector<HTMLButtonElement>(`[data-calendar-day="${next}"]`)
+      ?.focus();
+  }
 
-  useEffect(() => {
-    if (!open) return;
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") onClose();
-    };
-    window.addEventListener("keydown", onKeyDown);
-    return () => {
-      window.removeEventListener("keydown", onKeyDown);
-    };
-  }, [onClose, open]);
+  function changeTime(setValue: (value: string) => void, value: string) {
+    setValue(value.replace(/\D/g, "").slice(0, 2));
+    setExpired(false);
+  }
 
-  if (!open) return null;
+  function apply() {
+    const now = Date.now();
+    if (!valid || !isScheduleDateValid(selected, now, maximumScheduleDate(new Date(now)))) {
+      setExpired(true);
+      return;
+    }
+    onApply(selected.toISOString());
+  }
 
-  return createPortal(
-    <div
-      className="fixed inset-0 z-confirm-modal flex items-start justify-center modal-backdrop p-0 sm:p-4 sm:pt-16"
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="schedule-modal-title"
-      onMouseDown={(event) => {
-        if (event.target === event.currentTarget) onClose();
-      }}
+  return (
+    <Modal
+      open={open}
+      title={title}
+      onClose={onClose}
+      returnFocus={returnFocus}
+      className="max-h-[calc(100dvh-2rem)] max-w-[380px] rounded-[20px] p-5 sm:max-w-[440px]"
     >
-      <div className="flex h-full w-full max-w-2xl flex-col overflow-hidden bg-background shadow-xl sm:h-auto sm:max-h-[calc(100vh-8rem)] sm:rounded-2xl sm:inset-ring sm:inset-ring-border dark:sm:inset-ring-control-border">
-        <header className="flex items-center gap-3 px-4 py-3">
-          <button
-            type="button"
-            onClick={onClose}
-            className="flex size-9 items-center justify-center rounded-full hover:bg-muted"
-            aria-label="Закрити"
-          >
-            <X size={22} />
-          </button>
-          <h2 id="schedule-modal-title" className="flex-1 text-xl font-bold">
-            {title}
-          </h2>
-          {initialAt && onClear && (
+      <div className="mb-1.5 flex items-center justify-between">
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          aria-label="Попередній місяць"
+          disabled={
+            previousMonth <
+            new Date(earliest.getFullYear(), earliest.getMonth(), 1)
+          }
+          onClick={() => showMonth(previousMonth)}
+        >
+          <ChevronLeft size={20} aria-hidden="true" />
+        </Button>
+        <h3 aria-live="polite" className="text-center font-bold capitalize">
+          {monthFormat.format(month)}
+        </h3>
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          aria-label="Наступний місяць"
+          disabled={nextMonth > latestDay}
+          onClick={() => showMonth(nextMonth)}
+        >
+          <ChevronRight size={20} aria-hidden="true" />
+        </Button>
+      </div>
+
+      <div
+        className="mb-1 grid grid-cols-7 text-center text-xs text-muted-foreground"
+        aria-hidden="true"
+      >
+        {weekdays.map((label, index) => (
+          <span key={index} className="capitalize">
+            {label}
+          </span>
+        ))}
+      </div>
+      <div
+        className="grid grid-cols-7"
+        role="group"
+        aria-label="Дата публікації"
+      >
+        {Array.from({ length: 6 * weekLength }, (_, cell) => {
+          const number = cell - offset + 1;
+          if (number < 1 || number > lastDay) return <span key={cell} className="h-[42px]" />;
+
+          const candidate = new Date(year, monthIndex, number);
+          const selectedDay = candidate.getTime() === day.getTime();
+          return (
             <button
+              key={cell}
+              data-calendar-day={number}
               type="button"
-              onClick={onClear}
-              className="rounded-full px-3 py-2 font-semibold hover:bg-muted"
+              aria-label={dayFormat.format(candidate)}
+              aria-pressed={selectedDay}
+              disabled={candidate < earliest || candidate > latestDay}
+              tabIndex={number === tabStop ? 0 : -1}
+              onFocus={() => setFocusedDay(number)}
+              onKeyDown={(event) => moveDayFocus(event, number)}
+              onClick={() => {
+                setDay(candidate);
+                setExpired(false);
+              }}
+              className="group flex min-h-[42px] items-center justify-center rounded-lg text-sm focus-visible:focus-indicator disabled:opacity-40"
             >
-              Очистити
+              <span
+                className={cn(
+                  "grid size-[34px] max-w-full place-items-center rounded-full",
+                  selectedDay
+                    ? "bg-primary font-bold text-primary-foreground"
+                    : "group-enabled:group-hover:bg-muted",
+                )}
+              >
+                {number}
+              </span>
             </button>
-          )}
-          <Button
-            onClick={async () => {
-              if (!isValid || !isScheduleDateValid(selectedDate, Date.now(), maximumDate))
-                return;
-              setIsSaving(true);
-              try {
-                await onApply(selectedDate.toISOString());
-              } finally {
-                setIsSaving(false);
+          );
+        })}
+      </div>
+
+      <fieldset className="mt-3 min-w-0">
+        <legend className="mb-1.5 text-sm font-semibold">Час публікації</legend>
+        <div className="inline-flex items-center rounded-xl border border-border bg-muted/30 pr-1 pl-3">
+          <Clock3
+            size={18}
+            className="text-muted-foreground"
+            aria-hidden="true"
+          />
+          <input
+            ref={hourInput}
+            type="text"
+            inputMode="numeric"
+            aria-label="Години"
+            placeholder="ГГ"
+            maxLength={2}
+            value={hour}
+            onChange={(event) => changeTime(setHour, event.target.value)}
+            onFocus={(event) => event.currentTarget.select()}
+            onBlur={() => hour && setHour(hour.padStart(2, "0"))}
+            onKeyDown={(event) => {
+              if (event.key === "Enter") {
+                event.preventDefault();
+                minuteInput.current?.focus();
               }
             }}
-            disabled={!isValid}
-            isLoading={isSaving}
+            className={timeInputClass}
+          />
+          <span
+            aria-hidden="true"
+            className="text-[22px] text-muted-foreground"
           >
-            Оновити
-          </Button>
-        </header>
-
-        <div className="overflow-y-auto px-6 pb-6">
-          <div className="mb-8 flex items-center gap-3 text-muted-foreground">
-            <CalendarClock size={22} />
-            <span>Буде надіслано: {dateLabel}</span>
-          </div>
-
-          <p className="mb-2 text-sm text-muted-foreground">Дата</p>
-          <div className="flex gap-3">
-            <SelectField label="Місяць" value={month} onChange={changeMonth}>
-              {MONTH_OPTIONS.map(({ value, label }) => (
-                <option key={value} value={value}>
-                  {label}
-                </option>
-              ))}
-            </SelectField>
-            <SelectField label="День" value={day} onChange={setDay}>
-              {Array.from(
-                { length: daysInMonth(year, month) },
-                (_, index) => index + 1,
-              ).map((value) => (
-                <option key={value}>{value}</option>
-              ))}
-            </SelectField>
-            <SelectField label="Рік" value={year} onChange={changeYear}>
-              {Array.from(
-                {
-                  length:
-                    maximumDate.getFullYear() - new Date().getFullYear() + 1,
-                },
-                (_, index) => new Date().getFullYear() + index,
-              ).map((value) => (
-                <option key={value}>{value}</option>
-              ))}
-            </SelectField>
-          </div>
-
-          <p className="mb-2 mt-6 text-sm text-muted-foreground">Час</p>
-          <div className="flex gap-3">
-            <SelectField label="Година" value={hour} onChange={setHour}>
-              {Array.from({ length: HOURS_PER_DAY }, (_, index) => index).map(
-                (value) => (
-                  <option key={value} value={value}>
-                    {padDatePart(value)}
-                  </option>
-                ),
-              )}
-            </SelectField>
-            <SelectField label="Хвилина" value={minute} onChange={setMinute}>
-              {Array.from(
-                { length: MINUTES_PER_HOUR },
-                (_, index) => index,
-              ).map((value) => (
-                <option key={value} value={value}>
-                  {padDatePart(value)}
-                </option>
-              ))}
-            </SelectField>
-          </div>
-
-          {!isValid && (
-            <p className="mt-3 text-sm text-destructive">
-              Виберіть час від{" "}
-              {SCHEDULE.MIN_DELAY_MINUTES === 1
-                ? "наступної хвилини"
-                : `${SCHEDULE.MIN_DELAY_MINUTES} хв затримки`}{" "}
-              до {SCHEDULE.MAX_MONTHS_AHEAD} місяців наперед.
-            </p>
-          )}
-
-          <div className="mt-7">
-            <p className="text-sm text-muted-foreground">Часовий пояс</p>
-            <p className="text-lg">{timezone}</p>
-          </div>
-        </div>
-
-        {onOpenScheduledPosts && (
-          <button
+            :
+          </span>
+          <input
+            ref={minuteInput}
+            type="text"
+            inputMode="numeric"
+            aria-label="Хвилини"
+            placeholder="ХХ"
+            maxLength={2}
+            value={minute}
+            onChange={(event) => changeTime(setMinute, event.target.value)}
+            onFocus={(event) => event.currentTarget.select()}
+            onBlur={() => minute && setMinute(minute.padStart(2, "0"))}
+            onKeyDown={(event) => {
+              if (event.key === "Enter") event.preventDefault();
+            }}
+            className={timeInputClass}
+          />
+          <Button
             type="button"
-            onClick={() => onOpenScheduledPosts(selectedDate.toISOString())}
-            className="border-t border-border px-6 py-4 text-left font-semibold text-primary hover:bg-muted/50"
+            variant="ghost"
+            size="icon"
+            aria-label="Редагувати час"
+            onClick={() => hourInput.current?.focus()}
+            className="size-9 text-muted-foreground"
           >
-            Заплановані дописи
-          </button>
+            <Pencil size={15} aria-hidden="true" />
+          </Button>
+        </div>
+      </fieldset>
+      <p className="mt-2 text-[13px] text-muted-foreground">
+        {dayFormat.format(day)} · місцевий час
+      </p>
+      {(!valid || expired) && (
+        <p role="alert" className="mt-2 text-sm text-destructive">
+          Виберіть коректний майбутній час.
+        </p>
+      )}
+      <div className="mt-4 flex flex-wrap justify-end gap-2.5">
+        {onClear && (
+          <Button
+            type="button"
+            variant="ghost"
+            onClick={onClear}
+            className="mr-auto"
+          >
+            Очистити
+          </Button>
         )}
+        <Button type="button" variant="outline" onClick={onClose}>
+          Скасувати
+        </Button>
+        <Button
+          type="button"
+          onClick={apply}
+          disabled={!valid || expired}
+          className="dark:bg-primary dark:text-primary-foreground dark:hover:bg-primary-hover"
+        >
+          Застосувати
+        </Button>
       </div>
-    </div>,
-    document.body,
+      {onOpenScheduledPosts && (
+        <button
+          type="button"
+          onClick={() =>
+            onOpenScheduledPosts(
+              valid && !expired ? selected.toISOString() : null,
+            )
+          }
+          className="-mx-5 -mb-5 mt-3 flex min-h-11 w-[calc(100%+2.5rem)] items-center justify-center border-t border-border px-3 py-2 text-sm font-semibold text-primary transition-colors hover:bg-primary/10 focus-visible:focus-indicator"
+        >
+          Заплановані дописи
+        </button>
+      )}
+    </Modal>
   );
 }

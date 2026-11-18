@@ -7,7 +7,7 @@ import {
   useInteractions,
   useRole,
 } from "@floating-ui/react";
-import { useId, type ReactNode } from "react";
+import { useId, type ReactNode, type RefObject } from "react";
 import { X } from "lucide-react";
 
 import { useBodyScrollLock } from "@/hooks/useBodyScrollLock";
@@ -21,6 +21,7 @@ interface ModalProps {
   onClose: () => void;
   children: ReactNode;
   className?: string;
+  returnFocus?: RefObject<HTMLElement | null>;
 }
 export function Modal({
   open,
@@ -29,6 +30,7 @@ export function Modal({
   onClose,
   children,
   className,
+  returnFocus,
 }: ModalProps) {
   const titleId = useId();
   const { refs, context } = useFloating({
@@ -46,7 +48,7 @@ export function Modal({
   return (
     <FloatingPortal>
       <FloatingOverlay className="z-confirm-modal flex items-center justify-center modal-backdrop p-4">
-        <FloatingFocusManager context={context}>
+        <FloatingFocusManager context={context} returnFocus={returnFocus ?? true}>
           <section
             // eslint-disable-next-line react-hooks/refs
             ref={refs.setFloating}

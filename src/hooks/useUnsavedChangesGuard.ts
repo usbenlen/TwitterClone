@@ -3,12 +3,14 @@ import { useCallback, useEffect, useState } from "react";
 interface UseUnsavedChangesGuardProps {
   hasChanges: boolean;
   isBusy?: boolean;
+  escapeDisabled?: boolean;
   onClose: () => void;
 }
 
 export function useUnsavedChangesGuard({
   hasChanges,
   isBusy = false,
+  escapeDisabled = false,
   onClose,
 }: UseUnsavedChangesGuardProps) {
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
@@ -34,6 +36,8 @@ export function useUnsavedChangesGuard({
   }, [onClose]);
 
   useEffect(() => {
+    if (escapeDisabled) return;
+
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key !== "Escape") return;
 
@@ -49,7 +53,7 @@ export function useUnsavedChangesGuard({
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, [isConfirmOpen, requestClose]);
+  }, [escapeDisabled, isConfirmOpen, requestClose]);
 
   return {
     isConfirmOpen,

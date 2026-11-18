@@ -71,7 +71,7 @@ export function useComposerScheduling(options: SchedulingOptions) {
         setDraftAt(null);
         popup.close();
       },
-      openList: (value: string) => {
+      openList: (value: string | null) => {
         setDraftAt(value);
         popup.close();
         setListOpen(true);
