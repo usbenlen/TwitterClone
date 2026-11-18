@@ -75,7 +75,7 @@ export default function BirthDateEditor({
   const maxDay = maxBirthDay(year, month, today);
 
   return (
-    <section className="space-y-5 rounded-xl border border-border p-4">
+    <section className="space-y-5 overflow-hidden rounded-xl border border-border p-4">
       <div>
         <div className="flex items-center justify-between gap-3">
           <h3 className="font-semibold">Дата народження</h3>
@@ -180,7 +180,7 @@ export default function BirthDateEditor({
         <button
           type="button"
           onClick={onRemove}
-          className="w-full cursor-pointer py-1 text-center text-sm font-medium text-destructive hover:underline"
+          className="destructive-footer-action -mx-4 -mb-4 w-[calc(100%+2rem)]"
         >
           Видалити дату народження
         </button>

@@ -155,7 +155,7 @@ export default function PollComposer({
             type="button"
             onClick={onRemove}
             disabled={disabled}
-            className="-mx-3 -mb-3 mt-3 flex min-h-11 w-[calc(100%+1.5rem)] items-center justify-center border-t border-border px-3 py-2 text-sm font-medium text-destructive transition-colors hover:bg-destructive/10 focus-visible:focus-indicator disabled:opacity-50"
+            className="destructive-footer-action -mx-3 -mb-3 mt-3 w-[calc(100%+1.5rem)]"
           >
             Видалити опитування
           </button>
