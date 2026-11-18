@@ -13,7 +13,7 @@ import { useId } from "react";
 import { useBodyScrollLock } from "@/shared/hooks";
 import { cn } from "@/shared/lib/cn";
 
-import type { ReactNode } from "react";
+import type { ReactNode, RefObject } from "react";
 
 interface ModalProps {
   open: boolean;
@@ -22,6 +22,7 @@ interface ModalProps {
   onClose: () => void;
   children: ReactNode;
   className?: string;
+  returnFocus?: RefObject<HTMLElement | null>;
 }
 export function Modal({
   open,
@@ -30,6 +31,7 @@ export function Modal({
   onClose,
   children,
   className,
+  returnFocus,
 }: ModalProps) {
   const titleId = useId();
   const { refs, context } = useFloating({
@@ -47,7 +49,7 @@ export function Modal({
   return (
     <FloatingPortal>
       <FloatingOverlay className="z-confirm-modal flex items-center justify-center modal-backdrop p-4">
-        <FloatingFocusManager context={context}>
+        <FloatingFocusManager context={context} returnFocus={returnFocus ?? true}>
           <section
             // eslint-disable-next-line react-hooks/refs
             ref={refs.setFloating}

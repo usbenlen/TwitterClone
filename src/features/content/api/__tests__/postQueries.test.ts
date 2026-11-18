@@ -31,6 +31,7 @@ vi.mock("@/shared/config/mockConfig", () => ({ MOCK_ENABLED: true }));
 const mockedAdapters = vi.hoisted(() => {
   const api = () => ({
     getFeed: vi.fn(),
+    getById: vi.fn(),
     getBookmarked: vi.fn(),
     getByPostId: vi.fn(),
     getThread: vi.fn(),
@@ -171,6 +172,55 @@ afterEach(() => {
 });
 
 describe("post queries and mutations", () => {
+  it("keeps cached reply parents aligned with reactions, author changes and typed deletion", async () => {
+    const rootPost = post();
+    const comment = post({ id: rootPost.id, postId: rootPost.id, isComment: true });
+    const postTarget = { id: rootPost.id, type: "post" } as const;
+    const commentTarget = { id: comment.id, type: "comment" } as const;
+    const endpoint = postsApi.endpoints.getReplyParent;
+    const readPost = () => endpoint.select(postTarget)(store.getState()).data;
+    const readComment = () => endpoint.select(commentTarget)(store.getState()).data;
+    vi.mocked(postApi.getById).mockResolvedValue(rootPost);
+    vi.mocked(commentApi.getThread).mockResolvedValue({
+      target: comment, ancestors: [rootPost], replies: [],
+    });
+    await Promise.all([
+      store.dispatch(endpoint.initiate(postTarget)),
+      store.dispatch(endpoint.initiate(commentTarget)),
+    ]);
+
+    const pending = deferred<ToggleLikeResponse>();
+    vi.mocked(commentApi.toggleLike).mockReturnValue(pending.promise);
+    const reaction = store.dispatch(postsApi.endpoints.react.initiate({
+      ...commentTarget, action: "like", active: false,
+    }));
+    expect(readComment()).toMatchObject({ likedByMe: true, likesCount: 1 });
+    expect(readPost()).toMatchObject({ likedByMe: false, likesCount: 0 });
+    pending.reject(new Error("Offline"));
+    await reaction;
+    await Promise.all(store.dispatch(postsApi.util.getRunningQueriesThunk()));
+    expect(readComment()).toMatchObject({ likedByMe: false, likesCount: 0 });
+
+    const profile: User = {
+      ...rootPost.author,
+      displayName: "Updated author",
+      followersCount: 0,
+      followingCount: 0,
+      postsCount: 0,
+      isFollowedByCurrentUser: false,
+      createdAt: rootPost.createdAt,
+    };
+    updateCachedProfileAuthors(profile, store.dispatch, store.getState());
+    expect(readComment()?.author.displayName).toBe(profile.displayName);
+    expect(readComment()?.ancestors?.[0].author.displayName).toBe(profile.displayName);
+    expect(readPost()?.author.displayName).toBe(profile.displayName);
+
+    vi.mocked(commentApi.getThread).mockRejectedValue(new Error("Deleted"));
+    await store.dispatch(postsApi.endpoints.deletePost.initiate(commentTarget)).unwrap();
+    expect(readComment()).toBeNull();
+    expect(readPost()?.id).toBe(rootPost.id);
+  });
+
   it("shares optimistic reactions and rollback with every recommended page", async () => {
     await load();
     await store.dispatch(postsApi.endpoints.getRecommendedPosts.initiate(10));

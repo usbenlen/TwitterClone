@@ -162,6 +162,7 @@ export default function Composer({
               key={composer.scheduling.modalInitialAt ?? "new-schedule"}
               open
               initialAt={composer.scheduling.modalInitialAt}
+              returnFocus={composer.buttonRefs.schedule}
               onClose={() => composer.scheduling.onOpenChange(false)}
               onApply={composer.scheduling.apply}
               onClear={

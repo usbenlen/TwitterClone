@@ -39,6 +39,7 @@ export default function ScheduledPostEditModal({
     useUnsavedChangesGuard({
       hasChanges: composer.hasChanges,
       isBusy: composer.isPosting,
+      escapeDisabled: composer.scheduling.open,
       onClose,
     });
 

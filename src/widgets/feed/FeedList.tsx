@@ -1,9 +1,12 @@
-import { PostCard } from "@/features/content/components/posts";
-import { withAncestorContext } from "@/features/content/lib/posts/ancestors";
-import { Spinner } from "@/shared/ui";
+import { skipToken } from "@reduxjs/toolkit/query";
 
-import type { Post } from "@/features/content/types";
+import { PostCard } from "@/features/content/components/posts";
+import { Spinner } from "@/shared/ui";
+import type { Post, Target } from "@/features/content/types";
 import type { User } from "@/features/profiles/types";
+import { withAncestorContext } from "@/features/content/lib/posts/ancestors";
+import { useGetReplyParentQuery } from "@/features/content/api/postQueries";
+import { matches } from "@/features/content/model/postTargets";
 
 interface FeedListProps {
   posts: Post[];
@@ -15,21 +18,15 @@ interface FeedListProps {
   showReplyContext?: boolean;
 }
 
-function ReplyPostItem({ post }: { post: Post }) {
-  const parent = post.ancestors?.at(-1);
-
-  const parentPost = parent
-    ? withAncestorContext(parent, post.ancestors ?? [])
-    : null;
-
+function ReplyPostItem({ post, parent }: { post: Post; parent?: Post | null }) {
   return (
     <div className="relative">
-      {parentPost && (
+      {parent && (
         <div className="relative">
           <div className="pointer-events-none absolute left-[35px] top-[59px] bottom-[-9px] z-thread w-0.5 rounded-full bg-[color-mix(in_oklab,var(--border)_95%,black)]" />
 
           <PostCard
-            post={parentPost}
+            post={parent}
             variant="feed"
             navigateToPost
             className="relative border-b-0"
@@ -40,6 +37,27 @@ function ReplyPostItem({ post }: { post: Post }) {
       <PostCard post={post} variant="feed" navigateToPost />
     </div>
   );
+}
+
+function ProfileReplyRow({ post }: { post: Post }) {
+  const parentId = post.parentCommentId || post.postId;
+  const target: Target | undefined = post.isComment && parentId && post.parentCommentId !== post.id
+    ? { id: parentId, type: post.parentCommentId ? "comment" : "post" } : undefined;
+  const ancestors = post.ancestors ?? [];
+  const embedded = target && ancestors.find((ancestor) => matches(ancestor, target));
+  const query = useGetReplyParentQuery(embedded ? skipToken : (target ?? skipToken), { refetchOnMountOrArgChange: 60 });
+
+  const parent = embedded
+    ? { ...embedded, ancestors: ancestors.slice(0, ancestors.indexOf(embedded)) }
+    : query.isError ? undefined : query.currentData;
+
+  return <ReplyPostItem post={post} parent={parent} />;
+}
+
+function BookmarkReplyRow({ post }: { post: Post }) {
+  const ancestors = post.ancestors ?? [];
+  const parent = ancestors.at(-1);
+  return <ReplyPostItem post={post} parent={parent && withAncestorContext(parent, ancestors)} />;
 }
 
 function isReply(post: Post) {
@@ -81,7 +99,7 @@ export default function FeedList({
     return (
       <>
         {posts.map((post) => (
-          <ReplyPostItem
+          <ProfileReplyRow
             key={`${post.isComment ? "comment" : "post"}:${post.id}`}
             post={post}
           />
@@ -95,7 +113,7 @@ export default function FeedList({
       <>
         {posts.map((post) =>
           isReply(post) ? (
-            <ReplyPostItem
+            <BookmarkReplyRow
               key={`${post.isComment ? "comment" : "post"}:${post.id}`}
               post={post}
             />

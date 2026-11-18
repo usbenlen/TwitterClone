@@ -80,6 +80,22 @@ export const postsApi = appApi.injectEndpoints({
       ],
     }),
 
+    getReplyParent: build.query<Post | null, Target>({
+      queryFn: (target) =>
+        request(async () => {
+          if (target.type === "post") {
+            const parent = await postApi.getById(target.id);
+            return matches(parent, target) ? parent : null;
+          }
+
+          const thread = await commentApi.getThread(target.id, "comment");
+          return matches(thread.target, target)
+            ? { ...thread.target, ancestors: thread.ancestors }
+            : null;
+        }),
+      providesTags: (data, _error, target) => data ? tagsFor([data]) : [entityTag(target)],
+    }),
+
     getRecommendedPosts: build.infiniteQuery<
       PaginatedRecommendedPosts,
       number,
@@ -442,6 +458,7 @@ export const {
   useGetPollStateQuery,
   useGetSearchUsersQuery,
   useGetPostsQuery,
+  useGetReplyParentQuery,
   useGetThreadQuery,
   useGetHistoryQuery,
   useCreatePostMutation,

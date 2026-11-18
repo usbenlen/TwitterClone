@@ -163,6 +163,10 @@
   outline-offset: -2px;
 }
 
+@utility destructive-footer-action {
+  @apply flex min-h-11 items-center justify-center border-t border-border px-3 py-2 text-sm font-medium text-destructive transition-colors hover:bg-destructive/10 focus-visible:focus-indicator disabled:opacity-50;
+}
+
 @utility modal-backdrop {
   @apply bg-black/50 backdrop-blur-sm;
 }
