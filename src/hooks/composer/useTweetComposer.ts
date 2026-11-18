@@ -532,9 +532,7 @@ export function useTweetComposer({
     },
 
     linkPreview: {
-      visible: linkPreview.loading || !!linkPreview.preview,
       preview: linkPreview.preview,
-      loading: linkPreview.loading,
       onRemove: () => {
         if (!isPosting && !submittingRef.current) linkPreview.remove();
       },
