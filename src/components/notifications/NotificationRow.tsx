@@ -107,9 +107,9 @@ export function NotificationRow({
     >
       <div
         className={cn(
-          "flex size-7 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary",
-          item.type === "like" && "bg-pink-500/10 text-pink-500",
-          item.type === "repost" && "bg-emerald-500/10 text-emerald-500",
+          "flex size-7 shrink-0 items-center justify-center text-primary",
+          item.type === "like" && "text-pink-500",
+          item.type === "repost" && "text-emerald-500",
         )}
       >
         <Icon

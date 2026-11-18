@@ -28,7 +28,9 @@ export default function NavigationItem({
           "flex items-center rounded-full transition-colors hover:bg-muted",
           "dark:hover:bg-surface-hover dark:active:bg-muted dark:focus-visible:focus-indicator",
           vertical ? "gap-4 px-4 py-3 text-lg" : "gap-2 px-3 py-2",
-          isActive ? "navigation-active font-bold text-foreground" : "text-muted-foreground dark:text-foreground",
+          isActive && "text-foreground",
+          isActive && (vertical ? "font-semibold [&_svg]:stroke-[2.25]" : "navigation-active font-bold"),
+          !isActive && "text-muted-foreground dark:text-foreground",
         )
       }
     >
