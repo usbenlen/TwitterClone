@@ -26,10 +26,9 @@ export function ComposerAttachments({
         disabled={composer.isPosting}
       />
 
-      {composer.linkPreview.visible && (
+      {composer.linkPreview.preview && (
         <ComposerLinkPreview
           preview={composer.linkPreview.preview}
-          loading={composer.linkPreview.loading}
           onRemove={composer.linkPreview.onRemove}
           disabled={composer.isPosting}
         />

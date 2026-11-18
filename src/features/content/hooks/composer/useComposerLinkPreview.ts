@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 
 import { linkPreviewApi } from "@/features/content/api";
 import { LINK_PREVIEW_DEBOUNCE_MS } from "@/features/content/constants/composer";
@@ -7,53 +7,36 @@ import { ENABLE_LINK_PREVIEWS } from "@/shared/config/featureFlags";
 
 import type { LinkPreview } from "@/features/content/types";
 
+interface PreviewResolution {
+  sourceUrl: string;
+  preview: LinkPreview | null;
+}
+
 export function useComposerLinkPreview(
   content: string,
   initialPreview: LinkPreview | null = null,
 ) {
-  const [preview, setPreview] = useState<LinkPreview | null>(initialPreview);
-  const [loadingUrl, setLoadingUrl] = useState<string | null>(null);
-  const [errorUrl, setErrorUrl] = useState<string | null>(null);
-  const [dismissedUrl, setDismissedUrl] = useState<string | null>(null);
-  const requestId = useRef(0);
-
   const url = ENABLE_LINK_PREVIEWS ? findFirstHttpUrl(content) : null;
+  const [resolution, setResolution] = useState<PreviewResolution | null>(() =>
+    url && initialPreview ? { sourceUrl: url, preview: initialPreview } : null,
+  );
+  const isResolved = resolution !== null && resolution.sourceUrl === url;
 
   useEffect(() => {
-    const currentRequestId = ++requestId.current;
-    const controller = new AbortController();
-
     if (!url) {
       // eslint-disable-next-line react-hooks/set-state-in-effect
-      setPreview(null);
-      setLoadingUrl(null);
-      setErrorUrl(null);
-      setDismissedUrl(null);
-      return () => controller.abort();
+      setResolution(null);
+      return;
     }
+    if (isResolved) return;
 
-    if (preview?.url === url || dismissedUrl === url || errorUrl === url) {
-      return () => controller.abort();
-    }
-
-    setPreview(null);
-    setLoadingUrl(url);
-
+    const controller = new AbortController();
     const timer = window.setTimeout(async () => {
       try {
         const result = await linkPreviewApi.resolve(url, controller.signal);
-        if (requestId.current !== currentRequestId) return;
-
-        setPreview(result);
-        setErrorUrl(null);
+        if (!controller.signal.aborted) setResolution({ sourceUrl: url, preview: result });
       } catch {
-        if (controller.signal.aborted || requestId.current !== currentRequestId)
-          return;
-
-        setPreview(null);
-        setErrorUrl(url);
-      } finally {
-        if (requestId.current === currentRequestId) setLoadingUrl(null);
+        if (!controller.signal.aborted) setResolution({ sourceUrl: url, preview: null });
       }
     }, LINK_PREVIEW_DEBOUNCE_MS);
 
@@ -61,25 +44,11 @@ export function useComposerLinkPreview(
       window.clearTimeout(timer);
       controller.abort();
     };
-  }, [dismissedUrl, errorUrl, preview?.url, url]);
-
-  const remove = () => {
-    if (url) setDismissedUrl(url);
-    setPreview(null);
-    setLoadingUrl(null);
-  };
-
-  const clear = () => {
-    setPreview(null);
-    setLoadingUrl(null);
-    setErrorUrl(null);
-    setDismissedUrl(null);
-  };
+  }, [isResolved, url]);
 
   return {
-    preview,
-    loading: Boolean(url) && loadingUrl === url,
-    remove,
-    clear,
+    preview: isResolved ? resolution.preview : null,
+    remove: () => setResolution(url ? { sourceUrl: url, preview: null } : null),
+    clear: () => setResolution(null),
   };
 }
