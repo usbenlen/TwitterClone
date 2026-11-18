@@ -44,6 +44,17 @@ export function patchTweets(
       ),
     );
 
+  for (const target of postsApi.util.selectCachedArgsForQuery(state, "getReplyParent")) {
+    patches.push(
+      dispatch(
+        postsApi.util.updateQueryData("getReplyParent", target, (draft) => {
+          if (!draft) return draft;
+          visit([draft], update);
+        }),
+      ),
+    );
+  }
+
   for (const id of postsApi.util.selectCachedArgsForQuery(state, "getThread")) {
     patches.push(
       dispatch(
@@ -106,6 +117,15 @@ export function updateCachedProfileAuthors(
   dispatch: AppDispatch,
   state: RootState,
 ) {
+  for (const target of postsApi.util.selectCachedArgsForQuery(state, "getReplyParent")) {
+    dispatch(
+      postsApi.util.updateQueryData("getReplyParent", target, (draft) => {
+        if (!draft) return draft;
+        updateTweetAuthors([draft], user);
+      }),
+    );
+  }
+
   for (const limit of postsApi.util.selectCachedArgsForQuery(
     state,
     "getRecommendedPosts",
@@ -180,6 +200,12 @@ export function removeCachedTweet(
 
   const all: Tweet[] = [];
 
+  const parentTargets = postsApi.util.selectCachedArgsForQuery(state, "getReplyParent");
+  for (const parent of parentTargets) {
+    const data = postsApi.endpoints.getReplyParent.select(parent)(state).data;
+    if (data) all.push(data);
+  }
+
   for (const limit of postsApi.util.selectCachedArgsForQuery(
     state,
     "getRecommendedPosts",
@@ -213,6 +239,11 @@ export function removeCachedTweet(
   } while (size !== removed.size);
 
   const keep = (tweet: Tweet) => !removed.has(targetKey(targetOf(tweet)));
+
+  for (const parent of parentTargets) {
+    if (removed.has(targetKey(parent)))
+      dispatch(postsApi.util.updateQueryData("getReplyParent", parent, () => null));
+  }
 
   const affectedLists = postsApi.util
     .selectCachedArgsForQuery(state, "getPosts")

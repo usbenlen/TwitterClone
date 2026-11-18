@@ -1,5 +1,10 @@
+import { skipToken } from "@reduxjs/toolkit/query";
+
 import { TweetCard } from "@/components/tweet/index";
 import { Spinner } from "@/ui/Spinner";
+
+import { useGetReplyParentQuery } from "@/store/postsApi";
+import { matches, type Target } from "@/store/posts/types";
 
 import type { Tweet } from "@/types/tweet";
 import type { User } from "@/types/user";
@@ -16,21 +21,15 @@ interface FeedListProps {
   showReplyContext?: boolean;
 }
 
-function ReplyTweetItem({ tweet }: { tweet: Tweet }) {
-  const parent = tweet.ancestors?.at(-1);
-
-  const parentTweet = parent
-    ? withAncestorContext(parent, tweet.ancestors ?? [])
-    : null;
-
+function ReplyTweetItem({ tweet, parent }: { tweet: Tweet; parent?: Tweet | null }) {
   return (
     <div className="relative">
-      {parentTweet && (
+      {parent && (
         <div className="relative">
           <div className="pointer-events-none absolute left-[35px] top-[59px] bottom-[-9px] z-thread w-0.5 rounded-full bg-[color-mix(in_oklab,var(--border)_95%,black)]" />
 
           <TweetCard
-            tweet={parentTweet}
+            tweet={parent}
             variant="feed"
             navigateToPost
             className="relative border-b-0"
@@ -41,6 +40,27 @@ function ReplyTweetItem({ tweet }: { tweet: Tweet }) {
       <TweetCard tweet={tweet} variant="feed" navigateToPost />
     </div>
   );
+}
+
+function ProfileReplyRow({ tweet }: { tweet: Tweet }) {
+  const parentId = tweet.parentCommentId || tweet.postId;
+  const target: Target | undefined = tweet.isComment && parentId && tweet.parentCommentId !== tweet.id
+    ? { id: parentId, type: tweet.parentCommentId ? "comment" : "post" } : undefined;
+  const ancestors = tweet.ancestors ?? [];
+  const embedded = target && ancestors.find((ancestor) => matches(ancestor, target));
+  const query = useGetReplyParentQuery(embedded ? skipToken : (target ?? skipToken), { refetchOnMountOrArgChange: 60 });
+
+  const parent = embedded
+    ? { ...embedded, ancestors: ancestors.slice(0, ancestors.indexOf(embedded)) }
+    : query.isError ? undefined : query.currentData;
+
+  return <ReplyTweetItem tweet={tweet} parent={parent} />;
+}
+
+function BookmarkReplyRow({ tweet }: { tweet: Tweet }) {
+  const ancestors = tweet.ancestors ?? [];
+  const parent = ancestors.at(-1);
+  return <ReplyTweetItem tweet={tweet} parent={parent && withAncestorContext(parent, ancestors)} />;
 }
 
 function isReply(tweet: Tweet) {
@@ -82,7 +102,7 @@ export default function FeedList({
     return (
       <>
         {tweets.map((tweet) => (
-          <ReplyTweetItem
+          <ProfileReplyRow
             key={`${tweet.isComment ? "comment" : "post"}:${tweet.id}`}
             tweet={tweet}
           />
@@ -96,7 +116,7 @@ export default function FeedList({
       <>
         {tweets.map((tweet) =>
           isReply(tweet) ? (
-            <ReplyTweetItem
+            <BookmarkReplyRow
               key={`${tweet.isComment ? "comment" : "post"}:${tweet.id}`}
               tweet={tweet}
             />
