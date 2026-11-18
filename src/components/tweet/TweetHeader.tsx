@@ -66,7 +66,7 @@ export default function TweetHeader({
   return (
     <div className="relative flex flex-col gap-0.5 min-w-0">
       <div className="relative flex items-start justify-between gap-2 min-w-0">
-        <div className="flex min-w-0 flex-wrap items-center gap-x-1 gap-y-0.5 pr-8 text-sm">
+        <div className="flex min-w-0 items-center gap-x-1 gap-y-0.5 pr-8 text-sm sm:flex-wrap">
           <Link
             to={APP_ROUTES.profile(author.username)}
             className="min-w-0 max-w-full truncate font-bold text-foreground hover:underline"
@@ -76,19 +76,19 @@ export default function TweetHeader({
 
           <VerifiedBadge user={author} size={18} />
 
-          <span className="truncate text-muted-foreground">
+          <span className="min-w-0 truncate text-muted-foreground">
             @{normalizeInlineDisplayText(author.username)}
           </span>
 
-          <span className="text-muted-foreground">·</span>
+          <span className="shrink-0 text-muted-foreground">·</span>
 
-          <span className="shrink-0 text-muted-foreground">
+          <span className="shrink-0 whitespace-nowrap text-muted-foreground">
             {formatRelativeTime(createdAt)}
           </span>
 
           {updatedAt && (
             <>
-              <span className="text-muted-foreground">·</span>
+              <span className="shrink-0 text-muted-foreground">·</span>
               {onOpenEditHistory ? (
                 <button
                   type="button"
