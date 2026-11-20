@@ -1,7 +1,8 @@
-import { ExternalLink, X } from "lucide-react";
+import { X } from "lucide-react";
 import { useState } from "react";
 
 import { cn } from "@/shared/lib/cn";
+import { createLinkPreviewPlaceholder } from "@/features/content/lib/composer/linkPreview";
 
 import type { LinkPreview } from "@/features/content/types";
 
@@ -21,9 +22,9 @@ export default function LinkPreviewCard({
   disabled = false,
 }: LinkPreviewCardProps) {
   const [failedImageUrl, setFailedImageUrl] = useState<string | null>(null);
-  const showImage = Boolean(
-    preview.imageUrl && preview.imageUrl !== failedImageUrl,
-  );
+  const imageUrl = preview.imageUrl?.trim();
+  const remoteImage = imageUrl && imageUrl !== failedImageUrl ? imageUrl : null;
+  const source = remoteImage ?? createLinkPreviewPlaceholder(preview.domain);
 
   return (
     <div className={cn("relative mt-3", className)}>
@@ -34,45 +35,29 @@ export default function LinkPreviewCard({
         aria-label={`Відкрити ${preview.title} на ${preview.domain}`}
         className="group block overflow-hidden rounded-2xl border border-border bg-card outline-none transition hover:border-muted-foreground/50 focus-visible:ring-2 focus-visible:ring-primary"
       >
-        {showImage ? (
-          <div className="relative aspect-video overflow-hidden bg-muted">
-            <img
-              src={preview.imageUrl!}
-              alt=""
-              className="size-full object-cover transition duration-300 group-hover:scale-[1.01]"
-              onError={() => setFailedImageUrl(preview.imageUrl)}
-            />
+        <div className="relative aspect-video overflow-hidden bg-muted">
+          <img
+            key={source}
+            src={source}
+            alt=""
+            className="size-full object-cover transition duration-300 group-hover:scale-[1.01]"
+            onError={remoteImage ? () => setFailedImageUrl(remoteImage) : undefined}
+          />
 
-            <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/90 via-black/65 to-transparent px-3 pb-3 pt-12 text-white sm:px-4 sm:pb-4">
-              <div className="mb-1 text-xs font-semibold tracking-wide text-white/80">
-                {preview.domain}
-              </div>
-              <div
-                className={cn(
-                  "line-clamp-2 font-semibold leading-snug",
-                  compact ? "text-sm" : "text-[15px] sm:text-base",
-                )}
-              >
-                {preview.title}
-              </div>
+          <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/90 via-black/65 to-transparent px-3 pb-3 pt-12 text-white sm:px-4 sm:pb-4">
+            <div className="mb-1 truncate text-xs font-semibold tracking-wide text-white/80">
+              {preview.domain}
+            </div>
+            <div
+              className={cn(
+                "line-clamp-2 wrap-anywhere font-semibold leading-snug",
+                compact ? "text-sm" : "text-[15px] sm:text-base",
+              )}
+            >
+              {preview.title}
             </div>
           </div>
-        ) : (
-          <div className="flex min-h-24 items-center gap-3 p-4 pr-12">
-            <div className="min-w-0 flex-1">
-              <div className="truncate text-xs font-medium text-muted-foreground">
-                {preview.domain}
-              </div>
-              <div className="mt-1 line-clamp-2 font-semibold leading-snug">
-                {preview.title}
-              </div>
-            </div>
-            <ExternalLink
-              className="size-5 shrink-0 text-muted-foreground"
-              aria-hidden="true"
-            />
-          </div>
-        )}
+        </div>
       </a>
 
       {onRemove && (
