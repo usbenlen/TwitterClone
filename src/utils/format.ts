@@ -101,7 +101,7 @@ export function formatVoteCount(count: number): string {
 
 export function formatDateTime(
   value: string | Date | null | undefined,
-  dateStyle: "medium" | "full" = "medium",
+  dateStyle: "medium" | "long" | "full" = "medium",
 ): string {
   const date = value instanceof Date ? value : new Date(value ?? "");
   if (!Number.isFinite(date.getTime())) return "Дата невідома";

@@ -393,6 +393,23 @@ describe("composer interactions", () => {
     expect(read().scheduling.scheduledAt).toBeNull();
   });
 
+  it("allows changing an existing schedule while the draft is empty", async () => {
+    const read = mount({
+      allowScheduling: true,
+      initialScheduledAt: "2099-01-01T00:00:00Z",
+    });
+
+    act(() => read().scheduling.onOpenChange(true));
+    expect(read().scheduling.open).toBe(true);
+
+    act(() => read().scheduling.apply("2099-01-02T00:00:00Z"));
+    expect(read().scheduling.scheduledAt).toBe("2099-01-02T00:00:00Z");
+    expect(read().scheduling.open).toBe(false);
+    expect(read().canSubmit).toBe(false);
+    await act(async () => { await read().submit(); });
+    expect(mocks.schedule).not.toHaveBeenCalled();
+  });
+
   it("keeps scheduled state after a network error", async () => {
     const read = mount({ initialContent: "Later", allowScheduling: true });
     act(() => read().scheduling.apply("2099-01-01T00:00:00Z"));
