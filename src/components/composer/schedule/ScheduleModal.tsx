@@ -19,7 +19,6 @@ interface ScheduleModalProps {
   returnFocus?: RefObject<HTMLElement | null>;
   onClose: () => void;
   onApply: (scheduledAt: string) => void;
-  onClear?: () => void;
   onOpenScheduledPosts?: (draftAt: string | null) => void;
 }
 
@@ -52,7 +51,6 @@ export default function ScheduleModal({
   returnFocus,
   onClose,
   onApply,
-  onClear,
   onOpenScheduledPosts,
 }: ScheduleModalProps) {
   const [{ openedAt, earliest, latest, initial }] = useState(() => {
@@ -294,24 +292,19 @@ export default function ScheduleModal({
         </p>
       )}
       <div className="mt-4 flex flex-wrap justify-end gap-2.5">
-        {onClear && (
-          <Button
-            type="button"
-            variant="ghost"
-            onClick={onClear}
-            className="mr-auto"
-          >
-            Очистити
-          </Button>
-        )}
-        <Button type="button" variant="outline" onClick={onClose}>
+        <Button
+          type="button"
+          variant="outline"
+          onClick={onClose}
+          className="max-[360px]:px-3"
+        >
           Скасувати
         </Button>
         <Button
           type="button"
           onClick={apply}
           disabled={!valid || expired}
-          className="dark:bg-primary dark:text-primary-foreground dark:hover:bg-primary-hover"
+          className="max-[360px]:px-3 dark:bg-primary dark:text-primary-foreground dark:hover:bg-primary-hover"
         >
           Застосувати
         </Button>

@@ -171,8 +171,7 @@ export default function Composer({
               <ComposerToolbar
                 onAction={(action) => {
                   if (action === "schedule") {
-                    scheduleReturnFocus.current =
-                      composer.buttonRefs.schedule?.current ?? null;
+                    scheduleReturnFocus.current = composer.buttonRefs.schedule?.current ?? null;
                   }
                   composer.handleAction(action);
                 }}
@@ -206,14 +205,6 @@ export default function Composer({
               returnFocus={scheduleReturnFocus}
               onClose={() => composer.scheduling.onOpenChange(false)}
               onApply={composer.scheduling.apply}
-              onClear={
-                composer.scheduling.canClear && composer.scheduling.scheduledAt
-                  ? () => {
-                      scheduleReturnFocus.current = composer.editorRef.current;
-                      composer.scheduling.clear();
-                    }
-                  : undefined
-              }
               onOpenScheduledPosts={
                 composer.scheduling.showScheduledPostsLink
                   ? composer.scheduling.openList
