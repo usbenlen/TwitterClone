@@ -1,5 +1,5 @@
-import { CalendarClock, X } from "lucide-react";
-import { useState } from "react";
+import { CalendarClock, Pencil, X } from "lucide-react";
+import { useRef, useState } from "react";
 
 import { useAuth } from "@/features/auth/hooks/useAuth";
 import { ComposerAttachments } from "@/features/content/components/composer/ComposerAttachments";
@@ -45,6 +45,7 @@ export default function Composer({
 }: ComposerProps) {
   const { user } = useAuth();
   const [isExpanded, setIsExpanded] = useState(false);
+  const scheduleReturnFocus = useRef<HTMLElement>(null);
 
   const drag = useDragAndDrop({
     onFilesSelected: composer.onFilesSelected,
@@ -53,6 +54,8 @@ export default function Composer({
   if (!user) return null;
 
   const isComment = variant === "comment";
+  const { scheduledAt } = composer.scheduling;
+  const publicationTime = scheduledAt ? formatDateTime(scheduledAt, "long") : null;
 
   const handleSubmit = async () => {
     try {
@@ -105,22 +108,51 @@ export default function Composer({
 
           <ComposerAttachments composer={composer} quotedPost={quotedPost} />
 
-          {composer.scheduling.scheduledAt && (
-            <div className="mt-3 flex items-center justify-between rounded-xl border border-border bg-transparent px-3 py-2 text-sm">
-              <span className="flex items-center gap-2 text-muted-foreground">
-                <CalendarClock size={17} />
-                {formatDateTime(composer.scheduling.scheduledAt)}
-              </span>
+          {scheduledAt && (
+            <div className="mt-2 flex items-center rounded-2xl border border-border bg-transparent">
+              <button
+                type="button"
+                disabled={composer.disabledActions.includes("schedule")}
+                onClick={(event) => {
+                  scheduleReturnFocus.current = event.currentTarget;
+                  composer.scheduling.onOpenChange(true);
+                }}
+                className="flex min-h-14 min-w-0 flex-1 items-center gap-1.5 rounded-xl px-2.5 py-2 text-left hover:bg-muted/40 focus-visible:focus-indicator disabled:opacity-50 sm:gap-2"
+                aria-label={`Змінити час публікації, ${publicationTime}`}
+              >
+                <span className="flex size-8 shrink-0 items-center justify-center rounded-[10px] bg-primary/20 text-primary">
+                  <CalendarClock size={18} aria-hidden="true" />
+                </span>
+                <span className="min-w-0 flex-1">
+                  <span className="block text-xs leading-4 text-muted-foreground">
+                    Час публікації
+                  </span>
+                  <time
+                    dateTime={scheduledAt}
+                    className="block text-[13px] leading-5 text-foreground sm:text-sm"
+                  >
+                    {publicationTime}
+                  </time>
+                </span>
+                <Pencil
+                  size={15}
+                  className="shrink-0 text-muted-foreground"
+                  aria-hidden="true"
+                />
+              </button>
               {composer.scheduling.canClear && (
-                <button
-                  type="button"
-                  onClick={composer.scheduling.clear}
-                  disabled={composer.isPosting}
-                  className="flex size-7 items-center justify-center rounded-full hover:bg-muted"
-                  aria-label="Прибрати запланований час"
-                >
-                  <X size={16} />
-                </button>
+                <>
+                  <span className="h-5 w-px shrink-0 bg-border" aria-hidden="true" />
+                  <button
+                    type="button"
+                    onClick={composer.scheduling.clear}
+                    disabled={composer.isPosting}
+                    className="mx-1 flex size-9 shrink-0 items-center justify-center rounded-full text-muted-foreground hover:bg-muted focus-visible:focus-indicator disabled:opacity-50"
+                    aria-label="Прибрати запланований час"
+                  >
+                    <X size={16} aria-hidden="true" />
+                  </button>
+                </>
               )}
             </div>
           )}
@@ -134,7 +166,13 @@ export default function Composer({
               className="min-w-0 max-w-[280px] flex-1 overflow-x-auto overscroll-x-contain focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:max-w-none sm:overflow-visible"
             >
               <ComposerToolbar
-                onAction={composer.handleAction}
+                onAction={(action) => {
+                  if (action === "schedule") {
+                    scheduleReturnFocus.current =
+                      composer.buttonRefs.schedule?.current ?? null;
+                  }
+                  composer.handleAction(action);
+                }}
                 buttonRefs={composer.buttonRefs}
                 disabledActions={composer.disabledActions}
                 activeActions={composer.pollEditor.visible ? ["poll"] : []}
@@ -162,12 +200,15 @@ export default function Composer({
               key={composer.scheduling.modalInitialAt ?? "new-schedule"}
               open
               initialAt={composer.scheduling.modalInitialAt}
-              returnFocus={composer.buttonRefs.schedule}
+              returnFocus={scheduleReturnFocus}
               onClose={() => composer.scheduling.onOpenChange(false)}
               onApply={composer.scheduling.apply}
               onClear={
                 composer.scheduling.canClear && composer.scheduling.scheduledAt
-                  ? composer.scheduling.clear
+                  ? () => {
+                      scheduleReturnFocus.current = composer.editorRef.current;
+                      composer.scheduling.clear();
+                    }
                   : undefined
               }
               onOpenScheduledPosts={

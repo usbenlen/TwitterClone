@@ -171,7 +171,7 @@ export function usePostComposer({
 
   const canOpenSchedule =
     allowScheduling &&
-    hasPostContent &&
+    (hasPostContent || Boolean(scheduledAt)) &&
     remaining >= 0 &&
     !isPosting &&
     !hasBlockedMedia &&
@@ -228,7 +228,7 @@ export function usePostComposer({
     remaining >= 0 &&
     !isPosting &&
     !hasBlockedMedia &&
-    (!scheduledAt || canOpenSchedule);
+    (!scheduledAt || (hasPostContent && canOpenSchedule));
 
   const onFilesSelected = (files: FileList | null) => {
     if (isPosting || submittingRef.current) return;
