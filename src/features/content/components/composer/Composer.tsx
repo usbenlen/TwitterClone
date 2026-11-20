@@ -106,7 +106,7 @@ export default function Composer({
           <ComposerAttachments composer={composer} quotedPost={quotedPost} />
 
           {composer.scheduling.scheduledAt && (
-            <div className="mt-3 flex items-center justify-between rounded-xl border border-border px-3 py-2 text-sm">
+            <div className="mt-3 flex items-center justify-between rounded-xl border border-border bg-transparent px-3 py-2 text-sm">
               <span className="flex items-center gap-2 text-muted-foreground">
                 <CalendarClock size={17} />
                 {formatDateTime(composer.scheduling.scheduledAt)}

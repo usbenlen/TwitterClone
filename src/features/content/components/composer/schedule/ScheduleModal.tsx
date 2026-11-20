@@ -223,7 +223,7 @@ export default function ScheduleModal({
 
       <fieldset className="mt-3 min-w-0">
         <legend className="mb-1.5 text-sm font-semibold">Час публікації</legend>
-        <div className="inline-flex items-center rounded-xl border border-border bg-muted/30 pr-1 pl-3">
+        <div className="inline-flex items-center rounded-xl border border-border bg-transparent pr-1 pl-3">
           <Clock3
             size={18}
             className="text-muted-foreground"
