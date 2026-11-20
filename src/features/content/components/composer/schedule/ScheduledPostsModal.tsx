@@ -1,4 +1,4 @@
-import { ArrowLeft, CalendarClock, Pencil, Trash2, X } from "lucide-react";
+import { ArrowLeft, CalendarClock, Pencil, Plus, Trash2, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 
@@ -15,12 +15,14 @@ interface ScheduledPostsModalProps {
   open: boolean;
   onBack: () => void;
   onClose: () => void;
+  onCreatePost: () => void;
 }
 
 export default function ScheduledPostsModal({
   open,
   onBack,
   onClose,
+  onCreatePost,
 }: ScheduledPostsModalProps) {
   const { posts, isLoading, error, update, remove } = useScheduledPosts();
   const [editing, setEditing] = useState<ScheduledPost | null>(null);
@@ -53,25 +55,37 @@ export default function ScheduledPostsModal({
         }}
       >
         <div className="flex h-full w-full max-w-2xl flex-col bg-background shadow-xl sm:h-auto sm:max-h-[calc(100vh-8rem)] sm:rounded-2xl">
-          <header className="flex items-center gap-3 border-b border-border px-4 py-3">
+          <header className="flex items-center gap-2 border-b border-border px-4 py-3 sm:gap-3">
             <button
               type="button"
               onClick={onBack}
-              className="flex size-9 items-center justify-center rounded-full hover:bg-muted"
+              className="flex size-9 shrink-0 items-center justify-center rounded-full hover:bg-muted focus-visible:focus-indicator"
               aria-label="Назад до планування"
             >
-              <ArrowLeft size={22} />
+              <ArrowLeft size={22} aria-hidden="true" />
             </button>
-            <h2 id="scheduled-posts-title" className="flex-1 text-xl font-bold">
+            <h2
+              id="scheduled-posts-title"
+              className="min-w-0 flex-1 text-lg font-bold sm:text-xl"
+            >
               Заплановані дописи
             </h2>
             <button
               type="button"
+              onClick={onCreatePost}
+              className="flex size-9 shrink-0 items-center justify-center rounded-full hover:bg-muted focus-visible:focus-indicator"
+              aria-label="Створити допис"
+              title="Створити допис"
+            >
+              <Plus size={22} aria-hidden="true" />
+            </button>
+            <button
+              type="button"
               onClick={onClose}
-              className="flex size-9 items-center justify-center rounded-full hover:bg-muted"
+              className="flex size-9 shrink-0 items-center justify-center rounded-full hover:bg-muted focus-visible:focus-indicator"
               aria-label="Закрити"
             >
-              <X size={22} />
+              <X size={22} aria-hidden="true" />
             </button>
           </header>
 
@@ -83,9 +97,10 @@ export default function ScheduledPostsModal({
             )}
             {error && <p className="p-6 text-destructive">{error}</p>}
             {!isLoading && !error && posts.length === 0 && (
-              <p className="p-10 text-center text-muted-foreground">
-                Запланованих дописів поки немає.
-              </p>
+              <div className="flex flex-col items-center gap-3 px-4 py-10 text-center text-sm text-muted-foreground">
+                <CalendarClock size={28} aria-hidden="true" />
+                <p>Запланованих дописів поки немає.</p>
+              </div>
             )}
             {posts.map((post) => (
               <article
