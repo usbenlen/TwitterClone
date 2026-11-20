@@ -226,6 +226,10 @@ export default function Composer({
             open={composer.scheduling.listOpen}
             onBack={composer.scheduling.backToSchedule}
             onClose={composer.scheduling.closeList}
+            onCreatePost={() => {
+              composer.scheduling.closeList();
+              composer.editorRef.current?.focus();
+            }}
           />
         </div>
       </div>
